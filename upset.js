@@ -53,7 +53,7 @@ function plot() {
 
     var cellDistance = 20;
     var cellSize = 18;
-    var textWidth = 200;
+    var textHeight = 60;
 
     var paddingTop = 30;
     var paddingSide = 20;
@@ -89,45 +89,67 @@ function plot() {
     var svg = d3.select("body").append("svg").attr("width", w)
         .attr("height", h);
 
-    var grp = svg.selectAll('g')
+    var grp = svg.selectAll('.row')
         .data(sets)
         .enter()
         .append('g')
-        .attr('transform', function (d, i) {
-            return 'translate(0, ' + (cellDistance) * i + ')';
-        });
+        .attr({transform: function (d, i) {
+            return 'translate(0, ' + (textHeight + cellDistance * i) + ')';
+        },
+            class: 'row'});
 
-    grp.selectAll('rect').data(function (d) {
+    grp.selectAll('.row')
+        .append('g')
+        .attr({class: 'combination'
+        })
+
+    grp.selectAll('.combination').data(function (d) {
         return d.setID
     }).enter()
         .append('rect')
         .attr('x', function (d, i) {
             return (cellDistance) * i;
         })
-        .attr('width', cellSize)
-        .attr('height', cellSize).style("fill", function (d) {
+        .attr({width: cellSize,
+            height: cellSize})
+        .style("fill", function (d) {
             return setScale(d);
         });
 
-    svg.selectAll('.setSize').data(sets).enter()
+
+    svg.selectAll('.row')
         .append('rect')
         .attr({
             class: 'setSize',
             x: function (d) {
+                console.log('test');
                 console.log(d);
                 return (cellDistance) * d.setID.length;
-
-            },
-            y: function (d, i)
-            {
-                return cellDistance * i;
             },
             width: function (d) {
-
                 return  d.setSize;
             },
             height: cellSize
         });
+
+//    svg.selectAll('.setSize').data(sets).enter()
+//        .append('rect')
+//        .attr({
+//            class: 'setSize',
+//            x: function (d) {
+//                console.log(d);
+//                return (cellDistance) * d.setID.length;
+//
+//            },
+//            y: function (d, i) {
+//                return cellDistance * i;
+//            },
+//            width: function (d) {
+//
+//                return  d.setSize;
+//            },
+//            height: cellSize
+//        });
 
 //// background color
 //    svg.append("rect").attr({
