@@ -1,17 +1,28 @@
+.body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 .axis path,
 .axis line {
-    fill:none;
+    fill: none;
     stroke: gray;
     shape-rendering: crispEdges;
 }
-.axis text{
+
+.axis text {
     fill: olive;
 }
 
 .setSize {
-  fill: steelblue;
+    fill: steelblue;
 }
 
 .setSize:hover {
-  fill: orange;
+    fill: orange;
+}
+
+.setLabel {
+    dominant-baseline: middle;
+    font: 12px sans-serif;
+   /* writing-mode: bt-lr;*/
 }

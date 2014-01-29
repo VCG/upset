@@ -54,6 +54,7 @@ function plot() {
     var cellDistance = 20;
     var cellSize = 18;
     var textHeight = 60;
+    var textSpacing = 3;
 
     var paddingTop = 30;
     var paddingSide = 20;
@@ -89,12 +90,27 @@ function plot() {
     var svg = d3.select("body").append("svg").attr("width", w)
         .attr("height", h);
 
+    svg.selectAll(".setLabel")
+        .data(sets)
+        .enter()
+        .append("text").text(
+        function (d) {
+            return d.setName.substring(0, truncateAfter);
+        }).attr({
+            class: "setLabel",
+            transform: function (d, i) {
+                return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (textHeight - textSpacing) + ')rotate(270)';
+
+            }
+
+        });
+
     var grp = svg.selectAll('.row')
         .data(sets)
         .enter()
         .append('g')
         .attr({transform: function (d, i) {
-            return 'translate(0, ' + (textHeight + cellDistance * i) + ')';
+            return 'translate(0, ' + (textHeight + cellDistance * (i)) + ')';
         },
             class: 'row'});
 
