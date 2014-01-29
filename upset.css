@@ -1,0 +1,17 @@
+.axis path,
+.axis line {
+    fill:none;
+    stroke: gray;
+    shape-rendering: crispEdges;
+}
+.axis text{
+    fill: olive;
+}
+
+.setSize {
+  fill: steelblue;
+}
+
+.setSize:hover {
+  fill: orange;
+}

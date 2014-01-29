@@ -8,8 +8,9 @@ import numpy as np
 
 df = pd.read_csv('gbm_mutated.csv', index_col=0, delim_whitespace=True)
 
-sum_values = df.sum().order(ascending=False).head(100)
+sum_values = df.sum().order(ascending=False).head(5)
 
 
 top100 = df[sum_values.index]
-top100.to_csv('gbm_mutated_top100.csv');
+top100 = top100.T
+top100.to_csv('gbm_mutated_top5.csv');
