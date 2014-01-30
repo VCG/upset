@@ -5,6 +5,8 @@
 var sets = [];
 var subsets = [];
 var labels = [];
+var combinations = 0;
+var depth = 0;
 
 function SetIntersection() {
     this.expectedValue;
@@ -13,16 +15,36 @@ SetIntersection.prototype.Set = function () {
     this.size *= 2;
 }
 
-function Set(setName, setID, setData) {
-    this.setName = setName;
+function Set(setID, setName, combinedSets, setData) {
+    /** The binary representation of the set */
     this.setID = setID;
+    /** The name of the set */
+    this.setName = setName;
+    /** An array of all the sets that are combined in this set. The array contains a 1 if a set at the corresponding position in the sets array is combined. */
+    this.combinedSets = combinedSets;
+
+    /** The number of combined subsets */
+    this.nrCombinedSets = 0;
+
+    /** Array of length depth where each element that is in this subset is set to 1 */
     this.setData = setData;
+    /** The number of elements in this (sub)set */
     this.setSize = 0;
-    for (var i = 0; i < this.setData.length; i++) {
-        if (this.setData[i] != 0)
-            this.setSize++;
+
+    for (var i = 0; i < this.combinedSets.length; i++) {
+        if (this.combinedSets[i] != 0) {
+            this.nrCombinedSets++;
+        }
     }
 
+
+    if (this.setData != null) {
+        for (var i = 0; i < this.setData.length; i++) {
+            if (this.setData[i] != 0)
+                this.setSize++;
+        }
+    }
+//    console.log(this.setSize);
 }
 
 
@@ -33,22 +55,90 @@ function dataLoad(data) {
 
     var rows = d3.csv.parseRows(data);
     labels = rows[0];
+    depth = labels.length - 1;
+//    console.log("depth " + depth);
+    var setID = 1;
     for (var i = 1; i < rows.length; i++) {
-        var setID = Array.apply(null, new Array(rows.length - 1)).map(Number.prototype.valueOf, 0);
-        setID[i - 1] = 1;
+        var combinedSets = Array.apply(null, new Array(rows.length - 1)).map(Number.prototype.valueOf, 0);
+        combinedSets[i - 1] = 1;
         var setName = rows[i].shift();
-        var set = new Set(setName, setID, rows[i]);
+        var set = new Set(setID, setName, combinedSets, rows[i]);
+        setID = setID << 1;
         sets.push(set);
+    }
+
+    combinations = Math.pow(2, sets.length) - 1;
+//    console.log(combinations);
+
+    for (var i = 1; i <= combinations; i++) {
+        makeSubSet(i)
+    }
+
+    // sort by size of set overlap
+    subsets.sort(function (a, b) {
+        return b.setSize - a.setSize;
+    });
+
+    // sort by number of combinations
+    //    subsets.sort(function (a, b) {
+//        return a.nrCombinedSets - b.nrCombinedSets;
+//    });
+    plot(sets);
+
+    plot(subsets);
+}
+
+function calcSubSets(startIndex) {
+    for (var i = startIndex + 1; i < sets.length; i++) {
+        var setIndices = [];
+        setIndices.push([startIndex, i]);
+        makeSubSet(sets)
+    }
+}
+
+function makeSubSet(setMask) {
+    var originalSetMask = setMask;
+
+    var combinedSets = Array.apply(null, new Array(sets.length)).map(Number.prototype.valueOf, 0);
+    var bitMask = 1;
+
+    var combinedData = Array.apply(null, new Array(depth)).map(Number.prototype.valueOf, 1);
+    for (var setIndex = sets.length - 1; setIndex >= 0; setIndex--) {
+        var data = sets[setIndex].setData;
+        if ((setMask & bitMask) == 1) {
+            combinedSets[setIndex] = 1;
+            for (i = 0; i < data.length; i++) {
+                if (!(combinedData[i] == 1 && data[i] == 1)) {
+                    combinedData[i] = 0;
+                }
+            }
+
+        }
+        // remove the element from the combined data if it's also in another set
+        else {
+            for (i = 0; i < data.length; i++) {
+                if ((combinedData[i] == 1 && data[i] == 1)) {
+                    combinedData[i] = 0;
+                }
+            }
+        }
+        setMask = setMask >> 1;
 
     }
-    plot();
+
+    var subSet = new Set(originalSetMask, 'Bla', combinedSets, combinedData);
+    subsets.push(subSet);
+//    console.log(originalSetMask.toString(2));
+//    console.log(combinedSets);
+//    console.log(subSet.setSize);
+//    console.log(combinedData);
 }
 
 d3.text("data/mutations/gbm_mutated_top5.csv", "text/csv", dataLoad);
-//d3.csv.parseRows("data/mutations/gbm_mutated_top5.csv", dataLoad);
+//d3.text("data/test/test.csv", "text/csv", dataLoad);
 
-function plot() {
-//    console.log(sets);
+function plot(plottingSets) {
+//    console.log(plottingSets);
 
 
     var cellDistance = 20;
@@ -62,7 +152,7 @@ function plot() {
     var truncateAfter = 25;
 
     var w = 700;
-    var h = 500;
+    var h = combinations * cellDistance + textHeight;
 
 // var yScale = d3.scale.ordinal().domain(d3.range(data.length))
 // .rangeRoundBands([ 0, h ], 0.3);
@@ -82,10 +172,8 @@ function plot() {
     var grays = ["#636363", "#f0f0f0"];
     // scale for the set participation
     var setScale = d3.scale.ordinal().domain(0, 1).range(grays);
-    // scale for the size of the sets
-    var sizeScale = d3.scale.linear().domain([0, d3.max(sets, function (d) {
-        return d.setSize;
-    })]).range(0, 200);
+    // scale for the size of the plottingSets
+    var sizeScale = d3.scale.linear().domain([0, depth]).range(0, 400);
 
     var svg = d3.select("body").append("svg").attr("width", w)
         .attr("height", h);
@@ -106,7 +194,7 @@ function plot() {
         });
 
     var grp = svg.selectAll('.row')
-        .data(sets)
+        .data(plottingSets)
         .enter()
         .append('g')
         .attr({transform: function (d, i) {
@@ -120,7 +208,7 @@ function plot() {
         })
 
     grp.selectAll('.combination').data(function (d) {
-        return d.setID
+        return d.combinedSets
     }).enter()
         .append('rect')
         .attr('x', function (d, i) {
@@ -129,7 +217,11 @@ function plot() {
         .attr({width: cellSize,
             height: cellSize})
         .style("fill", function (d) {
-            return setScale(d);
+            if (d == 0)
+                return '#f0f0f0';
+            else
+                return '#636363';
+            //return setScale(d);
         });
 
 
@@ -138,23 +230,23 @@ function plot() {
         .attr({
             class: 'setSize',
             x: function (d) {
-                console.log('test');
-                console.log(d);
-                return (cellDistance) * d.setID.length;
+                return (cellDistance) * d.combinedSets.length;
             },
             width: function (d) {
-                return  d.setSize;
+                return d.setSize;
+//                console.log( sizeScale(d.setSize));
+//                return  sizeScale(d.setSize);
             },
             height: cellSize
         });
 
-//    svg.selectAll('.setSize').data(sets).enter()
+//    svg.selectAll('.setSize').data(plottingSets).enter()
 //        .append('rect')
 //        .attr({
 //            class: 'setSize',
 //            x: function (d) {
 //                console.log(d);
-//                return (cellDistance) * d.setID.length;
+//                return (cellDistance) * d.combinedSets.length;
 //
 //            },
 //            y: function (d, i) {
@@ -179,7 +271,7 @@ function plot() {
 //            "translate(" + textWidth + ", " + (paddingTop - 5) + ")").attr(
 //            "class", "x axis").call(xAxis);
 //
-//    var rectangles = svg.selectAll(".bar").data(sets).enter().append("rect")
+//    var rectangles = svg.selectAll(".bar").data(plottingSets).enter().append("rect")
 //        .attr({
 //            class: "bar",
 //            width: function (d) {
