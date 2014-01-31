@@ -134,8 +134,9 @@ function makeSubSet(setMask) {
 //    console.log(combinedData);
 }
 
-d3.text("data/mutations/gbm_mutated_top5.csv", "text/csv", dataLoad);
+//d3.text("data/mutations/gbm_mutated_top5.csv", "text/csv", dataLoad);
 //d3.text("data/test/test.csv", "text/csv", dataLoad);
+d3.text("data/fruit/fruit.csv", "text/csv", dataLoad);
 
 function plot(plottingSets) {
 //    console.log(plottingSets);

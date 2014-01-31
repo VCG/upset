@@ -1,0 +1,6 @@
+,Kiwi,Cucumber,Pickl,Apple,Carrot,Pepper,Lemon,Banana,Strawberry,Pear
+Green,1,1,1,1,0,1,0,0,0,0
+Red,0,0,0,1,1,1,0,0,0,0
+Vegetable,0,1,1,0,1,1,0,0,0,0
+Fruit,1,0,0,1,0,0,1,1,1,1
+Delicious,1,0,0,1,0,1,1,1,1,1
