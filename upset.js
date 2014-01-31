@@ -37,38 +37,69 @@ function Set(setID, setName, combinedSets, setData) {
         }
     }
 
-
     if (this.setData != null) {
         for (var i = 0; i < this.setData.length; i++) {
             if (this.setData[i] != 0)
                 this.setSize++;
         }
     }
-//    console.log(this.setSize);
+
 }
 
+//d3.text("data/mutations/gbm_mutated_top5.csv", "text/csv", dataLoad);
+//d3.text("data/test/test.csv", "text/csv", dataLoad);
+//d3.text("data/fruit/fruit.csv", "text/csv", dataLoad);
+d3.text("data/movies/movies_simplified.csv", "text/plain", dataLoad);
 
 //
 function dataLoad(data) {
 
-//    console.log(data);
 
-    var rows = d3.csv.parseRows(data);
-    labels = rows[0];
-    depth = labels.length - 1;
+    var dsv = d3.dsv(";", "text/plain");
+    var rows = dsv.parseRows(data).map(function (row) {
+        return row.map(function (value) {
+            var intValue = parseInt(value, 10)
+            if (isNaN(intValue))
+                return value;
+            return intValue;
+        });
+    });
+    console.log(rows);
+
+    // the raw set arrays
+    var rawSets = [];
+    // the names of the sets are in the columns
+    var setNames = rows.shift();
+    // we drop the first cell - this should be empty
+    setNames.shift();
+
+    // initialize the raw set arrays
+    for (var setCount = 0; setCount < setNames.length; setCount++) {
+        rawSets.push(new Array());
+    }
+
+    console.log(setNames);
+    for (var i = 0; i < rows.length; i++) {
+        labels.push(rows[i][0]);
+        for (var setCount = 0; setCount < setNames.length; setCount++) {
+            rawSets[setCount].push(rows[i][setCount + 1]);
+        }
+    }
+
+
+    depth = labels.length;
 //    console.log("depth " + depth);
     var setID = 1;
-    for (var i = 1; i < rows.length; i++) {
-        var combinedSets = Array.apply(null, new Array(rows.length - 1)).map(Number.prototype.valueOf, 0);
-        combinedSets[i - 1] = 1;
-        var setName = rows[i].shift();
-        var set = new Set(setID, setName, combinedSets, rows[i]);
+    for (var i = 0; i < rawSets.length; i++) {
+        var combinedSets = Array.apply(null, new Array(rawSets.length)).map(Number.prototype.valueOf, 0);
+        combinedSets[i] = 1;
+        var setName = setNames[i];
+        var set = new Set(setID, setName, combinedSets, rawSets[i]);
         setID = setID << 1;
         sets.push(set);
     }
 
     combinations = Math.pow(2, sets.length) - 1;
-//    console.log(combinations);
 
     for (var i = 1; i <= combinations; i++) {
         makeSubSet(i)
@@ -103,6 +134,8 @@ function makeSubSet(setMask) {
     var bitMask = 1;
 
     var combinedData = Array.apply(null, new Array(depth)).map(Number.prototype.valueOf, 1);
+
+    var isEmpty = true;
     for (var setIndex = sets.length - 1; setIndex >= 0; setIndex--) {
         var data = sets[setIndex].setData;
         if ((setMask & bitMask) == 1) {
@@ -123,24 +156,14 @@ function makeSubSet(setMask) {
             }
         }
         setMask = setMask >> 1;
-
     }
 
     var subSet = new Set(originalSetMask, 'Bla', combinedSets, combinedData);
     subsets.push(subSet);
-//    console.log(originalSetMask.toString(2));
-//    console.log(combinedSets);
-//    console.log(subSet.setSize);
-//    console.log(combinedData);
 }
 
-//d3.text("data/mutations/gbm_mutated_top5.csv", "text/csv", dataLoad);
-//d3.text("data/test/test.csv", "text/csv", dataLoad);
-d3.text("data/fruit/fruit.csv", "text/csv", dataLoad);
 
 function plot(plottingSets) {
-//    console.log(plottingSets);
-
 
     var cellDistance = 20;
     var cellSize = 18;
