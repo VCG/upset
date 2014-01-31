@@ -8,6 +8,7 @@ var labels = [];
 var combinations = 0;
 var depth = 0;
 
+
 function SetIntersection() {
     this.expectedValue;
 }
@@ -46,15 +47,13 @@ function Set(setID, setName, combinedSets, setData) {
 
 }
 
-//d3.text("data/mutations/gbm_mutated_top5.csv", "text/csv", dataLoad);
+d3.text("data/mutations/gbm_mutated_top5.csv", "text/csv", dataLoad);
 //d3.text("data/test/test.csv", "text/csv", dataLoad);
 //d3.text("data/fruit/fruit.csv", "text/csv", dataLoad);
-d3.text("data/movies/movies_simplified.csv", "text/plain", dataLoad);
+//d3.text("data/movies/movies_simplified.csv", "text/plain", dataLoad);
 
 //
 function dataLoad(data) {
-
-
     var dsv = d3.dsv(";", "text/plain");
     var rows = dsv.parseRows(data).map(function (row) {
         return row.map(function (value) {
@@ -64,8 +63,6 @@ function dataLoad(data) {
             return intValue;
         });
     });
-    console.log(rows);
-
     // the raw set arrays
     var rawSets = [];
     // the names of the sets are in the columns
@@ -78,7 +75,6 @@ function dataLoad(data) {
         rawSets.push(new Array());
     }
 
-    console.log(setNames);
     for (var i = 0; i < rows.length; i++) {
         labels.push(rows[i][0]);
         for (var setCount = 0; setCount < setNames.length; setCount++) {
@@ -86,9 +82,8 @@ function dataLoad(data) {
         }
     }
 
-
     depth = labels.length;
-//    console.log("depth " + depth);
+
     var setID = 1;
     for (var i = 0; i < rawSets.length; i++) {
         var combinedSets = Array.apply(null, new Array(rawSets.length)).map(Number.prototype.valueOf, 0);
@@ -110,22 +105,12 @@ function dataLoad(data) {
         return b.setSize - a.setSize;
     });
 
-    // sort by number of combinations
-    //    subsets.sort(function (a, b) {
-//        return a.nrCombinedSets - b.nrCombinedSets;
-//    });
+
     plot(sets);
 
     plot(subsets);
 }
 
-function calcSubSets(startIndex) {
-    for (var i = startIndex + 1; i < sets.length; i++) {
-        var setIndices = [];
-        setIndices.push([startIndex, i]);
-        makeSubSet(sets)
-    }
-}
 
 function makeSubSet(setMask) {
     var originalSetMask = setMask;
@@ -197,7 +182,15 @@ function plot(plottingSets) {
     // scale for the set participation
     var setScale = d3.scale.ordinal().domain(0, 1).range(grays);
     // scale for the size of the plottingSets
-    var sizeScale = d3.scale.linear().domain([0, depth]).range(0, 400);
+
+    console.log("Max" + d3.max(plottingSets, function (d) {
+        return d.setSize;
+    }));
+    var subSetSizeScale = d3.scale.linear().domain([0, d3.max(plottingSets, function (d) {
+        return d.setSize;
+    })]).range([0, 400]);
+
+    console.log("NaN: " + subSetSizeScale(5));
 
     var svg = d3.select("body").append("svg").attr("width", w)
         .attr("height", h);
@@ -210,6 +203,9 @@ function plot(plottingSets) {
             return d.setName.substring(0, truncateAfter);
         }).attr({
             class: "setLabel",
+            id: function (d) {
+                return d.setName.substring(0, truncateAfter);
+            },
             transform: function (d, i) {
                 return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (textHeight - textSpacing) + ')rotate(270)';
 
@@ -257,12 +253,42 @@ function plot(plottingSets) {
                 return (cellDistance) * d.combinedSets.length;
             },
             width: function (d) {
-                return d.setSize;
+                console.log(d.setSize);
+                console.log("Scale" + subSetSizeScale(5));
+                return subSetSizeScale(d.setSize);
+                //return d.setSize;
 //                console.log( sizeScale(d.setSize));
 //                return  sizeScale(d.setSize);
             },
             height: cellSize
         });
+
+
+    d3.selectAll(".setLabel").on(
+        "click",
+        function (d) {
+            console.log("test" + d.setName);
+            plottingSets.pop();
+            // sort by number of combinations
+            plottingSets.sort(function (a, b) {
+                return a.nrCombinedSets - b.nrCombinedSets;
+            });
+            console.log(plottingSets);
+
+
+//            yScale.domain(data.map(function (d) {
+//                return d.schoolname;
+//            }));
+
+            var what = svg.selectAll(".row").data(plottingSets);
+            what.exit().remove();
+            what.transition().duration(1000)
+                .attr({transform: function (d, i) {
+                    console.log(d.setID);
+                    return 'translate(0, ' + (textHeight + cellDistance * (i)) + ')';
+                }});
+        });
+}
 
 //    svg.selectAll('.setSize').data(plottingSets).enter()
 //        .append('rect')
@@ -348,6 +374,4 @@ function plot(plottingSets) {
 //                    return yScale(d.schoolname);
 //                });
 
-
-}
 
