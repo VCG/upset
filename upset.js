@@ -15,14 +15,11 @@ var dataSets;
 d3.json("datasets.json", function (error, json) {
     if (error) return console.warn(error);
     dataSets = json;
-    console.log(dataSets);
     load()
 });
 
 
 function load() {
-
-    console.log(dataSets);
     var select = d3.select("#header").append("select");
     select.on("change", change)
         .selectAll("option").data(dataSets).enter().append("option")
@@ -146,7 +143,7 @@ function dataLoad(data) {
     });
 
 
-    plot(sets);
+    //plot(sets);
 
     plot(subsets);
 }
@@ -206,7 +203,8 @@ function plot(plottingSets) {
     var truncateAfter = 25;
 
     var w = 700;
-    var h = combinations * cellDistance + textHeight;
+    var matrixHeight = combinations * cellDistance;
+    var h = matrixHeight + textHeight;
 
 // var yScale = d3.scale.ordinal().domain(d3.range(data.length))
 // .rangeRoundBands([ 0, h ], 0.3);
@@ -223,14 +221,6 @@ function plot(plottingSets) {
 
 //    var xAxis = d3.svg.axis().scale(xScale).orient("top");
 
-    var grays = ["#636363", "#f0f0f0"];
-    // scale for the set participation
-    var setScale = d3.scale.ordinal().domain(0, 1).range(grays);
-    // scale for the size of the plottingSets
-
-    console.log("Max" + d3.max(plottingSets, function (d) {
-        return d.setSize;
-    }));
 
     d3.select("#vis").select("svg").remove();
     var svg = d3.select("#vis").append("svg").attr("width", w)
@@ -257,16 +247,29 @@ function plot(plottingSets) {
 
         });
 
+    // ------------------- the rows -----------------------
+
+    var rowScale = d3.scale.ordinal().rangeRoundBands([ textHeight, h ], 0);
+
+    rowScale.domain(plottingSets.map(function (d) {
+        return d.setID;
+    }));
+
     var grp = svg.selectAll('.row')
         .data(plottingSets)
         .enter()
         .append('g')
         .attr({transform: function (d, i) {
-            return 'translate(0, ' + (textHeight + cellDistance * (i)) + ')';
+            return 'translate(0, ' + rowScale(d.setID) + ')';
+//            return 'translate(0, ' + (textHeight + cellDistance * (i)) + ')';
         },
             class: 'row'});
 
     // ------------ the combination matrix ----------------------
+
+    var grays = [ "#f0f0f0", "#636363"];
+    // scale for the set participation
+    var setScale = d3.scale.ordinal().domain([0, 1]).range(grays);
 
     grp.selectAll('.row')
         .append('g')
@@ -284,11 +287,11 @@ function plot(plottingSets) {
         .attr({width: cellSize,
             height: cellSize})
         .style("fill", function (d) {
-            if (d == 0)
-                return '#f0f0f0';
-            else
-                return '#636363';
-            //return setScale(d);
+            return setScale(d);
+//            if (d == 0)
+//                return '#f0f0f0';
+//            else
+//                return '#636363';
         });
 
     // ------------------- set size bars --------------------
@@ -315,7 +318,7 @@ function plot(plottingSets) {
             transform: 'translate(' + (xStartSetSizes + setSizeWidth / 2) + ',' + (labelTopPadding + 10) + ')'
         });
 
-
+    // scale for the size of the plottingSets
     var subSetSizeScale = d3.scale.linear().domain([0, d3.max(plottingSets, function (d) {
         return d.setSize;
     })]).range([0, setSizeWidth]);
@@ -348,27 +351,56 @@ function plot(plottingSets) {
     d3.selectAll(".setLabel").on(
         "click",
         function (d) {
-//            console.log("test" + d.setName);
-            plottingSets.pop();
             // sort by number of combinations
             plottingSets.sort(function (a, b) {
-                return a.nrCombinedSets - b.nrCombinedSets;
+                if (a.nrCombinedSets != b.nrCombinedSets) {
+                    console.log("Clear: a " + a.combinedSets + " b " + b.combinedSets);
+                    return a.nrCombinedSets - b.nrCombinedSets;
+                }
+                for (var i = 0; i < a.nrCombinedSets; i++) {
+//                    console.log(a.combinedSets);
+//                    console.log(b.combinedSets);
+                    if (a.combinedSets[i] != b.combinedSets[i]) {
+                        console.log("a " + a.combinedSets + " b " + b.combinedSets);
+                        if (a.combinedSets[i] > 0) {
+                            console.log("a");
+                            return 1;
+                        }
+                        else {
+                            console.log("b");
+                            return -1;
+                        }
+                    }
+                }
             });
-//            console.log(plottingSets);
-
-
-//            yScale.domain(data.map(function (d) {
-//                return d.schoolname;
-//            }));
-
-            var what = svg.selectAll(".row").data(plottingSets);
-            what.exit().remove();
-            what.transition().duration(1000)
-                .attr({transform: function (d, i) {
-                    console.log(d.setID);
-                    return 'translate(0, ' + (textHeight + cellDistance * (i)) + ')';
-                }});
+            transition();
         });
+
+    d3.select("#subsetSizeLabel").on(
+        "click",
+        function (d) {
+            // sort by size of set overlap
+            plottingSets.sort(function (a, b) {
+                return b.setSize - a.setSize;
+            });
+            transition();
+        });
+
+    function transition() {
+        rowScale.domain(plottingSets.map(function (d) {
+            return d.setID;
+        }));
+
+        svg.selectAll(".row").transition().delay(function (d, i) {
+            if (plottingSets.length < 100)
+                return i * 100;
+            return 0;
+        }).duration(1000)
+            .attr({transform: function (d, i) {
+                console.log(d.setID);
+                return 'translate(0, ' + rowScale(d.setID) + ')';
+            }});
+    }
 }
 
 //    svg.selectAll('.setSize').data(plottingSets).enter()

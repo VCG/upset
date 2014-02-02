@@ -10,7 +10,7 @@
 }
 
 .axis text {
-   font-size: 0.6em;
+    font-size: 0.6em;
 }
 
 .setSize {
@@ -24,17 +24,25 @@
 .setLabel {
     dominant-baseline: middle;
     font: 12px sans-serif;
-   /* writing-mode: bt-lr;*/
+    cursor: s-resize
+    /* writing-mode: bt-lr;*/
 }
 
-.setSizeLabel
-{
+.setLabel:hover {
+
+}
+
+.setSizeLabel {
     dominant-baseline: middle;
     font: 13px sans-serif;
     text-anchor: middle;
 }
 
-.labelBackground
-{
+.labelBackground {
     fill: #d3d3d3;
+}
+
+.labelBackground:hover {
+    fill: rgba(145, 145, 145, 0.88);
+    cursor: s-resize
 }
