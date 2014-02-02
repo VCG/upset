@@ -10,7 +10,7 @@
 }
 
 .axis text {
-    fill: olive;
+   font-size: 0.6em;
 }
 
 .setSize {
@@ -25,4 +25,16 @@
     dominant-baseline: middle;
     font: 12px sans-serif;
    /* writing-mode: bt-lr;*/
+}
+
+.setSizeLabel
+{
+    dominant-baseline: middle;
+    font: 13px sans-serif;
+    text-anchor: middle;
+}
+
+.labelBackground
+{
+    fill: #d3d3d3;
 }

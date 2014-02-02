@@ -1,0 +1,19 @@
+[
+    {
+        "text": "Simple Test Dataset",
+        "file": "data/test/test.csv"
+    },
+    {
+        "text": "Fruit Example",
+        "file": "data/fruit/fruit.csv"
+    },
+    {
+        "text": "Movie Genres",
+        "file": "data/movies/movies_simplified.csv"
+    },
+    {
+        "text": "Gene Mutations in Cancer",
+        "file": "data/mutations/gbm_mutated_top5.csv"
+    }
+]
+

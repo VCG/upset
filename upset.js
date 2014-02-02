@@ -8,6 +8,46 @@ var labels = [];
 var combinations = 0;
 var depth = 0;
 
+/** The list of available datasets */
+var dataSets;
+
+
+d3.json("datasets.json", function (error, json) {
+    if (error) return console.warn(error);
+    dataSets = json;
+    console.log(dataSets);
+    load()
+});
+
+
+function load() {
+
+    console.log(dataSets);
+    var select = d3.select("#header").append("select");
+    select.on("change", change)
+        .selectAll("option").data(dataSets).enter().append("option")
+        .attr("value", function (d) {
+            return d.file;
+        })
+        .attr("id", "dataSetSelector")
+        .text(function (d) {
+            return d.text;
+        })
+
+    loadDataset(dataSets[0].file);
+}
+
+function loadDataset(dataFile) {
+    d3.text(dataFile, "text/csv", dataLoad);
+}
+
+function change() {
+    sets.length = 0;
+    subsets.length = 0;
+    labels.length = 0;
+    loadDataset(this.options[this.selectedIndex].value);
+}
+
 
 function SetIntersection() {
     this.expectedValue;
@@ -47,7 +87,7 @@ function Set(setID, setName, combinedSets, setData) {
 
 }
 
-d3.text("data/mutations/gbm_mutated_top5.csv", "text/csv", dataLoad);
+
 //d3.text("data/test/test.csv", "text/csv", dataLoad);
 //d3.text("data/fruit/fruit.csv", "text/csv", dataLoad);
 //d3.text("data/movies/movies_simplified.csv", "text/plain", dataLoad);
@@ -155,6 +195,11 @@ function plot(plottingSets) {
     var textHeight = 60;
     var textSpacing = 3;
 
+    var xStartSetSizes = cellDistance * sets.length + 5;
+    var setSizeWidth = 300;
+
+    var labelTopPadding = 15;
+
     var paddingTop = 30;
     var paddingSide = 20;
 
@@ -186,14 +231,13 @@ function plot(plottingSets) {
     console.log("Max" + d3.max(plottingSets, function (d) {
         return d.setSize;
     }));
-    var subSetSizeScale = d3.scale.linear().domain([0, d3.max(plottingSets, function (d) {
-        return d.setSize;
-    })]).range([0, 400]);
 
-    console.log("NaN: " + subSetSizeScale(5));
-
-    var svg = d3.select("body").append("svg").attr("width", w)
+    d3.select("#vis").select("svg").remove();
+    var svg = d3.select("#vis").append("svg").attr("width", w)
         .attr("height", h);
+
+
+    // ------------ the set labels -------------------
 
     svg.selectAll(".setLabel")
         .data(sets)
@@ -222,10 +266,13 @@ function plot(plottingSets) {
         },
             class: 'row'});
 
+    // ------------ the combination matrix ----------------------
+
     grp.selectAll('.row')
         .append('g')
         .attr({class: 'combination'
         })
+
 
     grp.selectAll('.combination').data(function (d) {
         return d.combinedSets
@@ -244,17 +291,51 @@ function plot(plottingSets) {
             //return setScale(d);
         });
 
+    // ------------------- set size bars --------------------
+
+//    svg.append('rect').attr({
+//        height: '100',
+//    width: 100
+//    })
+
+
+    svg.append('rect')
+        .attr({
+            class: 'labelBackground',
+            id: 'subsetSizeLabel',
+            transform: 'translate(' + xStartSetSizes + ',' + labelTopPadding + ')',
+            height: '20',
+            width: setSizeWidth
+
+        });
+
+    svg.append('text').text('Subset Size')
+        .attr({
+            class: 'setSizeLabel',
+            transform: 'translate(' + (xStartSetSizes + setSizeWidth / 2) + ',' + (labelTopPadding + 10) + ')'
+        });
+
+
+    var subSetSizeScale = d3.scale.linear().domain([0, d3.max(plottingSets, function (d) {
+        return d.setSize;
+    })]).range([0, setSizeWidth]);
+
+    var subSetSizeAxis = d3.svg.axis().scale(subSetSizeScale).orient("top").ticks(4);
+
+    svg.append("g").attr()
+        .attr({class: "axis",
+            transform: "translate(" + xStartSetSizes + "," + (textHeight - 5) + ")"
+        })
+        .call(subSetSizeAxis);
 
     svg.selectAll('.row')
         .append('rect')
         .attr({
             class: 'setSize',
-            x: function (d) {
-                return (cellDistance) * d.combinedSets.length;
-            },
+            transform: "translate(" + xStartSetSizes + ", 0)", // " + (textHeight - 5) + ")"
             width: function (d) {
-                console.log(d.setSize);
-                console.log("Scale" + subSetSizeScale(5));
+//                console.log(d.setSize);
+//                console.log("Scale" + subSetSizeScale(5));
                 return subSetSizeScale(d.setSize);
                 //return d.setSize;
 //                console.log( sizeScale(d.setSize));
@@ -267,13 +348,13 @@ function plot(plottingSets) {
     d3.selectAll(".setLabel").on(
         "click",
         function (d) {
-            console.log("test" + d.setName);
+//            console.log("test" + d.setName);
             plottingSets.pop();
             // sort by number of combinations
             plottingSets.sort(function (a, b) {
                 return a.nrCombinedSets - b.nrCombinedSets;
             });
-            console.log(plottingSets);
+//            console.log(plottingSets);
 
 
 //            yScale.domain(data.map(function (d) {
