@@ -205,9 +205,11 @@ function plot(plottingSets) {
     var textSpacing = 3;
 
     var xStartSetSizes = cellDistance * sets.length + 5;
-    var setSizeWidth = 300;
+    var setSizeWidth = 700;
+    var subSetSizeWidth = 300;
 
-    var xStartExpectedValues = xStartSetSizes + setSizeWidth + 20;
+
+    var xStartExpectedValues = xStartSetSizes + subSetSizeWidth + 20;
     var expectedValueWidth = 300;
 
     var labelTopPadding = 15;
@@ -218,12 +220,79 @@ function plot(plottingSets) {
     var truncateAfter = 25;
 
     var w = 1000;
-    var matrixHeight = combinations * cellDistance;
-    var h = matrixHeight + textHeight;
+    var setMatrixHeight = sets.length * cellDistance;
+    var subSetMatrixHeight = combinations * cellDistance;
+    var h = subSetMatrixHeight + textHeight + setMatrixHeight;
 
     d3.select("#vis").select("svg").remove();
     var svg = d3.select("#vis").append("svg").attr("width", w)
         .attr("height", h);
+
+    //####################### SETS ##################################################
+
+    var setRowScale = d3.scale.ordinal().rangeRoundBands([ 0, setMatrixHeight ], 0);
+
+    setRowScale.domain(sets.map(function (d) {
+        return d.setID;
+    }));
+
+    var setGrp = svg.selectAll('.setRow')
+        .data(sets)
+        .enter()
+        .append('g')
+        .attr({transform: function (d, i) {
+            return 'translate(0, ' + setRowScale(d.setID) + ')';
+        //  return 'translate(0, ' + ( cellDistance * (i)) + ')';
+        },
+            class: 'setRow'});
+
+    // ------------ the combination matrix ----------------------
+
+    var grays = [ "#ffffff", "#636363"];
+    // scale for the set participation
+    var setScale = d3.scale.ordinal().domain([0, 1]).range(grays);
+
+    setGrp.selectAll('.setRow')
+        .append('g')
+        .attr({class: 'setCombination'
+        })
+
+    setGrp.selectAll('.setCombination').data(function (d) {
+        return d.combinedSets
+    }).enter()
+        .append('rect')
+        .attr('x', function (d, i) {
+            console.log(d);
+            return (cellDistance) * i;
+
+        })
+        .attr({width: cellSize,
+            height: cellSize})
+        .style("fill", function (d) {
+            return setScale(d);
+        });
+
+    // ------------------- set size bars --------------------
+
+
+    // scale for the size of the plottingSets
+    var setSizeScale = d3.scale.linear().domain([0, d3.max(sets, function (d) {
+        return d.setSize;
+    })]).nice().range([0, setSizeWidth]);
+
+    svg.selectAll('.setRow')
+        .append('rect')
+        .attr({
+            class: 'setSize',
+            transform: "translate(" + xStartSetSizes + ", 0)", // " + (textHeight - 5) + ")"
+            width: function (d) {
+                return setSizeScale(d.setSize);
+            },
+            height: cellSize
+        });
+
+
+    // ################## SUBSETS #########################
 
     // ------------ the set labels -------------------
 
@@ -239,7 +308,7 @@ function plot(plottingSets) {
                 return d.setName.substring(0, truncateAfter);
             },
             transform: function (d, i) {
-                return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (textHeight - textSpacing) + ')rotate(270)';
+                return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (setMatrixHeight + textHeight - textSpacing) + ')rotate(270)';
 
             }
 
@@ -251,7 +320,7 @@ function plot(plottingSets) {
             // sort by number of combinations
             plottingSets.sort(function (a, b) {
                 if (a.nrCombinedSets != b.nrCombinedSets) {
-                      return a.nrCombinedSets - b.nrCombinedSets;
+                    return a.nrCombinedSets - b.nrCombinedSets;
                 }
                 // if the number of combined sets is identical, we can pick the largest one
                 return b.setID - a.setID;
@@ -261,7 +330,7 @@ function plot(plottingSets) {
 
     // ------------------- the rows -----------------------
 
-    var rowScale = d3.scale.ordinal().rangeRoundBands([ textHeight, h ], 0);
+    var rowScale = d3.scale.ordinal().rangeRoundBands([ setMatrixHeight + textHeight, h ], 0);
 
     rowScale.domain(plottingSets.map(function (d) {
         return d.setID;
@@ -324,35 +393,35 @@ function plot(plottingSets) {
     svg.append('rect')
         .attr({
             class: 'labelBackground subsetSizeLabel',
-            transform: 'translate(' + xStartSetSizes + ',' + labelTopPadding + ')',
+            transform: 'translate(' + xStartSetSizes + ',' + (setMatrixHeight + labelTopPadding) + ')',
             height: '20',
-            width: setSizeWidth
+            width: subSetSizeWidth
 
         });
 
     svg.append('text').text('Subset Size')
         .attr({
             class: 'columnLabel subsetSizeLabel',
-            transform: 'translate(' + (xStartSetSizes + setSizeWidth / 2) + ',' + (labelTopPadding + 10) + ')'
+            transform: 'translate(' + (xStartSetSizes + subSetSizeWidth / 2) + ',' + (setMatrixHeight + labelTopPadding + 10) + ')'
         });
 
     // scale for the size of the plottingSets
     var subSetSizeScale = d3.scale.linear().domain([0, d3.max(plottingSets, function (d) {
         return d.setSize;
-    })]).nice().range([0, setSizeWidth]);
+    })]).nice().range([0, subSetSizeWidth]);
 
     var subSetSizeAxis = d3.svg.axis().scale(subSetSizeScale).orient("top").ticks(4);
 
     svg.append("g").attr()
         .attr({class: "axis",
-            transform: "translate(" + xStartSetSizes + "," + (textHeight - 5) + ")"
+            transform: "translate(" + xStartSetSizes + "," + (setMatrixHeight + textHeight - 5) + ")"
         })
         .call(subSetSizeAxis);
 
     svg.selectAll('.row')
         .append('rect')
         .attr({
-            class: 'setSize',
+            class: 'subSetSize',
             transform: "translate(" + xStartSetSizes + ", 0)", // " + (textHeight - 5) + ")"
             width: function (d) {
                 return subSetSizeScale(d.setSize);
@@ -376,7 +445,7 @@ function plot(plottingSets) {
         .attr({
             class: 'labelBackground expectedValueLabel',
             // id: ,
-            transform: 'translate(' + xStartExpectedValues + ',' + labelTopPadding + ')',
+            transform: 'translate(' + xStartExpectedValues + ',' + (setMatrixHeight + labelTopPadding) + ')',
             height: '20',
             width: expectedValueWidth
 
@@ -385,7 +454,7 @@ function plot(plottingSets) {
     svg.append('text').text('Deviation from Expected Value')
         .attr({
             class: 'columnLabel expectedValueLabel',
-            transform: 'translate(' + (xStartExpectedValues + expectedValueWidth / 2) + ',' + (labelTopPadding + 10) + ')'
+            transform: 'translate(' + (xStartExpectedValues + expectedValueWidth / 2) + ',' + (setMatrixHeight + labelTopPadding + 10) + ')'
         });
 
     // scale for the size of the plottingSets
@@ -402,7 +471,7 @@ function plot(plottingSets) {
 
     svg.append("g").attr()
         .attr({class: "axis",
-            transform: "translate(" + xStartExpectedValues + "," + (textHeight - 5) + ")"
+            transform: "translate(" + xStartExpectedValues + "," + (setMatrixHeight + textHeight - 5) + ")"
         })
         .call(expectedValueAxis);
 

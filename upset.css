@@ -12,12 +12,18 @@
 .axis text {
     font-size: 0.6em;
 }
+
 /** The set size bar */
 .setSize {
+    fill: lightgray;
+}
+
+/** The subSet size bar */
+.subSetSize {
     fill: #078600;
 }
 
-.setSize:hover {
+.subSetSize:hover {
     fill: orange;
 }
 
