@@ -2,22 +2,25 @@
  * author: Alexander Lex - alex@seas.harvard.edu Inspired by
  */
 
+/** The input datasets */
 var sets = [];
+/** The dynamically created subsets */
 var subsets = [];
+/** The labels of the records */
 var labels = [];
+/** The number of combinations that are currently active */
 var combinations = 0;
+/** The depth of the dataset, i.e., how many records it contains */
 var depth = 0;
 
 /** The list of available datasets */
 var dataSets;
-
 
 d3.json("datasets.json", function (error, json) {
     if (error) return console.warn(error);
     dataSets = json;
     load()
 });
-
 
 function load() {
     var select = d3.select("#header").append("select");
@@ -45,14 +48,6 @@ function change() {
     loadDataset(this.options[this.selectedIndex].value);
 }
 
-
-function SetIntersection() {
-    this.expectedValue;
-}
-SetIntersection.prototype.Set = function () {
-    this.size *= 2;
-}
-
 function Set(setID, setName, combinedSets, setData) {
     /** The binary representation of the set */
     this.setID = setID;
@@ -69,6 +64,9 @@ function Set(setID, setName, combinedSets, setData) {
     /** The number of elements in this (sub)set */
     this.setSize = 0;
 
+    /** The ratio of elements that are contained in this set */
+    this.dataRatio = 0.0;
+
     for (var i = 0; i < this.combinedSets.length; i++) {
         if (this.combinedSets[i] != 0) {
             this.nrCombinedSets++;
@@ -82,7 +80,20 @@ function Set(setID, setName, combinedSets, setData) {
         }
     }
 
+    this.dataRatio = this.setSize / depth;
+
 }
+
+function SubSet(setID, setName, combinedSets, setData, expectedValue) {
+    Set.call(this, setID, setName, combinedSets, setData);
+    this.expectedValue = expectedValue;
+    this.expectedValueDeviation = (this.expectedValue - this.dataRatio) * depth;
+    console.log(setName + " DR: " + this.dataRatio + " EV: " + this.expectedValue + " EVD: " + this.expectedValueDeviation);
+
+}
+// Not sure how to do this properly with parameters?
+SubSet.prototype = Set;
+SubSet.prototype.constructor = SubSet;
 
 function dataLoad(data) {
     var dsv = d3.dsv(";", "text/plain");
@@ -136,12 +147,10 @@ function dataLoad(data) {
         return b.setSize - a.setSize;
     });
 
-
     //plot(sets);
 
     plot(subsets);
 }
-
 
 function makeSubSet(setMask) {
     var originalSetMask = setMask;
@@ -152,32 +161,42 @@ function makeSubSet(setMask) {
     var combinedData = Array.apply(null, new Array(depth)).map(Number.prototype.valueOf, 1);
 
     var isEmpty = true;
+    var expectedValue = 1;
+    var notExpectedValue = 1;
+    var name = ""
     for (var setIndex = sets.length - 1; setIndex >= 0; setIndex--) {
         var data = sets[setIndex].setData;
         if ((setMask & bitMask) == 1) {
             combinedSets[setIndex] = 1;
-            for (i = 0; i < data.length; i++) {
+            expectedValue *= sets[setIndex].dataRatio;
+            name += sets[setIndex].setName + " ";
+        }
+        else
+        {
+            notExpectedValue *= sets[setIndex].dataRatio;
+        }
+        for (i = 0; i < data.length; i++) {
+            if ((setMask & bitMask) == 1) {
                 if (!(combinedData[i] == 1 && data[i] == 1)) {
                     combinedData[i] = 0;
                 }
             }
-
-        }
-        // remove the element from the combined data if it's also in another set
-        else {
-            for (i = 0; i < data.length; i++) {
+            else {
+                // remove the element from the combined data if it's also in another set
                 if ((combinedData[i] == 1 && data[i] == 1)) {
                     combinedData[i] = 0;
                 }
             }
         }
+
+        // update the set mask for the next iteration
         setMask = setMask >> 1;
     }
 
-    var subSet = new Set(originalSetMask, 'Bla', combinedSets, combinedData);
+    expectedValue *= 1-notExpectedValue;
+    var subSet = new SubSet(originalSetMask, name, combinedSets, combinedData, expectedValue);
     subsets.push(subSet);
 }
-
 
 function plot(plottingSets) {
 
@@ -189,6 +208,9 @@ function plot(plottingSets) {
     var xStartSetSizes = cellDistance * sets.length + 5;
     var setSizeWidth = 300;
 
+    var xStartExpectedValues = xStartSetSizes + setSizeWidth + 10;
+    var expectedValueWidth = 300;
+
     var labelTopPadding = 15;
 
     var paddingTop = 30;
@@ -196,15 +218,13 @@ function plot(plottingSets) {
 
     var truncateAfter = 25;
 
-    var w = 700;
+    var w = 1000;
     var matrixHeight = combinations * cellDistance;
     var h = matrixHeight + textHeight;
-
 
     d3.select("#vis").select("svg").remove();
     var svg = d3.select("#vis").append("svg").attr("width", w)
         .attr("height", h);
-
 
     // ------------ the set labels -------------------
 
@@ -255,7 +275,6 @@ function plot(plottingSets) {
         .attr({class: 'combination'
         })
 
-
     grp.selectAll('.combination').data(function (d) {
         return d.combinedSets
     }).enter()
@@ -270,7 +289,6 @@ function plot(plottingSets) {
         });
 
     // ------------------- set size bars --------------------
-
 
     svg.append('rect')
         .attr({
@@ -291,7 +309,7 @@ function plot(plottingSets) {
     // scale for the size of the plottingSets
     var subSetSizeScale = d3.scale.linear().domain([0, d3.max(plottingSets, function (d) {
         return d.setSize;
-    })]).range([0, setSizeWidth]);
+    })]).nice().range([0, setSizeWidth]);
 
     var subSetSizeAxis = d3.svg.axis().scale(subSetSizeScale).orient("top").ticks(4);
 
@@ -312,6 +330,45 @@ function plot(plottingSets) {
             height: cellSize
         });
 
+    // ----------------------- expected value bars -------------------
+
+    // scale for the size of the plottingSets
+    var minDeviation = d3.min(plottingSets, function (d) {
+        return d.expectedValueDeviation;
+    });
+    var maxDeviation = d3.max(plottingSets, function (d) {
+        return d.expectedValueDeviation;
+    });
+
+    var expectedValueScale = d3.scale.linear().domain([minDeviation, maxDeviation]).nice().range([0, expectedValueWidth]);
+
+    var expectedValueAxis = d3.svg.axis().scale(expectedValueScale).orient("top").ticks(4);
+
+    svg.append("g").attr()
+        .attr({class: "axis",
+            transform: "translate(" + xStartExpectedValues + "," + (textHeight - 5) + ")"
+        })
+        .call(expectedValueAxis);
+
+    svg.selectAll('.row')
+        .append('rect')
+        .attr({
+            class: function (d) {
+                return d.expectedValueDeviation < 0 ? "expectedValueDeviation negative" : "expectedValueDeviation positive";
+            },
+            transform: function (d) {
+                var start = expectedValueScale(d3.min([0, d.expectedValueDeviation]));
+              //  console.log(d.setName + " expected: " + d.expectedValueDeviation + " start: " + start);
+                start += xStartExpectedValues;
+                return "translate(" + start + ", 0)";
+            },
+            width: function (d) {
+                return Math.abs(expectedValueScale(d.expectedValueDeviation) - expectedValueScale(0));
+            },
+            height: cellSize
+        });
+
+    // -------------------- Interaction ----------------------------
 
     d3.selectAll(".setLabel").on(
         "click",
@@ -360,7 +417,7 @@ function plot(plottingSets) {
             return 0;
         }).duration(1000)
             .attr({transform: function (d, i) {
-                console.log(d.setID);
+              //  console.log(d.setID);
                 return 'translate(0, ' + rowScale(d.setID) + ')';
             }});
     }
