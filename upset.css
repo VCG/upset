@@ -12,7 +12,7 @@
 .axis text {
     font-size: 0.6em;
 }
-
+/** The set size bar */
 .setSize {
     fill: #078600;
 }
@@ -21,6 +21,7 @@
     fill: orange;
 }
 
+/** The labels for the vertical set names */
 .setLabel {
     dominant-baseline: middle;
     font: 12px sans-serif;
@@ -32,10 +33,11 @@
 
 }
 
-.setSizeLabel {
-    dominant-baseline: middle;
+.columnLabel {
+    dominant-baseline: central;
     font: 13px sans-serif;
     text-anchor: middle;
+    cursor: s-resize;
 }
 
 .labelBackground {
@@ -44,7 +46,7 @@
 
 .labelBackground:hover {
     fill: rgba(145, 145, 145, 0.88);
-    cursor: s-resize
+    cursor: s-resize;
 }
 
 

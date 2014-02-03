@@ -87,8 +87,8 @@ function Set(setID, setName, combinedSets, setData) {
 function SubSet(setID, setName, combinedSets, setData, expectedValue) {
     Set.call(this, setID, setName, combinedSets, setData);
     this.expectedValue = expectedValue;
-    this.expectedValueDeviation = (this.expectedValue - this.dataRatio) * depth;
-    console.log(setName + " DR: " + this.dataRatio + " EV: " + this.expectedValue + " EVD: " + this.expectedValueDeviation);
+    this.expectedValueDeviation = (this.dataRatio - this.expectedValue) * depth;
+    //   console.log(setName + " DR: " + this.dataRatio + " EV: " + this.expectedValue + " EVD: " + this.expectedValueDeviation);
 
 }
 // Not sure how to do this properly with parameters?
@@ -171,9 +171,8 @@ function makeSubSet(setMask) {
             expectedValue *= sets[setIndex].dataRatio;
             name += sets[setIndex].setName + " ";
         }
-        else
-        {
-            notExpectedValue *= (1-sets[setIndex].dataRatio);
+        else {
+            notExpectedValue *= (1 - sets[setIndex].dataRatio);
         }
         for (i = 0; i < data.length; i++) {
             if ((setMask & bitMask) == 1) {
@@ -208,7 +207,7 @@ function plot(plottingSets) {
     var xStartSetSizes = cellDistance * sets.length + 5;
     var setSizeWidth = 300;
 
-    var xStartExpectedValues = xStartSetSizes + setSizeWidth + 10;
+    var xStartExpectedValues = xStartSetSizes + setSizeWidth + 20;
     var expectedValueWidth = 300;
 
     var labelTopPadding = 15;
@@ -246,6 +245,32 @@ function plot(plottingSets) {
 
         });
 
+    d3.selectAll(".setLabel").on(
+        "click",
+        function (d) {
+            // sort by number of combinations
+            plottingSets.sort(function (a, b) {
+                if (a.nrCombinedSets != b.nrCombinedSets) {
+                    console.log("Clear: a " + a.combinedSets + " b " + b.combinedSets);
+                    return a.nrCombinedSets - b.nrCombinedSets;
+                }
+                for (var i = 0; i < a.nrCombinedSets; i++) {
+                    if (a.combinedSets[i] != b.combinedSets[i]) {
+                        console.log("a " + a.combinedSets + " b " + b.combinedSets);
+                        if (a.combinedSets[i] > 0) {
+                            console.log("a");
+                            return 1;
+                        }
+                        else {
+                            console.log("b");
+                            return -1;
+                        }
+                    }
+                }
+            });
+            rowTransition();
+        });
+
     // ------------------- the rows -----------------------
 
     var rowScale = d3.scale.ordinal().rangeRoundBands([ textHeight, h ], 0);
@@ -263,6 +288,24 @@ function plot(plottingSets) {
 //            return 'translate(0, ' + (textHeight + cellDistance * (i)) + ')';
         },
             class: 'row'});
+
+    // -------------------- row transitions ----------------------------
+
+    function rowTransition() {
+        rowScale.domain(plottingSets.map(function (d) {
+            return d.setID;
+        }));
+
+        svg.selectAll(".row").transition().delay(function (d, i) {
+            if (plottingSets.length < 100)
+                return i * 100;
+            return 0;
+        }).duration(1000)
+            .attr({transform: function (d, i) {
+                //  console.log(d.setID);
+                return 'translate(0, ' + rowScale(d.setID) + ')';
+            }});
+    }
 
     // ------------ the combination matrix ----------------------
 
@@ -292,8 +335,7 @@ function plot(plottingSets) {
 
     svg.append('rect')
         .attr({
-            class: 'labelBackground',
-            id: 'subsetSizeLabel',
+            class: 'labelBackground subsetSizeLabel',
             transform: 'translate(' + xStartSetSizes + ',' + labelTopPadding + ')',
             height: '20',
             width: setSizeWidth
@@ -302,7 +344,7 @@ function plot(plottingSets) {
 
     svg.append('text').text('Subset Size')
         .attr({
-            class: 'setSizeLabel',
+            class: 'columnLabel subsetSizeLabel',
             transform: 'translate(' + (xStartSetSizes + setSizeWidth / 2) + ',' + (labelTopPadding + 10) + ')'
         });
 
@@ -330,7 +372,33 @@ function plot(plottingSets) {
             height: cellSize
         });
 
+    d3.selectAll(".subsetSizeLabel").on(
+        "click",
+        function (d) {
+            // sort by size of set overlap
+            plottingSets.sort(function (a, b) {
+                return b.setSize - a.setSize;
+            });
+            rowTransition();
+        });
+
     // ----------------------- expected value bars -------------------
+
+    svg.append('rect')
+        .attr({
+            class: 'labelBackground expectedValueLabel',
+            // id: ,
+            transform: 'translate(' + xStartExpectedValues + ',' + labelTopPadding + ')',
+            height: '20',
+            width: expectedValueWidth
+
+        });
+
+    svg.append('text').text('Deviation from Expected Value')
+        .attr({
+            class: 'columnLabel expectedValueLabel',
+            transform: 'translate(' + (xStartExpectedValues + expectedValueWidth / 2) + ',' + (labelTopPadding + 10) + ')'
+        });
 
     // scale for the size of the plottingSets
     var minDeviation = d3.min(plottingSets, function (d) {
@@ -358,7 +426,7 @@ function plot(plottingSets) {
             },
             transform: function (d) {
                 var start = expectedValueScale(d3.min([0, d.expectedValueDeviation]));
-              //  console.log(d.setName + " expected: " + d.expectedValueDeviation + " start: " + start);
+                //  console.log(d.setName + " expected: " + d.expectedValueDeviation + " start: " + start);
                 start += xStartExpectedValues;
                 return "translate(" + start + ", 0)";
             },
@@ -368,58 +436,15 @@ function plot(plottingSets) {
             height: cellSize
         });
 
-    // -------------------- Interaction ----------------------------
-
-    d3.selectAll(".setLabel").on(
-        "click",
-        function (d) {
-            // sort by number of combinations
-            plottingSets.sort(function (a, b) {
-                if (a.nrCombinedSets != b.nrCombinedSets) {
-                    console.log("Clear: a " + a.combinedSets + " b " + b.combinedSets);
-                    return a.nrCombinedSets - b.nrCombinedSets;
-                }
-                for (var i = 0; i < a.nrCombinedSets; i++) {
-                    if (a.combinedSets[i] != b.combinedSets[i]) {
-                        console.log("a " + a.combinedSets + " b " + b.combinedSets);
-                        if (a.combinedSets[i] > 0) {
-                            console.log("a");
-                            return 1;
-                        }
-                        else {
-                            console.log("b");
-                            return -1;
-                        }
-                    }
-                }
-            });
-            transition();
-        });
-
-    d3.select("#subsetSizeLabel").on(
+    d3.selectAll(".expectedValueLabel").on(
         "click",
         function (d) {
             // sort by size of set overlap
             plottingSets.sort(function (a, b) {
-                return b.setSize - a.setSize;
+                return Math.abs(b.expectedValueDeviation) - Math.abs(a.expectedValueDeviation);
             });
-            transition();
+            rowTransition();
         });
 
-    function transition() {
-        rowScale.domain(plottingSets.map(function (d) {
-            return d.setID;
-        }));
-
-        svg.selectAll(".row").transition().delay(function (d, i) {
-            if (plottingSets.length < 100)
-                return i * 100;
-            return 0;
-        }).duration(1000)
-            .attr({transform: function (d, i) {
-              //  console.log(d.setID);
-                return 'translate(0, ' + rowScale(d.setID) + ')';
-            }});
-    }
 }
 
