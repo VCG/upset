@@ -251,22 +251,10 @@ function plot(plottingSets) {
             // sort by number of combinations
             plottingSets.sort(function (a, b) {
                 if (a.nrCombinedSets != b.nrCombinedSets) {
-                    console.log("Clear: a " + a.combinedSets + " b " + b.combinedSets);
-                    return a.nrCombinedSets - b.nrCombinedSets;
+                      return a.nrCombinedSets - b.nrCombinedSets;
                 }
-                for (var i = 0; i < a.nrCombinedSets; i++) {
-                    if (a.combinedSets[i] != b.combinedSets[i]) {
-                        console.log("a " + a.combinedSets + " b " + b.combinedSets);
-                        if (a.combinedSets[i] > 0) {
-                            console.log("a");
-                            return 1;
-                        }
-                        else {
-                            console.log("b");
-                            return -1;
-                        }
-                    }
-                }
+                // if the number of combined sets is identical, we can pick the largest one
+                return b.setID - a.setID;
             });
             rowTransition();
         });
