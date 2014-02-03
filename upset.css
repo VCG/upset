@@ -15,7 +15,7 @@
 
 /** The set size bar */
 .setSize {
-    fill: lightgray;
+    fill: #756bb1;
 }
 
 /** The subSet size bar */
@@ -55,11 +55,16 @@
     cursor: s-resize;
 }
 
-
 .expectedValueDeviation.positive {
     fill: steelblue;
 }
 
 .expectedValueDeviation.negative {
     fill: brown;
+}
+
+.connection {
+   /* stroke: #333333;*/
+    /*stroke-width: 1;*/
+    fill: #d3d3d3;
 }

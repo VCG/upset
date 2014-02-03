@@ -208,7 +208,6 @@ function plot(plottingSets) {
     var setSizeWidth = 700;
     var subSetSizeWidth = 300;
 
-
     var xStartExpectedValues = xStartSetSizes + subSetSizeWidth + 20;
     var expectedValueWidth = 300;
 
@@ -242,7 +241,7 @@ function plot(plottingSets) {
         .append('g')
         .attr({transform: function (d, i) {
             return 'translate(0, ' + setRowScale(d.setID) + ')';
-        //  return 'translate(0, ' + ( cellDistance * (i)) + ')';
+            //  return 'translate(0, ' + ( cellDistance * (i)) + ')';
         },
             class: 'setRow'});
 
@@ -252,30 +251,33 @@ function plot(plottingSets) {
     // scale for the set participation
     var setScale = d3.scale.ordinal().domain([0, 1]).range(grays);
 
-    setGrp.selectAll('.setRow')
-        .append('g')
-        .attr({class: 'setCombination'
-        })
+//    setGrp.selectAll('.setRow')
+//        .append('g')
+//        .attr({class: 'setCombination'
+//        })
 
-    setGrp.selectAll('.setCombination').data(function (d) {
-        return d.combinedSets
-    }).enter()
-        .append('rect')
-        .attr('x', function (d, i) {
-            console.log(d);
-            return (cellDistance) * i;
+    svg.selectAll('.connection')
+        .data(sets)
+        .enter()
+        .append('polygon')
+        .attr({
+            points: function (d, i) {
 
-        })
-        .attr({width: cellSize,
-            height: cellSize})
-        .style("fill", function (d) {
-            return setScale(d);
-        });
+                // lower edge
+                var subLeft = (1 + cellDistance * i) + ", " + setMatrixHeight + " ";
+                var subRight = (cellDistance * (i + 1) - 1) + ", " + setMatrixHeight + " ";
+                var setTop = xStartSetSizes + ", " + (cellDistance * i + 1) + " ";
+                var setBottom = xStartSetSizes + ", " + (cellDistance * (i + 1) - 1) + " ";
 
-    // ------------------- set size bars --------------------
+                return (subLeft + subRight + setBottom + setTop );
+            },
+            class: 'connection'
+        }
+    );
 
+// ------------------- set size bars --------------------
 
-    // scale for the size of the plottingSets
+// scale for the size of the plottingSets
     var setSizeScale = d3.scale.linear().domain([0, d3.max(sets, function (d) {
         return d.setSize;
     })]).nice().range([0, setSizeWidth]);
@@ -291,10 +293,9 @@ function plot(plottingSets) {
             height: cellSize
         });
 
+// ################## SUBSETS #########################
 
-    // ################## SUBSETS #########################
-
-    // ------------ the set labels -------------------
+// ------------ the set labels -------------------
 
     svg.selectAll(".setLabel")
         .data(sets)
@@ -328,7 +329,7 @@ function plot(plottingSets) {
             rowTransition();
         });
 
-    // ------------------- the rows -----------------------
+// ------------------- the rows -----------------------
 
     var rowScale = d3.scale.ordinal().rangeRoundBands([ setMatrixHeight + textHeight, h ], 0);
 
@@ -346,7 +347,7 @@ function plot(plottingSets) {
         },
             class: 'row'});
 
-    // -------------------- row transitions ----------------------------
+// -------------------- row transitions ----------------------------
 
     function rowTransition() {
         rowScale.domain(plottingSets.map(function (d) {
@@ -364,10 +365,10 @@ function plot(plottingSets) {
             }});
     }
 
-    // ------------ the combination matrix ----------------------
+// ------------ the combination matrix ----------------------
 
     var grays = [ "#f0f0f0", "#636363"];
-    // scale for the set participation
+// scale for the set participation
     var setScale = d3.scale.ordinal().domain([0, 1]).range(grays);
 
     grp.selectAll('.row')
@@ -388,7 +389,7 @@ function plot(plottingSets) {
             return setScale(d);
         });
 
-    // ------------------- set size bars --------------------
+// ------------------- set size bars --------------------
 
     svg.append('rect')
         .attr({
@@ -405,7 +406,7 @@ function plot(plottingSets) {
             transform: 'translate(' + (xStartSetSizes + subSetSizeWidth / 2) + ',' + (setMatrixHeight + labelTopPadding + 10) + ')'
         });
 
-    // scale for the size of the plottingSets
+// scale for the size of the plottingSets
     var subSetSizeScale = d3.scale.linear().domain([0, d3.max(plottingSets, function (d) {
         return d.setSize;
     })]).nice().range([0, subSetSizeWidth]);
@@ -439,7 +440,7 @@ function plot(plottingSets) {
             rowTransition();
         });
 
-    // ----------------------- expected value bars -------------------
+// ----------------------- expected value bars -------------------
 
     svg.append('rect')
         .attr({
@@ -457,7 +458,7 @@ function plot(plottingSets) {
             transform: 'translate(' + (xStartExpectedValues + expectedValueWidth / 2) + ',' + (setMatrixHeight + labelTopPadding + 10) + ')'
         });
 
-    // scale for the size of the plottingSets
+// scale for the size of the plottingSets
     var minDeviation = d3.min(plottingSets, function (d) {
         return d.expectedValueDeviation;
     });
