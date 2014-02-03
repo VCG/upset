@@ -173,7 +173,7 @@ function makeSubSet(setMask) {
         }
         else
         {
-            notExpectedValue *= sets[setIndex].dataRatio;
+            notExpectedValue *= (1-sets[setIndex].dataRatio);
         }
         for (i = 0; i < data.length; i++) {
             if ((setMask & bitMask) == 1) {
@@ -193,7 +193,7 @@ function makeSubSet(setMask) {
         setMask = setMask >> 1;
     }
 
-    expectedValue *= 1-notExpectedValue;
+    expectedValue *= notExpectedValue;
     var subSet = new SubSet(originalSetMask, name, combinedSets, combinedData, expectedValue);
     subsets.push(subSet);
 }
