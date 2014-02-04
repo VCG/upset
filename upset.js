@@ -204,7 +204,8 @@ function plot(plottingSets) {
     var textHeight = 60;
     var textSpacing = 3;
 
-    var xStartSetSizes = cellDistance * sets.length + 5;
+    var majorPadding = 5;
+    var xStartSetSizes = cellDistance * sets.length + majorPadding;
     var setSizeWidth = 700;
     var subSetSizeWidth = 300;
 
@@ -219,7 +220,7 @@ function plot(plottingSets) {
     var truncateAfter = 25;
 
     var w = 1000;
-    var setMatrixHeight = sets.length * cellDistance;
+    var setMatrixHeight = sets.length * cellDistance + majorPadding ;
     var subSetMatrixHeight = combinations * cellDistance;
     var h = subSetMatrixHeight + textHeight + setMatrixHeight;
 
@@ -229,7 +230,7 @@ function plot(plottingSets) {
 
     //####################### SETS ##################################################
 
-    var setRowScale = d3.scale.ordinal().rangeRoundBands([ 0, setMatrixHeight ], 0);
+    var setRowScale = d3.scale.ordinal().rangeRoundBands([ 0, setMatrixHeight - majorPadding ], 0);
 
     setRowScale.domain(sets.map(function (d) {
         return d.setID;
@@ -245,16 +246,7 @@ function plot(plottingSets) {
         },
             class: 'setRow'});
 
-    // ------------ the combination matrix ----------------------
-
-    var grays = [ "#ffffff", "#636363"];
-    // scale for the set participation
-    var setScale = d3.scale.ordinal().domain([0, 1]).range(grays);
-
-//    setGrp.selectAll('.setRow')
-//        .append('g')
-//        .attr({class: 'setCombination'
-//        })
+    // ------------ the connection lines ----------------------
 
     svg.selectAll('.connection')
         .data(sets)
@@ -264,10 +256,10 @@ function plot(plottingSets) {
             points: function (d, i) {
 
                 // lower edge
-                var subLeft = (1 + cellDistance * i) + ", " + setMatrixHeight + " ";
-                var subRight = (cellDistance * (i + 1) - 1) + ", " + setMatrixHeight + " ";
-                var setTop = xStartSetSizes + ", " + (cellDistance * i + 1) + " ";
-                var setBottom = xStartSetSizes + ", " + (cellDistance * (i + 1) - 1) + " ";
+                var subLeft = ( cellDistance * i) + ", " + setMatrixHeight + " ";
+                var subRight = (cellDistance * (i + 1) - 2) + ", " + setMatrixHeight + " ";
+                var setTop = xStartSetSizes + ", " + (cellDistance * i ) + " ";
+                var setBottom = xStartSetSizes + ", " + (cellDistance * (i + 1) - 2) + " ";
 
                 return (subLeft + subRight + setBottom + setTop );
             },
@@ -297,10 +289,20 @@ function plot(plottingSets) {
 
 // ------------ the set labels -------------------
 
-    svg.selectAll(".setLabel")
+    var setLabels = svg.selectAll(".setLabel")
         .data(sets)
-        .enter()
-        .append("text").text(
+        .enter();
+
+    setLabels.append('rect').attr({
+        transform: function (d, i) {
+            return 'translate(' + (cellDistance * i ) + ', ' + setMatrixHeight +')';
+        },
+        width: cellSize,
+        height: textHeight - 2,
+        class: "connection"
+    });
+
+    setLabels.append("text").text(
         function (d) {
             return d.setName.substring(0, truncateAfter);
         }).attr({
@@ -314,6 +316,8 @@ function plot(plottingSets) {
             }
 
         });
+
+
 
     d3.selectAll(".setLabel").on(
         "click",
