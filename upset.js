@@ -23,7 +23,11 @@ d3.json("datasets.json", function (error, json) {
 });
 
 function load() {
-    var select = d3.select("#header").append("select");
+    var header = d3.select("#header");
+    header.append('div').html('&darr; # intersections.').attr({id: 'sortIntersect',
+        class: 'myButton'})
+    var dataSelect = header.append('div').text('Choose Dataset: ');
+    var select = dataSelect.append("select");
     select.on("change", change)
         .selectAll("option").data(dataSets).enter().append("option")
         .attr("value", function (d) {
@@ -219,8 +223,11 @@ function plot(plottingSets) {
 
     var truncateAfter = 25;
 
-    var w = 1000;
-    var setMatrixHeight = sets.length * cellDistance + majorPadding ;
+    var setCellDistance = 12;
+    var setCellSize = 10;
+
+    var w = 1300;
+    var setMatrixHeight = sets.length * setCellDistance + majorPadding;
     var subSetMatrixHeight = combinations * cellDistance;
     var h = subSetMatrixHeight + textHeight + setMatrixHeight;
 
@@ -258,8 +265,8 @@ function plot(plottingSets) {
                 // lower edge
                 var subLeft = ( cellDistance * i) + ", " + setMatrixHeight + " ";
                 var subRight = (cellDistance * (i + 1) - 2) + ", " + setMatrixHeight + " ";
-                var setTop = xStartSetSizes + ", " + (cellDistance * i ) + " ";
-                var setBottom = xStartSetSizes + ", " + (cellDistance * (i + 1) - 2) + " ";
+                var setTop = xStartSetSizes + ", " + (setCellDistance * i  ) + " ";
+                var setBottom = xStartSetSizes + ", " + (setCellDistance * (i + 1) - 2) + " ";
 
                 return (subLeft + subRight + setBottom + setTop );
             },
@@ -269,10 +276,15 @@ function plot(plottingSets) {
 
 // ------------------- set size bars --------------------
 
-// scale for the size of the plottingSets
-    var setSizeScale = d3.scale.linear().domain([0, d3.max(sets, function (d) {
+    // scale for the size of the subsets, also used for the sets
+    var subSetSizeScale = d3.scale.linear().domain([0, d3.max(plottingSets, function (d) {
         return d.setSize;
-    })]).nice().range([0, setSizeWidth]);
+    })]).nice().range([0, subSetSizeWidth]);
+
+// scale for the size of the plottingSets
+//    var setSizeScale = d3.scale.linear().domain([0, d3.max(sets, function (d) {
+//        return d.setSize;
+//    })]).nice().range([0, setSizeWidth]);
 
     svg.selectAll('.setRow')
         .append('rect')
@@ -280,9 +292,9 @@ function plot(plottingSets) {
             class: 'setSize',
             transform: "translate(" + xStartSetSizes + ", 0)", // " + (textHeight - 5) + ")"
             width: function (d) {
-                return setSizeScale(d.setSize);
+                return subSetSizeScale(d.setSize);
             },
-            height: cellSize
+            height: setCellSize//setRowScale.rangeBand()
         });
 
 // ################## SUBSETS #########################
@@ -295,7 +307,7 @@ function plot(plottingSets) {
 
     setLabels.append('rect').attr({
         transform: function (d, i) {
-            return 'translate(' + (cellDistance * i ) + ', ' + setMatrixHeight +')';
+            return 'translate(' + (cellDistance * i ) + ', ' + setMatrixHeight + ')';
         },
         width: cellSize,
         height: textHeight - 2,
@@ -317,13 +329,32 @@ function plot(plottingSets) {
 
         });
 
-
-
-    d3.selectAll(".setLabel").on(
+    d3.selectAll("#sortIntersect").on(
         "click",
         function (d) {
             // sort by number of combinations
             plottingSets.sort(function (a, b) {
+                if (a.nrCombinedSets != b.nrCombinedSets) {
+                    return a.nrCombinedSets - b.nrCombinedSets;
+                }
+                // if the number of combined sets is identical, we can pick the largest one
+                return b.setID - a.setID;
+            });
+            rowTransition();
+        });
+
+    // sort based on occurrence of one specific data item
+    d3.selectAll(".setLabel").on(
+        "click",
+        function (d, i) {
+            var setIndex = sets.indexOf(d);
+
+            plottingSets.sort(function (a, b) {
+                // move all elements that contain the clicked set to the top
+                if (b.combinedSets[setIndex] !== a.combinedSets[setIndex]) {
+                    return b.combinedSets[setIndex] - a.combinedSets[setIndex];
+                }
+                // move all elements with viewer intersections to the top
                 if (a.nrCombinedSets != b.nrCombinedSets) {
                     return a.nrCombinedSets - b.nrCombinedSets;
                 }
