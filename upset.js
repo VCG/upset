@@ -4,8 +4,8 @@
 
 /** The input datasets */
 var sets = [];
-/** The dynamically created subsets */
-var subsets = [];
+/** The dynamically created subSets */
+var subSets = [];
 /** The labels of the records */
 var labels = [];
 /** The number of combinations that are currently active */
@@ -47,7 +47,7 @@ function loadDataset(dataFile) {
 
 function change() {
     sets.length = 0;
-    subsets.length = 0;
+    subSets.length = 0;
     labels.length = 0;
     loadDataset(this.options[this.selectedIndex].value);
 }
@@ -60,7 +60,7 @@ function Set(setID, setName, combinedSets, setData) {
     /** An array of all the sets that are combined in this set. The array contains a 1 if a set at the corresponding position in the sets array is combined. */
     this.combinedSets = combinedSets;
 
-    /** The number of combined subsets */
+    /** The number of combined subSets */
     this.nrCombinedSets = 0;
 
     /** Array of length depth where each element that is in this subset is set to 1 */
@@ -147,13 +147,11 @@ function dataLoad(data) {
     }
 
     // sort by size of set overlap
-    subsets.sort(function (a, b) {
+    subSets.sort(function (a, b) {
         return b.setSize - a.setSize;
     });
 
-    //plot(sets);
-
-    plot(subsets);
+    plot();
 }
 
 function makeSubSet(setMask) {
@@ -198,10 +196,10 @@ function makeSubSet(setMask) {
 
     expectedValue *= notExpectedValue;
     var subSet = new SubSet(originalSetMask, name, combinedSets, combinedData, expectedValue);
-    subsets.push(subSet);
+    subSets.push(subSet);
 }
 
-function plot(plottingSets) {
+function plot() {
 
     var cellDistance = 20;
     var cellSize = 18;
@@ -276,15 +274,10 @@ function plot(plottingSets) {
 
 // ------------------- set size bars --------------------
 
-    // scale for the size of the subsets, also used for the sets
-    var subSetSizeScale = d3.scale.linear().domain([0, d3.max(plottingSets, function (d) {
+    // scale for the size of the subSets, also used for the sets
+    var subSetSizeScale = d3.scale.linear().domain([0, d3.max(subSets, function (d) {
         return d.setSize;
     })]).nice().range([0, subSetSizeWidth]);
-
-// scale for the size of the plottingSets
-//    var setSizeScale = d3.scale.linear().domain([0, d3.max(sets, function (d) {
-//        return d.setSize;
-//    })]).nice().range([0, setSizeWidth]);
 
     svg.selectAll('.setRow')
         .append('rect')
@@ -332,48 +325,28 @@ function plot(plottingSets) {
     d3.selectAll("#sortIntersect").on(
         "click",
         function (d) {
-            // sort by number of combinations
-            plottingSets.sort(function (a, b) {
-                if (a.nrCombinedSets != b.nrCombinedSets) {
-                    return a.nrCombinedSets - b.nrCombinedSets;
-                }
-                // if the number of combined sets is identical, we can pick the largest one
-                return b.setID - a.setID;
-            });
+            sortByCombinationSize();
             rowTransition();
         });
 
     // sort based on occurrence of one specific data item
     d3.selectAll(".setLabel").on(
         "click",
-        function (d, i) {
-            var setIndex = sets.indexOf(d);
-
-            plottingSets.sort(function (a, b) {
-                // move all elements that contain the clicked set to the top
-                if (b.combinedSets[setIndex] !== a.combinedSets[setIndex]) {
-                    return b.combinedSets[setIndex] - a.combinedSets[setIndex];
-                }
-                // move all elements with viewer intersections to the top
-                if (a.nrCombinedSets != b.nrCombinedSets) {
-                    return a.nrCombinedSets - b.nrCombinedSets;
-                }
-                // if the number of combined sets is identical, we can pick the largest one
-                return b.setID - a.setID;
-            });
+        function (d) {
+            sortOnSetItem(d)
             rowTransition();
         });
 
-// ------------------- the rows -----------------------
+    // ------------------- the rows -----------------------
 
     var rowScale = d3.scale.ordinal().rangeRoundBands([ setMatrixHeight + textHeight, h ], 0);
 
-    rowScale.domain(plottingSets.map(function (d) {
+    rowScale.domain(subSets.map(function (d) {
         return d.setID;
     }));
 
     var grp = svg.selectAll('.row')
-        .data(plottingSets)
+        .data(subSets)
         .enter()
         .append('g')
         .attr({transform: function (d, i) {
@@ -382,28 +355,25 @@ function plot(plottingSets) {
         },
             class: 'row'});
 
-// -------------------- row transitions ----------------------------
+    // -------------------- row transitions ----------------------------
 
     function rowTransition() {
-        rowScale.domain(plottingSets.map(function (d) {
+        rowScale.domain(subSets.map(function (d) {
             return d.setID;
         }));
 
-        svg.selectAll(".row").transition().delay(function (d, i) {
-            if (plottingSets.length < 100)
-                return i * 100;
-            return 0;
-        }).duration(1000)
-            .attr({transform: function (d, i) {
-                //  console.log(d.setID);
+        svg.selectAll(".row").transition().duration(function (d, i) {
+                return 2000;
+            }
+        ).attr({transform: function (d) {
                 return 'translate(0, ' + rowScale(d.setID) + ')';
             }});
     }
 
-// ------------ the combination matrix ----------------------
+    // ------------ the combination matrix ----------------------
 
     var grays = [ "#f0f0f0", "#636363"];
-// scale for the set participation
+    // scale for the set participation
     var setScale = d3.scale.ordinal().domain([0, 1]).range(grays);
 
     grp.selectAll('.row')
@@ -424,7 +394,7 @@ function plot(plottingSets) {
             return setScale(d);
         });
 
-// ------------------- set size bars --------------------
+    // ------------------- set size bars --------------------
 
     svg.append('rect')
         .attr({
@@ -441,8 +411,8 @@ function plot(plottingSets) {
             transform: 'translate(' + (xStartSetSizes + subSetSizeWidth / 2) + ',' + (setMatrixHeight + labelTopPadding + 10) + ')'
         });
 
-// scale for the size of the plottingSets
-    var subSetSizeScale = d3.scale.linear().domain([0, d3.max(plottingSets, function (d) {
+    // scale for the size of the plottingSets
+    var subSetSizeScale = d3.scale.linear().domain([0, d3.max(subSets, function (d) {
         return d.setSize;
     })]).nice().range([0, subSetSizeWidth]);
 
@@ -468,14 +438,11 @@ function plot(plottingSets) {
     d3.selectAll(".subsetSizeLabel").on(
         "click",
         function (d) {
-            // sort by size of set overlap
-            plottingSets.sort(function (a, b) {
-                return b.setSize - a.setSize;
-            });
+            sortBySubsetSize();
             rowTransition();
         });
 
-// ----------------------- expected value bars -------------------
+    // ----------------------- expected value bars -------------------
 
     svg.append('rect')
         .attr({
@@ -493,11 +460,11 @@ function plot(plottingSets) {
             transform: 'translate(' + (xStartExpectedValues + expectedValueWidth / 2) + ',' + (setMatrixHeight + labelTopPadding + 10) + ')'
         });
 
-// scale for the size of the plottingSets
-    var minDeviation = d3.min(plottingSets, function (d) {
+    // scale for the size of the plottingSets
+    var minDeviation = d3.min(subSets, function (d) {
         return d.expectedValueDeviation;
     });
-    var maxDeviation = d3.max(plottingSets, function (d) {
+    var maxDeviation = d3.max(subSets, function (d) {
         return d.expectedValueDeviation;
     });
 
@@ -532,10 +499,7 @@ function plot(plottingSets) {
     d3.selectAll(".expectedValueLabel").on(
         "click",
         function (d) {
-            // sort by size of set overlap
-            plottingSets.sort(function (a, b) {
-                return Math.abs(b.expectedValueDeviation) - Math.abs(a.expectedValueDeviation);
-            });
+            sortByExpectedValue();
             rowTransition();
         });
 
