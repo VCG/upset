@@ -385,6 +385,9 @@ function plot() {
         return d.combinedSets
     }).enter()
         .append('rect')
+        .on("click", function(d) {
+        	alert( "Cell clicked:" + d );
+        })
         .attr('x', function (d, i) {
             return (cellDistance) * i;
         })
