@@ -88,6 +88,12 @@ function dataLoad(data) {
     plot();
 }
 
+function change() {
+    sets.length = 0;
+    subSets.length = 0;
+    labels.length = 0;
+    loadDataset(this.options[this.selectedIndex].value);
+}
 
 function plot() {
 
