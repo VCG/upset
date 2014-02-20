@@ -231,7 +231,6 @@ function plot() {
             },
             transform: function (d, i) {
                 return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (setMatrixHeight + textHeight - textSpacing) + ')rotate(270)';
-
             }
 
         });
@@ -344,9 +343,6 @@ function plot() {
     svg.selectAll('.row')
         .append('rect')
         .on("click", function(d) {
-        	console.log( d );
-        	console.log( d.items );
-        	d.items.forEach( function( element, index, array ) { console.log( labels[element] ); } );
         	setSelectedItems( d.items );
         })        
         .attr({
