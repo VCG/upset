@@ -13,6 +13,9 @@ var combinations = 0;
 /** The depth of the dataset, i.e., how many records it contains */
 var depth = 0;
 
+/** Indices of selected items **/
+var selectedItems = [];
+
 /** The list of available datasets */
 var dataSets;
 

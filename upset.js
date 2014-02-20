@@ -1,5 +1,6 @@
 /**
- * author: Alexander Lex - alex@seas.harvard.edu Inspired by
+ * author: Alexander Lex - alex@seas.harvard.edu Inspired by ?
+ * author: Nils Gehlenborg - nils@hms.harvard.edu
  */
 
 
@@ -34,6 +35,8 @@ function loadDataset(dataFile) {
 
 
 function dataLoad(data) {
+    clearSelectedItems();
+
     var dsv = d3.dsv(";", "text/plain");
     var rows = dsv.parseRows(data).map(function (row) {
         return row.map(function (value) {
@@ -94,6 +97,21 @@ function change() {
     labels.length = 0;
     loadDataset(this.options[this.selectedIndex].value);
 }
+
+
+function setSelectedItems( indices ) {
+	selectedItems = indices;
+	
+	plotSelectedItems();
+}
+
+
+function clearSelectedItems() {
+    selectedItems.length = 0;
+
+	plotSelectedItems();
+}
+
 
 function plot() {
 
@@ -282,7 +300,7 @@ function plot() {
     }).enter()
         .append('rect')
         .on("click", function(d) {
-        	alert( "Cell clicked:" + d );
+        	// click event for cells
         })
         .attr('x', function (d, i) {
             return (cellDistance) * i;
@@ -325,6 +343,12 @@ function plot() {
 
     svg.selectAll('.row')
         .append('rect')
+        .on("click", function(d) {
+        	console.log( d );
+        	console.log( d.items );
+        	d.items.forEach( function( element, index, array ) { console.log( labels[element] ); } );
+        	setSelectedItems( d.items );
+        })        
         .attr({
             class: 'subSetSize',
             transform: "translate(" + xStartSetSizes + ", 0)", // " + (textHeight - 5) + ")"
@@ -401,6 +425,39 @@ function plot() {
             sortByExpectedValue();
             rowTransition();
         });
-
 }
 
+
+function plotSelectedItems() {
+
+    var majorPadding = 5;
+    var setCellDistance = 12;
+    var cellDistance = 20;
+    var textHeight = 12;
+    var textSpacing = 3;
+
+    var xStartSetSizes = cellDistance * sets.length + majorPadding;
+    var setMatrixHeight = sets.length * setCellDistance + majorPadding;
+
+	var svg = d3.select("#vis").select("svg");
+		svg.selectAll(".itemLabel").remove();
+
+    var itemLabels = svg.selectAll(".itemLabel")
+        .data(selectedItems)
+        .enter();
+
+    itemLabels.append("text").text(
+        function (d) {
+            //return d.setName.substring(0, truncateAfter);
+            return( labels[d] );
+        }).attr({
+            class: "itemLabel",
+            id: function (d) {
+            	return( "itemLabel-" + d );
+                //return d.setName.substring(0, truncateAfter);
+            },
+            transform: function (d, i) {
+                return 'translate(' + (700+xStartSetSizes)  + ',' + (setMatrixHeight + i* ( textHeight + textSpacing) ) + ')rotate(0)';
+            }
+        });
+}
