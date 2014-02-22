@@ -149,60 +149,105 @@ function plot() {
 
     //####################### SETS ##################################################
 
-    var setRowScale = d3.scale.ordinal().rangeRoundBands([ 0, setMatrixHeight - majorPadding ], 0);
+    var rowRientation = "horizontal"; // "vertical"
 
-    setRowScale.domain(sets.map(function (d) {
-        return d.setID;
-    }));
+    if(rowRientation=="horizontal") {
 
-    var setGrp = svg.selectAll('.setRow')
-        .data(sets)
-        .enter()
-        .append('g')
-        .attr({transform: function (d, i) {
-            return 'translate(0, ' + setRowScale(d.setID) + ')';
-            //  return 'translate(0, ' + ( cellDistance * (i)) + ')';
-        },
-            class: 'setRow'});
+        var setRowScale = d3.scale.ordinal().rangeRoundBands([ 0, setMatrixHeight - majorPadding ], 0);
 
-    // ------------ the connection lines ----------------------
+        setRowScale.domain(sets.map(function (d) {
+            return d.setID;
+        }));
 
-    svg.selectAll('.connection')
-        .data(sets)
-        .enter()
-        .append('polygon')
-        .attr({
-            points: function (d, i) {
-
-                // lower edge
-                var subLeft = ( cellDistance * i) + ", " + setMatrixHeight + " ";
-                var subRight = (cellDistance * (i + 1) - 2) + ", " + setMatrixHeight + " ";
-                var setTop = xStartSetSizes + ", " + (setCellDistance * i  ) + " ";
-                var setBottom = xStartSetSizes + ", " + (setCellDistance * (i + 1) - 2) + " ";
-
-                return (subLeft + subRight + setBottom + setTop );
+        var setGrp = svg.selectAll('.setRow')
+            .data(sets)
+            .enter()
+            .append('g')
+            .attr({transform: function (d, i) {
+                return 'translate(0, ' + setRowScale(d.setID) + ')';
+                //  return 'translate(0, ' + ( cellDistance * (i)) + ')';
             },
-            class: 'connection'
-        }
-    );
+                class: 'setRow'});
 
-// ------------------- set size bars --------------------
+        // ------------ the connection lines ----------------------
 
-    // scale for the size of the subSets, also used for the sets
-    var subSetSizeScale = d3.scale.linear().domain([0, d3.max(subSets, function (d) {
-        return d.setSize;
-    })]).nice().range([0, subSetSizeWidth]);
+        svg.selectAll('.connection')
+            .data(sets)
+            .enter()
+            .append('polygon')
+            .attr({
+                points: function (d, i) {
 
-    svg.selectAll('.setRow')
-        .append('rect')
-        .attr({
-            class: 'setSize',
-            transform: "translate(" + xStartSetSizes + ", 0)", // " + (textHeight - 5) + ")"
-            width: function (d) {
-                return subSetSizeScale(d.setSize);
-            },
-            height: setCellSize//setRowScale.rangeBand()
-        });
+                    // lower edge
+                    var subLeft = ( cellDistance * i) + ", " + setMatrixHeight + " ";
+                    var subRight = (cellDistance * (i + 1) - 2) + ", " + setMatrixHeight + " ";
+                    var setTop = xStartSetSizes + ", " + (setCellDistance * i  ) + " ";
+                    var setBottom = xStartSetSizes + ", " + (setCellDistance * (i + 1) - 2) + " ";
+
+                    return (subLeft + subRight + setBottom + setTop );
+                },
+                class: 'connection'
+            }
+        );
+
+    // ------------------- set size bars --------------------
+
+        // scale for the size of the subSets, also used for the sets
+        var subSetSizeScale = d3.scale.linear().domain([0, d3.max(subSets, function (d) {
+            return d.setSize;
+        })]).nice().range([0, subSetSizeWidth]);
+
+        svg.selectAll('.setRow')
+            .append('rect')
+            .attr({
+                class: 'setSize',
+                transform: "translate(" + xStartSetSizes + ", 0)", // " + (textHeight - 5) + ")"
+                width: function (d) {
+                    return subSetSizeScale(d.setSize);
+                },
+                height: setCellSize//setRowScale.rangeBand()
+            });
+
+
+    } else { // vertical rows
+
+      var setRowScale = d3.scale.ordinal().rangeRoundBands([ 0, sets.length * (cellSize + 2)], 0);
+
+      var subSetSizeHeight = setMatrixHeight - majorPadding;
+
+      setRowScale.domain(sets.map(function (d) {
+          return d.setID;
+      }));
+
+      var setGrp = svg.selectAll('.setRow')
+          .data(sets)
+        .enter()
+          .append('g')
+          .attr({transform: function (d, i) {
+              return 'translate(' + setRowScale(d.setID) + ', 0)';
+              //  return 'translate(0, ' + ( cellDistance * (i)) + ')';
+          },
+              class: 'setRow'});
+
+  // ------------------- set size bars --------------------
+
+      // scale for the size of the subSets, also used for the sets
+      var subSetSizeScale = d3.scale.linear().domain([0, d3.max(subSets, function (d) {
+          return d.setSize;
+      })]).nice().range([0, subSetSizeHeight]);
+
+      svg.selectAll('.setRow')
+          .append('rect')
+          .attr({
+              class: 'setSize',
+              transform: function (d) { return "translate(0, "+ (subSetSizeHeight-subSetSizeScale(d.setSize))+")"}, // " + (textHeight - 5) + ")"
+              height: function (d) {
+                  return subSetSizeScale(d.setSize);
+              },
+              width: cellSize//setRowScale.rangeBand()
+          });
+
+    }
 
 // ################## SUBSETS #########################
 
