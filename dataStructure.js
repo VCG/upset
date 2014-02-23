@@ -4,6 +4,8 @@
 
 /** The input datasets */
 var sets = [];
+/** The ordered and grouped subsets */
+var subSetsGroups = [];
 /** The dynamically created subSets */
 var subSets = [];
 /** The labels of the records */
@@ -18,6 +20,9 @@ var selectedItems = [];
 
 /** The list of available datasets */
 var dataSets;
+
+/** Groups of subsets driven by group size */
+var sizeGroups = [];
 
 /**
  * Base class for Sets, subsets, groups.
@@ -35,11 +40,11 @@ function BaseSet(setID, setName, combinedSets, setData) {
     /** An array of all the sets that are combined in this set. The array contains a 1 if a set at the corresponding position in the sets array is combined. */
     this.combinedSets = combinedSets;
 
-    /** The number of combined subSets */
+    /** The number of combined subSetsGroups */
     this.nrCombinedSets = 0;
 
     /** The indices of the data items in this set */
-    this.items =[];
+    this.items = [];
     /** The number of elements in this (sub)set */
     this.setSize = 0;
 
@@ -72,13 +77,34 @@ function Set(setID, setName, combinedSets, itemList) {
 Set.prototype = BaseSet;
 Set.prototype.constructor = BaseSet;
 
-
-function SubSet(setID, setName, combinedSets,itemList, expectedValue) {
+function SubSet(setID, setName, combinedSets, itemList, expectedValue) {
     BaseSet.call(this, setID, setName, combinedSets, itemList);
     this.expectedValue = expectedValue;
     this.expectedValueDeviation = (this.dataRatio - this.expectedValue) * depth;
+
     //   console.log(setName + " DR: " + this.dataRatio + " EV: " + this.expectedValue + " EVD: " + this.expectedValueDeviation);
 
+}
+
+SubSet.prototype.toString = function () {
+    return "Subset + " + this.setID + " Nr Combined Sets: " + this.nrCombinedSets;
+}
+
+function Group() {
+    this.visibleSets = [];
+    this.hiddenSets = [];
+    this.subSets = [];
+
+    this.addSubSet = function (subSet) {
+        this.subSets.push(subSet);
+        if (subSet.setSize > 0) {
+            this.visibleSets.push(subSet);
+
+        }
+        else {
+            this.hiddenSets.push(subSet);
+        }
+    }
 }
 
 // Not sure how to do this properly with parameters?
@@ -130,13 +156,27 @@ function makeSubSet(setMask) {
     subSets.push(subSet);
 }
 
+function groupBySetSize() {
+    sizeGroups = [];
+    for (var i = 0; i < sets.length; i++) {
+        sizeGroups.push(new Group());
+    }
+    subSets.forEach(function (subSet) {
+        var group = sizeGroups[subSet.nrCombinedSets-1]
+        if (group != null)
+            group.addSubSet(subSet);
+        else
+            console.log(group + subSet.nrCombinedSets);
+    })
+    console.log(sizeGroups);
+}
 
 // ----------------------- Sort Functions ----------------------------
 
-
 function sortOnSetItem(set) {
+    subSetsGroups = subSets.slice(0);
     var setIndex = sets.indexOf(set);
-    subSets.sort(function (a, b) {
+    subSetsGroups.sort(function (a, b) {
         // move all elements that contain the clicked set to the top
         if (b.combinedSets[setIndex] !== a.combinedSets[setIndex]) {
             return b.combinedSets[setIndex] - a.combinedSets[setIndex];
@@ -151,8 +191,9 @@ function sortOnSetItem(set) {
 }
 
 function sortByCombinationSize() {
+    subSetsGroups = subSets.slice(0);
 // sort by number of combinations
-    subSets.sort(function (a, b) {
+    subSetsGroups.sort(function (a, b) {
         if (a.nrCombinedSets != b.nrCombinedSets) {
             return a.nrCombinedSets - b.nrCombinedSets;
         }
@@ -162,17 +203,33 @@ function sortByCombinationSize() {
 }
 
 function sortBySubsetSize() {
+    subSetsGroups = subSets.slice(0);
 // sort by size of set overlap
-    subSets.sort(function (a, b) {
+    subSetsGroups.sort(function (a, b) {
         return b.setSize - a.setSize;
     });
 }
 
 function sortByExpectedValue() {
+    subSetsGroups = subSets.slice(0);
 // sort by size of set overlap
-    subSets.sort(function (a, b) {
+    subSetsGroups.sort(function (a, b) {
         return Math.abs(b.expectedValueDeviation) - Math.abs(a.expectedValueDeviation);
     });
+}
+
+/** Sort by set size using groups */
+function sortBySetSizeGroups() {
+    subSetsGroups = [];
+
+    for (var i = 0; i < sizeGroups.length; i++) {
+        var group = sizeGroups[i];
+        //subSets.push(group);
+        for (var j = 0; j < group.visibleSets.length; j++) {
+            subSetsGroups.push(group.visibleSets[j]);
+        }
+    }
+    console.log(subSetsGroups);
 }
 
 
