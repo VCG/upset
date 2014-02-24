@@ -5,7 +5,7 @@
 /** The input datasets */
 var sets = [];
 /** The ordered and grouped subsets */
-var subSetsGroups = [];
+var renderRows = [];
 /** The dynamically created subSets */
 var subSets = [];
 /** The labels of the records */
@@ -40,7 +40,7 @@ function BaseSet(setID, setName, combinedSets, setData) {
     /** An array of all the sets that are combined in this set. The array contains a 1 if a set at the corresponding position in the sets array is combined. */
     this.combinedSets = combinedSets;
 
-    /** The number of combined subSetsGroups */
+    /** The number of combined renderRows */
     this.nrCombinedSets = 0;
 
     /** The indices of the data items in this set */
@@ -162,21 +162,21 @@ function groupBySetSize() {
         sizeGroups.push(new Group());
     }
     subSets.forEach(function (subSet) {
-        var group = sizeGroups[subSet.nrCombinedSets-1]
+        var group = sizeGroups[subSet.nrCombinedSets - 1]
         if (group != null)
             group.addSubSet(subSet);
         else
-            console.log(group + subSet.nrCombinedSets);
+            console.log("Fail" + group + subSet.nrCombinedSets);
     })
-    console.log(sizeGroups);
 }
 
 // ----------------------- Sort Functions ----------------------------
 
 function sortOnSetItem(set) {
-    subSetsGroups = subSets.slice(0);
+    renderRows.length = 0;
+    renderRows = subSets.slice(0);
     var setIndex = sets.indexOf(set);
-    subSetsGroups.sort(function (a, b) {
+    renderRows.sort(function (a, b) {
         // move all elements that contain the clicked set to the top
         if (b.combinedSets[setIndex] !== a.combinedSets[setIndex]) {
             return b.combinedSets[setIndex] - a.combinedSets[setIndex];
@@ -191,9 +191,11 @@ function sortOnSetItem(set) {
 }
 
 function sortByCombinationSize() {
-    subSetsGroups = subSets.slice(0);
+    renderRows.length = 0;
+    renderRows = subSets.slice(0);
+
 // sort by number of combinations
-    subSetsGroups.sort(function (a, b) {
+    renderRows.sort(function (a, b) {
         if (a.nrCombinedSets != b.nrCombinedSets) {
             return a.nrCombinedSets - b.nrCombinedSets;
         }
@@ -203,33 +205,34 @@ function sortByCombinationSize() {
 }
 
 function sortBySubsetSize() {
-    subSetsGroups = subSets.slice(0);
+    renderRows.length = 0;
+    renderRows = subSets.slice(0);
 // sort by size of set overlap
-    subSetsGroups.sort(function (a, b) {
+    renderRows.sort(function (a, b) {
         return b.setSize - a.setSize;
     });
 }
 
 function sortByExpectedValue() {
-    subSetsGroups = subSets.slice(0);
+    renderRows.length =0;
+    renderRows = subSets.slice(0);
 // sort by size of set overlap
-    subSetsGroups.sort(function (a, b) {
+    renderRows.sort(function (a, b) {
         return Math.abs(b.expectedValueDeviation) - Math.abs(a.expectedValueDeviation);
     });
 }
 
 /** Sort by set size using groups */
 function sortBySetSizeGroups() {
-    subSetsGroups = [];
+    renderRows.length = 0;
 
     for (var i = 0; i < sizeGroups.length; i++) {
         var group = sizeGroups[i];
         //subSets.push(group);
         for (var j = 0; j < group.visibleSets.length; j++) {
-            subSetsGroups.push(group.visibleSets[j]);
+            renderRows.push(group.visibleSets[j]);
         }
     }
-    console.log(subSetsGroups);
 }
 
 

@@ -6,9 +6,9 @@ h1{
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-div #sortIntersect{
-    float: right;
-}
+/*div #sortIntersect{*/
+    /*float: right;*/
+/*}*/
 
 .myButton {
     -moz-box-shadow:inset 0px 1px 0px 0px #9acc85;
