@@ -12,7 +12,6 @@ d3.json("datasets.json", function (error, json) {
 
 function load() {
 
-    console.log("data");
     var header = d3.select("#header");
     header.append('div').html('&darr; # intersections.').attr({id: 'sortIntersect',
         class: 'myButton'})
@@ -367,12 +366,12 @@ function plot() {
 
     function plotSubSets() {
 
-        console.log(renderRows);
-
         // ------------------- the rows -----------------------
 
         var subSets = svg.selectAll('.row')
-            .data(renderRows);
+            .data(renderRows, function (d) {
+                return d.setID;
+            });
         var grp = subSets
             .enter()
             .append('g')
@@ -438,8 +437,6 @@ function plot() {
 
         // ----------------------- expected value bars -------------------
 
-
-
         svg.selectAll('.row')
             .append('rect')
             .attr({
@@ -458,8 +455,6 @@ function plot() {
                 height: cellSize
             });
 
-
-
     }
 
 // -------------------- row transitions ----------------------------
@@ -468,7 +463,9 @@ function plot() {
 
         // TODO continue here
 
-        console.log(renderRows);
+        renderRows.forEach(function (d) {
+            console.log(d.setID + " " + d.setName);
+        })
         rowScale.domain(renderRows.map(function (d) {
             return d.setID;
         }));
