@@ -122,8 +122,6 @@ function clearSelectedItems() {
 
 function plot() {
 
-    setUpSortSelections();
-
     var cellDistance = 20;
     var cellSize = 18;
     var textHeight = 60;
@@ -169,7 +167,9 @@ function plot() {
         }));
 
         var setGrp = svg.selectAll('.setRow')
-            .data(sets, function(d){return d.setID;})
+            .data(sets, function (d) {
+                return d.setID;
+            })
             .enter()
             .append('g')
             .attr({transform: function (d, i) {
@@ -296,7 +296,74 @@ function plot() {
         return d.setID;
     }));
 
+    // ------------------- set size bars --------------------
+
+    svg.append('rect')
+        .attr({
+            class: 'labelBackground subsetSizeLabel',
+            transform: 'translate(' + xStartSetSizes + ',' + (setMatrixHeight + labelTopPadding) + ')',
+            height: '20',
+            width: subSetSizeWidth
+
+        });
+
+    svg.append('text').text('Subset Size')
+        .attr({
+            class: 'columnLabel subsetSizeLabel',
+            transform: 'translate(' + (xStartSetSizes + subSetSizeWidth / 2) + ',' + (setMatrixHeight + labelTopPadding + 10) + ')'
+        });
+
+    // scale for the size of the plottingSets
+    var subSetSizeScale = d3.scale.linear().domain([0, d3.max(renderRows, function (d) {
+        return d.setSize;
+    })]).nice().range([0, subSetSizeWidth]);
+
+    var subSetSizeAxis = d3.svg.axis().scale(subSetSizeScale).orient("top").ticks(4);
+
+    svg.append("g").attr()
+        .attr({class: "axis",
+            transform: "translate(" + xStartSetSizes + "," + (setMatrixHeight + textHeight - 5) + ")"
+        })
+        .call(subSetSizeAxis);
+
+    // lables for the expected value
+
+    svg.append('rect')
+        .attr({
+            class: 'labelBackground expectedValueLabel',
+            // id: ,
+            transform: 'translate(' + xStartExpectedValues + ',' + (setMatrixHeight + labelTopPadding) + ')',
+            height: '20',
+            width: expectedValueWidth
+
+        });
+
+    svg.append('text').text('Deviation from Expected Value')
+        .attr({
+            class: 'columnLabel expectedValueLabel',
+            transform: 'translate(' + (xStartExpectedValues + expectedValueWidth / 2) + ',' + (setMatrixHeight + labelTopPadding + 10) + ')'
+        });
+
+    // scale for the size of the plottingSets
+    var minDeviation = d3.min(renderRows, function (d) {
+        return d.expectedValueDeviation;
+    });
+    var maxDeviation = d3.max(renderRows, function (d) {
+        return d.expectedValueDeviation;
+    });
+
+    var expectedValueScale = d3.scale.linear().domain([minDeviation, maxDeviation]).nice().range([0, expectedValueWidth]);
+
+    var expectedValueAxis = d3.svg.axis().scale(expectedValueScale).orient("top").ticks(4);
+
+    svg.append("g").attr()
+        .attr({class: "axis",
+            transform: "translate(" + xStartExpectedValues + "," + (setMatrixHeight + textHeight - 5) + ")"
+        })
+        .call(expectedValueAxis);
+
     plotSubSets();
+    setUpSortSelections();
 
     function plotSubSets() {
 
@@ -311,9 +378,9 @@ function plot() {
             .append('g')
             .attr({
                 //transform: function (d, i) {
-               // return 'translate(0, ' + rowScale(d.setID) + ')';
+                // return 'translate(0, ' + rowScale(d.setID) + ')';
 //            return 'translate(0, ' + (textHeight + cellDistance * (i)) + ')';
-            //},
+                //},
                 class: 'row'});
 
         // ------------ the combination matrix ----------------------
@@ -353,35 +420,7 @@ function plot() {
                 return setScale(d);
             });
 
-        // ------------------- set size bars --------------------
-
-        svg.append('rect')
-            .attr({
-                class: 'labelBackground subsetSizeLabel',
-                transform: 'translate(' + xStartSetSizes + ',' + (setMatrixHeight + labelTopPadding) + ')',
-                height: '20',
-                width: subSetSizeWidth
-
-            });
-
-        svg.append('text').text('Subset Size')
-            .attr({
-                class: 'columnLabel subsetSizeLabel',
-                transform: 'translate(' + (xStartSetSizes + subSetSizeWidth / 2) + ',' + (setMatrixHeight + labelTopPadding + 10) + ')'
-            });
-
-        // scale for the size of the plottingSets
-        var subSetSizeScale = d3.scale.linear().domain([0, d3.max(renderRows, function (d) {
-            return d.setSize;
-        })]).nice().range([0, subSetSizeWidth]);
-
-        var subSetSizeAxis = d3.svg.axis().scale(subSetSizeScale).orient("top").ticks(4);
-
-        svg.append("g").attr()
-            .attr({class: "axis",
-                transform: "translate(" + xStartSetSizes + "," + (setMatrixHeight + textHeight - 5) + ")"
-            })
-            .call(subSetSizeAxis);
+        // ------------------------ set size bars -------------------
 
         svg.selectAll('.row')
             .append('rect')
@@ -399,39 +438,7 @@ function plot() {
 
         // ----------------------- expected value bars -------------------
 
-        svg.append('rect')
-            .attr({
-                class: 'labelBackground expectedValueLabel',
-                // id: ,
-                transform: 'translate(' + xStartExpectedValues + ',' + (setMatrixHeight + labelTopPadding) + ')',
-                height: '20',
-                width: expectedValueWidth
 
-            });
-
-        svg.append('text').text('Deviation from Expected Value')
-            .attr({
-                class: 'columnLabel expectedValueLabel',
-                transform: 'translate(' + (xStartExpectedValues + expectedValueWidth / 2) + ',' + (setMatrixHeight + labelTopPadding + 10) + ')'
-            });
-
-        // scale for the size of the plottingSets
-        var minDeviation = d3.min(renderRows, function (d) {
-            return d.expectedValueDeviation;
-        });
-        var maxDeviation = d3.max(renderRows, function (d) {
-            return d.expectedValueDeviation;
-        });
-
-        var expectedValueScale = d3.scale.linear().domain([minDeviation, maxDeviation]).nice().range([0, expectedValueWidth]);
-
-        var expectedValueAxis = d3.svg.axis().scale(expectedValueScale).orient("top").ticks(4);
-
-        svg.append("g").attr()
-            .attr({class: "axis",
-                transform: "translate(" + xStartExpectedValues + "," + (setMatrixHeight + textHeight - 5) + ")"
-            })
-            .call(expectedValueAxis);
 
         svg.selectAll('.row')
             .append('rect')
@@ -451,12 +458,8 @@ function plot() {
                 height: cellSize
             });
 
-        d3.selectAll(".expectedValueLabel").on(
-            "click",
-            function (d) {
-                sortByExpectedValue();
-                rowTransition();
-            });
+
+
     }
 
 // -------------------- row transitions ----------------------------
@@ -514,6 +517,12 @@ function plot() {
             "click",
             function (d) {
                 sortBySubsetSize();
+                rowTransition();
+            });
+        d3.selectAll(".expectedValueLabel").on(
+            "click",
+            function (d) {
+                sortByExpectedValue();
                 rowTransition();
             });
     }
