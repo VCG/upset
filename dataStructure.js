@@ -2,6 +2,11 @@
  * Created by alexsb on 2/4/14.
  */
 
+var SET = "SET_TYPE";
+var SUBSET = "SUBSET_TYPE";
+var GROUP ="GROUP_TYPE";
+var AGGREGATE = "AGGREGATE_TYPE";
+
 /** The input datasets */
 var sets = [];
 /** The ordered and grouped subsets */
@@ -34,9 +39,9 @@ var sizeGroups = [];
  */
 function BaseSet(setID, setName, combinedSets, setData) {
     /** The binary representation of the set */
-    this.setID = setID;
+    this.id = setID;
     /** The name of the set */
-    this.setName = setName;
+    this.name = setName;
     /** An array of all the sets that are combined in this set. The array contains a 1 if a set at the corresponding position in the sets array is combined. */
     this.combinedSets = combinedSets;
 
@@ -69,6 +74,7 @@ function BaseSet(setID, setName, combinedSets, setData) {
 }
 
 function Set(setID, setName, combinedSets, itemList) {
+    this.type = SET;
     BaseSet.call(this, setID, setName, combinedSets, itemList);
     /** Array of length depth where each element that is in this subset is set to 1, others are set to 0 */
     this.itemList = itemList;
@@ -78,22 +84,29 @@ Set.prototype = BaseSet;
 Set.prototype.constructor = BaseSet;
 
 function SubSet(setID, setName, combinedSets, itemList, expectedValue) {
+    this.type = SUBSET;
     BaseSet.call(this, setID, setName, combinedSets, itemList);
     this.expectedValue = expectedValue;
     this.expectedValueDeviation = (this.dataRatio - this.expectedValue) * depth;
 
-    //   console.log(setName + " DR: " + this.dataRatio + " EV: " + this.expectedValue + " EVD: " + this.expectedValueDeviation);
+    //   console.log(name + " DR: " + this.dataRatio + " EV: " + this.expectedValue + " EVD: " + this.expectedValueDeviation);
 
 }
 
 SubSet.prototype.toString = function () {
-    return "Subset + " + this.setID + " Nr Combined Sets: " + this.nrCombinedSets;
+    return "Subset + " + this.id + " Nr Combined Sets: " + this.nrCombinedSets;
 }
 
-function Group() {
+function Group(groupID, groupName) {
+    this.type = GROUP;
+    this.name = groupName;
+    this.id = groupID;
     this.visibleSets = [];
     this.hiddenSets = [];
     this.subSets = [];
+
+    this.expectedValue = 10;
+    this.expectedValueDeviation = -2;
 
     this.addSubSet = function (subSet) {
         this.subSets.push(subSet);
@@ -122,13 +135,13 @@ function makeSubSet(setMask) {
     var isEmpty = true;
     var expectedValue = 1;
     var notExpectedValue = 1;
-    var name = ""
+    var name = "";
     for (var setIndex = sets.length - 1; setIndex >= 0; setIndex--) {
         var data = sets[setIndex].itemList;
         if ((setMask & bitMask) == 1) {
             combinedSets[setIndex] = 1;
             expectedValue *= sets[setIndex].dataRatio;
-            name += sets[setIndex].setName + " ";
+            name += sets[setIndex].name + " ";
         }
         else {
             notExpectedValue *= (1 - sets[setIndex].dataRatio);
@@ -159,7 +172,7 @@ function makeSubSet(setMask) {
 function groupBySetSize() {
     sizeGroups = [];
     for (var i = 0; i < sets.length; i++) {
-        sizeGroups.push(new Group());
+        sizeGroups.push(new Group("SetSizeG_" + i, i + "-Set Subsets"));
     }
     subSets.forEach(function (subSet) {
         var group = sizeGroups[subSet.nrCombinedSets - 1]
@@ -186,7 +199,7 @@ function sortOnSetItem(set) {
             return a.nrCombinedSets - b.nrCombinedSets;
         }
         // if the number of combined sets is identical, we can pick the largest one
-        return b.setID - a.setID;
+        return b.id - a.id;
     });
 }
 
@@ -200,7 +213,7 @@ function sortByCombinationSize() {
             return a.nrCombinedSets - b.nrCombinedSets;
         }
         // if the number of combined sets is identical, we can pick the largest one
-        return b.setID - a.setID;
+        return b.id - a.id;
     });
 }
 
@@ -214,7 +227,7 @@ function sortBySubsetSize() {
 }
 
 function sortByExpectedValue() {
-    renderRows.length =0;
+    renderRows.length = 0;
     renderRows = subSets.slice(0);
 // sort by size of set overlap
     renderRows.sort(function (a, b) {
@@ -228,7 +241,7 @@ function sortBySetSizeGroups() {
 
     for (var i = 0; i < sizeGroups.length; i++) {
         var group = sizeGroups[i];
-        //subSets.push(group);
+        renderRows.push(group);
         for (var j = 0; j < group.visibleSets.length; j++) {
             renderRows.push(group.visibleSets[j]);
         }

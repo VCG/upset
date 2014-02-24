@@ -162,17 +162,17 @@ function plot() {
         var setRowScale = d3.scale.ordinal().rangeRoundBands([ 0, setMatrixHeight - majorPadding ], 0);
 
         setRowScale.domain(sets.map(function (d) {
-            return d.setID;
+            return d.id;
         }));
 
         var setGrp = svg.selectAll('.setRow')
             .data(sets, function (d) {
-                return d.setID;
+                return d.id;
             })
             .enter()
             .append('g')
             .attr({transform: function (d, i) {
-                return 'translate(0, ' + setRowScale(d.setID) + ')';
+                return 'translate(0, ' + setRowScale(d.id) + ')';
                 //  return 'translate(0, ' + ( cellDistance * (i)) + ')';
             },
                 class: 'setRow'});
@@ -223,7 +223,7 @@ function plot() {
         var subSetSizeHeight = setMatrixHeight - majorPadding;
 
         setRowScale.domain(sets.map(function (d) {
-            return d.setID;
+            return d.id;
         }));
 
         var setGrp = svg.selectAll('.setRow')
@@ -231,7 +231,7 @@ function plot() {
             .enter()
             .append('g')
             .attr({transform: function (d, i) {
-                return 'translate(' + setRowScale(d.setID) + ', 0)';
+                return 'translate(' + setRowScale(d.id) + ', 0)';
                 //  return 'translate(0, ' + ( cellDistance * (i)) + ')';
             },
                 class: 'setRow'});
@@ -277,11 +277,11 @@ function plot() {
 
     setLabels.append("text").text(
         function (d) {
-            return d.setName.substring(0, truncateAfter);
+            return d.name.substring(0, truncateAfter);
         }).attr({
             class: "setLabel",
             id: function (d) {
-                return d.setName.substring(0, truncateAfter);
+                return d.name.substring(0, truncateAfter);
             },
             transform: function (d, i) {
                 return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (setMatrixHeight + textHeight - textSpacing) + ')rotate(270)';
@@ -292,10 +292,10 @@ function plot() {
     var rowScale = d3.scale.ordinal().rangeRoundBands([ setMatrixHeight + textHeight, h ], 0);
 
     rowScale.domain(renderRows.map(function (d) {
-        return d.setID;
+        return d.id;
     }));
 
-    // ------------------- set size bars --------------------
+    // ------------------- set size bars header --------------------
 
     svg.append('rect')
         .attr({
@@ -325,7 +325,7 @@ function plot() {
         })
         .call(subSetSizeAxis);
 
-    // lables for the expected value
+    // ------------ expected value header -----------------------
 
     svg.append('rect')
         .attr({
@@ -367,44 +367,55 @@ function plot() {
     function plotSubSets() {
 
         // ------------------- the rows -----------------------
-
         var subSets = svg.selectAll('.row')
             .data(renderRows, function (d) {
-                return d.setID;
+                return d.id;
             });
+
         var grp = subSets
             .enter()
             .append('g')
             .attr({
                 //transform: function (d, i) {
-                // return 'translate(0, ' + rowScale(d.setID) + ')';
+                // return 'translate(0, ' + rowScale(d.id) + ')';
 //            return 'translate(0, ' + (textHeight + cellDistance * (i)) + ')';
                 //},
-                class: 'row'});
-
-        // ------------ the combination matrix ----------------------
+                class: function (d) {
+                    return 'row ' + d.type;
+                }
+            });
 
         subSets.exit().remove();
 
-        //     var rows = svg.selectAll(".row");
+        //  var rows = svg.selectAll(".row");
         subSets.transition().duration(function (d, i) {
                 return 2000;
             }
         ).attr({transform: function (d) {
-                return 'translate(0, ' + rowScale(d.setID) + ')';
+                return 'translate(0, ' + rowScale(d.id) + ')';
+
+            }, class: function (d) {
+                console.log(d.type);
+                return 'row ' + d.type;
             }});
+
+        // ------------ the combination matrix ----------------------
 
         var grays = [ "#f0f0f0", "#636363"];
         // scale for the set participation
         var setScale = d3.scale.ordinal().domain([0, 1]).range(grays);
 
-        grp.selectAll('.row')
-            .append('g')
-            .attr({class: 'combination'
-            })
+        console.log(subSets.filter(function (d) {
+            return true;
+        }));
 
-        grp.selectAll('.combination').data(function (d) {
-            return d.combinedSets
+        subSets.selectAll('.row').append('g')
+            .attr({class: 'combination'
+            });
+        console.log(subSets.selectAll('.SUBSET_TYPE'));
+        subSets.selectAll('.combination').data(function (d) {
+            //     console.log(d);
+            return d.combinedSets;
         }).enter()
             .append('rect')
             .on("click", function (d) {
@@ -417,6 +428,7 @@ function plot() {
                 height: cellSize})
             .style("fill", function (d) {
                 return setScale(d);
+
             });
 
         // ------------------------ set size bars -------------------
@@ -445,7 +457,7 @@ function plot() {
                 },
                 transform: function (d) {
                     var start = expectedValueScale(d3.min([0, d.expectedValueDeviation]));
-                    //  console.log(d.setName + " expected: " + d.expectedValueDeviation + " start: " + start);
+                    //  console.log(d.name + " expected: " + d.expectedValueDeviation + " start: " + start);
                     start += xStartExpectedValues;
                     return "translate(" + start + ", 0)";
                 },
@@ -464,10 +476,10 @@ function plot() {
         // TODO continue here
 
         renderRows.forEach(function (d) {
-            console.log(d.setID + " " + d.setName);
+            console.log(d.id + " " + d.name);
         })
         rowScale.domain(renderRows.map(function (d) {
-            return d.setID;
+            return d.id;
         }));
         plotSubSets();
 //        var selection = svg.selectAll(".row").data(renderRows);
@@ -482,7 +494,7 @@ function plot() {
 //                return 2000;
 //            }
 //        ).attr({transform: function (d) {
-//                return 'translate(0, ' + rowScale(d.setID) + ')';
+//                return 'translate(0, ' + rowScale(d.id) + ')';
 //            }});
 
     }
