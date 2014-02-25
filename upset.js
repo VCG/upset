@@ -277,11 +277,11 @@ function plot() {
 
     setLabels.append("text").text(
         function (d) {
-            return d.name.substring(0, truncateAfter);
+            return d.rowName.substring(0, truncateAfter);
         }).attr({
             class: "setLabel",
             id: function (d) {
-                return d.name.substring(0, truncateAfter);
+                return d.rowName.substring(0, truncateAfter);
             },
             transform: function (d, i) {
                 return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (setMatrixHeight + textHeight - textSpacing) + ')rotate(270)';
@@ -490,7 +490,7 @@ function plot() {
         // TODO continue here
 
         renderRows.forEach(function (d) {
-            console.log(d.id + " " + d.name);
+            console.log(d.id + " " + d.rowName);
         })
         rowScale.domain(renderRows.map(function (d) {
             return d.id;
