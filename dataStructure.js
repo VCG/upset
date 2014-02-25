@@ -105,6 +105,7 @@ function Group(groupID, groupName) {
     this.hiddenSets = [];
     this.subSets = [];
 
+    this.setSize =2;
     this.expectedValue = 10;
     this.expectedValueDeviation = -2;
 

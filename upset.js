@@ -409,13 +409,26 @@ function plot() {
             return true;
         }));
 
-        subSets.selectAll('.row').append('g')
+
+        /**=================  PROOF READING FROM HERE !!! hs*/
+
+        subSets.filter(function(d){return d.type=="SUBSET_TYPE"}).selectAll("g").data(function(d){
+                console.log(d);
+                return [d.combinedSets];
+            }
+        ).enter()
+            .append('g')//.each(function(d){console.log(d)})
             .attr({class: 'combination'
-            });
-        console.log(subSets.selectAll('.SUBSET_TYPE'));
-        subSets.selectAll('.combination').data(function (d) {
+            })
+    .each(function(d){
+                console.log(d);});
+
+
+//        svg.selectAll('.combination').each(function(d){ console.log(d);});
+        svg.selectAll('.combination').selectAll("rect").data(function (d) {
             //     console.log(d);
-            return d.combinedSets;
+            console.log(d);
+            return d;
         }).enter()
             .append('rect')
             .on("click", function (d) {
@@ -430,6 +443,7 @@ function plot() {
                 return setScale(d);
 
             });
+        /**  PROOF READING UNTIL HERE !!! hs ====================*/
 
         // ------------------------ set size bars -------------------
 
