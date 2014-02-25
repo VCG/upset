@@ -88,13 +88,11 @@ function dataLoad(data) {
         makeSubSet(i)
     }
 
-    renderRows = subSets.slice(0);
     groupBySetSize();
     // sort by size of set overlap
-    renderRows.sort(function (a, b) {
-        return b.setSize - a.setSize;
-    });
+    //sortByCombinationSize();
 
+    sortBySetSizeGroups();
     plot();
 
 }
@@ -277,11 +275,11 @@ function plot() {
 
     setLabels.append("text").text(
         function (d) {
-            return d.name.substring(0, truncateAfter);
+            return d.rowName.substring(0, truncateAfter);
         }).attr({
             class: "setLabel",
             id: function (d) {
-                return d.name.substring(0, truncateAfter);
+                return d.rowName.substring(0, truncateAfter);
             },
             transform: function (d, i) {
                 return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (setMatrixHeight + textHeight - textSpacing) + ')rotate(270)';
@@ -405,16 +403,13 @@ function plot() {
         // scale for the set participation
         var setScale = d3.scale.ordinal().domain([0, 1]).range(grays);
 
-        console.log(subSets.filter(function (d) {
-            return true;
-        }));
+//        subSets.selectAll('.row').append('g')
+//            .attr({class: 'combination'
+//            });
 
-        subSets.selectAll('.row').append('g')
-            .attr({class: 'combination'
-            });
-        console.log(subSets.selectAll('.SUBSET_TYPE'));
-        subSets.selectAll('.combination').data(function (d) {
-            //     console.log(d);
+        //  console.log(svg.selectAll('.SUBSET_TYPE'));
+        subSets.selectAll('.SUBSET_TYPE').data(function (d) {
+            console.log(d);
             return d.combinedSets;
         }).enter()
             .append('rect')
@@ -457,7 +452,7 @@ function plot() {
                 },
                 transform: function (d) {
                     var start = expectedValueScale(d3.min([0, d.expectedValueDeviation]));
-                    //  console.log(d.name + " expected: " + d.expectedValueDeviation + " start: " + start);
+                    //  console.log(d.rowName + " expected: " + d.expectedValueDeviation + " start: " + start);
                     start += xStartExpectedValues;
                     return "translate(" + start + ", 0)";
                 },
@@ -476,7 +471,7 @@ function plot() {
         // TODO continue here
 
         renderRows.forEach(function (d) {
-            console.log(d.id + " " + d.name);
+            console.log(d.id + " " + d.rowName);
         })
         rowScale.domain(renderRows.map(function (d) {
             return d.id;

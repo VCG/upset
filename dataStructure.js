@@ -40,8 +40,8 @@ var sizeGroups = [];
 function BaseSet(setID, setName, combinedSets, setData) {
     /** The binary representation of the set */
     this.id = setID;
-    /** The name of the set */
-    this.name = setName;
+    /** The rowName of the set */
+    this.rowName = setName;
     /** An array of all the sets that are combined in this set. The array contains a 1 if a set at the corresponding position in the sets array is combined. */
     this.combinedSets = combinedSets;
 
@@ -89,7 +89,7 @@ function SubSet(setID, setName, combinedSets, itemList, expectedValue) {
     this.expectedValue = expectedValue;
     this.expectedValueDeviation = (this.dataRatio - this.expectedValue) * depth;
 
-    //   console.log(name + " DR: " + this.dataRatio + " EV: " + this.expectedValue + " EVD: " + this.expectedValueDeviation);
+    //   console.log(rowName + " DR: " + this.dataRatio + " EV: " + this.expectedValue + " EVD: " + this.expectedValueDeviation);
 
 }
 
@@ -99,7 +99,7 @@ SubSet.prototype.toString = function () {
 
 function Group(groupID, groupName) {
     this.type = GROUP;
-    this.name = groupName;
+    this.rowName = groupName;
     this.id = groupID;
     this.visibleSets = [];
     this.hiddenSets = [];
@@ -141,7 +141,7 @@ function makeSubSet(setMask) {
         if ((setMask & bitMask) == 1) {
             combinedSets[setIndex] = 1;
             expectedValue *= sets[setIndex].dataRatio;
-            name += sets[setIndex].name + " ";
+            name += sets[setIndex].rowName + " ";
         }
         else {
             notExpectedValue *= (1 - sets[setIndex].dataRatio);
