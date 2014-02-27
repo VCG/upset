@@ -2,10 +2,12 @@
  * Created by alexsb on 2/4/14.
  */
 
-var SET = "SET_TYPE";
-var SUBSET = "SUBSET_TYPE";
-var GROUP ="GROUP_TYPE";
-var AGGREGATE = "AGGREGATE_TYPE";
+ROW_TYPE =
+{
+    SET: "SET_TYPE",
+    SUBSET: "SUBSET_TYPE",
+    GROUP: "GROUP_TYPE",
+    AGGREGATE: "AGGREGATE_TYPE"}
 
 /** The input datasets */
 var sets = [];
@@ -74,7 +76,7 @@ function BaseSet(setID, setName, combinedSets, setData) {
 }
 
 function Set(setID, setName, combinedSets, itemList) {
-    this.type = SET;
+    this.type = ROW_TYPE.SET;
     BaseSet.call(this, setID, setName, combinedSets, itemList);
     /** Array of length depth where each element that is in this subset is set to 1, others are set to 0 */
     this.itemList = itemList;
@@ -84,9 +86,11 @@ Set.prototype = BaseSet;
 Set.prototype.constructor = BaseSet;
 
 function SubSet(setID, setName, combinedSets, itemList, expectedValue) {
-    this.type = SUBSET;
+    this.type = ROW_TYPE.SUBSET;
     BaseSet.call(this, setID, setName, combinedSets, itemList);
     this.expectedValue = expectedValue;
+
+    // this.expectedValueDeviation = this.setSize - this.expectedValue;
     this.expectedValueDeviation = (this.dataRatio - this.expectedValue) * depth;
 
     //   console.log(rowName + " DR: " + this.dataRatio + " EV: " + this.expectedValue + " EVD: " + this.expectedValueDeviation);
@@ -98,26 +102,30 @@ SubSet.prototype.toString = function () {
 }
 
 function Group(groupID, groupName) {
-    this.type = GROUP;
+    this.type = ROW_TYPE.GROUP;
     this.rowName = groupName;
     this.id = groupID;
     this.visibleSets = [];
     this.hiddenSets = [];
     this.subSets = [];
 
-    this.setSize =2;
-    this.expectedValue = 10;
-    this.expectedValueDeviation = -2;
+    this.setSize = 0;
+    this.expectedValue = 0;
+    this.expectedValueDeviation = 0;
 
     this.addSubSet = function (subSet) {
         this.subSets.push(subSet);
         if (subSet.setSize > 0) {
-            this.visibleSets.push(subSet);
+            this.visibleSets.unshift(subSet);
 
         }
         else {
-            this.hiddenSets.push(subSet);
+            this.hiddenSets.unshift(subSet);
         }
+
+        this.setSize += subSet.setSize;
+        this.expectedValue += subSet.expectedValue;
+        this.expectedValueDeviation += subSet.expectedValueDeviation;
     }
 }
 
@@ -173,7 +181,7 @@ function makeSubSet(setMask) {
 function groupBySetSize() {
     sizeGroups = [];
     for (var i = 0; i < sets.length; i++) {
-        sizeGroups.push(new Group("SetSizeG_" + i, i + "-Set Subsets"));
+        sizeGroups.push(new Group("SetSizeG_" + (i+1), (i +1) + "-Set Subsets"));
     }
     subSets.forEach(function (subSet) {
         var group = sizeGroups[subSet.nrCombinedSets - 1]

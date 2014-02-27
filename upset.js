@@ -131,8 +131,13 @@ function plot() {
     var setSizeWidth = 700;
     var subSetSizeWidth = 300;
 
+    /** The width from the start of the set vis to the right edge */
+
+
     var xStartExpectedValues = xStartSetSizes + subSetSizeWidth + 20;
     var expectedValueWidth = 300;
+
+    var setVisWidth = expectedValueWidth + subSetSizeWidth + majorPadding + cellDistance + xStartSetSizes;
 
     var labelTopPadding = 15;
 
@@ -146,8 +151,24 @@ function plot() {
 
     var w = 1300;
     var setMatrixHeight = sets.length * setCellDistance + majorPadding;
-    var subSetMatrixHeight = combinations * cellDistance;
-    var h = subSetMatrixHeight + textHeight + setMatrixHeight;
+    var subSetMatrixHeight;
+    var h;
+
+    var rowScale;
+
+    function initRows() {
+
+        subSetMatrixHeight = renderRows.length * cellDistance;
+        h = subSetMatrixHeight + textHeight + setMatrixHeight;
+
+        rowScale = d3.scale.ordinal().rangeRoundBands([ setMatrixHeight + textHeight, h ], 0);
+
+        rowScale.domain(renderRows.map(function (d) {
+            return d.id;
+        }));
+    }
+
+    initRows();
 
     d3.select("#vis").select("svg").remove();
     var svg = d3.select("#vis").append("svg").attr("width", w)
@@ -289,11 +310,11 @@ function plot() {
 
         });
 
-    var rowScale = d3.scale.ordinal().rangeRoundBands([ setMatrixHeight + textHeight, h ], 0);
-
-    rowScale.domain(renderRows.map(function (d) {
-        return d.id;
-    }));
+//    var rowScale = d3.scale.ordinal().rangeRoundBands([ setMatrixHeight + textHeight, h ], 0);
+//
+//    rowScale.domain(renderRows.map(function (d) {
+//        return d.id;
+//    }));
 
     // ------------------- set size bars header --------------------
 
@@ -395,39 +416,31 @@ function plot() {
                 return 'translate(0, ' + rowScale(d.id) + ')';
 
             }, class: function (d) {
-                console.log(d.type);
+                //    console.log(d.type);
                 return 'row ' + d.type;
             }});
 
         // ------------ the combination matrix ----------------------
 
         var grays = [ "#f0f0f0", "#636363"];
-        // scale for the set participation
+        // scale for the set containment
         var setScale = d3.scale.ordinal().domain([0, 1]).range(grays);
 
-        console.log(subSets.filter(function (d) {
-            return true;
-        }));
-
-
-        /**=================  PROOF READING FROM HERE !!! hs*/
-
-        subSets.filter(function(d){return d.type=="SUBSET_TYPE"}).selectAll("g").data(function(d){
-                console.log(d);
+        subSets.filter(function (d) {
+            return d.type == ROW_TYPE.SUBSET;
+        }).selectAll("g").data(function (d) {
+                // binding in an array of size one
                 return [d.combinedSets];
             }
         ).enter()
-            .append('g')//.each(function(d){console.log(d)})
+            .append('g')
             .attr({class: 'combination'
-            })
-    .each(function(d){
-                console.log(d);});
+            });
+//            .each(function (d) {
+//                console.log(d);
+//            });
 
-
-//        svg.selectAll('.combination').each(function(d){ console.log(d);});
         svg.selectAll('.combination').selectAll("rect").data(function (d) {
-            //     console.log(d);
-            console.log(d);
             return d;
         }).enter()
             .append('rect')
@@ -443,7 +456,34 @@ function plot() {
                 return setScale(d);
 
             });
-        /**  PROOF READING UNTIL HERE !!! hs ====================*/
+
+        // Handling groups
+
+        var groups2 = svg.selectAll('.row').select(function (d, i) {
+            if (d.type === ROW_TYPE.GROUP)
+                return this;
+            return null;
+        })
+
+        groups2.append('rect').attr({
+            class: 'groupBackGround',
+            width: setVisWidth,
+            height: cellSize,
+            x: 0,
+            y: 0
+
+        })
+
+        //  console.log("g2: " + groups2);
+
+        groups2.append('text').text(function (d) {
+            return d.rowName;
+        })
+            .attr({class: 'groupLabel',
+                y: cellSize - 3,
+                x: 3,
+                'font-size': cellSize - 4
+            });
 
         // ------------------------ set size bars -------------------
 
@@ -454,11 +494,23 @@ function plot() {
             })
             .attr({
                 class: 'subSetSize',
-                transform: "translate(" + xStartSetSizes + ", 0)", // " + (textHeight - 5) + ")"
+
+                transform: function (d) {
+                    var y = 0;
+                    if (d.type !== ROW_TYPE.SUBSET)
+                        y = cellSize / 3 * .4;
+                    return   "translate(" + xStartSetSizes + ", " + y + ")"; // " + (textHeight - 5) + ")"
+                },
+
                 width: function (d) {
                     return subSetSizeScale(d.setSize);
                 },
-                height: cellSize
+                height: function (d) {
+                    if (d.type === ROW_TYPE.SUBSET)
+                        return cellSize;
+                    else
+                        return cellSize / 3;
+                }
             });
 
         // ----------------------- expected value bars -------------------
@@ -473,12 +525,20 @@ function plot() {
                     var start = expectedValueScale(d3.min([0, d.expectedValueDeviation]));
                     //  console.log(d.name + " expected: " + d.expectedValueDeviation + " start: " + start);
                     start += xStartExpectedValues;
-                    return "translate(" + start + ", 0)";
+                    var y = 0;
+                    if (d.type !== ROW_TYPE.SUBSET)
+                        y = cellSize / 3 * 1.7;
+                    return "translate(" + start + ", " + y + ")";
                 },
                 width: function (d) {
                     return Math.abs(expectedValueScale(d.expectedValueDeviation) - expectedValueScale(0));
                 },
-                height: cellSize
+                height: function (d) {
+                    if (d.type === ROW_TYPE.SUBSET)
+                        return cellSize;
+                    else
+                        return cellSize / 3;
+                }
             });
 
     }
@@ -487,14 +547,15 @@ function plot() {
 
     function rowTransition() {
 
-        // TODO continue here
-
-        renderRows.forEach(function (d) {
-            console.log(d.id + " " + d.rowName);
-        })
-        rowScale.domain(renderRows.map(function (d) {
-            return d.id;
-        }));
+//        rowScale = d3.scale.ordinal().rangeRoundBands([ setMatrixHeight + textHeight, h ], 0);
+//
+//        subSetMatrixHeight = renderRows.length * cellDistance;
+//        h = subSetMatrixHeight + textHeight + setMatrixHeight;
+//
+//        rowScale.domain(renderRows.map(function (d) {
+//            return d.id;
+//        }));
+        initRows();
         plotSubSets();
 //        var selection = svg.selectAll(".row").data(renderRows);
 //        selection.enter();

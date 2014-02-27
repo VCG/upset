@@ -88,11 +88,25 @@ h1{
 
 }
 
+
+.groupLabel {
+    /*dominant-baseline: central;*/
+    font:  sans-serif;
+
+    text-anchor: left;
+    cursor: s-resize;
+}
+
+
 .columnLabel {
     dominant-baseline: central;
     font: 13px sans-serif;
     text-anchor: middle;
     cursor: s-resize;
+}
+
+.groupBackGround {
+    fill: #d3d3d3;
 }
 
 .labelBackground {

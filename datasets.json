@@ -4,6 +4,10 @@
         "file": "data/test/test.csv"
     },
     {
+        "text": "Random Test Dataset",
+        "file": "data/test/rand.csv"
+    },
+    {
         "text": "Fruit Example",
         "file": "data/fruit/fruit.csv"
     },
