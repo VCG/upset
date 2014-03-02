@@ -12,6 +12,17 @@ d3.json("datasets.json", function (error, json) {
 
 function load() {
 
+    // Variables from query string
+    var queryParameters = {}, queryString = location.search.substring(1),
+        re = /([^&=]+)=([^&]*)/g, m;
+
+    // Creates a map with the query string parameters
+    while (m = re.exec(queryString)) {
+        queryParameters[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+    }
+
+    queryParameters['dataset'] = parseInt(queryParameters['dataset']) || 0;
+
     var header = d3.select("#header");
     header.append('div').html('&darr; # intersections.').attr({id: 'sortIntersect',
         class: 'myButton'})
@@ -30,8 +41,14 @@ function load() {
         .text(function (d) {
             return d.text;
         })
+        .property("selected", function(d, i) {
+          if(i==queryParameters['dataset'])
+            return true;
+          else
+            return false;
+        });
 
-    loadDataset(dataSets[0].file);
+    loadDataset(dataSets[queryParameters['dataset']].file);
 }
 
 function loadDataset(dataFile) {
@@ -105,6 +122,7 @@ function change() {
     renderRows.length = 0;
     labels.length = 0;
     loadDataset(this.options[this.selectedIndex].value);
+    history.replaceState({}, "Upset", window.location.origin+window.location.pathname+"?dataset="+this.selectedIndex);
 }
 
 function setSelectedItems(indices) {
