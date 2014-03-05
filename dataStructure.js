@@ -39,7 +39,6 @@ var sizeGroups = [];
  * @constructor
  */
 function Element(id, elementName) {
-    console.log(elementName);
     this.id = id;
     this.elementName = elementName;
     /** The indices of the data items in this set */
@@ -125,6 +124,7 @@ function Group(groupID, groupName) {
     this.subSets = [];
     /** the visible subsets */
     this.visibleSets = [];
+    this.aggregate = new Aggregate("empty" + groupID, "Empty Subsets");
     /** the hidden/aggregated subsets */
     this.hiddenSets = [];
 
@@ -140,6 +140,7 @@ function Group(groupID, groupName) {
         }
         else {
             this.hiddenSets.unshift(subSet);
+            this.aggregate.addSubSet(subSet);
         }
         this.items = this.items.concat(subSet.items);
         this.setSize += subSet.setSize;
@@ -150,6 +151,25 @@ function Group(groupID, groupName) {
 
 Group.prototype = Element;
 Group.prototype.constructor = Element;
+
+function Aggregate(aggregateID, aggregateName)
+{
+    Element.call(this, aggregateID, aggregateName);
+    this.type = ROW_TYPE.AGGREGATE;
+    this.subSets = [];
+
+    this.addSubSet = function (subSet) {
+        this.subSets.push(subSet);
+        this.items = this.items.concat(subSet.items);
+        this.setSize += subSet.setSize;
+        this.expectedValue += subSet.expectedValue;
+        this.expectedValueDeviation += subSet.expectedValueDeviation;
+    }
+}
+
+Aggregate.prototype = Element;
+Aggregate.prototype.constructor = Element;
+
 
 function makeSubSet(setMask) {
     var originalSetMask = setMask;
