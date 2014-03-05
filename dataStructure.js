@@ -94,6 +94,7 @@ function Set(setID, setName, combinedSets, itemList) {
     this.type = ROW_TYPE.SET;
     /** Array of length depth where each element that is in this subset is set to 1, others are set to 0 */
     this.itemList = itemList;
+    this.isSelected = true;
 }
 
 Set.prototype = BaseSet;

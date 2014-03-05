@@ -502,7 +502,12 @@ function plot() {
             width: setVisWidth,
             height: cellSize,
             x: 0,
-            y: 0
+            y: 0,
+            class: function(d)
+            {
+                if(d.isSelected)
+                return "#"
+            }
 
         })
 
@@ -518,6 +523,7 @@ function plot() {
                 y: cellSize - 3,
                 x: 3,
                 'font-size': cellSize - 4
+
             });
 
         // ------------------------ set size bars -------------------
