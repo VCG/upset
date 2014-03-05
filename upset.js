@@ -233,7 +233,7 @@ function plot() {
 
                     return (subLeft + subRight + setBottom + setTop );
                 },
-                class: 'connection'
+                class: 'connection diagonal'
             }
         );
 
@@ -311,8 +311,21 @@ function plot() {
         },
         width: cellSize,
         height: textHeight - 2,
-        class: "connection"
-    });
+        class: "connection vertical"
+    })
+    .on("mouseover", function(d, i) {
+      d3.selectAll(".connection, .combination rect")
+        .style("opacity", .3)
+      d3.selectAll(".connection.diagonal").filter(function(dd, ii) { return ii == i;})
+        .style("opacity", 1)
+      d3.selectAll(".combination").selectAll("rect").filter(function(dd, ii) { return ii == i; })
+        .style("opacity", 1)      
+      d3.select(this)
+        .style("opacity", 1)
+    })
+    .on("mouseout", function(d, i) {
+      d3.selectAll(".connection, .combination rect").style("opacity", 1)      
+    })
 
     setLabels.append("text").text(
         function (d) {
