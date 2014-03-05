@@ -477,13 +477,13 @@ function plot() {
 
         // Handling groups
 
-        var groups2 = svg.selectAll('.row').select(function (d, i) {
-            if (d.type === ROW_TYPE.GROUP)
+        var groups = svg.selectAll('.row').select(function (d, i) {
+            if (d.type === ROW_TYPE.GROUP || d.type === ROW_TYPE.AGGREGATE)
                 return this;
             return null;
         })
 
-        groups2.append('rect').attr({
+        groups.append('rect').attr({
             class: 'groupBackGround',
             width: setVisWidth,
             height: cellSize,
@@ -492,10 +492,13 @@ function plot() {
 
         })
 
-        //  console.log("g2: " + groups2);
+        //  console.log("g2: " + groups);
 
-        groups2.append('text').text(function (d) {
-            return d.elementName;
+        groups.append('text').text(function (d) {
+            if (d.type === ROW_TYPE.GROUP)
+                return d.elementName;
+            else if (d.type === ROW_TYPE.AGGREGATE)
+                return d.subSets.length + " empty subsets";
         })
             .attr({class: 'groupLabel',
                 y: cellSize - 3,
