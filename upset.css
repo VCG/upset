@@ -72,10 +72,6 @@ h1{
     fill: #078600;
 }
 
-.subSetSize:hover {
-    fill: orange;
-}
-
 /** The labels for the vertical set names */
 .setLabel {
     dominant-baseline: middle;

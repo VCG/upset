@@ -235,8 +235,10 @@ function plot() {
                     return (subLeft + subRight + setBottom + setTop );
                 },
                 class: 'connection diagonal'
-            }
-        );
+              }
+            )
+            .on("mouseover", mouseoverColumn)
+            .on("mouseout", mouseoutColumn)
 
         // ------------------- set size bars --------------------
 
@@ -254,7 +256,9 @@ function plot() {
                     return subSetSizeScale(d.setSize);
                 },
                 height: setCellSize//setRowScale.rangeBand()
-            });
+            })
+            .on("mouseover", mouseoverColumn)
+            .on("mouseout", mouseoutColumn)
 
     } else { // vertical rows
 
@@ -314,19 +318,8 @@ function plot() {
         height: textHeight - 2,
         class: "connection vertical"
     })
-    .on("mouseover", function(d, i) {
-      d3.selectAll(".connection, .combination rect")
-        .style("opacity", .3)
-      d3.selectAll(".connection.diagonal").filter(function(dd, ii) { return ii == i;})
-        .style("opacity", 1)
-      d3.selectAll(".combination").selectAll("rect").filter(function(dd, ii) { return ii == i; })
-        .style("opacity", 1)      
-      d3.select(this)
-        .style("opacity", 1)
-    })
-    .on("mouseout", function(d, i) {
-      d3.selectAll(".connection, .combination rect").style("opacity", 1)      
-    })
+    .on("mouseover", mouseoverColumn)
+    .on("mouseout", mouseoutColumn)
 
     setLabels.append("text").text(
         function (d) {
@@ -340,7 +333,9 @@ function plot() {
                 return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (setMatrixHeight + textHeight - textSpacing) + ')rotate(270)';
             }
 
-        });
+        })
+        .on("mouseover", mouseoverColumn)
+        .on("mouseout", mouseoutColumn)
 
 //    var rowScale = d3.scale.ordinal().rangeRoundBands([ setMatrixHeight + textHeight, h ], 0);
 //
@@ -482,12 +477,17 @@ function plot() {
             .attr('x', function (d, i) {
                 return (cellDistance) * i;
             })
-            .attr({width: cellSize,
-                height: cellSize})
+            .attr({
+                width: cellSize,
+                height: cellSize,
+                class: 'cell'
+            })
             .style("fill", function (d) {
                 return setScale(d);
 
-            });
+            })
+            .on("mouseover", mouseoverCell)
+            .on("mouseout", mouseoutCell)
 
         // Handling groups
 
@@ -546,7 +546,9 @@ function plot() {
                     else
                         return cellSize / 3;
                 }
-            });
+            })
+            .on("mouseover", mouseoverRow)
+            .on("mouseout", mouseoutRow)
 
         // ----------------------- expected value bars -------------------
 
@@ -573,7 +575,9 @@ function plot() {
                     else
                         return cellSize / 3;
                 }
-            });
+            })
+            .on("mouseover", mouseoverRow)
+            .on("mouseout", mouseoutRow)
 
     }
 
