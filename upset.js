@@ -193,6 +193,19 @@ function plot() {
     var svg = d3.select("#vis").append("svg").attr("width", w)
         .attr("height", h);
 
+    // Rows container for vertical panning
+    var gRows = svg.append("g")
+                    .attr("class", "gRows")
+                    .data([ {"x":0, "y":0} ]);
+
+    // Extra layer for vertical panning
+    svg.append("rect").attr({
+      x:0,
+      y:0,
+      width:w,
+      height:(setMatrixHeight + textHeight - 5),
+      fill: "white"
+    }); 
     //####################### SETS ##################################################
 
     var rowRientation = "horizontal"; // "vertical"
@@ -409,13 +422,25 @@ function plot() {
         })
         .call(expectedValueAxis);
 
+    // We need an invisible background to pan the subsets
+    gRows.append("rect").attr({
+      x:0,
+      y:setMatrixHeight,
+      width:w,
+      height:h,
+      fill: "white"
+    });
+
     plotSubSets();
     setUpSortSelections();
 
     function plotSubSets() {
 
         // ------------------- the rows -----------------------
-        var subSets = svg.selectAll('.row')
+
+
+
+        var subSets = gRows.selectAll('.row')
             .data(renderRows, function (d) {
                 return d.id;
             });
@@ -584,6 +609,27 @@ function plot() {
             })
             .on("mouseover", mouseoverRow)
             .on("mouseout", mouseoutRow)
+
+        function zoomed() {
+        
+          d3.select(this).attr("transform", "translate(0, " + d3.event.translate[0] + ")");
+        }
+
+        var zoom = d3.behavior.zoom()
+            .scaleExtent([1, 10])
+            .on("zoom", zoomed);
+
+      var drag = d3.behavior.drag()
+          .on("drag", function(d,i) {
+              d.x += d3.event.dx
+              d.y += d3.event.dy
+              d3.select(this).attr("transform", function(d,i){
+                  return "translate(" + [ d.x, d.y ] + ")"
+              })
+          });
+   
+      d3.select(".gRows").call(zoom);
+
 
     }
 
