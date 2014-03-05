@@ -42,6 +42,13 @@ function Element(id, elementName) {
     console.log(elementName);
     this.id = id;
     this.elementName = elementName;
+    /** The indices of the data items in this set */
+    this.items = [];
+    /** The number of elements in this (sub)set */
+    this.setSize = 0;
+    /** The ratio of elements that are contained in this set */
+    this.dataRatio = 0.0;
+
 }
 
 /**
@@ -63,14 +70,6 @@ function BaseSet(setID, setName, combinedSets, setData) {
     /** The number of combined renderRows */
     this.nrCombinedSets = 0;
 
-    /** The indices of the data items in this set */
-    this.items = [];
-    /** The number of elements in this (sub)set */
-    this.setSize = 0;
-
-    /** The ratio of elements that are contained in this set */
-    this.dataRatio = 0.0;
-
     for (var i = 0; i < this.combinedSets.length; i++) {
         if (this.combinedSets[i] != 0) {
             this.nrCombinedSets++;
@@ -90,7 +89,6 @@ function BaseSet(setID, setName, combinedSets, setData) {
 
 BaseSet.prototype = Element;
 BaseSet.prototype.constructor = Element;
-
 
 function Set(setID, setName, combinedSets, itemList) {
     BaseSet.call(this, setID, setName, combinedSets, itemList);
@@ -119,7 +117,6 @@ SubSet.prototype.toString = function () {
 SubSet.prototype = Set;
 SubSet.prototype.constructor = SubSet;
 
-
 function Group(groupID, groupName) {
     Element.call(this, groupID, groupName);
     this.type = ROW_TYPE.GROUP;
@@ -131,7 +128,7 @@ function Group(groupID, groupName) {
     /** the hidden/aggregated subsets */
     this.hiddenSets = [];
 
-    this.setSize = 0;
+    //this.setSize = 0;
     this.expectedValue = 0;
     this.expectedValueDeviation = 0;
 
@@ -144,7 +141,7 @@ function Group(groupID, groupName) {
         else {
             this.hiddenSets.unshift(subSet);
         }
-
+        this.items = this.items.concat(subSet.items);
         this.setSize += subSet.setSize;
         this.expectedValue += subSet.expectedValue;
         this.expectedValueDeviation += subSet.expectedValueDeviation;
@@ -153,7 +150,6 @@ function Group(groupID, groupName) {
 
 Group.prototype = Element;
 Group.prototype.constructor = Element;
-
 
 function makeSubSet(setMask) {
     var originalSetMask = setMask;
