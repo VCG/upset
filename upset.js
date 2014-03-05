@@ -113,6 +113,7 @@ function dataLoad(data) {
     });
 
     plot();
+    plotSetSelection();
 
 }
 

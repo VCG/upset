@@ -131,3 +131,9 @@ h1{
     /*stroke-width: 1;*/
     fill: #f0f0f0;
 }
+
+/* ---------------- The set selector --------------- */
+
+#setSelect {
+  float: left;
+}
