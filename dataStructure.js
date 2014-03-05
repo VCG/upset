@@ -123,9 +123,13 @@ SubSet.prototype.constructor = SubSet;
 function Group(groupID, groupName) {
     Element.call(this, groupID, groupName);
     this.type = ROW_TYPE.GROUP;
-    this.visibleSets = [];
-    this.hiddenSets = [];
+
+    /** all subsets */
     this.subSets = [];
+    /** the visible subsets */
+    this.visibleSets = [];
+    /** the hidden/aggregated subsets */
+    this.hiddenSets = [];
 
     this.setSize = 0;
     this.expectedValue = 0;
