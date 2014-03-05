@@ -27,17 +27,30 @@ function mouseoutColumn(d, i) {
 
 function mouseoverRow(d, i) {
 
+  d3.selectAll(".row")
+    .style("opacity", .3)
+
+  d3.selectAll(".row").filter(function(dd, ii) { return ii == i;})
+    .style("opacity", 1)
+
 }
 
 function mouseoutRow(d, i) {
+
+ 	d3.selectAll(".row").style("opacity", 1)      
 
 }
 
 function mouseoverCell(d, i) {
 
+	mouseoverColumn(d, i);
+	mouseoverRow(d, d3.selectAll(".row").data().indexOf(d3.select(this).node().parentNode.parentNode.__data__))
 
 }
 
-function mouseoutRow(d, i) {
+function mouseoutCell(d, i) {
+
+	mouseoutColumn(d, i);
+	mouseoutRow(d, d3.selectAll(".row").data().indexOf(d3.select(this).node().parentNode.parentNode.__data__))
 
 }

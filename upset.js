@@ -476,12 +476,17 @@ function plot() {
             .attr('x', function (d, i) {
                 return (cellDistance) * i;
             })
-            .attr({width: cellSize,
-                height: cellSize})
+            .attr({
+                width: cellSize,
+                height: cellSize,
+                class: 'cell'
+            })
             .style("fill", function (d) {
                 return setScale(d);
 
-            });
+            })
+            .on("mouseover", mouseoverCell)
+            .on("mouseout", mouseoutCell)
 
         // Handling groups
 
@@ -540,7 +545,9 @@ function plot() {
                     else
                         return cellSize / 3;
                 }
-            });
+            })
+            .on("mouseover", mouseoverRow)
+            .on("mouseout", mouseoutRow)
 
         // ----------------------- expected value bars -------------------
 
@@ -567,7 +574,9 @@ function plot() {
                     else
                         return cellSize / 3;
                 }
-            });
+            })
+            .on("mouseover", mouseoverRow)
+            .on("mouseout", mouseoutRow)
 
     }
 
