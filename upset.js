@@ -41,11 +41,11 @@ function load() {
         .text(function (d) {
             return d.text;
         })
-        .property("selected", function(d, i) {
-          if(i==queryParameters['dataset'])
-            return true;
-          else
-            return false;
+        .property("selected", function (d, i) {
+            if (i == queryParameters['dataset'])
+                return true;
+            else
+                return false;
         });
 
     loadDataset(dataSets[queryParameters['dataset']].file);
@@ -122,7 +122,7 @@ function change() {
     renderRows.length = 0;
     labels.length = 0;
     loadDataset(this.options[this.selectedIndex].value);
-    history.replaceState({}, "Upset", window.location.origin+window.location.pathname+"?dataset="+this.selectedIndex);
+    history.replaceState({}, "Upset", window.location.origin + window.location.pathname + "?dataset=" + this.selectedIndex);
 }
 
 function setSelectedItems(indices) {
@@ -316,11 +316,11 @@ function plot() {
 
     setLabels.append("text").text(
         function (d) {
-            return d.rowName.substring(0, truncateAfter);
+            return d.elementName.substring(0, truncateAfter);
         }).attr({
             class: "setLabel",
             id: function (d) {
-                return d.rowName.substring(0, truncateAfter);
+                return d.elementName.substring(0, truncateAfter);
             },
             transform: function (d, i) {
                 return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (setMatrixHeight + textHeight - textSpacing) + ')rotate(270)';
@@ -495,7 +495,7 @@ function plot() {
         //  console.log("g2: " + groups2);
 
         groups2.append('text').text(function (d) {
-            return d.rowName;
+            return d.elementName;
         })
             .attr({class: 'groupLabel',
                 y: cellSize - 3,
@@ -541,7 +541,6 @@ function plot() {
                 },
                 transform: function (d) {
                     var start = expectedValueScale(d3.min([0, d.expectedValueDeviation]));
-                    //  console.log(d.name + " expected: " + d.expectedValueDeviation + " start: " + start);
                     start += xStartExpectedValues;
                     var y = 0;
                     if (d.type !== ROW_TYPE.SUBSET)

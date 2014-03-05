@@ -18,13 +18,13 @@ function plotSelectedItems() {
 
     itemLabels.append("text").text(
         function (d) {
-            //return d.rowName.substring(0, truncateAfter);
+            //return d.elementName.substring(0, truncateAfter);
             return( labels[d] );
         }).attr({
             class: "itemLabel",
             id: function (d) {
                 return( "itemLabel-" + d );
-                //return d.rowName.substring(0, truncateAfter);
+                //return d.elementName.substring(0, truncateAfter);
             },
             transform: function (d, i) {
                 return 'translate(' + (700 + xStartSetSizes) + ',' + (setMatrixHeight + i * ( textHeight + textSpacing) ) + ')rotate(0)';

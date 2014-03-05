@@ -7,7 +7,8 @@ ROW_TYPE =
     SET: "SET_TYPE",
     SUBSET: "SUBSET_TYPE",
     GROUP: "GROUP_TYPE",
-    AGGREGATE: "AGGREGATE_TYPE"}
+    AGGREGATE: "AGGREGATE_TYPE",
+    UNDEFINED: "UNDEFINED"}
 
 /** The input datasets */
 var sets = [];
@@ -32,7 +33,21 @@ var dataSets;
 var sizeGroups = [];
 
 /**
+ * The base element for all rows (sets, groups, subsets, aggregates)
+ * @param id
+ * @param elementName
+ * @constructor
+ */
+function Element(id, elementName) {
+    console.log(elementName);
+    this.id = id;
+    this.elementName = elementName;
+}
+
+/**
  * Base class for Sets, subsets, groups.
+ *
+ * The setID is set to Element.id and is a binary representation of the contained set
  * @param setID
  * @param setName
  * @param combinedSets
@@ -40,10 +55,8 @@ var sizeGroups = [];
  * @constructor
  */
 function BaseSet(setID, setName, combinedSets, setData) {
-    /** The binary representation of the set */
-    this.id = setID;
-    /** The rowName of the set */
-    this.rowName = setName;
+    Element.call(this, setID, setName);
+
     /** An array of all the sets that are combined in this set. The array contains a 1 if a set at the corresponding position in the sets array is combined. */
     this.combinedSets = combinedSets;
 
@@ -75,9 +88,13 @@ function BaseSet(setID, setName, combinedSets, setData) {
 
 }
 
+BaseSet.prototype = Element;
+BaseSet.prototype.constructor = Element;
+
+
 function Set(setID, setName, combinedSets, itemList) {
-    this.type = ROW_TYPE.SET;
     BaseSet.call(this, setID, setName, combinedSets, itemList);
+    this.type = ROW_TYPE.SET;
     /** Array of length depth where each element that is in this subset is set to 1, others are set to 0 */
     this.itemList = itemList;
 }
@@ -86,25 +103,26 @@ Set.prototype = BaseSet;
 Set.prototype.constructor = BaseSet;
 
 function SubSet(setID, setName, combinedSets, itemList, expectedValue) {
-    this.type = ROW_TYPE.SUBSET;
     BaseSet.call(this, setID, setName, combinedSets, itemList);
+    this.type = ROW_TYPE.SUBSET;
     this.expectedValue = expectedValue;
 
     // this.expectedValueDeviation = this.setSize - this.expectedValue;
     this.expectedValueDeviation = (this.dataRatio - this.expectedValue) * depth;
-
-    //   console.log(rowName + " DR: " + this.dataRatio + " EV: " + this.expectedValue + " EVD: " + this.expectedValueDeviation);
-
 }
 
 SubSet.prototype.toString = function () {
     return "Subset + " + this.id + " Nr Combined Sets: " + this.nrCombinedSets;
 }
 
+// Not sure how to do this properly with parameters?
+SubSet.prototype = Set;
+SubSet.prototype.constructor = SubSet;
+
+
 function Group(groupID, groupName) {
+    Element.call(this, groupID, groupName);
     this.type = ROW_TYPE.GROUP;
-    this.rowName = groupName;
-    this.id = groupID;
     this.visibleSets = [];
     this.hiddenSets = [];
     this.subSets = [];
@@ -129,9 +147,9 @@ function Group(groupID, groupName) {
     }
 }
 
-// Not sure how to do this properly with parameters?
-SubSet.prototype = Set;
-SubSet.prototype.constructor = SubSet;
+Group.prototype = Element;
+Group.prototype.constructor = Element;
+
 
 function makeSubSet(setMask) {
     var originalSetMask = setMask;
@@ -150,7 +168,7 @@ function makeSubSet(setMask) {
         if ((setMask & bitMask) == 1) {
             combinedSets[setIndex] = 1;
             expectedValue *= sets[setIndex].dataRatio;
-            name += sets[setIndex].rowName + " ";
+            name += sets[setIndex].elementName + " ";
         }
         else {
             notExpectedValue *= (1 - sets[setIndex].dataRatio);
@@ -181,7 +199,7 @@ function makeSubSet(setMask) {
 function groupBySetSize() {
     sizeGroups = [];
     for (var i = 0; i < sets.length; i++) {
-        sizeGroups.push(new Group("SetSizeG_" + (i+1), (i +1) + "-Set Subsets"));
+        sizeGroups.push(new Group("SetSizeG_" + (i + 1), (i + 1) + "-Set Subsets"));
     }
     subSets.forEach(function (subSet) {
         var group = sizeGroups[subSet.nrCombinedSets - 1]
