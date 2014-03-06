@@ -527,13 +527,7 @@ function plot() {
             width: setVisWidth,
             height: cellSize,
             x: 0,
-            y: 0,
-            class: function(d)
-            {
-                if(d.isSelected)
-                return "#"
-            }
-
+            y: 0
         })
 
         //  console.log("g2: " + groups);

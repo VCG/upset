@@ -89,7 +89,6 @@ h1 {
 .groupLabel {
     /*dominant-baseline: central;*/
     font: sans-serif;
-
     text-anchor: left;
     cursor: s-resize;
 }
