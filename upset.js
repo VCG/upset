@@ -19,7 +19,7 @@ function plot() {
     var textSpacing = 3;
 
     var majorPadding = 5;
-    var xStartSetSizes = cellDistance * sets.length + majorPadding;
+    var xStartSetSizes = cellDistance * usedSets.length + majorPadding;
     var setSizeWidth = 700;
     var subSetSizeWidth = 300;
 
@@ -42,7 +42,7 @@ function plot() {
     var setCellSize = 10;
 
     var w = 1300;
-    var setMatrixHeight = sets.length * setCellDistance + majorPadding;
+    var setMatrixHeight = usedSets.length * setCellDistance + majorPadding;
     var subSetMatrixHeight;
     var h;
 
@@ -87,12 +87,12 @@ function plot() {
 
         var setRowScale = d3.scale.ordinal().rangeRoundBands([ 0, setMatrixHeight - majorPadding ], 0);
 
-        setRowScale.domain(sets.map(function (d) {
+        setRowScale.domain(usedSets.map(function (d) {
             return d.id;
         }));
 
         var setGrp = svg.selectAll('.setRow')
-            .data(sets, function (d) {
+            .data(usedSets, function (d) {
                 return d.id;
             })
             .enter()
@@ -106,7 +106,7 @@ function plot() {
         // ------------ the connection lines ----------------------
 
         svg.selectAll('.connection')
-            .data(sets)
+            .data(usedSets)
             .enter()
             .append('polygon')
             .attr({
@@ -148,16 +148,16 @@ function plot() {
 
     } else { // vertical rows
 
-        var setRowScale = d3.scale.ordinal().rangeRoundBands([ 0, sets.length * (cellSize + 2)], 0);
+        var setRowScale = d3.scale.ordinal().rangeRoundBands([ 0, usedSets.length * (cellSize + 2)], 0);
 
         var subSetSizeHeight = setMatrixHeight - majorPadding;
 
-        setRowScale.domain(sets.map(function (d) {
+        setRowScale.domain(usedSets.map(function (d) {
             return d.id;
         }));
 
         var setGrp = svg.selectAll('.setRow')
-            .data(sets)
+            .data(usedSets)
             .enter()
             .append('g')
             .attr({transform: function (d, i) {
@@ -193,7 +193,7 @@ function plot() {
 // ------------ the set labels -------------------
 
     var setLabels = svg.selectAll(".setLabel")
-        .data(sets)
+        .data(usedSets)
         .enter();
 
     setLabels.append('rect').attr({
@@ -504,30 +504,8 @@ function plot() {
 
     function rowTransition() {
 
-//        rowScale = d3.scale.ordinal().rangeRoundBands([ setMatrixHeight + textHeight, h ], 0);
-//
-//        subSetMatrixHeight = renderRows.length * cellDistance;
-//        h = subSetMatrixHeight + textHeight + setMatrixHeight;
-//
-//        rowScale.domain(renderRows.map(function (d) {
-//            return d.id;
-//        }));
         initRows();
         plotSubSets();
-//        var selection = svg.selectAll(".row").data(renderRows);
-//        selection.enter();
-//
-//        selection.exit().remove();
-
-//
-//
-//        var rows = svg.selectAll(".row");
-//        rows.transition().duration(function (d, i) {
-//                return 2000;
-//            }
-//        ).attr({transform: function (d) {
-//                return 'translate(0, ' + rowScale(d.id) + ')';
-//            }});
 
     }
 

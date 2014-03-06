@@ -1,7 +1,7 @@
 function plotSetSelection() {
     var cellDistance = 20;
     var cellSize = 18;
-    var w = 200;
+    var w = 120;
     var headerHeight = 40;
     var setHeight = sets.length * cellDistance
     var h = setHeight + headerHeight;
@@ -31,27 +31,7 @@ function plotSetSelection() {
         },
             class: 'setRow'});
 
-//    setGrp.append('rect').attr({
-//        transform: function (d, i) {
-//            return 'translate(' + (cellDistance * i ) + ', ' + setMatrixHeight + ')';
-//        },
-//        width: cellSize,
-//        height: textHeight - 2,
-//        class: "connection vertical"
-//    })
-//        .on("mouseover", function(d, i) {
-//            d3.selectAll(".connection, .combination rect")
-//                .style("opacity", .3)
-//            d3.selectAll(".connection.diagonal").filter(function(dd, ii) { return ii == i;})
-//                .style("opacity", 1)
-//            d3.selectAll(".combination").selectAll("rect").filter(function(dd, ii) { return ii == i; })
-//                .style("opacity", 1)
-//            d3.select(this)
-//                .style("opacity", 1)
-//        })
-//        .on("mouseout", function(d, i) {
-//            d3.selectAll(".connection, .combination rect").style("opacity", 1)
-//        })
+
 
     setGrp.append("rect").attr({
         class: "setSelectBackground",
@@ -69,7 +49,9 @@ function plotSetSelection() {
 //                return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (setMatrixHeight + textHeight - textSpacing) + ')rotate(270)';
 //            }
 
-    });
+    }).on("click", setClicked);
+
+
 
     setGrp.append("text").text(
         function (d) {
@@ -88,6 +70,10 @@ function plotSetSelection() {
 //                return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (setMatrixHeight + textHeight - textSpacing) + ')rotate(270)';
 //            }
 
-        });
+        }).on("click", setClicked);
 
+    function setClicked(d) {
+        updateSetContainment(d);
+        console.log(d.elementName + d.isSelected);
+    }
 }

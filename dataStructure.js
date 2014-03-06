@@ -99,7 +99,7 @@ function Set(setID, setName, combinedSets, itemList) {
     this.type = ROW_TYPE.SET;
     /** Array of length depth where each element that is in this subset is set to 1, others are set to 0 */
     this.itemList = itemList;
-    this.isSelected = true;
+    this.isSelected = false;
 }
 
 Set.prototype = BaseSet;
@@ -185,7 +185,7 @@ Aggregate.prototype.constructor = Element;
 function makeSubSet(setMask) {
     var originalSetMask = setMask;
 
-    var combinedSets = Array.apply(null, new Array(sets.length)).map(Number.prototype.valueOf, 0);
+    var combinedSets = Array.apply(null, new Array(usedSets.length)).map(Number.prototype.valueOf, 0);
     var bitMask = 1;
 
     var combinedData = Array.apply(null, new Array(depth)).map(Number.prototype.valueOf, 1);
@@ -194,15 +194,15 @@ function makeSubSet(setMask) {
     var expectedValue = 1;
     var notExpectedValue = 1;
     var name = "";
-    for (var setIndex = sets.length - 1; setIndex >= 0; setIndex--) {
-        var data = sets[setIndex].itemList;
+    for (var setIndex = usedSets.length - 1; setIndex >= 0; setIndex--) {
+        var data = usedSets[setIndex].itemList;
         if ((setMask & bitMask) == 1) {
             combinedSets[setIndex] = 1;
-            expectedValue *= sets[setIndex].dataRatio;
-            name += sets[setIndex].elementName + " ";
+            expectedValue *= usedSets[setIndex].dataRatio;
+            name += usedSets[setIndex].elementName + " ";
         }
         else {
-            notExpectedValue *= (1 - sets[setIndex].dataRatio);
+            notExpectedValue *= (1 - usedSets[setIndex].dataRatio);
         }
         for (i = 0; i < data.length; i++) {
             if ((setMask & bitMask) == 1) {

@@ -28,10 +28,10 @@ function load() {
 
     var header = d3.select("#header");
     header.append('div').html('&darr; # intersections.').attr({id: 'sortIntersect',
-        class: 'myButton'})
+        class: 'myButton'});
 
     header.append('div').html('Group by set size.').attr({id: 'groupSetSize',
-        class: 'myButton'})
+        class: 'myButton'});
 
     var dataSelect = header.append('div').text('Choose Dataset: ');
     var select = dataSelect.append("select");
@@ -45,17 +45,21 @@ function load() {
             return d.text;
         })
         .property("selected", function (d, i) {
-            if (i == queryParameters['dataset'])
-                return true;
-            else
-                return false;
+            return (i == queryParameters['dataset'])
         });
 
     loadDataset(dataSets[queryParameters['dataset']].file);
 }
 
 function loadDataset(dataFile) {
-    d3.text(dataFile, "text/csv", dataLoad);
+    d3.text(dataFile, "text/csv", run);
+}
+
+function run(data) {
+    dataLoad(data);
+    setUpSubSets();
+    plot();
+    plotSetSelection();
 }
 
 function dataLoad(data) {
@@ -100,9 +104,16 @@ function dataLoad(data) {
         var set = new Set(setID, setName, combinedSets, rawSets[i]);
         setID = setID << 1;
         sets.push(set);
+        if (i < nrDefaultSets) {
+            set.isSelected = true;
+            usedSets.push(set);
+        }
     }
+}
 
-    combinations = Math.pow(2, sets.length) - 1;
+function setUpSubSets() {
+
+    combinations = Math.pow(2, usedSets.length) - 1;
 
     for (var i = 1; i <= combinations; i++) {
         makeSubSet(i)
@@ -115,16 +126,43 @@ function dataLoad(data) {
         return b.setSize - a.setSize;
     });
 
-    plot();
-    plotSetSelection();
-
 }
 
 function change() {
     sets.length = 0;
     subSets.length = 0;
+    usedSets.length = 0;
     renderRows.length = 0;
     labels.length = 0;
     loadDataset(this.options[this.selectedIndex].value);
     history.replaceState({}, "Upset", window.location.origin + window.location.pathname + "?dataset=" + this.selectedIndex);
+}
+
+function updateSetContainment(set) {
+    if (!set.isSelected) {
+        set.isSelected = true;
+        usedSets.push(set);
+    }
+    else {
+        set.isSelected = false;
+
+        var index = usedSets.indexOf(set);
+        if (index > -1) {
+            usedSets.splice(index, 1);
+        }
+    }
+    subSets.length = 0;
+    renderRows.length = 0;
+    setUpSubSets();
+    plot();
+    plotSetSelection();
+
+}
+
+function addSet(set) {
+
+}
+
+function removeSet(set) {
+    console.log("Not implemented");
 }
