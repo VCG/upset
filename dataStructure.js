@@ -12,6 +12,8 @@ ROW_TYPE =
 
 /** The input datasets */
 var sets = [];
+/** The sets currently in use */
+var usedSets = [];
 /** The ordered and grouped subsets */
 var renderRows = [];
 /** The dynamically created subSets */
@@ -31,6 +33,9 @@ var dataSets;
 
 /** Groups of subsets driven by group size */
 var sizeGroups = [];
+
+/** How many sets do we want to see by default */
+var nrDefaultSets = 3;
 
 /**
  * The base element for all rows (sets, groups, subsets, aggregates)
