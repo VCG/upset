@@ -188,8 +188,10 @@ function parseDataSet(data,dataSetDescription) {
                 });
             });
 
+            console.log( rows );
+
             // iterate over columns defined by this set definition block
-            for (var r = 1; r < rows.length; r++) {
+            for (var r = 0; r < rows.length; r++) {
                 labels.push(rows[r][getIdColumn(dataSetDescription)]);
                 for ( var s = 0; s < setDefinitionBlockLength; ++s ) {
                     rawSets[processedSetsCount+s].push(rows[r][setDefinitionBlock.start+s]);
