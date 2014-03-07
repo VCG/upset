@@ -4,14 +4,25 @@ function plotSelectedItems() {
     
     area.html( "" );
 
-    area.append( '<table>' );
-    area.append( '<thead><tr><th>#</th><th>Id</th><th>Name</th></tr></thead>' )
-    area.append( '<tbody>' );
+    var s = '<table><thead><tr><th>#</th><th>Id</th>';
 
-    for ( var i = 0; i < selectedItems.length; ++i ) {
-        area.append( '<tr><td><span class="item-index">' + (i+1) + '</span></td><td><span class="item-id">' + selectedItems[i] + '</span></td><td><span class="item-label" id="' + ( 'item-' + i ) + '">' + labels[selectedItems[i]] + '</span></td></tr>' )
+    for ( var a = 0; a < attributes.length; ++a ) {
+        s += '<th>' + attributes[a].name + '</th>';
     }
 
-    area.append( '</tbody>' );
-    area.append( "</table>" );
+    area.append( '</tr></thead><tbody>' );
+
+    for ( var i = 0; i < selectedItems.length; ++i ) {
+        s +=  '<tr id="' + ( 'item-' + i ) + '"><td><span class="item-index">' + (i+1) + '</span></td><td><span class="item-id">' + selectedItems[i] + '</span></td>';
+
+        for ( var a = 0; a < attributes.length; ++a ) {
+            s += '<td><span class="item-label">' + attributes[a].values[selectedItems[i]] + '</span></td>';
+        }
+
+        s += '</tr>';
+    }
+
+    s += '</tbody></table>';
+
+    area.append( s );
 }
