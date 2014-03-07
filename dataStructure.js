@@ -20,6 +20,8 @@ var renderRows = [];
 var subSets = [];
 /** The labels of the records */
 var labels = [];
+/** meta data attributes of the records/items */
+var attributes = [];
 /** The number of combinations that are currently active */
 var combinations = 0;
 /** The depth of the dataset, i.e., how many records it contains */

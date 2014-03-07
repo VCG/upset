@@ -145,21 +145,18 @@ function getIdColumn(dataSetDescription) {
 function parseDataSet(data,dataSetDescription) {
 
     var dsv = d3.dsv( dataSetDescription.separator, 'text/plain');
-    var rows = dsv.parseRows(data).map( function (row) {
-        return row.map( function (value) {
-            var intValue = parseInt(value, 10)
-            if (isNaN(intValue))
-                return value;
-            return intValue;
-        });
-    });
 
     // the raw set arrays
     var rawSets = [];
     var setNames = [];
 
+    var file = dsv.parseRows(data);
+
     // the names of the sets are in the columns
-    var header = rows[dataSetDescription.header];
+    var header = file[dataSetDescription.header];
+
+    // remove header
+    file.splice(dataSetDescription.header, 1);
 
     // load set assignments
     var processedSetsCount = 0;
@@ -173,6 +170,23 @@ function parseDataSet(data,dataSetDescription) {
             for ( var setCount = 0; setCount < setDefinitionBlockLength; ++setCount ) {
                 rawSets.push(new Array());
             }        
+
+            var rows = file.map( function (row, rowIndex) {
+                return row.map( function (value, columnIndex) {
+
+                    if ( columnIndex >= setDefinitionBlock.start && columnIndex <= setDefinitionBlock.end ) {
+                        var intValue = parseInt(value, 10);
+                        
+                        if ( isNaN(intValue) ) {                            
+                            console.error( 'Unable to convert "' + value + '" to integer (row ' + rowIndex + ', column ' + columnIndex + ')' );
+                        }
+
+                        return intValue;
+                    }
+
+                    return null;
+                });
+            });
 
             // iterate over columns defined by this set definition block
             for (var r = 1; r < rows.length; r++) {
@@ -193,7 +207,30 @@ function parseDataSet(data,dataSetDescription) {
         }
     }
 
-    console.log( rawSets);
+    // initialize attribute data structure
+    attributes.length = 0;
+    for ( var i = 0; i < dataSetDescription.meta.length; ++i ) {
+        var metaDefinition = dataSetDescription.meta[i];
+
+        attributes.push( { name: metaDefinition.name || header[metaDefinition.index], type: metaDefinition.type, values: [] } );
+    }    
+
+    // load meta data    
+    for ( var i = 0; i < dataSetDescription.meta.length; ++i ) {
+        var metaDefinition = dataSetDescription.meta[i];
+
+        if ( metaDefinition.type === 'id' ) {
+            labels = file.map( function (row, rowIndex) {
+                return row[metaDefinition.index];
+            });            
+        }
+
+        attributes[i].values = file.map( function (row, rowIndex) {
+                return row[metaDefinition.index];
+            });            
+    }
+
+    console.log( attributes );
 
     depth = labels.length;
 
