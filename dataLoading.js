@@ -177,7 +177,7 @@ function parseDataSet(data,dataSetDescription) {
             // iterate over columns defined by this set definition block
             for (var r = 1; r < rows.length; r++) {
                 labels.push(rows[r][getIdColumn(dataSetDescription)]);
-                for ( var s = processedSetsCount; s < processedSetsCount + setDefinitionBlockLength; ++s ) {
+                for ( var s = 0; s < setDefinitionBlockLength; ++s ) {
                     rawSets[processedSetsCount+s].push(rows[r][setDefinitionBlock.start+s]);
 
                     if ( r === 1 ) {
@@ -192,6 +192,8 @@ function parseDataSet(data,dataSetDescription) {
             console.error( 'Set definition format "' + setDefinitionBlock.format + '" not supported' );
         }
     }
+
+    console.log( rawSets);
 
     depth = labels.length;
 
