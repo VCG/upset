@@ -38,7 +38,7 @@ function plot() {
     var setCellDistance = 12;
     var setCellSize = 10;
 
-    var w = 1300;
+    var w = 850;
     var setMatrixHeight = usedSets.length * setCellDistance + majorPadding;
     var subSetMatrixHeight;
     var h;

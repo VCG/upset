@@ -11,9 +11,25 @@
 <body>
 <h1>UpSet - Quantitative Visualization of Set Intersections </h1>
 
-<div id="header"></div>
-<div id="setSelect"></div>
-<div id="vis"></div>
+<div>
+	<div id="header" style="background-color: white;"></div>
+	
+	<div style="background-color: white; height: 100%; width: 100%;">
+
+		<div style="float: left; height: 100%; width: 1000px;">
+			<div style="float: left; height: 100%; width: auto;" id="setSelect"></div>
+			<div style="height: 100%;" id="vis"></div>
+			<div style="clear: both; height: 1px; overflow: hidden; font-size:0pt; margin-top: -1px;"></div>
+		</div>
+
+		<div style="height: 100%;">
+			<div id="item-table">
+			</div>
+		</div>
+
+	</div>
+</div>
+
 <script type="text/javascript" src="dataLoading.js" /></script>
 <script type="text/javascript" src="dataStructure.js" /></script>
 <script type="text/javascript" src="setSelection.js" /></script>

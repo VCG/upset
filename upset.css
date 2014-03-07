@@ -141,3 +141,19 @@ h1 {
 .setSelectBackground {
 
 }
+
+/* ---------------- tables --------------- */
+td {
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+tr:nth-child(even) {
+    background-color: #eee;
+}
+
+th {
+    text-align: left;
+    padding-left: 2px;
+    padding-right: 2px;    
+}
