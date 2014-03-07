@@ -11,6 +11,21 @@ ROW_TYPE =
     AGGREGATE: 'AGGREGATE_TYPE',
     UNDEFINED: 'UNDEFINED'}
 
+/** basic event bus (http://stackoverflow.com/questions/2967332/jquery-plugin-for-event-driven-architecture) */
+var EventManager = {};
+
+/** how to use:
+
+$(EventManager).bind("tabClicked", function() {
+    // do something
+});
+
+$(EventManager).trigger("tabClicked");
+
+$(EventManager).unbind("tabClicked");
+
+*/
+
 /** The input datasets */
 var sets = [];
 /** The sets currently in use */
@@ -23,6 +38,8 @@ var subSets = [];
 var labels = [];
 /** meta data attributes of the records/items */
 var attributes = [];
+/** attributes selected by the user (for item visualizations) */
+var selectedAttributes = {};
 /** The number of combinations that are currently active */
 var combinations = 0;
 /** The depth of the dataset, i.e., how many records it contains */
