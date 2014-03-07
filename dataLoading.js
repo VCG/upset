@@ -188,8 +188,6 @@ function parseDataSet(data,dataSetDescription) {
                 });
             });
 
-            console.log( rows );
-
             // iterate over columns defined by this set definition block
             for (var r = 0; r < rows.length; r++) {
                 labels.push(rows[r][getIdColumn(dataSetDescription)]);
@@ -197,7 +195,6 @@ function parseDataSet(data,dataSetDescription) {
                     rawSets[processedSetsCount+s].push(rows[r][setDefinitionBlock.start+s]);
 
                     if ( r === 1 ) {
-
                         setNames.push( header[setDefinitionBlock.start+s] );
                     }
                 }
@@ -229,11 +226,32 @@ function parseDataSet(data,dataSetDescription) {
         }
 
         attributes[i].values = file.map( function (row, rowIndex) {
-                return row[metaDefinition.index];
+                var value = row[metaDefinition.index];
+                switch ( metaDefinition.type ) {
+                    case 'integer':
+                        var intValue = parseInt(value, 10);                
+                        if ( isNaN(intValue) ) {                            
+                            console.error( 'Unable to convert "' + value + '" to integer.' );
+                            return NaN;
+                        }
+                        return intValue;
+                    case 'float':
+                        var floatValue = parseFloat(value, 10);                
+                        if ( isNaN(floatValue) ) {                            
+                            console.error( 'Unable to convert "' + value + '" to float.' );
+                            return NaN;
+                        }
+                        return floatValue;
+                    case 'id':
+                        // fall-through
+                    case 'string':
+                        // fall-through
+                    default:
+                        return value;  
+                }
+
             });            
     }
-
-    console.log( attributes );
 
     depth = labels.length;
 
