@@ -190,7 +190,10 @@ function parseDataSet(data,dataSetDescription) {
 
             // iterate over columns defined by this set definition block
             for (var r = 0; r < rows.length; r++) {
-                labels.push(rows[r][getIdColumn(dataSetDescription)]);
+                
+                // increment number of items in data set
+                ++depth;
+                
                 for ( var s = 0; s < setDefinitionBlockLength; ++s ) {
                     rawSets[processedSetsCount+s].push(rows[r][setDefinitionBlock.start+s]);
 
@@ -219,12 +222,6 @@ function parseDataSet(data,dataSetDescription) {
     for ( var i = 0; i < dataSetDescription.meta.length; ++i ) {
         var metaDefinition = dataSetDescription.meta[i];
 
-        if ( metaDefinition.type === 'id' ) {
-            labels = file.map( function (row, rowIndex) {
-                return row[metaDefinition.index];
-            });            
-        }
-
         attributes[i].values = file.map( function (row, rowIndex) {
                 var value = row[metaDefinition.index];
                 switch ( metaDefinition.type ) {
@@ -252,8 +249,6 @@ function parseDataSet(data,dataSetDescription) {
 
             });            
     }
-
-    depth = labels.length;
 
     var setID = 1;
     for (var i = 0; i < rawSets.length; i++) {
@@ -291,7 +286,7 @@ function change() {
     subSets.length = 0;
     usedSets.length = 0;
     renderRows.length = 0;
-    labels.length = 0;
+    depth = 0;
     loadDataSet(this.options[this.selectedIndex].value);
     history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + '?dataset=' + this.selectedIndex);
 }
