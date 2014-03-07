@@ -2,6 +2,7 @@
  * Created by alexsb on 2/4/14.
  */
 
+
 ROW_TYPE =
 {
     SET: 'SET_TYPE',

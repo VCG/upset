@@ -195,6 +195,7 @@ function parseDataSet(data,dataSetDescription) {
                     rawSets[processedSetsCount+s].push(rows[r][setDefinitionBlock.start+s]);
 
                     if ( r === 1 ) {
+
                         setNames.push( header[setDefinitionBlock.start+s] );
                     }
                 }

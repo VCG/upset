@@ -129,6 +129,7 @@ function plot() {
 
         // scale for the size of the subSets, also used for the sets
         var subSetSizeScale = d3.scale.linear().domain([0, d3.max(renderRows, function (d) {
+            console.log(" a " + d.setSize);
             return d.setSize;
         })]).nice().range([0, subSetSizeWidth]);
 
@@ -280,6 +281,9 @@ function plot() {
     var minDeviation = d3.min(renderRows, function (d) {
         return d.expectedValueDeviation;
     });
+    if (minDeviation > 0) {
+        minDeviation = 0;
+    }
     var maxDeviation = d3.max(renderRows, function (d) {
         return d.expectedValueDeviation;
     });
@@ -462,6 +466,7 @@ function plot() {
                     return 'translate(' + start + ', ' + y + ')';
                 },
                 width: function (d) {
+                    console.log(d.expectedValueDeviation)
                     return Math.abs(expectedValueScale(d.expectedValueDeviation) - expectedValueScale(0));
                 },
                 height: function (d) {
