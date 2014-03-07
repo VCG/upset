@@ -157,3 +157,11 @@ th {
     padding-left: 2px;
     padding-right: 2px;    
 }
+
+th.attribute-header {
+    background-color: lightgray;
+}
+
+th.attribute-header.selected {
+    background-color: yellow;
+}
