@@ -1,0 +1,14 @@
+{
+	"file": "fruit.csv",
+	"name": "Fruits of the World",
+	"header": 0,
+	"separator": ";",
+	"skip": null,
+	"meta": [
+		{ "type": "id", "index": 0, "name": "my name" },
+		{ "type": "string", "index": 6 },		
+	],
+	"sets": [
+		{ "type": "binary", "start_index": 1, "end_index": 5 }
+	]
+}
