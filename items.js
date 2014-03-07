@@ -1,33 +1,17 @@
 function plotSelectedItems() {
 
-    var majorPadding = 5;
-    var setCellDistance = 12;
-    var cellDistance = 20;
-    var textHeight = 12;
-    var textSpacing = 3;
+    var area = $( '#item-table' );
+    
+    area.html( "" );
 
-    var xStartSetSizes = cellDistance * sets.length + majorPadding;
-    var setMatrixHeight = sets.length * setCellDistance + majorPadding;
+    area.append( '<table>' );
+    area.append( '<thead><tr><th>#</th><th>Id</th><th>Name</th></tr></thead>' )
+    area.append( '<tbody>' );
 
-    var svg = d3.select('#vis').select('svg');
-    svg.selectAll('.itemLabel').remove();
+    for ( var i = 0; i < selectedItems.length; ++i ) {
+        area.append( '<tr><td><span class="item-index">' + (i+1) + '</span></td><td><span class="item-id">' + selectedItems[i] + '</span></td><td><span class="item-label" id="' + ( 'item-' + i ) + '">' + labels[selectedItems[i]] + '</span></td></tr>' )
+    }
 
-    var itemLabels = svg.selectAll('.itemLabel')
-        .data(selectedItems)
-        .enter();
-
-    itemLabels.append('text').text(
-        function (d) {
-            //return d.elementName.substring(0, truncateAfter);
-            return( labels[d] );
-        }).attr({
-            class: 'itemLabel',
-            id: function (d) {
-                return( 'itemLabel-' + d );
-                //return d.elementName.substring(0, truncateAfter);
-            },
-            transform: function (d, i) {
-                return 'translate(' + (700 + xStartSetSizes) + ',' + (setMatrixHeight + i * ( textHeight + textSpacing) ) + ')rotate(0)';
-            }
-        });
+    area.append( '</tbody>' );
+    area.append( "</table>" );
 }
