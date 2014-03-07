@@ -6,14 +6,51 @@
  * author: Romain Vuillemot - romain.vuillemot@gmail.com
  */
 
+var dataSetDescriptions;
 
-d3.json('datasets.json', function (error, json) {
-    if (error) return console.warn(error);
-    dataSets = json;
-    load()
+$.when( $.ajax( { url: 'datasets.json', dataType: 'json' } ) ).then( function( data, textStatus, jqXHR ) {
+    loadDataSetDescriptions(data);
 });
 
-function load() {
+
+function loadDataSetDescriptions(dataSetList) {
+
+    var descriptions = [];
+    var descriptionDeferreds = [];
+
+    // launch requests to load data set descriptions
+    for ( var i = 0; i < dataSetList.length; ++i ) {        
+        console.log( "Loading " + dataSetList[i] )
+
+        descriptionDeferreds.push( 
+            $.ajax( { url: dataSetList[i], dataType: 'json' } )
+        );
+    }
+
+    // when all requests have finished, process the responses
+    $.when.apply($, descriptionDeferreds).then(
+        function(){ 
+            for ( var j = 0; j < arguments.length; ++j ) {
+                var description = arguments[j][0];
+
+                // preprend data file path (based on path to description in data set list)
+                description.file = dataSetList[j].substring(0, dataSetList[j].lastIndexOf('/')) + '/' + description.file;
+
+                descriptions.push( description ); 
+            }
+
+            load(descriptions); 
+        },
+        function( object, status, error ) { 
+            console.error( 'Unable to load ' + object.responseText );
+            console.error( error.message );
+        }
+    );
+}
+
+function load(descriptions) {
+
+    dataSetDescriptions = descriptions;
 
     // Variables from query string
     var queryParameters = {}, queryString = location.search.substring(1),
@@ -27,70 +64,132 @@ function load() {
     queryParameters['dataset'] = parseInt(queryParameters['dataset']) || 0;
 
     var header = d3.select('#header');
+    
     header.append('div').html('&darr; # intersections.').attr({id: 'sortIntersect',
         class: 'myButton'});
 
     header.append('div').html('Group by set size.').attr({id: 'groupSetSize',
         class: 'myButton'});
 
-    var dataSelect = header.append('div').text('Choose Dataset: ');
+    var dataSelect = header.append('div').text('Choose Dataset');
+
     var select = dataSelect.append('select');
     select.on('change', change)
-        .selectAll('option').data(dataSets).enter().append('option')
-        .attr('value', function (d) {
-            return d.file;
+        .selectAll('option').data(dataSetDescriptions).enter().append('option')
+        .attr('value', function (d,i) {
+            return i;
         })
         .attr('id', 'dataSetSelector')
         .text(function (d) {
-            return d.text;
+            return d.name + ' ' + '(' + getNumberOfSets(d) + ' sets, ' + getNumberOfAttributes(d) + ' attributes' + ')';
         })
         .property('selected', function (d, i) {
             return (i === queryParameters['dataset'])
         });
-
-    loadDataset(dataSets[queryParameters['dataset']].file);
+        
+    loadDataSet(queryParameters['dataset']);
 }
 
-function loadDataset(dataFile) {
-    d3.text(dataFile, 'text/csv', run);
+function loadDataSet(index) {
+    processDataSet(dataSetDescriptions[index]);
 }
 
-function run(data) {
-    dataLoad(data);
+
+function processDataSet(dataSetDescription) {
+    d3.text(dataSetDescription.file, 'text/csv', function(data){
+        parseDataSet(data,dataSetDescription);
+        run();
+    });
+}
+
+function run() {
     setUpSubSets();
     plot();
     plotSetSelection();
 }
 
-function dataLoad(data) {
 
-   // clearSelectedItems();
+function getNumberOfSets(dataSetDescription) {
+    var sets = 0;
 
-    var dsv = d3.dsv(';', 'text/plain');
-    var rows = dsv.parseRows(data).map(function (row) {
-        return row.map(function (value) {
+    for ( var i = 0; i < dataSetDescription.sets.length; ++i ) {
+        var setDefinitionBlock = dataSetDescription.sets[i];
+
+        if ( setDefinitionBlock.format === 'binary') {
+            sets += setDefinitionBlock.end - setDefinitionBlock.start + 1; 
+        }
+        else {
+            console.error( 'Set definition format "' + setDefinitionBlock.format + '" not supported' );
+        }
+    }
+
+    return ( sets );
+}
+
+function getNumberOfAttributes(dataSetDescription) {
+    return ( dataSetDescription.meta.length );
+}
+
+function getIdColumn(dataSetDescription) {
+    for ( var i = 0; i < dataSetDescription.meta.length; ++i ) {
+        if ( dataSetDescription.meta[i].type === "id" ) {
+            return dataSetDescription.meta[i].index;
+        }
+    }
+
+    // id column not defined, assume 0
+    return 0;
+}
+
+
+function parseDataSet(data,dataSetDescription) {
+
+    var dsv = d3.dsv( dataSetDescription.separator, 'text/plain');
+    var rows = dsv.parseRows(data).map( function (row) {
+        return row.map( function (value) {
             var intValue = parseInt(value, 10)
             if (isNaN(intValue))
                 return value;
             return intValue;
         });
     });
+
     // the raw set arrays
     var rawSets = [];
+    var setNames = [];
+
     // the names of the sets are in the columns
-    var setNames = rows.shift();
-    // we drop the first cell - this should be empty
-    setNames.shift();
+    var header = rows[dataSetDescription.header];
 
-    // initialize the raw set arrays
-    for (var setCount = 0; setCount < setNames.length; setCount++) {
-        rawSets.push(new Array());
-    }
+    // load set assignments
+    var processedSetsCount = 0;
+    for ( var i = 0; i < dataSetDescription.sets.length; ++i ) {
+        var setDefinitionBlock = dataSetDescription.sets[i];
 
-    for (var i = 0; i < rows.length; i++) {
-        labels.push(rows[i][0]);
-        for (var setCount = 0; setCount < setNames.length; setCount++) {
-            rawSets[setCount].push(rows[i][setCount + 1]);
+        if ( setDefinitionBlock.format === 'binary') {
+            var setDefinitionBlockLength = setDefinitionBlock.end - setDefinitionBlock.start + 1; 
+
+            // initialize the raw set arrays
+            for ( var setCount = 0; setCount < setDefinitionBlockLength; ++setCount ) {
+                rawSets.push(new Array());
+            }        
+
+            // iterate over columns defined by this set definition block
+            for (var r = 1; r < rows.length; r++) {
+                labels.push(rows[r][getIdColumn(dataSetDescription)]);
+                for ( var s = processedSetsCount; s < processedSetsCount + setDefinitionBlockLength; ++s ) {
+                    rawSets[processedSetsCount+s].push(rows[r][setDefinitionBlock.start+s]);
+
+                    if ( r === 1 ) {
+                        setNames.push( header[setDefinitionBlock.start+s] );
+                    }
+                }
+            }
+
+            processedSetsCount += setDefinitionBlockLength;
+        }
+        else {
+            console.error( 'Set definition format "' + setDefinitionBlock.format + '" not supported' );
         }
     }
 
@@ -100,8 +199,7 @@ function dataLoad(data) {
     for (var i = 0; i < rawSets.length; i++) {
         var combinedSets = Array.apply(null, new Array(rawSets.length)).map(Number.prototype.valueOf, 0);
         combinedSets[i] = 1;
-        var setName = setNames[i];
-        var set = new Set(setID, setName, combinedSets, rawSets[i]);
+        var set = new Set(setID, setNames[i], combinedSets, rawSets[i]);
         setID = setID << 1;
         sets.push(set);
         if (i < nrDefaultSets) {
@@ -134,7 +232,7 @@ function change() {
     usedSets.length = 0;
     renderRows.length = 0;
     labels.length = 0;
-    loadDataset(this.options[this.selectedIndex].value);
+    loadDataSet(this.options[this.selectedIndex].value);
     history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + '?dataset=' + this.selectedIndex);
 }
 

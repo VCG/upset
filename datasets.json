@@ -1,23 +1,9 @@
 [
-    {
-        "text": "Simple Test Dataset",
-        "file": "data/test/test.csv"
-    },
-    {
-        "text": "Random Test Dataset",
-        "file": "data/test/rand.csv"
-    },
-    {
-        "text": "Fruit Example",
-        "file": "data/fruit/fruit.csv"
-    },
-    {
-        "text": "Movie Genres",
-        "file": "data/movies/movies_simplified.csv"
-    },
-    {
-        "text": "Gene Mutations in Cancer",
-        "file": "data/mutations/gbm_mutated_top5.csv"
-    }
+    "data/fruit/fruit.json",
+    "data/movies/movies_simplified.json",
+    "data/movies/movies.json",
+    "data/test/rand.json",
+    "data/test/test.json",
+    "data/mutations/mutations5.json",
+    "data/mutations/mutations20.json"
 ]
-
