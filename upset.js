@@ -129,6 +129,7 @@ function plot() {
 
         // scale for the size of the subSets, also used for the sets
         var subSetSizeScale = d3.scale.linear().domain([0, d3.max(renderRows, function (d) {
+            console.log(" a " + d.setSize);
             return d.setSize;
         })]).nice().range([0, subSetSizeWidth]);
 
