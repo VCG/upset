@@ -7,7 +7,7 @@
  */
 
 
-d3.json("datasets.json", function (error, json) {
+d3.json('datasets.json', function (error, json) {
     if (error) return console.warn(error);
     dataSets = json;
     load()
@@ -26,7 +26,7 @@ function load() {
 
     queryParameters['dataset'] = parseInt(queryParameters['dataset']) || 0;
 
-    var header = d3.select("#header");
+    var header = d3.select('#header');
     header.append('div').html('&darr; # intersections.').attr({id: 'sortIntersect',
         class: 'myButton'});
 
@@ -34,25 +34,25 @@ function load() {
         class: 'myButton'});
 
     var dataSelect = header.append('div').text('Choose Dataset: ');
-    var select = dataSelect.append("select");
-    select.on("change", change)
-        .selectAll("option").data(dataSets).enter().append("option")
-        .attr("value", function (d) {
+    var select = dataSelect.append('select');
+    select.on('change', change)
+        .selectAll('option').data(dataSets).enter().append('option')
+        .attr('value', function (d) {
             return d.file;
         })
-        .attr("id", "dataSetSelector")
+        .attr('id', 'dataSetSelector')
         .text(function (d) {
             return d.text;
         })
-        .property("selected", function (d, i) {
-            return (i == queryParameters['dataset'])
+        .property('selected', function (d, i) {
+            return (i === queryParameters['dataset'])
         });
 
     loadDataset(dataSets[queryParameters['dataset']].file);
 }
 
 function loadDataset(dataFile) {
-    d3.text(dataFile, "text/csv", run);
+    d3.text(dataFile, 'text/csv', run);
 }
 
 function run(data) {
@@ -64,9 +64,9 @@ function run(data) {
 
 function dataLoad(data) {
 
-    clearSelectedItems();
+   // clearSelectedItems();
 
-    var dsv = d3.dsv(";", "text/plain");
+    var dsv = d3.dsv(';', 'text/plain');
     var rows = dsv.parseRows(data).map(function (row) {
         return row.map(function (value) {
             var intValue = parseInt(value, 10)
@@ -135,7 +135,7 @@ function change() {
     renderRows.length = 0;
     labels.length = 0;
     loadDataset(this.options[this.selectedIndex].value);
-    history.replaceState({}, "Upset", window.location.origin + window.location.pathname + "?dataset=" + this.selectedIndex);
+    history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + '?dataset=' + this.selectedIndex);
 }
 
 function updateSetContainment(set) {
@@ -164,5 +164,5 @@ function addSet(set) {
 }
 
 function removeSet(set) {
-    console.log("Not implemented");
+    console.log('Not implemented');
 }

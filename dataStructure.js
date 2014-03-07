@@ -4,11 +4,11 @@
 
 ROW_TYPE =
 {
-    SET: "SET_TYPE",
-    SUBSET: "SUBSET_TYPE",
-    GROUP: "GROUP_TYPE",
-    AGGREGATE: "AGGREGATE_TYPE",
-    UNDEFINED: "UNDEFINED"}
+    SET: 'SET_TYPE',
+    SUBSET: 'SUBSET_TYPE',
+    GROUP: 'GROUP_TYPE',
+    AGGREGATE: 'AGGREGATE_TYPE',
+    UNDEFINED: 'UNDEFINED'}
 
 /** The input datasets */
 var sets = [];
@@ -75,13 +75,13 @@ function BaseSet(setID, setName, combinedSets, setData) {
     this.nrCombinedSets = 0;
 
     for (var i = 0; i < this.combinedSets.length; i++) {
-        if (this.combinedSets[i] != 0) {
+        if (this.combinedSets[i] !== 0) {
             this.nrCombinedSets++;
         }
     }
 
     for (var i = 0; i < setData.length; i++) {
-        if (setData[i] != 0) {
+        if (setData[i] !== 0) {
             this.items.push(i);
             this.setSize++;
         }
@@ -115,7 +115,7 @@ function SubSet(setID, setName, combinedSets, itemList, expectedValue) {
 }
 
 SubSet.prototype.toString = function () {
-    return "Subset + " + this.id + " Nr Combined Sets: " + this.nrCombinedSets;
+    return 'Subset + ' + this.id + ' Nr Combined Sets: ' + this.nrCombinedSets;
 }
 
 // Not sure how to do this properly with parameters?
@@ -130,7 +130,7 @@ function Group(groupID, groupName) {
     this.subSets = [];
     /** the visible subsets */
     this.visibleSets = [];
-    this.aggregate = new Aggregate("empty" + groupID, "Empty Subsets");
+    this.aggregate = new Aggregate('empty' + groupID, 'Empty Subsets');
     /** the hidden/aggregated subsets */
     this.hiddenSets = [];
 
@@ -158,8 +158,7 @@ function Group(groupID, groupName) {
 Group.prototype = Element;
 Group.prototype.constructor = Element;
 
-function Aggregate(aggregateID, aggregateName)
-{
+function Aggregate(aggregateID, aggregateName) {
     Element.call(this, aggregateID, aggregateName);
     this.type = ROW_TYPE.AGGREGATE;
     this.subSets = [];
@@ -169,7 +168,7 @@ function Aggregate(aggregateID, aggregateName)
     this.expectedValueDeviation = 0;
 
     this.addSubSet = function (subSet) {
-        console.log("test");
+        console.log('test');
         this.subSets.push(subSet);
         this.items = this.items.concat(subSet.items);
         this.setSize += subSet.setSize;
@@ -180,7 +179,6 @@ function Aggregate(aggregateID, aggregateName)
 
 Aggregate.prototype = Element;
 Aggregate.prototype.constructor = Element;
-
 
 function makeSubSet(setMask) {
     var originalSetMask = setMask;
@@ -193,26 +191,26 @@ function makeSubSet(setMask) {
     var isEmpty = true;
     var expectedValue = 1;
     var notExpectedValue = 1;
-    var name = "";
+    var name = '';
     for (var setIndex = usedSets.length - 1; setIndex >= 0; setIndex--) {
         var data = usedSets[setIndex].itemList;
-        if ((setMask & bitMask) == 1) {
+        if ((setMask & bitMask) === 1) {
             combinedSets[setIndex] = 1;
             expectedValue *= usedSets[setIndex].dataRatio;
-            name += usedSets[setIndex].elementName + " ";
+            name += usedSets[setIndex].elementName + ' ';
         }
         else {
             notExpectedValue *= (1 - usedSets[setIndex].dataRatio);
         }
         for (i = 0; i < data.length; i++) {
-            if ((setMask & bitMask) == 1) {
-                if (!(combinedData[i] == 1 && data[i] == 1)) {
+            if ((setMask & bitMask) === 1) {
+                if (!(combinedData[i] === 1 && data[i] === 1)) {
                     combinedData[i] = 0;
                 }
             }
             else {
                 // remove the element from the combined data if it's also in another set
-                if ((combinedData[i] == 1 && data[i] == 1)) {
+                if ((combinedData[i] === 1 && data[i] === 1)) {
                     combinedData[i] = 0;
                 }
             }

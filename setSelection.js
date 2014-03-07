@@ -8,11 +8,11 @@ function plotSetSelection() {
 
     var truncateAfter = 25;
 
-    d3.select("#setSelect").select("svg").remove();
-    var svg = d3.select("#setSelect").append("svg").attr("width", w)
-        .attr("height", h);
+    d3.select('#setSelect').select('svg').remove();
+    var svg = d3.select('#setSelect').append('svg').attr('width', w)
+        .attr('height', h);
 
-    svg.append("text").text("Choose Sets").attr({
+    svg.append('text').text('Choose Sets').attr({
         transform: 'translate(0, 20)'
     });
 
@@ -31,17 +31,15 @@ function plotSetSelection() {
         },
             class: 'setRow'});
 
-
-
-    setGrp.append("rect").attr({
-        class: "setSelectBackground",
+    setGrp.append('rect').attr({
+        class: 'setSelectBackground',
         width: w,
         height: cellSize,
         fill: function (d) {
             if (d.isSelected)
-                return "#d3d3d3";
+                return '#d3d3d3';
             else
-                return "#ffffff";
+                return '#ffffff';
         }
 
 
@@ -49,15 +47,13 @@ function plotSetSelection() {
 //                return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (setMatrixHeight + textHeight - textSpacing) + ')rotate(270)';
 //            }
 
-    }).on("click", setClicked);
+    }).on('click', setClicked);
 
-
-
-    setGrp.append("text").text(
+    setGrp.append('text').text(
         function (d) {
             return d.elementName.substring(0, truncateAfter);
         }).attr({
-            class: "groupLabel",
+            class: 'groupLabel',
             id: function (d) {
                 return d.elementName.substring(0, truncateAfter);
             },
@@ -70,7 +66,7 @@ function plotSetSelection() {
 //                return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (setMatrixHeight + textHeight - textSpacing) + ')rotate(270)';
 //            }
 
-        }).on("click", setClicked);
+        }).on('click', setClicked);
 
     function setClicked(d) {
         updateSetContainment(d);

@@ -7,14 +7,14 @@
 function groupBySetSize() {
     sizeGroups = [];
     for (var i = 0; i < sets.length; i++) {
-        sizeGroups.push(new Group("SetSizeG_" + (i + 1), (i + 1) + "-Set Subsets"));
+        sizeGroups.push(new Group('SetSizeG_' + (i + 1), (i + 1) + '-Set Subsets'));
     }
     subSets.forEach(function (subSet) {
         var group = sizeGroups[subSet.nrCombinedSets - 1]
         if (group != null)
             group.addSubSet(subSet);
         else
-            console.log("Fail" + group + subSet.nrCombinedSets);
+            console.log('Fail' + group + subSet.nrCombinedSets);
     })
 }
 
@@ -30,7 +30,7 @@ function sortOnSetItem(set) {
             return b.combinedSets[setIndex] - a.combinedSets[setIndex];
         }
         // move all elements with viewer intersections to the top
-        if (a.nrCombinedSets != b.nrCombinedSets) {
+        if (a.nrCombinedSets !== b.nrCombinedSets) {
             return a.nrCombinedSets - b.nrCombinedSets;
         }
         // if the number of combined sets is identical, we can pick the largest one
@@ -44,7 +44,7 @@ function sortByCombinationSize() {
 
 // sort by number of combinations
     renderRows.sort(function (a, b) {
-        if (a.nrCombinedSets != b.nrCombinedSets) {
+        if (a.nrCombinedSets !== b.nrCombinedSets) {
             return a.nrCombinedSets - b.nrCombinedSets;
         }
         // if the number of combined sets is identical, we can pick the largest one

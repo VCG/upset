@@ -1,13 +1,10 @@
-
 function setSelectedItems(indices) {
     selectedItems = indices;
-
     plotSelectedItems();
 }
 
 function clearSelectedItems() {
     selectedItems.length = 0;
-
     plotSelectedItems();
 }
 
@@ -62,28 +59,30 @@ function plot() {
 
     initRows();
 
-    d3.select("#vis").select("svg").remove();
-    var svg = d3.select("#vis").append("svg").attr("width", w)
-        .attr("height", h);
+    d3.select('#vis').select('svg').remove();
+    var svg = d3.select('#vis').append('svg').attr('width', w)
+        .attr('height', h);
 
     // Rows container for vertical panning
-    var gRows = svg.append("g")
-                    .attr("class", "gRows")
-                    .data([ {"x":0, "y":0} ]);
+    var gRows = svg.append('g')
+        .attr('class', 'gRows')
+        .data([
+            {'x': 0, 'y': 0}
+        ]);
 
     // Extra layer for vertical panning
-    svg.append("rect").attr({
-      x:0,
-      y:0,
-      width:w,
-      height:(setMatrixHeight + textHeight - 5),
-      fill: "white"
-    }); 
+    svg.append('rect').attr({
+        x: 0,
+        y: 0,
+        width: w,
+        height: (setMatrixHeight + textHeight - 5),
+        fill: 'white'
+    });
     //####################### SETS ##################################################
 
-    var rowRientation = "horizontal"; // "vertical"
+    var rowRientation = 'horizontal'; // 'vertical'
 
-    if (rowRientation == "horizontal") {
+    if (rowRientation === 'horizontal') {
 
         var setRowScale = d3.scale.ordinal().rangeRoundBands([ 0, setMatrixHeight - majorPadding ], 0);
 
@@ -113,18 +112,18 @@ function plot() {
                 points: function (d, i) {
 
                     // lower edge
-                    var subLeft = ( cellDistance * i) + ", " + setMatrixHeight + " ";
-                    var subRight = (cellDistance * (i + 1) - 2) + ", " + setMatrixHeight + " ";
-                    var setTop = xStartSetSizes + ", " + (setCellDistance * i  ) + " ";
-                    var setBottom = xStartSetSizes + ", " + (setCellDistance * (i + 1) - 2) + " ";
+                    var subLeft = ( cellDistance * i) + ', ' + setMatrixHeight + ' ';
+                    var subRight = (cellDistance * (i + 1) - 2) + ', ' + setMatrixHeight + ' ';
+                    var setTop = xStartSetSizes + ', ' + (setCellDistance * i  ) + ' ';
+                    var setBottom = xStartSetSizes + ', ' + (setCellDistance * (i + 1) - 2) + ' ';
 
                     return (subLeft + subRight + setBottom + setTop );
                 },
                 class: 'connection diagonal'
-              }
-            )
-            .on("mouseover", mouseoverColumn)
-            .on("mouseout", mouseoutColumn)
+            }
+        )
+            .on('mouseover', mouseoverColumn)
+            .on('mouseout', mouseoutColumn)
 
         // ------------------- set size bars --------------------
 
@@ -137,14 +136,14 @@ function plot() {
             .append('rect')
             .attr({
                 class: 'setSize',
-                transform: "translate(" + xStartSetSizes + ", 0)", // " + (textHeight - 5) + ")"
+                transform: 'translate(' + xStartSetSizes + ', 0)', // ' + (textHeight - 5) + ')'
                 width: function (d) {
                     return subSetSizeScale(d.setSize);
                 },
                 height: setCellSize//setRowScale.rangeBand()
             })
-            .on("mouseover", mouseoverColumn)
-            .on("mouseout", mouseoutColumn)
+            .on('mouseover', mouseoverColumn)
+            .on('mouseout', mouseoutColumn)
 
     } else { // vertical rows
 
@@ -178,8 +177,8 @@ function plot() {
             .attr({
                 class: 'setSize',
                 transform: function (d) {
-                    return "translate(0, " + (subSetSizeHeight - subSetSizeScale(d.setSize)) + ")"
-                }, // " + (textHeight - 5) + ")"
+                    return 'translate(0, ' + (subSetSizeHeight - subSetSizeScale(d.setSize)) + ')'
+                }, // ' + (textHeight - 5) + ')'
                 height: function (d) {
                     return subSetSizeScale(d.setSize);
                 },
@@ -192,7 +191,7 @@ function plot() {
 
 // ------------ the set labels -------------------
 
-    var setLabels = svg.selectAll(".setLabel")
+    var setLabels = svg.selectAll('.setLabel')
         .data(usedSets)
         .enter();
 
@@ -202,16 +201,16 @@ function plot() {
         },
         width: cellSize,
         height: textHeight - 2,
-        class: "connection vertical"
+        class: 'connection vertical'
     })
-    .on("mouseover", mouseoverColumn)
-    .on("mouseout", mouseoutColumn)
+        .on('mouseover', mouseoverColumn)
+        .on('mouseout', mouseoutColumn)
 
-    setLabels.append("text").text(
+    setLabels.append('text').text(
         function (d) {
             return d.elementName.substring(0, truncateAfter);
         }).attr({
-            class: "setLabel",
+            class: 'setLabel',
             id: function (d) {
                 return d.elementName.substring(0, truncateAfter);
             },
@@ -220,8 +219,8 @@ function plot() {
             }
 
         })
-        .on("mouseover", mouseoverColumn)
-        .on("mouseout", mouseoutColumn)
+        .on('mouseover', mouseoverColumn)
+        .on('mouseout', mouseoutColumn)
 
 //    var rowScale = d3.scale.ordinal().rangeRoundBands([ setMatrixHeight + textHeight, h ], 0);
 //
@@ -251,11 +250,11 @@ function plot() {
         return d.setSize;
     })]).nice().range([0, subSetSizeWidth]);
 
-    var subSetSizeAxis = d3.svg.axis().scale(subSetSizeScale).orient("top").ticks(4);
+    var subSetSizeAxis = d3.svg.axis().scale(subSetSizeScale).orient('top').ticks(4);
 
-    svg.append("g").attr()
-        .attr({class: "axis",
-            transform: "translate(" + xStartSetSizes + "," + (setMatrixHeight + textHeight - 5) + ")"
+    svg.append('g').attr()
+        .attr({class: 'axis',
+            transform: 'translate(' + xStartSetSizes + ',' + (setMatrixHeight + textHeight - 5) + ')'
         })
         .call(subSetSizeAxis);
 
@@ -287,21 +286,21 @@ function plot() {
 
     var expectedValueScale = d3.scale.linear().domain([minDeviation, maxDeviation]).nice().range([0, expectedValueWidth]);
 
-    var expectedValueAxis = d3.svg.axis().scale(expectedValueScale).orient("top").ticks(4);
+    var expectedValueAxis = d3.svg.axis().scale(expectedValueScale).orient('top').ticks(4);
 
-    svg.append("g").attr()
-        .attr({class: "axis",
-            transform: "translate(" + xStartExpectedValues + "," + (setMatrixHeight + textHeight - 5) + ")"
+    svg.append('g').attr()
+        .attr({class: 'axis',
+            transform: 'translate(' + xStartExpectedValues + ',' + (setMatrixHeight + textHeight - 5) + ')'
         })
         .call(expectedValueAxis);
 
     // We need an invisible background to pan the subsets
-    gRows.append("rect").attr({
-      x:0,
-      y:setMatrixHeight,
-      width:w,
-      height:h,
-      fill: "white"
+    gRows.append('rect').attr({
+        x: 0,
+        y: setMatrixHeight,
+        width: w,
+        height: h,
+        fill: 'white'
     });
 
     plotSubSets();
@@ -310,8 +309,6 @@ function plot() {
     function plotSubSets() {
 
         // ------------------- the rows -----------------------
-
-
 
         var subSets = gRows.selectAll('.row')
             .data(renderRows, function (d) {
@@ -333,7 +330,7 @@ function plot() {
 
         subSets.exit().remove();
 
-        //  var rows = svg.selectAll(".row");
+        //  var rows = svg.selectAll('.row');
         subSets.transition().duration(function (d, i) {
                 return 2000;
             }
@@ -347,13 +344,13 @@ function plot() {
 
         // ------------ the combination matrix ----------------------
 
-        var grays = [ "#f0f0f0", "#636363"];
+        var grays = [ '#f0f0f0', '#636363'];
         // scale for the set containment
         var setScale = d3.scale.ordinal().domain([0, 1]).range(grays);
 
         subSets.filter(function (d) {
-            return d.type == ROW_TYPE.SUBSET;
-        }).selectAll("g").data(function (d) {
+            return d.type === ROW_TYPE.SUBSET;
+        }).selectAll('g').data(function (d) {
                 // binding in an array of size one
                 return [d.combinedSets];
             }
@@ -365,11 +362,11 @@ function plot() {
 //                console.log(d);
 //            });
 
-        svg.selectAll('.combination').selectAll("rect").data(function (d) {
+        svg.selectAll('.combination').selectAll('rect').data(function (d) {
             return d;
         }).enter()
             .append('rect')
-            .on("click", function (d) {
+            .on('click', function (d) {
                 // click event for cells
             })
             .attr('x', function (d, i) {
@@ -380,12 +377,12 @@ function plot() {
                 height: cellSize,
                 class: 'cell'
             })
-            .style("fill", function (d) {
+            .style('fill', function (d) {
                 return setScale(d);
 
             })
-            .on("mouseover", mouseoverCell)
-            .on("mouseout", mouseoutCell)
+            .on('mouseover', mouseoverCell)
+            .on('mouseout', mouseoutCell)
 
         // Handling groups
 
@@ -403,13 +400,13 @@ function plot() {
             y: 0
         })
 
-        //  console.log("g2: " + groups);
+        //  console.log('g2: ' + groups);
 
         groups.append('text').text(function (d) {
             if (d.type === ROW_TYPE.GROUP)
                 return d.elementName;
             else if (d.type === ROW_TYPE.AGGREGATE)
-                return d.subSets.length + " empty subsets";
+                return d.subSets.length + ' empty subsets';
         })
             .attr({class: 'groupLabel',
                 y: cellSize - 3,
@@ -422,7 +419,7 @@ function plot() {
 
         svg.selectAll('.row')
             .append('rect')
-            .on("click", function (d) {
+            .on('click', function (d) {
                 setSelectedItems(d.items);
             })
             .attr({
@@ -432,7 +429,7 @@ function plot() {
                     var y = 0;
                     if (d.type !== ROW_TYPE.SUBSET)
                         y = cellSize / 3 * .4;
-                    return   "translate(" + xStartSetSizes + ", " + y + ")"; // " + (textHeight - 5) + ")"
+                    return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
                 },
 
                 width: function (d) {
@@ -445,8 +442,8 @@ function plot() {
                         return cellSize / 3;
                 }
             })
-            .on("mouseover", mouseoverRow)
-            .on("mouseout", mouseoutRow)
+            .on('mouseover', mouseoverRow)
+            .on('mouseout', mouseoutRow)
 
         // ----------------------- expected value bars -------------------
 
@@ -454,7 +451,7 @@ function plot() {
             .append('rect')
             .attr({
                 class: function (d) {
-                    return d.expectedValueDeviation < 0 ? "expectedValueDeviation negative" : "expectedValueDeviation positive";
+                    return d.expectedValueDeviation < 0 ? 'expectedValueDeviation negative' : 'expectedValueDeviation positive';
                 },
                 transform: function (d) {
                     var start = expectedValueScale(d3.min([0, d.expectedValueDeviation]));
@@ -462,7 +459,7 @@ function plot() {
                     var y = 0;
                     if (d.type !== ROW_TYPE.SUBSET)
                         y = cellSize / 3 * 1.7;
-                    return "translate(" + start + ", " + y + ")";
+                    return 'translate(' + start + ', ' + y + ')';
                 },
                 width: function (d) {
                     return Math.abs(expectedValueScale(d.expectedValueDeviation) - expectedValueScale(0));
@@ -474,29 +471,28 @@ function plot() {
                         return cellSize / 3;
                 }
             })
-            .on("mouseover", mouseoverRow)
-            .on("mouseout", mouseoutRow)
+            .on('mouseover', mouseoverRow)
+            .on('mouseout', mouseoutRow)
 
         function zoomed() {
-        
-          d3.select(this).attr("transform", "translate(0, " + d3.event.translate[0] + ")");
+
+            d3.select(this).attr('transform', 'translate(0, ' + d3.event.translate[0] + ')');
         }
 
         var zoom = d3.behavior.zoom()
             .scaleExtent([1, 10])
-            .on("zoom", zoomed);
+            .on('zoom', zoomed);
 
-      var drag = d3.behavior.drag()
-          .on("drag", function(d,i) {
-              d.x += d3.event.dx
-              d.y += d3.event.dy
-              d3.select(this).attr("transform", function(d,i){
-                  return "translate(" + [ d.x, d.y ] + ")"
-              })
-          });
-   
-      d3.select(".gRows").call(zoom);
+        var drag = d3.behavior.drag()
+            .on('drag', function (d, i) {
+                d.x += d3.event.dx
+                d.y += d3.event.dy
+                d3.select(this).attr('transform', function (d, i) {
+                    return 'translate(' + [ d.x, d.y ] + ')'
+                })
+            });
 
+        d3.select('.gRows').call(zoom);
 
     }
 
@@ -510,36 +506,36 @@ function plot() {
     }
 
     function setUpSortSelections() {
-        d3.selectAll("#sortIntersect").on(
-            "click",
+        d3.selectAll('#sortIntersect').on(
+            'click',
             function (d) {
                 sortByCombinationSize();
                 rowTransition();
             });
 
-        d3.selectAll("#groupSetSize").on(
-            "click",
+        d3.selectAll('#groupSetSize').on(
+            'click',
             function (d) {
                 sortBySetSizeGroups();
                 rowTransition();
             });
 
         // sort based on occurrence of one specific data item
-        d3.selectAll(".setLabel").on(
-            "click",
+        d3.selectAll('.setLabel').on(
+            'click',
             function (d) {
                 sortOnSetItem(d)
                 rowTransition();
             });
 
-        d3.selectAll(".subsetSizeLabel").on(
-            "click",
+        d3.selectAll('.subsetSizeLabel').on(
+            'click',
             function (d) {
                 sortBySubsetSize();
                 rowTransition();
             });
-        d3.selectAll(".expectedValueLabel").on(
-            "click",
+        d3.selectAll('.expectedValueLabel').on(
+            'click',
             function (d) {
                 sortByExpectedValue();
                 rowTransition();
