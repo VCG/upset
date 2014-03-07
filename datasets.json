@@ -4,6 +4,7 @@
     "data/movies/movies.json",
     "data/test/rand.json",
     "data/test/test.json",
+    "data/test/test_2set.json",
     "data/mutations/mutations5.json",
     "data/mutations/mutations20.json"
 ]

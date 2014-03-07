@@ -1,6 +1,6 @@
 {
 	"file": "test.csv",
-	"name": "Test",
+	"name": "Test (2 set definitions)",
 	"header": 0,
 	"separator": ";",
 	"skip": 0,
@@ -8,6 +8,7 @@
 		{ "type": "id", "index": 0, "name": "Name" }
 	],
 	"sets": [
-		{ "format": "binary", "start": 1, "end": 3 },
+		{ "format": "binary", "start": 1, "end": 1 },
+		{ "format": "binary", "start": 3, "end": 3 }
 	]
 }
