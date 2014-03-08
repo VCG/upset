@@ -2,9 +2,8 @@
  * Created by Alexander Lex on 3/4/14.
  */
 
-
-
-function groupBySetSize() {
+var groupBySetSize = function () {
+    console.log('testg');
     sizeGroups = [];
     for (var i = 0; i < sets.length; i++) {
         sizeGroups.push(new Group('SetSizeG_' + (i + 1), (i + 1) + '-Set Subsets'));
@@ -29,7 +28,7 @@ function sortOnSetItem(set) {
         if (b.combinedSets[setIndex] !== a.combinedSets[setIndex]) {
             return b.combinedSets[setIndex] - a.combinedSets[setIndex];
         }
-        // move all elements with viewer intersections to the top
+        // move all elements with fewer intersections to the top
         if (a.nrCombinedSets !== b.nrCombinedSets) {
             return a.nrCombinedSets - b.nrCombinedSets;
         }
@@ -71,9 +70,9 @@ function sortByExpectedValue() {
 }
 
 /** Sort by set size using groups */
-function sortBySetSizeGroups() {
+var sortBySetSizeGroups = function() {
     renderRows.length = 0;
-
+console.log('testss');
     for (var i = 0; i < sizeGroups.length; i++) {
         var group = sizeGroups[i];
         renderRows.push(group);
@@ -84,4 +83,13 @@ function sortBySetSizeGroups() {
     }
 }
 
+var UpSetState = {
+    grouping: sortBySetSizeGroups,
+    sorting: sortBySubsetSize,
+
+    update: function () {
+        this.grouping();
+       // this.sorting();
+    }
+}
 

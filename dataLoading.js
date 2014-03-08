@@ -8,6 +8,9 @@
 
 var dataSetDescriptions;
 
+
+
+
 $.when( $.ajax( { url: 'datasets.json', dataType: 'json' } ) ).then( function( data, textStatus, jqXHR ) {
     loadDataSetDescriptions(data);
 });
@@ -104,6 +107,8 @@ function processDataSet(dataSetDescription) {
 
 function run() {
     setUpSubSets();
+    setUpGroupings();
+    UpSetState.update();
     plot();
     plotSetSelection();
 }
@@ -291,11 +296,18 @@ function setUpSubSets() {
     }
 
     renderRows = subSets.slice(0);
-    groupBySetSize();
+
     // sort by size of set overlap
-    renderRows.sort(function (a, b) {
-        return b.setSize - a.setSize;
-    });
+//    renderRows.sort(function (a, b) {
+//        return b.setSize - a.setSize;
+//    });
+
+}
+
+function setUpGroupings()
+{
+    groupBySetSize();
+
 
 }
 
