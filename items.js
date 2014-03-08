@@ -1,10 +1,11 @@
-function plotSelectedItems() { 
+function plotSelectedItems( selection ) { 
+
     var element = "#item-table";
 
     // clear target element
     d3.select(element).html("");
 
-    d3.select(element).html('<p>' + selectedItems.length + ' of ' + depth + ' selected</p>')
+    d3.select(element).html('<p>' + selection.items.length + ' of ' + depth + ' selected</p>')
     
     var table = d3.select(element).append("table");
     var thead = table.append("thead");
@@ -15,11 +16,12 @@ function plotSelectedItems() {
             .data(attributes)
         .enter()
             .append("th")
+                .style("background-color", selections.getColor( selection ) )
                 .text(function(d) { return d.name; })
                 .on("click", function(k) { // is attribute object
 
                     if ( k.type === "float" || k.type === "integer" ) {
-                        plotHistogram( k, selectedItems );
+                        plotHistogram( k );
                     }
 
                     thead.selectAll('th').data(attributes).text(function(d) { return d.name; });
@@ -50,7 +52,7 @@ function plotSelectedItems() {
                 });
 
     var rows = tbody.selectAll("tr")
-            .data(selectedItems)
+            .data(selection.items)
         .enter()
             .append("tr")
             .each(function(d,i) { 
@@ -58,20 +60,16 @@ function plotSelectedItems() {
                     .data(attributes)
                 .enter()
                     .append("td")
-                    .text(function(a) { return a.values[selectedItems[i]] });
+                    .text(function(a) { return a.values[selection.items[i]] });
             });
+
+    console.log( selections );
 
 }
 
 
-function plotHistogram( attribute, selectedItems ) {
+function plotHistogram( attribute ) {
     var element = "#item-vis";
-
-    var values = [];
-
-    for ( var i = 0; i < selectedItems.length; ++i ) {
-        values.push( attribute.values[selectedItems[i]] );
-    }
 
     // A formatter for counts.
     var format = d3.format(".00r");
@@ -91,15 +89,6 @@ function plotHistogram( attribute, selectedItems ) {
         .domain([attribute.min, attribute.max])
         .range([0, width]);
 
-    // Generate a histogram using twenty uniformly-spaced bins.
-    var data = d3.layout.histogram()
-        .bins(x.ticks(20))
-        (values);
-
-    var y = d3.scale.linear()
-        .domain([0, d3.max(data, function(d) { return d.y; })])
-        .range([height, 0]);
-
     var xAxis = d3.svg.axis()
         .scale(x)
         .orient("bottom");
@@ -113,19 +102,80 @@ function plotHistogram( attribute, selectedItems ) {
       .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    var histograms = [];
+
+    console.log( selections );
+    // for each selection
+    for ( var s = 0; s < selections.getSize(); ++s ) {
+
+        var values = [];
+
+        var selection = selections.getSelection(s);
+
+        console.log( "Rendering selection " + (s+1) + " of " + selections.getSize() + " with size " + selection.items.length + " and color " + selections.getColor( selection ) );
+
+        for ( var i = 0; i < selection.items.length; ++i ) {
+            values.push( attribute.values[selection.items[i]] );
+        }
+
+        // Generate a histogram using twenty uniformly-spaced bins.
+        var histogram = d3.layout.histogram()
+            .frequency(false)
+            .bins(x.ticks(20))
+            (values);
+
+        for ( var i = 0; i < histogram.length; ++i ) {
+            histogram[i].color = selections.getColor( selection );
+            histogram[i].dx = histogram[i].dx/selections.getSize();
+            histogram[i].x = histogram[i].x + s*histogram[i].dx
+        }
+
+        histograms.push( histogram );
+    }
+
+    var y = d3.scale.linear()
+        .domain([0, d3.max(histograms, function(histogram) { return d3.max( histogram, function(d) { return d.y; } ); })])
+        .range([height, 0]);
+
+    var histogram = svg.selectAll(".histogram")
+            .data( histograms )
+        .enter().append("g")
+            .attr("class", "histogram");
+
+    var bar = histogram.selectAll(".bar")   
+            .data( function( d ) { return ( d ); } )
+        .enter().append("g")
+            .attr("class", "bar")
+            .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+    
+    bar.append("rect")
+        .attr("x", 1)
+        .attr("width", function(d) { return x(d.dx+attribute.min) - 1; }) //x(histograms[0].dx+attribute.min) - 1
+        .attr("height", function(d) { return height - y(d.y); })
+        .style('fill-opacity', 0.5 )
+        .style('fill', function(d){ return (d.color) } );
+    /*
+    bar.append("rect")
+        .attr("x", 1)
+        .attr("width", function(d) { return x(d.dx+attribute.min) - 1; }) //x(histograms[0].dx+attribute.min) - 1
+        .attr("height", function(d) { return 2; })
+        .style('fill-opacity', 0.5 )
+        .style('fill', function(d){ return (d.color) } );
+    */
+    /*
     var bar = svg.selectAll(".bar")
-        .data(data)
+        .data(histograms)
       .enter().append("g")
         .attr("class", "bar")
         .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
 
-    console.log( data );
-
     bar.append("rect")
         .attr("x", 1)
         .attr("width", x(data[0].dx+attribute.min) - 1 )
-        .attr("height", function(d) { return height - y(d.y); });
-
+        .attr("height", function(d, i ) { console.log( i + " -- " + y(d.y) ); return height - y(d.y); })
+        .style('fill-opacity', 0.5 )
+        .style('fill', selections.getColor(selection) );
+    */
     /*
     bar.append("text")
         .attr("dy", ".75em")

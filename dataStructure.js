@@ -48,6 +48,8 @@ var depth = 0;
 /** Indices of selected items **/
 var selectedItems = [];
 
+var selections = new SelectionList(); //an array of selection
+
 /** The list of available datasets */
 var dataSets;
 
@@ -56,6 +58,7 @@ var sizeGroups = [];
 
 /** How many sets do we want to see by default */
 var nrDefaultSets = 3;
+
 
 /**
  * The base element for all rows (sets, groups, subsets, aggregates)
@@ -72,7 +75,6 @@ function Element(id, elementName) {
     this.setSize = 0;
     /** The ratio of elements that are contained in this set */
     this.dataRatio = 0.0;
-
 }
 
 /**
@@ -108,8 +110,8 @@ function BaseSet(setID, setName, combinedSets, setData) {
     }
 
     this.dataRatio = this.setSize / depth;
-
 }
+
 
 BaseSet.prototype = Element;
 BaseSet.prototype.constructor = Element;

@@ -1,12 +1,8 @@
-function setSelectedItems(indices) {
-    selectedItems = indices;
-    plotSelectedItems();
-}
+$(EventManager).bind( "item-selection-added", function( event, data ) {
+    console.log( "Selection was added to selection list with color " + selections.getColor( data.selection ) + ' and ' + data.selection.items.length + ' items.' );
+    plotSelectedItems( data.selection );
+});
 
-function clearSelectedItems() {
-    selectedItems.length = 0;
-    plotSelectedItems();
-}
 
 function plot() {
 
@@ -424,7 +420,7 @@ function plot() {
         svg.selectAll('.row')
             .append('rect')
             .on('click', function (d) {
-                setSelectedItems(d.items);
+                selections.addSelection( new Selection( d.items) );
             })
             .attr({
                 class: 'subSetSize',

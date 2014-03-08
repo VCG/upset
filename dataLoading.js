@@ -1,7 +1,6 @@
 /**
  * author: Alexander Lex - alex@seas.harvard.edu
  * author: Nils Gehlenborg - nils@hms.harvard.edu
- * author: Romain Vuillemot - nils@hms.harvard.edu
  * author: Hendrik Srtobelt - strobelt@seas.harvard.edu.
  * author: Romain Vuillemot - romain.vuillemot@gmail.com
  */
