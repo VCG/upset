@@ -155,7 +155,8 @@ tr:nth-child(even) {
 th {
     text-align: left;
     padding-left: 2px;
-    padding-right: 2px;    
+    padding-right: 2px;
+    cursor: s-resize;
 }
 
 th.attribute-header {
