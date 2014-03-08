@@ -336,6 +336,8 @@ function updateSetContainment(set) {
     subSets.length = 0;
     renderRows.length = 0;
     setUpSubSets();
+    setUpGroupings();
+    UpSetState.update();
     plot();
     plotSetSelection();
 

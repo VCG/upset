@@ -512,14 +512,17 @@ function plot() {
         d3.selectAll('#sortIntersect').on(
             'click',
             function (d) {
-                sortByCombinationSize();
+                UpSetState.grouping = sortByCombinationSize;
+                UpSetState.update();
                 rowTransition();
             });
 
         d3.selectAll('#groupSetSize').on(
             'click',
             function (d) {
-                sortBySetSizeGroups();
+                UpSetState.grouping =  sortBySetSizeGroups;
+                UpSetState.update();
+
                 rowTransition();
             });
 
@@ -527,20 +530,26 @@ function plot() {
         d3.selectAll('.setLabel').on(
             'click',
             function (d) {
-                sortOnSetItem(d)
+                UpSetState.grouping =  sortOnSetItem(d);
+                UpSetState.update();
+
+
                 rowTransition();
             });
 
         d3.selectAll('.subsetSizeLabel').on(
             'click',
             function (d) {
-                sortBySubsetSize();
+                UpSetState.grouping =  sortBySubsetSize;
+                UpSetState.update();
                 rowTransition();
             });
         d3.selectAll('.expectedValueLabel').on(
             'click',
             function (d) {
-                sortByExpectedValue();
+                UpSetState.grouping =  sortByExpectedValue;
+                UpSetState.update();
+         
                 rowTransition();
             });
     }

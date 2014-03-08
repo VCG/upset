@@ -72,7 +72,6 @@ function sortByExpectedValue() {
 /** Sort by set size using groups */
 var sortBySetSizeGroups = function() {
     renderRows.length = 0;
-console.log('testss');
     for (var i = 0; i < sizeGroups.length; i++) {
         var group = sizeGroups[i];
         renderRows.push(group);
@@ -85,7 +84,7 @@ console.log('testss');
 
 var UpSetState = {
     grouping: sortBySetSizeGroups,
-    sorting: sortBySubsetSize,
+//    sorting: sortBySubsetSize,
 
     update: function () {
         this.grouping();
