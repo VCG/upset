@@ -7,7 +7,7 @@
 	"meta": [
 		{ "type": "id", "index": 0, "name": "Name" },
 		{ "type": "integer", "index": 1, "name": "Release Date" },
-		{ "type": "float", "index": 20, "name": "Average Rating", "min": 0, "max": 5 },
+		{ "type": "float", "index": 20, "name": "Average Rating", "min": 1, "max": 5 },
 		{ "type": "integer", "index": 21, "name": "Times Watched" }
 	],
 	"sets": [
