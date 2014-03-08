@@ -15,9 +15,9 @@ function SelectionList( colors ) {
     this.colors = colors || d3.scale.category10().range();
 
     this.addSelection = function( selection ) {
-        this.colorMap[selection] = this._nextColor();
+        this.colorMap[this.list.length] = this._nextColor();
+        console.log( this.colorMap );
         this.list.push( selection );        
-        this.colorMap[selection]
 
         $(EventManager).trigger( "item-selection-added", { selection: selection } );            
 
@@ -40,9 +40,19 @@ function SelectionList( colors ) {
         console.log( 'Unable to delete selection.' );
     };
 
+    this.getSelectionIndex = function(selection){
+        for ( var i = 0; i < this.list.length; ++i ) {
+            if ( this.list[i] === selection ) {
+                return i;
+            }        
+        }
+
+        return undefined;
+    }
+
     this.getSelection = function(index) {
         try {
-            return ( this.list[i] );
+            return ( this.list[index] );
         }
         catch ( error ) {
             // ignore
@@ -53,7 +63,7 @@ function SelectionList( colors ) {
 
     this.getColor = function( selection ) {
         try {
-            return ( this.colorMap[selection] );
+            return ( this.colorMap[this.getSelectionIndex(selection)] );
         }
         catch ( error ) {
             // ignore
