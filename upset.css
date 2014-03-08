@@ -71,7 +71,7 @@ h1 {
 
 /** The subSet size bar */
 .subSetSize {
-    fill: #078600;
+    fill: #636363; /*#078600;*/
 }
 
 /** The labels for the vertical set names */

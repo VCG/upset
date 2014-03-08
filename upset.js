@@ -420,7 +420,9 @@ function plot() {
         svg.selectAll('.row')
             .append('rect')
             .on('click', function (d) {
-                selections.addSelection( new Selection( d.items) );
+                var selection = new Selection( d.items);
+                selections.addSelection( selection );
+                d3.select(this).style( "fill", selections.getColor( selection ) );
             })
             .attr({
                 class: 'subSetSize',
