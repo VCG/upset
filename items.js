@@ -1,11 +1,35 @@
-function plotSelectedItems( selection ) { 
+function plotSelectionTabs( element, selections, activeSelection ) {
+    // clear target element
+    d3.select(element).html("");
+    
+    var table = d3.select(element).append("table");
+    var tbody = table.append("tbody");
 
-    var element = "#item-table";
+    tbody.append("tr")
+            .selectAll("td")
+            .data(selections.list)
+        .enter()
+            .append("td")
+                .style("border", "2px solid black" )
+                .style("border-radius", "10px" )
+                .style("padding", "3px" )
+                .style("background-color", function(d,i) { return ( i === selections.getSelectionIndex( activeSelection ) ? selections.getColor( d ) : "white" ); } )
+                .style("border-color", function(d) { return selections.getColor( d ); } )
+                .text(function(d) { return d.items.length; })
+                .on("click", function(k) { // is attribute object
+                    d3.selectAll("td").style( "background-color", "white" );
+                    d3.select(this).style( "background-color", selections.getColor(k) );                                    
+                    plotSelectedItems( "#item-table", k );
+                });
+}
+
+
+function plotSelectedItems( element, selection ) { 
 
     // clear target element
     d3.select(element).html("");
 
-    d3.select(element).html('<p>' + selection.items.length + ' of ' + depth + ' selected</p>')
+    //d3.select(element).html('<p>' + selection.items.length + ' of ' + depth + ' selected</p>')
     
     var table = d3.select(element).append("table");
     var thead = table.append("thead");
@@ -62,9 +86,6 @@ function plotSelectedItems( selection ) {
                     .append("td")
                     .text(function(a) { return a.values[selection.items[i]] });
             });
-
-    console.log( selections );
-
 }
 
 
@@ -104,15 +125,11 @@ function plotHistogram( attribute ) {
 
     var histograms = [];
 
-    console.log( selections );
     // for each selection
     for ( var s = 0; s < selections.getSize(); ++s ) {
 
         var values = [];
-
         var selection = selections.getSelection(s);
-
-        console.log( "Rendering selection " + (s+1) + " of " + selections.getSize() + " with size " + selection.items.length + " and color " + selections.getColor( selection ) );
 
         for ( var i = 0; i < selection.items.length; ++i ) {
             values.push( attribute.values[selection.items[i]] );
@@ -124,6 +141,7 @@ function plotHistogram( attribute ) {
             .bins(x.ticks(20))
             (values);
 
+        // interleave by shifting bar positions and adjusting bar widths
         for ( var i = 0; i < histogram.length; ++i ) {
             histogram[i].color = selections.getColor( selection );
             histogram[i].dx = histogram[i].dx/selections.getSize();
@@ -152,38 +170,8 @@ function plotHistogram( attribute ) {
         .attr("x", 1)
         .attr("width", function(d) { return x(d.dx+attribute.min) - 1; }) //x(histograms[0].dx+attribute.min) - 1
         .attr("height", function(d) { return height - y(d.y); })
-        .style('fill-opacity', 0.5 )
+        .style('fill-opacity', 0.75 )
         .style('fill', function(d){ return (d.color) } );
-    /*
-    bar.append("rect")
-        .attr("x", 1)
-        .attr("width", function(d) { return x(d.dx+attribute.min) - 1; }) //x(histograms[0].dx+attribute.min) - 1
-        .attr("height", function(d) { return 2; })
-        .style('fill-opacity', 0.5 )
-        .style('fill', function(d){ return (d.color) } );
-    */
-    /*
-    var bar = svg.selectAll(".bar")
-        .data(histograms)
-      .enter().append("g")
-        .attr("class", "bar")
-        .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
-
-    bar.append("rect")
-        .attr("x", 1)
-        .attr("width", x(data[0].dx+attribute.min) - 1 )
-        .attr("height", function(d, i ) { console.log( i + " -- " + y(d.y) ); return height - y(d.y); })
-        .style('fill-opacity', 0.5 )
-        .style('fill', selections.getColor(selection) );
-    */
-    /*
-    bar.append("text")
-        .attr("dy", ".75em")
-        .attr("y", 6)
-        .attr("x", x(data[0].dx) / 2)
-        .attr("text-anchor", "middle")
-        .text(function(d) { return format(d.y); });
-    */
 
     svg.append("g")
         .attr("class", "x axis")

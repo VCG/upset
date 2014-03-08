@@ -1,6 +1,8 @@
 $(EventManager).bind( "item-selection-added", function( event, data ) {
     console.log( "Selection was added to selection list with color " + selections.getColor( data.selection ) + ' and ' + data.selection.items.length + ' items.' );
-    plotSelectedItems( data.selection );
+    
+    plotSelectionTabs( "#selection-tabs", selections, data.selection );
+    plotSelectedItems( "#item-table", data.selection );
 });
 
 
