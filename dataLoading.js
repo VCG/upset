@@ -215,7 +215,12 @@ function parseDataSet(data,dataSetDescription) {
     for ( var i = 0; i < dataSetDescription.meta.length; ++i ) {
         var metaDefinition = dataSetDescription.meta[i];
 
-        attributes.push( { name: metaDefinition.name || header[metaDefinition.index], type: metaDefinition.type, values: [], sort: 1 } );
+        attributes.push({
+            name: metaDefinition.name || header[metaDefinition.index],
+            type: metaDefinition.type,
+            values: [],
+            sort: 1,
+        });
     }    
 
     // load meta data    
@@ -249,6 +254,19 @@ function parseDataSet(data,dataSetDescription) {
 
             });            
     }
+
+    // add meta data summary statistics
+    for ( var i = 0; i < dataSetDescription.meta.length; ++i ) {
+        var metaDefinition = dataSetDescription.meta[i];
+
+        if ( metaDefinition.type === "float" || metaDefinition.type === "integer" ) {
+            attributes[i].min = metaDefinition.min || Math.min.apply( null, attributes[i].values );
+            attributes[i].max = metaDefinition.max || Math.max.apply( null, attributes[i].values );            
+        }
+    }    
+
+    console.log( attributes );
+
 
     var setID = 1;
     for (var i = 0; i < rawSets.length; i++) {
