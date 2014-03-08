@@ -1,35 +1,64 @@
-function plotSelectedItems() {
+function plotSelectedItems() { 
+    var element = "#item-table";
 
-    var area = $( '#item-table' );
+    // clear target element
+    d3.select(element).html("");
+
+    d3.select(element).html('<p>' + selectedItems.length + ' of ' + depth + ' selected</p>')
     
-    area.html( "" );
+    var table = d3.select(element).append("table");
+    var thead = table.append("thead");
+    var tbody = table.append("tbody");
 
-    var s = '';
+    thead.append("tr")
+            .selectAll("th")
+            .data(attributes)
+        .enter()
+            .append("th")
+                .text(function(d) { return d.name; })
+                .on("click", function(k) { // is attribute object
+                    thead.selectAll('th').data(attributes).text(function(d) { return d.name; });
+                    d3.select(this).html( ( k.sort > 0 ? "&#x25B2;" : "&#x25BC;" ) + " " + k.name );
+                    rows.sort( function(a, b) { 
+                        switch ( k.type ) {
+                            case 'integer':
+                                // fall-through
+                            case 'float':
+                                return k.sort * ( k.values[a] - k.values[b] );
+                            case 'id':
+                                // fall-through
+                            case 'string':
+                                // fall-through
+                            default:
+                                if ( k.values[a] < k.values[b] ) {
+                                    return k.sort * -1;
+                                }
+                                if ( k.values[a] > k.values[b] ) {
+                                    return k.sort * 1;
+                                }
+                                
+                                return 0;
+                        }
+                    });
+                    // switch sort order
+                    k.sort = k.sort * -1;
+                });
 
-    s += '<p>Selection size: ' + selectedItems.length + ' of ' + depth + '</p>'
+    var rows = tbody.selectAll("tr")
+            .data(selectedItems)
+        .enter()
+            .append("tr")
+            .each(function(d,i) { 
+                d3.select(this).selectAll("td")
+                    .data(attributes)
+                .enter()
+                    .append("td")
+                    .text(function(a) { return a.values[selectedItems[i]] });
+            });
 
-    s += '<table><thead><tr><th>#</th><th>Id</th>';
+}
 
-    for ( var a = 0; a < attributes.length; ++a ) {
-        s += '<th class="attribute-header" data-attribute-id="' + a + '">' + attributes[a].name + '</th>';
-    }
-
-    area.append( '</tr></thead><tbody>' );
-
-    for ( var i = 0; i < selectedItems.length; ++i ) {
-        s +=  '<tr class="item-row" data-item-id="' + selectedItems[i] + '"><td><span class="item-index">' + (i+1) + '</span></td><td><span class="item-id">' + selectedItems[i] + '</span></td>';
-
-        for ( var a = 0; a < attributes.length; ++a ) {
-            s += '<td><span class="item-label">' + attributes[a].values[selectedItems[i]] + '</span></td>';
-        }
-
-        s += '</tr>';
-    }
-
-    s += '</tbody></table>';
-
-    area.append( s );
-
+/*
     $( ".attribute-header" ).on( "click", function(){
         if ( !selectedAttributes[this.getAttribute( 'data-attribute-id' )] ) {
             selectedAttributes[this.getAttribute( 'data-attribute-id' )] = true;
@@ -44,7 +73,7 @@ function plotSelectedItems() {
 
         $(this).toggleClass( 'selected' );
     });
-}
+
 
 $(EventManager).bind( "attribute-selection-added", function( event, data ) {
     console.log( "attribute " + attributes[data.id].name + " was added to selection." );
@@ -53,3 +82,4 @@ $(EventManager).bind( "attribute-selection-added", function( event, data ) {
 $(EventManager).bind( "attribute-selection-removed", function( event, data ) {
     console.log( "attribute " + attributes[data.id].name + " was removed from selection." );
 });
+*/
