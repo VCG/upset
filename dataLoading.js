@@ -215,7 +215,7 @@ function parseDataSet(data,dataSetDescription) {
     for ( var i = 0; i < dataSetDescription.meta.length; ++i ) {
         var metaDefinition = dataSetDescription.meta[i];
 
-        attributes.push( { name: metaDefinition.name || header[metaDefinition.index], type: metaDefinition.type, values: [] } );
+        attributes.push( { name: metaDefinition.name || header[metaDefinition.index], type: metaDefinition.type, values: [], sort: 1 } );
     }    
 
     // load meta data    
