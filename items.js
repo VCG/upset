@@ -1,10 +1,11 @@
-function plotSelectedItems() { 
+function plotSelectedItems( selection ) { 
+
     var element = "#item-table";
 
     // clear target element
     d3.select(element).html("");
 
-    d3.select(element).html('<p>' + selectedItems.length + ' of ' + depth + ' selected</p>')
+    d3.select(element).html('<p>' + selection.items.length + ' of ' + depth + ' selected</p>')
     
     var table = d3.select(element).append("table");
     var thead = table.append("thead");
@@ -15,11 +16,12 @@ function plotSelectedItems() {
             .data(attributes)
         .enter()
             .append("th")
+                .style("background-color", selections.getColor( selection ) )
                 .text(function(d) { return d.name; })
                 .on("click", function(k) { // is attribute object
 
                     if ( k.type === "float" || k.type === "integer" ) {
-                        plotHistogram( k, selectedItems );
+                        plotHistogram( k, selection );
                     }
 
                     thead.selectAll('th').data(attributes).text(function(d) { return d.name; });
@@ -50,7 +52,7 @@ function plotSelectedItems() {
                 });
 
     var rows = tbody.selectAll("tr")
-            .data(selectedItems)
+            .data(selection.items)
         .enter()
             .append("tr")
             .each(function(d,i) { 
@@ -58,7 +60,7 @@ function plotSelectedItems() {
                     .data(attributes)
                 .enter()
                     .append("td")
-                    .text(function(a) { return a.values[selectedItems[i]] });
+                    .text(function(a) { return a.values[selection.items[i]] });
             });
 
 }
