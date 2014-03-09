@@ -19,7 +19,7 @@ Selection.prototype.createSelection = function( attributeId, filterId, parameter
         }
     }
     console.log( filter );
-    return ( new Selection( newItems, this.filters.concat( [ { id: filterId, parameters: parameters, attributeId: attributeId } ] ) ) );
+    return ( new Selection( newItems, this.filters.concat( [ { id: filterId, parameters: parameters, attributeId: attributeId, uuid: Utilities.generateUuid() } ] ) ) );
 };
 
 

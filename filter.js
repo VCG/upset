@@ -108,11 +108,16 @@ Filter.prototype.get = function( filter ) {
 };
 
 
-Filter.prototype.renderViewer = function( element, filterId, attributeId, parameters ) {
+Filter.prototype.renderViewer = function( element, filterId, attributeId, parameters, filterUuid ) {
     var filterInstance = this.get( filterId );
     var filterViewer = element.append("div");
 
-    filterViewer.html( '<div><u>' + attributes[attributeId].name +'</u>: <b>' + filterInstance.name + '</b> (<i>' + filterInstance.types + '</i>)</div>');
+    filterViewer.html( '<div><u>' + attributes[attributeId].name +'</u>: <b>' + filterInstance.name + '</b> (<i>' + filterInstance.types + '</i>)&nbsp;<span class="filter-edit-button" data-filter-uuid="' + filterUuid + '""><i class="fa fw fa-pencil"></i></span></div>');
+
+    d3.selectAll( '.filter-edit-button' ).on( 'click', function(event){
+        console.log( this.dataset.filterUuid );
+        alert( "You will see the edit form for this filter ..." );
+    });
 
     var parameterType = undefined;
     var parameterName = undefined;
