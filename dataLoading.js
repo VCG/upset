@@ -76,6 +76,9 @@ function load(descriptions) {
     header.append('div').html('Group by Sets.').attr({id: 'groupSet',
         class: 'myButton'});
 
+    header.append('div').html('Toggle Collapse of All Groups.').attr({id: 'collapseGroups',
+        class: 'myButton'});
+
     var dataSelect = header.append('div').text('Choose Dataset');
 
     var select = dataSelect.append('select');
