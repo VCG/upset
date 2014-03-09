@@ -2,14 +2,17 @@
  * Created by Alexander Lex on 3/4/14.
  */
 
+var GROUP_PREFIX = 'SetSizeG_';
+var EMPTY_GROUP_ID = GROUP_PREFIX + '0';
+
 var groupBySetSize = function () {
-    console.log('testg');
     sizeGroups = [];
+    sizeGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset'));
     for (var i = 0; i < usedSets.length; i++) {
-        sizeGroups.push(new Group('SetSizeG_' + (i + 1), (i + 1) + '-Set Subsets'));
+        sizeGroups.push(new Group(GROUP_PREFIX + (i + 1), (i + 1) + '-Set Subsets'));
     }
     subSets.forEach(function (subSet) {
-        var group = sizeGroups[subSet.nrCombinedSets - 1]
+        var group = sizeGroups[subSet.nrCombinedSets]
         if (group != null)
             group.addSubSet(subSet);
         else
@@ -86,6 +89,10 @@ var sortBySetSizeGroups = function () {
     renderRows.length = 0;
     for (var i = 0; i < sizeGroups.length; i++) {
         var group = sizeGroups[i];
+        // ignoring an empty empty group
+        if (group.id === EMPTY_GROUP_ID && group.setSize === 0) {
+            continue;
+        }
         renderRows.push(group);
         if (!group.isCollapsed) {
             for (var j = 0; j < group.visibleSets.length; j++) {
