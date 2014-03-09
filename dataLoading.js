@@ -223,7 +223,7 @@ function parseDataSet(data,dataSetDescription) {
             name: metaDefinition.name || header[metaDefinition.index],
             type: metaDefinition.type,
             values: [],
-            sort: 1,
+            sort: 1
         });
     }    
 
@@ -249,7 +249,7 @@ function parseDataSet(data,dataSetDescription) {
         name: 'Sets',
         type: 'sets',
         values: [],
-        sort: 1,
+        sort: 1
     };
 
     for ( var d = 0; d < depth; ++d ) {
@@ -330,11 +330,12 @@ function setUpSubSets() {
 
     combinations = Math.pow(2, usedSets.length) - 1;
 
-    for (var i = 1; i <= combinations; i++) {
+
+    for (var i = 0; i <= combinations; i++) {
         makeSubSet(i)
     }
 
-    renderRows = subSets.slice(0);
+   // renderRows = subSets.slice(0);
 
     // sort by size of set overlap
 //    renderRows.sort(function (a, b) {
