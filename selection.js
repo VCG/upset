@@ -5,19 +5,21 @@
 
 function Selection( items ) {
     this.items = items || [];
+    this.id = undefined;
 }
 
 
 // should be a singleton
-function SelectionList( colors ) {
+function SelectionList( palette ) {
     this.list = [];
-    this.colorMap = {};
-    this.colors = colors || d3.scale.category10().range();
+    this.colors = {};
+    this.palette = palette || d3.scale.category10().range();
 
     this.addSelection = function( selection ) {
-        this.colorMap[this.list.length] = this._nextColor();
-        console.log( this.colorMap );
+        selection.id = this._nextId();
         this.list.push( selection );        
+
+        this.colors[selection.id] = this._nextColor();
 
         $(EventManager).trigger( "item-selection-added", { selection: selection } );            
 
@@ -32,8 +34,18 @@ function SelectionList( colors ) {
                 // remove selection from list
                 this.list.splice(i,1);
 
+                // return color to palette
+                this.palette.push(this.colors[selection.id]);
+
                 // remove selection from color map
-                delete this.colorMap[getSelectionIndex(selection)];
+                delete this.colors[selection.id];
+
+                // clear selection id
+                selection.id = undefined;
+
+                $(EventManager).trigger( "item-selection-removed", { selection: selection, index: i } );            
+
+                return;
             }
         }
         
@@ -63,7 +75,7 @@ function SelectionList( colors ) {
 
     this.getColor = function( selection ) {
         try {
-            return ( this.colorMap[this.getSelectionIndex(selection)] );
+            return ( this.colors[selection.id] );
         }
         catch ( error ) {
             // ignore
@@ -77,16 +89,20 @@ function SelectionList( colors ) {
     }
 
     this._nextColor = function() {
-        /*
-        // assign colors using round-robin approach
-        // minimizes re-use of colors
-        var color = this.colors.splice(0,1)[0];
-        this.color.push(color);
-        return ( color );
-        */
+        // use color pool and return black once pool is empty
+        if ( this.palette.length > 0 ) {
+            // first available color
+            return this.palette.splice(0,1)[0];
+        }
 
-        // assign colors based on selection creation order
-        // minimizes chance to have same color assigned to two or more selections
-        return this.colors[this.list.length];
+        return "#000";
+    }
+
+    this._nextId = function() {
+        // see broofa's answer in http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
+        return ( 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+            return v.toString(16) ;
+        }) );
     }
 }
