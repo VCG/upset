@@ -148,6 +148,8 @@ function Group(groupID, groupName) {
     Element.call(this, groupID, groupName);
     this.type = ROW_TYPE.GROUP;
 
+    this.isCollapsed = false;
+
     /** all subsets */
     this.subSets = [];
     /** the visible subsets */
@@ -184,6 +186,9 @@ function Aggregate(aggregateID, aggregateName) {
     Element.call(this, aggregateID, aggregateName);
     this.type = ROW_TYPE.AGGREGATE;
     this.subSets = [];
+
+    this.isCollapsed = true;
+
 
     //this.setSize = 0;
     this.expectedValue = 0;

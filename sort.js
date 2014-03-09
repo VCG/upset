@@ -5,7 +5,7 @@
 var groupBySetSize = function () {
     console.log('testg');
     sizeGroups = [];
-    for (var i = 0; i < sets.length; i++) {
+    for (var i = 0; i < usedSets.length; i++) {
         sizeGroups.push(new Group('SetSizeG_' + (i + 1), (i + 1) + '-Set Subsets'));
     }
     subSets.forEach(function (subSet) {
@@ -15,6 +15,18 @@ var groupBySetSize = function () {
         else
             console.log('Fail' + group + subSet.nrCombinedSets);
     })
+}
+
+/** Collapse or uncollapse group */
+var collapseGroup = function (group) {
+    group.isCollapsed = !group.isCollapsed;
+    updateState();
+}
+
+var collapseAggregate = function (aggregate) {
+    aggregate.isCollapsed = !aggregate.isCollapsed;
+    updateState();
+
 }
 
 // ----------------------- Sort Functions ----------------------------
@@ -70,25 +82,36 @@ function sortByExpectedValue() {
 }
 
 /** Sort by set size using groups */
-var sortBySetSizeGroups = function() {
+var sortBySetSizeGroups = function () {
     renderRows.length = 0;
     for (var i = 0; i < sizeGroups.length; i++) {
         var group = sizeGroups[i];
         renderRows.push(group);
-        for (var j = 0; j < group.visibleSets.length; j++) {
-            renderRows.push(group.visibleSets[j]);
+        if (!group.isCollapsed) {
+            for (var j = 0; j < group.visibleSets.length; j++) {
+                renderRows.push(group.visibleSets[j]);
+            }
+            if (group.aggregate.subSets.length > 0) {
+                renderRows.push(group.aggregate);
+                if (!group.aggregate.isCollapsed) {
+                    for (var j = 0; j < group.aggregate.subSets.length; j++) {
+                        renderRows.push(group.aggregate.subSets[j]);
+                    }
+                }
+            }
         }
-        renderRows.push(group.aggregate);
     }
 }
 
 var UpSetState = {
-    grouping: sortBySetSizeGroups,
+    grouping: sortBySetSizeGroups
 //    sorting: sortBySubsetSize,
 
-    update: function () {
-        this.grouping();
-       // this.sorting();
-    }
+}
+
+updateState = function () {
+    UpSetState.grouping();
+    //  history.pushState(UpSetState);
+    // this.sorting();
 }
 
