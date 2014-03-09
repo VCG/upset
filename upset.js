@@ -450,18 +450,35 @@ function plot() {
                     subsetDefinition[usedSets[x].id] = d.combinedSets[x];
                 }
 
+                var filterList = [];
+
                 // create subset filter and create new selection based on all items
                 var selection = new Selection(allItems);
-                selection = selection.createSelection( attributes.length-1, "subset", { subset: subsetDefinition } );
+                filterList.push( { attributeId: attributes.length-1, id: "subset", parameters: { subset: subsetDefinition }, uuid: Utilities.generateUuid() } );
+
+                for ( var a = 0; a < attributes.length - 1; ++a ) {
+                    if ( attributes[a].type === 'integer' || attributes[a].type === 'float' ) {
+                        filterList.push( { attributeId: a, id: "numericRange", parameters: { min: attributes[a].min, max: attributes[a].max }, uuid: Utilities.generateUuid() } );
+                    }
+
+                    if ( attributes[a].type === 'string' ) {
+                        filterList.push( { attributeId: a, id: "regex", parameters: { pattern: "." }, uuid: Utilities.generateUuid() } );
+                    }
+                }
+
+                selection.filters = filterList;
+                selection.applyFilters();
                 selections.addSelection(selection);
                 d3.select(this).style("fill", selections.getColor(selection));
 
                 // === Experiments ===
                 // create a set count filter and create new selection based on previous subset
-                selections.addSelection(selection.createSelection( attributes.length-2, "numericRange", { min: "1", max: "1" } ));                
+                //selections.addSelection(selection.createSelection( attributes.length-2, "numericRange", { min: "1", max: "1" } ));                
 
                 // create a regex filter on name and create new selection based on previous subset
-                selections.addSelection(selection.createSelection( 0, "stringRegex", { pattern: "^[A-B].+$" } ));                
+                //selections.addSelection(selection.createSelection( 0, "stringRegex", { pattern: "^[A-B].+$" } ));                
+
+                // create a filter for every attribute that will allow everything to pass (so we can play around with the filter editors)
             })
             .attr({
                 class: 'subSetSize',
