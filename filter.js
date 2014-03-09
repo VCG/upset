@@ -211,7 +211,8 @@ Filter.prototype.renderParameterViewer = function( element, parameterName, param
 
             for (var id in subset) {
                 if (subset.hasOwnProperty(id)) {
-                    s += ( subset[id] === 1 ? '<i class="fa fw fa-square"></i>' : '<i class="fa fw fa-square-o"></i>' ) + ' '; // + id + '  ';
+                    s += '<span title="' + setIdToSet[id].elementName + '">' + '<i class="' + this.subsetStateToClass( subset[id] ) + '"></i>';
+                    s += '</span>&nbsp;';
                 }
             }
             element.html( s );
@@ -256,6 +257,13 @@ Filter.prototype.parseParameterValue = function( filterUuid, parameterVariable, 
             var parameterEditor = $('[data-filter-parameter-variable="' + parameterVariable + '"]' );
             value = parseInt( $( parameterEditor ).val(), 10 );
             break;
+        case 'subset':
+            value = {};
+            var parameterEditor = filterEditor.selectAll( ".subset-state-toggle-button" ).each(function() {
+                value[this.dataset.subset] = +this.dataset.subsetState;
+            });
+            console.log( value );
+            break;
         case 'string':
             // fall-through
         default:
@@ -268,25 +276,24 @@ Filter.prototype.parseParameterValue = function( filterUuid, parameterVariable, 
 }
 
 Filter.prototype.renderParameterEditor = function( element, parameterName, parameterType, parameterValue, parameterVariable ) {
-
+    var self = this;
     var s = "";
     
     s += '<div data-filter-parameter-type="' + parameterType + '">';
     
     switch ( parameterType ) {
         case 'float':
-            s += parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="number" step="1" value="' + d3.format('f')(parameterValue) + '"></input>';
+            s += parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="number" step="0.1" value="' + d3.format('f')(parameterValue) + '"></input>';
             break;
         case 'integer':
             s +=  parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="number" step="1" value="' + d3.format('d')(parameterValue) + '"></input>';
             break;
         case 'subset':        
             var subset = parameterValue;
-
             for (var id in subset) {                
                 if (subset.hasOwnProperty(id)) {
-                    s += ( subset[id] === 1 ? '<i class="fa fw fa-square"></i>' : '<i class="fa fw fa-square-o"></i>' ); // + id + '  ';
-                    s += ' ' + setIdToSet[id].elementName + '<br>';
+                    s += '<span class="subset-state-toggle-button" data-subset="' + id + '" data-subset-state="' + subset[id] + '">' + '<i class="' + this.subsetStateToClass( subset[id] ) + '"></i>';
+                    s += ' ' + setIdToSet[id].elementName + ' <small>' + (setIdToSet[id].setSize === 0 ? '<i class="fa fa-warning"></i> 0 items' : '') + '</small>' + '</span><br>';
                 }
             }
             break;
@@ -303,5 +310,31 @@ Filter.prototype.renderParameterEditor = function( element, parameterName, param
     element.html(s);
 
     // attach events ...
+    d3.selectAll( ".subset-state-toggle-button").on( "click", function(event) {
+        this.dataset.subsetState = ( this.dataset.subsetState+1) % 3;
+        d3.select(this).select('i').attr( "class", self.subsetStateToClass( this.dataset.subsetState ) );
+    });
 };
+
+
+Filter.prototype.subsetStateToClass = function( state ) {
+    var s = "";
+
+    switch ( "" + state ) {
+        case "0":
+            s += 'fa fw fa-circle-o';
+            break;
+        case "1":
+            s += 'fa fw fa-circle';
+            break;
+        case "2":
+            s += 'fa fw fa-adjust';
+            break;
+        default:
+            s += 'fa fw fa-question-circle';
+            break;
+    }
+
+    return ( s );
+}
 
