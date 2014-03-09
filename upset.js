@@ -145,7 +145,7 @@ function plot() {
         .attr({
             class: 'setSize',
             transform: function (d, i) {
-                return 'translate(' + (cellDistance * (i )) + ', ' + ( textHeight -minorPadding - setSizeScale(d.setSize)) + ')'
+                return 'translate(' + (cellDistance * (i )) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize)) + ')'
             }, // ' + (textHeight - 5) + ')'
             height: function (d) {
                 return setSizeScale(d.setSize);
@@ -168,7 +168,6 @@ function plot() {
         })
         .on('mouseover', mouseoverColumn)
         .on('mouseout', mouseoutColumn)
-
 
     // ------------------- set size bars header --------------------
 
@@ -512,6 +511,17 @@ function plot() {
             'click',
             function (d) {
                 UpSetState.grouping = sortBySetGroups;
+                updateState();
+
+                rowTransition();
+            });
+
+        collapseGroups
+
+        d3.selectAll('#collapseGroups').on(
+            'click',
+            function (d) {
+                toggleCollapseAll();
                 updateState();
 
                 rowTransition();

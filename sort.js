@@ -52,6 +52,14 @@ var collapseGroup = function (group) {
     updateState();
 }
 
+var toggleCollapseAll = function () {
+    if (UpSetState.collapseAll) {
+        UpSetState.unCollapseAll = true;
+    }
+    UpSetState.collapseAll = !UpSetState.collapseAll;
+    updateState();
+}
+
 var collapseAggregate = function (aggregate) {
     aggregate.isCollapsed = !aggregate.isCollapsed;
     updateState();
@@ -119,6 +127,12 @@ var sortByGroup = function (groupList) {
             continue;
         }
         dataRows.push(group);
+        if (UpSetState.collapseAll) {
+            group.isCollapsed = true;
+        }
+        if (UpSetState.unCollapseAll) {
+            group.isCollapsed = false;
+        }
         if (!group.isCollapsed) {
             for (var j = 0; j < group.visibleSets.length; j++) {
                 dataRows.push(group.visibleSets[j]);
@@ -133,6 +147,8 @@ var sortByGroup = function (groupList) {
             }
         }
     }
+    UpSetState.unCollapseAll = false;
+
 }
 
 /** Sort by set size using groups */
@@ -146,6 +162,8 @@ var sortBySetGroups = function () {
 }
 
 var UpSetState = {
+    collapseAll: false,
+    unCollapseAll: false,
     grouping: sortBySetSizeGroups
 //    sorting: sortBySubsetSize,
 
@@ -160,7 +178,7 @@ updateState = function () {
         var count = 1;
         if (registry.hasOwnProperty(element.id)) {
             var count = registry[element.id];
-            count +=1;
+            count += 1;
             registry[element.id] = count;
         }
         else {
@@ -173,7 +191,6 @@ updateState = function () {
         renderRows.push(wrapper);
 
     });
-
 
 }
 
