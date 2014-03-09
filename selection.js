@@ -22,6 +22,28 @@ Selection.prototype.createSelection = function( attributeId, filterId, parameter
     return ( new Selection( newItems, this.filters.concat( [ { id: filterId, parameters: parameters, attributeId: attributeId, uuid: Utilities.generateUuid() } ] ) ) );
 };
 
+Selection.prototype.applyFilters = function() {
+    
+    // start over with all items in the data set
+    this.items = allItems;
+
+    for ( var f = 0; f < this.filters.length; ++f ) {
+        var filterInstance = this.filters[f];
+        var newItems = [];
+
+        for ( var i = 0; i < this.items.length; ++i ) {
+            if ( filter.get(filterInstance.id).test( this.items[i], attributes[filterInstance.attributeId], filterInstance.parameters ) ) {
+                newItems.push(this.items[i]);
+            }
+        }    
+
+        this.items = newItems;
+    }
+
+    $(EventManager).trigger( "item-selection-updated", { selection: this } );
+}
+
+
 Selection.prototype.getFilter = function( uuid ) {
     for ( var i = 0; i < this.filters.length; ++i ) {
         if ( this.filters[i].uuid === uuid ) {

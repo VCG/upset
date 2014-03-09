@@ -6,6 +6,13 @@ $(EventManager).bind( "item-selection-added", function( event, data ) {
     plotSelectedItems( "#item-table", data.selection );
 });
 
+$(EventManager).bind( "item-selection-updated", function( event, data ) {
+    console.log( 'Selection was updated! New length is ' + data.selection.items.length + ' items.' );
+    
+    plotSelectionTabs( "#selection-tabs", selections, data.selection );
+    plotSelectedItems( "#item-table", data.selection );
+});
+
 
 $(EventManager).bind( "item-selection-removed", function( event, data ) {
     console.log( "Selection was removed from selection list." );

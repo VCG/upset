@@ -169,6 +169,7 @@ Filter.prototype.renderEditor = function( element, selection, filterUuid ) { // 
     d3.selectAll( '.filter-save' ).on( 'click', function(event){
         console.log( this.dataset.filterUuid );
         self.parseParameterValues( this.dataset.filterUuid, selection );
+        selection.applyFilters();
         self.renderViewer( element, selection, this.dataset.filterUuid );
         console.log( "Now the new filter needs to be applied ... " );
     });
@@ -235,8 +236,6 @@ Filter.prototype.parseParameterValues = function( filterUuid, selection ) {
     for ( var i = 0; i < filterParameters.length; ++i ) {
         var value = self.parseParameterValue( filterUuid, filterParameters[i].variable, filterParameters[i].type );
 
-        console.log( value );
-        console.log(  filterInstanceParameters[filterParameters[i].variable] );
         if ( value ) {
             console.log( 'Replacing ' + filterParameters[i].variable + ' (' + filterParameters[i].type + ') = "' + filterInstanceParameters[filterParameters[i].variable] + '" with "' + value + '"' );
             filterInstanceParameters[filterParameters[i].variable] = value;
