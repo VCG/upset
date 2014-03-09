@@ -178,3 +178,11 @@ th.attribute-header.selected {
 .selection-tab.active {
     background-color: #ccc;
 }
+
+.filter-edit-button {
+    color: blue;    
+}
+
+.filter-edit-button:hover {
+    color: darkblue;
+}
