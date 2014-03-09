@@ -144,8 +144,8 @@ function plot() {
 
         // scale for the size of the subSets, also used for the sets
         var subSetSizeScale = d3.scale.linear().domain([0, d3.max(renderRows, function (d) {
-            console.log(" a " + d.setSize);
-            return d.setSize;
+            console.log(" a " + d.data.setSize);
+            return d.data.setSize;
         })]).nice().range([0, subSetSizeWidth]);
 
         svg.selectAll('.setRow')
@@ -185,7 +185,7 @@ function plot() {
 
         // scale for the size of the subSets, also used for the sets
         var subSetSizeScale = d3.scale.linear().domain([0, d3.max(renderRows, function (d) {
-            return d.setSize;
+            return d.data.setSize;
         })]).nice().range([0, subSetSizeHeight]);
 
         svg.selectAll('.setRow')
@@ -203,7 +203,6 @@ function plot() {
 
     }
 
-// ################## SUBSETS #########################
 
 // ------------ the set labels -------------------
 
@@ -240,9 +239,11 @@ function plot() {
 
 //    var rowScale = d3.scale.ordinal().rangeRoundBands([ setMatrixHeight + textHeight, h ], 0);
 //
-//    rowScale.domain(renderRows.map(function (d) {
+//    rowScale.domain(dataRows.map(function (d) {
 //        return d.id;
 //    }));
+
+
 
     // ------------------- set size bars header --------------------
 
@@ -262,7 +263,7 @@ function plot() {
         });
 
     // scale for the size of the plottingSets
-    var subSetSizeScale = d3.scale.linear().domain([0, d3.max(renderRows, function (d) {
+    var subSetSizeScale = d3.scale.linear().domain([0, d3.max(dataRows, function (d) {
         return d.setSize;
     })]).nice().range([0, subSetSizeWidth]);
 
@@ -293,13 +294,13 @@ function plot() {
         });
 
     // scale for the size of the plottingSets
-    var minDeviation = d3.min(renderRows, function (d) {
+    var minDeviation = d3.min(dataRows, function (d) {
         return d.expectedValueDeviation;
     });
     if (minDeviation > 0) {
         minDeviation = 0;
     }
-    var maxDeviation = d3.max(renderRows, function (d) {
+    var maxDeviation = d3.max(dataRows, function (d) {
         return d.expectedValueDeviation;
     });
 
@@ -325,6 +326,9 @@ function plot() {
     plotSubSets();
     setUpSortSelections();
 
+    // ################## SUBSETS #########################
+
+
     function plotSubSets() {
 
         // ------------------- the rows -----------------------
@@ -346,7 +350,7 @@ function plot() {
 //            return 'translate(0, ' + (textHeight + cellDistance * (i)) + ')';
                 //},
                 class: function (d) {
-                    return 'row ' + d.type;
+                    return 'row ' + d.data.type;
                 }
             });
 
@@ -361,7 +365,7 @@ function plot() {
 
             }, class: function (d) {
                 //    console.log(d.type);
-                return 'row ' + d.type;
+                return 'row ' + d.data.type;
             }});
 
         // ------------ the combination matrix ----------------------
@@ -371,10 +375,10 @@ function plot() {
         var setScale = d3.scale.ordinal().domain([0, 1]).range(grays);
 
         subSets.filter(function (d) {
-            return d.type === ROW_TYPE.SUBSET;
+            return d.data.type === ROW_TYPE.SUBSET;
         }).selectAll('g').data(function (d) {
                 // binding in an array of size one
-                return [d.combinedSets];
+                return [d.data.combinedSets];
             }
         ).enter()
             .append('g')
@@ -409,7 +413,7 @@ function plot() {
         // Handling groups
 
         var groups = svg.selectAll('.row').select(function (d, i) {
-            if (d.type === ROW_TYPE.GROUP || d.type === ROW_TYPE.AGGREGATE)
+            if (d.data.type === ROW_TYPE.GROUP || d.data.type === ROW_TYPE.AGGREGATE)
                 return this;
             return null;
         })
@@ -421,17 +425,17 @@ function plot() {
             x: 0,
             y: 0
         }).on('click', function (d) {
-                collapseGroup(d);
+                collapseGroup(d.data);
                 rowTransition();
             });
 
         //  console.log('g2: ' + groups);
 
         groups.append('text').text(function (d) {
-            if (d.type === ROW_TYPE.GROUP)
-                return d.elementName;
-            else if (d.type === ROW_TYPE.AGGREGATE)
-                return d.subSets.length + ' empty subsets';
+            if (d.data.type === ROW_TYPE.GROUP)
+                return d.data.elementName;
+            else if (d.data.type === ROW_TYPE.AGGREGATE)
+                return d.data.subSets.length + ' empty subsets';
         })
             .attr({class: 'groupLabel',
                 y: cellSize - 3,
@@ -448,8 +452,8 @@ function plot() {
 
                 // extract a subset defintion for use with the subset filter
                 var subsetDefinition = {};
-                for (var x = 0; x < d.combinedSets.length; ++x) {
-                    subsetDefinition[usedSets[x].id] = d.combinedSets[x];
+                for (var x = 0; x < d.data.combinedSets.length; ++x) {
+                    subsetDefinition[usedSets[x].id] = d.data.combinedSets[x];
                 }
 
                 var filterList = [];
@@ -486,16 +490,16 @@ function plot() {
 
                 transform: function (d) {
                     var y = 0;
-                    if (d.type !== ROW_TYPE.SUBSET)
+                    if (d.data.type !== ROW_TYPE.SUBSET)
                         y = cellSize / 3 * .4;
                     return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
                 },
 
                 width: function (d) {
-                    return subSetSizeScale(d.setSize);
+                    return subSetSizeScale(d.data.setSize);
                 },
                 height: function (d) {
-                    if (d.type === ROW_TYPE.SUBSET)
+                    if (d.data.type === ROW_TYPE.SUBSET)
                         return cellSize;
                     else
                         return cellSize / 3;
@@ -510,22 +514,22 @@ function plot() {
             .append('rect')
             .attr({
                 class: function (d) {
-                    return d.expectedValueDeviation < 0 ? 'expectedValueDeviation negative' : 'expectedValueDeviation positive';
+                    return d.data.expectedValueDeviation < 0 ? 'expectedValueDeviation negative' : 'expectedValueDeviation positive';
                 },
                 transform: function (d) {
-                    var start = expectedValueScale(d3.min([0, d.expectedValueDeviation]));
+                    var start = expectedValueScale(d3.min([0, d.data.expectedValueDeviation]));
                     start += xStartExpectedValues;
                     var y = 0;
-                    if (d.type !== ROW_TYPE.SUBSET)
+                    if (d.data.type !== ROW_TYPE.SUBSET)
                         y = cellSize / 3 * 1.7;
                     return 'translate(' + start + ', ' + y + ')';
                 },
                 width: function (d) {
-                    console.log(d.expectedValueDeviation)
-                    return Math.abs(expectedValueScale(d.expectedValueDeviation) - expectedValueScale(0));
+                    console.log(d.data.expectedValueDeviation)
+                    return Math.abs(expectedValueScale(d.data.expectedValueDeviation) - expectedValueScale(0));
                 },
                 height: function (d) {
-                    if (d.type === ROW_TYPE.SUBSET)
+                    if (d.data.type === ROW_TYPE.SUBSET)
                         return cellSize;
                     else
                         return cellSize / 3;
@@ -596,7 +600,7 @@ function plot() {
         d3.selectAll('.setLabel').on(
             'click',
             function (d) {
-                UpSetState.grouping = sortOnSetItem(d);
+                UpSetState.grouping = sortOnSetItem(d.data);
                 updateState();
 
                 rowTransition();
