@@ -320,12 +320,13 @@ function parseDataSet(data,dataSetDescription) {
         var combinedSets = Array.apply(null, new Array(rawSets.length)).map(Number.prototype.valueOf, 0);
         combinedSets[i] = 1;
         var set = new Set(setID, setNames[i], combinedSets, rawSets[i]);
-        setID = setID << 1;
+        setIdToSet[setID] = set;        
         sets.push(set);
         if (i < nrDefaultSets) {
             set.isSelected = true;
             usedSets.push(set);
         }
+        setID = setID << 1;
     }
 }
 
