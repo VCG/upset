@@ -168,8 +168,9 @@ Filter.prototype.renderEditor = function( element, selection, filterUuid ) { // 
 
     d3.selectAll( '.filter-save' ).on( 'click', function(event){
         console.log( this.dataset.filterUuid );
+        self.parseParameterValues( this.dataset.filterUuid, selection );
         self.renderViewer( element, selection, this.dataset.filterUuid );
-        alert( "Applied new filter parameters" );
+        console.log( "Now the new filter needs to be applied ... " );
     });
 
     d3.selectAll( '.filter-cancel' ).on( 'click', function(event){
@@ -226,6 +227,51 @@ Filter.prototype.renderParameterViewer = function( element, parameterName, param
     }
 };
 
+Filter.prototype.parseParameterValues = function( filterUuid, selection ) {
+    var self = this;
+    var filterParameters = self.get( selection.getFilter( filterUuid ).id ).parameters;
+    var filterInstanceParameters = selection.getFilter( filterUuid ).parameters;
+
+    for ( var i = 0; i < filterParameters.length; ++i ) {
+        var value = self.parseParameterValue( filterUuid, filterParameters[i].variable, filterParameters[i].type );
+
+        console.log( value );
+        console.log(  filterInstanceParameters[filterParameters[i].variable] );
+        if ( value ) {
+            console.log( 'Replacing ' + filterParameters[i].variable + ' (' + filterParameters[i].type + ') = "' + filterInstanceParameters[filterParameters[i].variable] + '" with "' + value + '"' );
+            filterInstanceParameters[filterParameters[i].variable] = value;
+        }
+    }
+}
+
+Filter.prototype.parseParameterValue = function( filterUuid, parameterVariable, parameterType ) {
+    var filterEditor = d3.select('#filter-' + filterUuid );
+    if ( filterEditor.empty() ) {
+        return undefined;
+    }
+
+    var value = undefined;
+
+    switch ( parameterType ) {
+        case 'float':
+            var parameterEditor = $('[data-filter-parameter-variable="' + parameterVariable + '"]' );
+            value = parseFloat( $( parameterEditor ).val() );
+            break;
+        case 'integer':
+            var parameterEditor = $('[data-filter-parameter-variable="' + parameterVariable + '"]' );
+            value = parseInt( $( parameterEditor ).val(), 10 );
+            break;
+        case 'string':
+            // fall-through
+        default:
+            var parameterEditor = $('[data-filter-parameter-variable="' + parameterVariable + '"]' );
+            value = $( parameterEditor ).val();
+            break;
+    }
+
+    return ( value );
+}
+
 Filter.prototype.renderParameterEditor = function( element, parameterName, parameterType, parameterValue, parameterVariable ) {
 
     var s = "";
@@ -234,10 +280,10 @@ Filter.prototype.renderParameterEditor = function( element, parameterName, param
     
     switch ( parameterType ) {
         case 'float':
-            s += parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter="' + parameterVariable + '" type="number" step="1" value="' + d3.format('f')(parameterValue) + '"></input>';
+            s += parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="number" step="1" value="' + d3.format('f')(parameterValue) + '"></input>';
             break;
         case 'integer':
-            s +=  parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter="' + parameterVariable + '" type="number" step="1" value="' + d3.format('d')(parameterValue) + '"></input>';
+            s +=  parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="number" step="1" value="' + d3.format('d')(parameterValue) + '"></input>';
             break;
         case 'subset':        
             /*
@@ -254,7 +300,7 @@ Filter.prototype.renderParameterEditor = function( element, parameterName, param
         case 'string':
             // fall-through
         default:
-            s += parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter="' + parameterVariable + '" type="text" value="' + parameterValue + '"></input>';
+            s += parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="text" value="' + parameterValue + '"></input>';
             break;
     }
 
