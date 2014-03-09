@@ -318,9 +318,10 @@ function plot() {
     gRows.append('rect').attr({
         x: 0,
         y: setMatrixHeight,
-        width: w,
+        width: w-120,
         height: h,
-        fill: 'white'
+        fill: 'white',
+        class: 'background-subsets'
     });
 
     plotSubSets();
@@ -538,23 +539,19 @@ function plot() {
             .on('mouseover', mouseoverRow)
             .on('mouseout', mouseoutRow)
 
-        function zoomed() {
-
+        function zooming() {
             d3.select(this).attr('transform', 'translate(0, ' + d3.event.translate[0] + ')');
+            console.log(h, svgHeight)
+            // Subset background should stick to his place
+            d3.select(".background-subsets").attr('transform', function (d, i) {
+                return 'translate(' + [ 0, -d3.event.translate[0] ] + ')'
+            })
+
         }
 
         var zoom = d3.behavior.zoom()
             .scaleExtent([1, 10])
-            .on('zoom', zoomed);
-
-        var drag = d3.behavior.drag()
-            .on('drag', function (d, i) {
-                d.x += d3.event.dx
-                d.y += d3.event.dy
-                d3.select(this).attr('transform', function (d, i) {
-                    return 'translate(' + [ d.x, d.y ] + ')'
-                })
-            });
+            .on('zoom', zooming);
 
         d3.select('.gRows').call(zoom);
 
