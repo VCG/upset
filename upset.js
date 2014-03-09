@@ -436,9 +436,25 @@ function plot() {
         svg.selectAll('.row')
             .append('rect')
             .on('click', function (d) {
-                var selection = new Selection(d.items);
+
+                // extract a subset defintion for use with the subset filter
+                var subsetDefinition = {};
+                for ( var x = 0; x < d.combinedSets.length; ++x ) {
+                    subsetDefinition[usedSets[x].id] = d.combinedSets[x];
+                }
+
+                // create subset filter and create new selection based on all items
+                var selection = new Selection(allItems);
+                selection = selection.createSelection( attributes.length-1, "subset", { subset: subsetDefinition } );
                 selections.addSelection(selection);
                 d3.select(this).style("fill", selections.getColor(selection));
+
+                // === Experiments ===
+                // create a set count filter and create new selection based on previous subset
+                selections.addSelection(selection.createSelection( attributes.length-2, "numericRange", { min: "1", max: "1" } ));                
+
+                // create a regex filter on name and create new selection based on previous subset
+                selections.addSelection(selection.createSelection( 0, "stringRegex", { pattern: "^[A-B].+$" } ));                
             })
             .attr({
                 class: 'subSetSize',

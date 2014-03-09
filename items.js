@@ -37,10 +37,11 @@ function plotSelectionTabs( element, selections, activeSelection ) {
 }
 
 
-function plotSelectedItems( element, selection ) { 
+function plotSelectedItems( elementId, selection ) { 
 
+    var element = d3.select(elementId);
     // clear target element
-    d3.select(element).html("");
+    element.html("");
 
     //console.log( "Selection is " );
     //console.log( selection );
@@ -51,8 +52,12 @@ function plotSelectedItems( element, selection ) {
     }
 
     //d3.select(element).html('<p>' + selection.items.length + ' of ' + depth + ' selected</p>')
+
+    for ( var i = 0; i < selection.filters.length; ++i ) {
+        filter.renderViewer(element, selection.filters[i].id, selection.filters[i].attributeId, selection.filters[i].parameters );
+    }
     
-    var table = d3.select(element).append("table");
+    var table = element.append("table");
     var thead = table.append("thead");
     var tbody = table.append("tbody");
 

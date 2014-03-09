@@ -45,6 +45,11 @@ var combinations = 0;
 /** The depth of the dataset, i.e., how many records it contains */
 var depth = 0;
 
+/** an array representing all items */
+var allItems = [];
+
+var filter = new Filter();
+
 /** Indices of selected items **/
 var selectedItems = [];
 

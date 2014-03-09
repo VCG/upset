@@ -3,10 +3,24 @@
 */
 
 
-function Selection( items ) {
+Selection = function( items, filters ) {
     this.items = items || [];
+    this.filters = filters || [];
     this.id = undefined;
-}
+};
+
+
+Selection.prototype.createSelection = function( attributeId, filterId, parameters ) {
+    var newItems = [];
+    var filterInstance = filter.get(filterId);
+    for ( var i = 0; i < this.items.length; ++i ) {
+        if ( filterInstance.test( this.items[i], attributes[attributeId], parameters ) ) {
+            newItems.push(this.items[i]);
+        }
+    }
+    console.log( filter );
+    return ( new Selection( newItems, this.filters.concat( [ { id: filterId, parameters: parameters, attributeId: attributeId } ] ) ) );
+};
 
 
 // should be a singleton

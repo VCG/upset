@@ -196,7 +196,7 @@ function parseDataSet(data,dataSetDescription) {
             for (var r = 0; r < rows.length; r++) {
                 
                 // increment number of items in data set
-                ++depth;
+                allItems.push(depth++);
                 
                 for ( var s = 0; s < setDefinitionBlockLength; ++s ) {
                     rawSets[processedSetsCount+s].push(rows[r][setDefinitionBlock.start+s]);
@@ -253,18 +253,15 @@ function parseDataSet(data,dataSetDescription) {
     };
 
     for ( var d = 0; d < depth; ++d ) {
-        var sets = [];
+        var setList = [];
         for (var s = 0; s < rawSets.length; s++ ) {
             if ( rawSets[s][d] === 1 ) {
-                sets.push( s );
+                setList.push( Math.floor( Math.pow(2,s) ) );
             }
         }
-        setsAttribute.values[d] = sets;
+        setsAttribute.values[d] = setList;
     }
     attributes.push(setsAttribute);
-    
-    //console.log( rawSets );
-
 
     // load meta data    
     for ( var i = 0; i < dataSetDescription.meta.length; ++i ) {
