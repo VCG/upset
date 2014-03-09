@@ -73,6 +73,9 @@ function load(descriptions) {
     header.append('div').html('Group by set size.').attr({id: 'groupSetSize',
         class: 'myButton'});
 
+    header.append('div').html('Group by Sets.').attr({id: 'groupSet',
+        class: 'myButton'});
+
     var dataSelect = header.append('div').text('Choose Dataset');
 
     var select = dataSelect.append('select');
@@ -347,8 +350,7 @@ function setUpSubSets() {
 function setUpGroupings()
 {
     groupBySetSize();
-
-
+    groupBySet();
 }
 
 function change() {

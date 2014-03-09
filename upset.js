@@ -1,21 +1,18 @@
+$(EventManager).bind("item-selection-added", function (event, data) {
+    console.log("Selection was added to selection list with color " + selections.getColor(data.selection) + ' and ' + data.selection.items.length + ' items.');
 
-$(EventManager).bind( "item-selection-added", function( event, data ) {
-    console.log( "Selection was added to selection list with color " + selections.getColor( data.selection ) + ' and ' + data.selection.items.length + ' items.' );
-    
-    plotSelectionTabs( "#selection-tabs", selections, data.selection );
-    plotSelectedItems( "#item-table", data.selection );
+    plotSelectionTabs("#selection-tabs", selections, data.selection);
+    plotSelectedItems("#item-table", data.selection);
 });
 
+$(EventManager).bind("item-selection-removed", function (event, data) {
+    console.log("Selection was removed from selection list.");
 
-$(EventManager).bind( "item-selection-removed", function( event, data ) {
-    console.log( "Selection was removed from selection list." );
-    
     var newActiveSelectionIndex = data.index > 0 ? data.index - 1 : 0;
 
-    plotSelectionTabs( "#selection-tabs", selections, selections.getSelection(newActiveSelectionIndex) );
-    plotSelectedItems( "#item-table", selections.getSelection(newActiveSelectionIndex) );        
+    plotSelectionTabs("#selection-tabs", selections, selections.getSelection(newActiveSelectionIndex));
+    plotSelectedItems("#item-table", selections.getSelection(newActiveSelectionIndex));
 });
-
 
 function plot() {
 
@@ -324,8 +321,11 @@ function plot() {
         // ------------------- the rows -----------------------
 
         var subSets = gRows.selectAll('.row')
-            .data(renderRows, function (d) {
+            .data(renderRows, function (d, i) {
+                //    console.log("what: " + d.id + '' + i);
+                //  return d.id + '' + i;
                 return d.id;
+
             });
 
         var grp = subSets
@@ -439,22 +439,22 @@ function plot() {
 
                 // extract a subset defintion for use with the subset filter
                 var subsetDefinition = {};
-                for ( var x = 0; x < d.combinedSets.length; ++x ) {
+                for (var x = 0; x < d.combinedSets.length; ++x) {
                     subsetDefinition[usedSets[x].id] = d.combinedSets[x];
                 }
 
                 // create subset filter and create new selection based on all items
                 var selection = new Selection(allItems);
-                selection = selection.createSelection( attributes.length-1, "subset", { subset: subsetDefinition } );
+                selection = selection.createSelection(attributes.length - 1, "subset", { subset: subsetDefinition });
                 selections.addSelection(selection);
                 d3.select(this).style("fill", selections.getColor(selection));
 
                 // === Experiments ===
                 // create a set count filter and create new selection based on previous subset
-                selections.addSelection(selection.createSelection( attributes.length-2, "numericRange", { min: "1", max: "1" } ));                
+                selections.addSelection(selection.createSelection(attributes.length - 2, "numericRange", { min: "1", max: "1" }));
 
                 // create a regex filter on name and create new selection based on previous subset
-                selections.addSelection(selection.createSelection( 0, "stringRegex", { pattern: "^[A-B].+$" } ));                
+                selections.addSelection(selection.createSelection(0, "stringRegex", { pattern: "^[A-B].+$" }));
             })
             .attr({
                 class: 'subSetSize',
@@ -553,6 +553,15 @@ function plot() {
             'click',
             function (d) {
                 UpSetState.grouping = sortBySetSizeGroups;
+                updateState();
+
+                rowTransition();
+            });
+
+        d3.selectAll('#groupSet').on(
+            'click',
+            function (d) {
+                UpSetState.grouping = sortBySetGroups;
                 updateState();
 
                 rowTransition();
