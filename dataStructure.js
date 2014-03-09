@@ -61,6 +61,9 @@ var dataSets;
 /** Groups of subsets driven by group size */
 var sizeGroups = [];
 
+/** Groups of subsets driven by set containment */
+var setGroups = [];
+
 /** How many sets do we want to see by default */
 var nrDefaultSets = 3;
 

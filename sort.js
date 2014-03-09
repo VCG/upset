@@ -2,14 +2,15 @@
  * Created by Alexander Lex on 3/4/14.
  */
 
-var GROUP_PREFIX = 'SetSizeG_';
-var EMPTY_GROUP_ID = GROUP_PREFIX + '0';
+var SET_SIZE_GROUP_PREFIX = 'SetSizeG_';
+var EMPTY_GROUP_ID = 'EmptyGroup';
+var SET_BASED_GROUPING_PREFIX = "SetG_";
 
 var groupBySetSize = function () {
     sizeGroups = [];
     sizeGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset'));
     for (var i = 0; i < usedSets.length; i++) {
-        sizeGroups.push(new Group(GROUP_PREFIX + (i + 1), (i + 1) + '-Set Subsets'));
+        sizeGroups.push(new Group(SET_SIZE_GROUP_PREFIX + (i + 1), (i + 1) + '-Set Subsets'));
     }
     subSets.forEach(function (subSet) {
         var group = sizeGroups[subSet.nrCombinedSets]
@@ -18,6 +19,29 @@ var groupBySetSize = function () {
         else
             console.log('Fail' + group + subSet.nrCombinedSets);
     })
+}
+
+/**
+ * Creates groups for all sets containing all subsets of this set
+ */
+var groupBySet = function () {
+
+    setGroups = [];
+    setGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset'));
+    for (var i = 0; i < usedSets.length; i++) {
+        var group = new Group(SET_BASED_GROUPING_PREFIX + (i + 1), 'All Subsets of ' + usedSets[i].elementName);
+
+        setGroups.push(group);
+
+        subSets.forEach(function (subSet) {
+            if (subSet.combinedSets[i] !== 0) {
+
+                console.log('Adding to ' + usedSets[i].elementName + " subset " +  subSet.id);
+//                console.log('b: ' + usedSets[i].combinedSets);
+                group.addSubSet(subSet);
+            }
+        });
+    }
 }
 
 /** Collapse or uncollapse group */
@@ -84,11 +108,10 @@ function sortByExpectedValue() {
     });
 }
 
-/** Sort by set size using groups */
-var sortBySetSizeGroups = function () {
+var sortByGroup = function (groupList) {
     renderRows.length = 0;
-    for (var i = 0; i < sizeGroups.length; i++) {
-        var group = sizeGroups[i];
+    for (var i = 0; i < groupList.length; i++) {
+        var group = groupList[i];
         // ignoring an empty empty group
         if (group.id === EMPTY_GROUP_ID && group.setSize === 0) {
             continue;
@@ -108,6 +131,16 @@ var sortBySetSizeGroups = function () {
             }
         }
     }
+}
+
+/** Sort by set size using groups */
+var sortBySetSizeGroups = function () {
+    sortByGroup(sizeGroups);
+}
+
+/** Sort by the groups containing all subsets of each sets */
+var sortBySetGroups = function (){
+    sortByGroup(setGroups);
 }
 
 var UpSetState = {

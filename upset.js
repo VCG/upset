@@ -1,14 +1,13 @@
-
 $(EventManager).bind( "item-selection-added", function( event, data ) {
     console.log( "Selection was added to selection list with color " + selections.getColor( data.selection ) + ' and ' + data.selection.items.length + ' items.' );
-    
+
     plotSelectionTabs( "#selection-tabs", selections, data.selection );
     plotSelectedItems( "#item-table", data.selection );
 });
 
 $(EventManager).bind( "item-selection-updated", function( event, data ) {
     console.log( 'Selection was updated! New length is ' + data.selection.items.length + ' items.' );
-    
+
     plotSelectionTabs( "#selection-tabs", selections, data.selection );
     plotSelectedItems( "#item-table", data.selection );
 });
@@ -16,13 +15,12 @@ $(EventManager).bind( "item-selection-updated", function( event, data ) {
 
 $(EventManager).bind( "item-selection-removed", function( event, data ) {
     console.log( "Selection was removed from selection list." );
-    
+
     var newActiveSelectionIndex = data.index > 0 ? data.index - 1 : 0;
 
     plotSelectionTabs( "#selection-tabs", selections, selections.getSelection(newActiveSelectionIndex) );
-    plotSelectedItems( "#item-table", selections.getSelection(newActiveSelectionIndex) );        
+    plotSelectedItems( "#item-table", selections.getSelection(newActiveSelectionIndex) );
 });
-
 
 function plot() {
 
@@ -58,6 +56,7 @@ function plot() {
     var setMatrixHeight = usedSets.length * setCellDistance + majorPadding;
     var subSetMatrixHeight;
     var h;
+    var svgHeight = 600;
 
     var rowScale;
 
@@ -77,7 +76,7 @@ function plot() {
 
     d3.select('#vis').select('svg').remove();
     var svg = d3.select('#vis').append('svg').attr('width', w)
-        .attr('height', h);
+        .attr('height', svgHeight);
 
     // Rows container for vertical panning
     var gRows = svg.append('g')
@@ -314,7 +313,7 @@ function plot() {
         })
         .call(expectedValueAxis);
 
-    // We need an invisible background to pan the subsets
+    // Invisible background to capture the pan interaction with the subsets
     gRows.append('rect').attr({
         x: 0,
         y: setMatrixHeight,
@@ -331,8 +330,11 @@ function plot() {
         // ------------------- the rows -----------------------
 
         var subSets = gRows.selectAll('.row')
-            .data(renderRows, function (d) {
+            .data(renderRows, function (d, i) {
+                //    console.log("what: " + d.id + '' + i);
+                //  return d.id + '' + i;
                 return d.id;
+
             });
 
         var grp = subSets
@@ -446,7 +448,7 @@ function plot() {
 
                 // extract a subset defintion for use with the subset filter
                 var subsetDefinition = {};
-                for ( var x = 0; x < d.combinedSets.length; ++x ) {
+                for (var x = 0; x < d.combinedSets.length; ++x) {
                     subsetDefinition[usedSets[x].id] = d.combinedSets[x];
                 }
 
@@ -454,6 +456,7 @@ function plot() {
 
                 // create subset filter and create new selection based on all items
                 var selection = new Selection(allItems);
+
                 filterList.push( { attributeId: attributes.length-1, id: "subset", parameters: { subset: subsetDefinition }, uuid: Utilities.generateUuid() } );
 
                 for ( var a = 0; a < attributes.length - 1; ++a ) {
@@ -477,8 +480,6 @@ function plot() {
 
                 // create a regex filter on name and create new selection based on previous subset
                 //selections.addSelection(selection.createSelection( 0, "stringRegex", { pattern: "^[A-B].+$" } ));                
-
-                // create a filter for every attribute that will allow everything to pass (so we can play around with the filter editors)
             })
             .attr({
                 class: 'subSetSize',
@@ -577,6 +578,15 @@ function plot() {
             'click',
             function (d) {
                 UpSetState.grouping = sortBySetSizeGroups;
+                updateState();
+
+                rowTransition();
+            });
+
+        d3.selectAll('#groupSet').on(
+            'click',
+            function (d) {
+                UpSetState.grouping = sortBySetGroups;
                 updateState();
 
                 rowTransition();
