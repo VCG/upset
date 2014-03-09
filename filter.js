@@ -62,7 +62,7 @@ Filter = function() {
         stringRegex: {
           name: "Regular Expression",
           types: ["string"],
-          parameters: [ { name: "String", type: "string", variable: "pattern" } ],
+          parameters: [ { name: "Pattern", type: "string", variable: "pattern" } ],
           test: function( item, attribute, parameters ) {
                 return ( attribute.values[item].match( parameters.pattern ) !== null );
             }   
@@ -108,23 +108,25 @@ Filter.prototype.get = function( filter ) {
 };
 
 
-Filter.prototype.renderViewer = function( element, filterId, attributeId, parameters, filterUuid ) {
-    var filterInstance = this.get( filterId );
+Filter.prototype.renderViewer = function( element, selection, filterUuid ) { // filterId, attributeId, parameters
+    var self = this;
+
+    var filterId = selection.getFilter( filterUuid ).id;
+    var attributeId = selection.getFilter( filterUuid ).attributeId;
+    var parameters = selection.getFilter( filterUuid ).parameters;
+
+    var filterInstance = self.get( filterId );
     var filterViewer = element.select('#filter-' + filterUuid );
     if ( filterViewer.empty() ) {
         filterViewer = element.append('div').attr( 'id', 'filter-' + filterUuid );
     }
-    var self = this;
 
     filterViewer.html( '<div><u>' + attributes[attributeId].name +'</u>: <b>' + filterInstance.name + '</b> (<i>' + filterInstance.types + '</i>)&nbsp;' + 
         '<span class="filter-button filter-edit" data-filter-uuid="' + filterUuid + '""><i class="fa fw fa-pencil"></i></span>' +
         '</div>');
 
     d3.selectAll( '.filter-edit' ).on( 'click', function(event){
-        console.log( this.dataset.filterUuid );
-        console.log( element, filterId, attributeId, parameters, this.dataset.filterUuid );
-        self.renderEditor( element, filterId, attributeId, parameters, this.dataset.filterUuid );
-        console.log( "You should see the edit form for this filter ..." );
+        self.renderEditor( element, selection, this.dataset.filterUuid );
     });
 
     var parameterType = undefined;
@@ -146,13 +148,18 @@ Filter.prototype.renderViewer = function( element, filterId, attributeId, parame
     }
 };
 
-Filter.prototype.renderEditor = function( element, filterId, attributeId, parameters, filterUuid ) {
-    var filterInstance = this.get( filterId );
+Filter.prototype.renderEditor = function( element, selection, filterUuid ) { // filterId, attributeId, parameters
+    var self = this;
+
+    var filterId = selection.getFilter( filterUuid ).id;
+    var attributeId = selection.getFilter( filterUuid ).attributeId;
+    var parameters = selection.getFilter( filterUuid ).parameters;
+
+    var filterInstance = self.get( filterId );
     var filterEditor = element.select('#filter-' + filterUuid );
     if ( filterEditor.empty() ) {
         filterEditor = element.append('div').attr( 'id', 'filter-' + filterUuid );
     }
-    var self = this;
 
     filterEditor.html( '<div><u>' + attributes[attributeId].name +'</u>: <b>' + filterInstance.name + '</b> (<i>' + filterInstance.types + '</i>)' + 
         '&nbsp;<span class="filter-button filter-save" data-filter-uuid="' + filterUuid + '""><i class="fa fw fa-check"></i></span>' +
@@ -161,12 +168,13 @@ Filter.prototype.renderEditor = function( element, filterId, attributeId, parame
 
     d3.selectAll( '.filter-save' ).on( 'click', function(event){
         console.log( this.dataset.filterUuid );
-        alert( "Applying updated filter ..." );
+        self.renderViewer( element, selection, this.dataset.filterUuid );
+        alert( "Applied new filter parameters" );
     });
 
     d3.selectAll( '.filter-cancel' ).on( 'click', function(event){
         console.log( this.dataset.filterUuid );
-        self.renderViewer( element, filterId, attributeId, parameters, this.dataset.filterUuid );
+        self.renderViewer( element, selection, this.dataset.filterUuid );
         console.log( "Cancelled!" );
     });
 
@@ -174,7 +182,7 @@ Filter.prototype.renderEditor = function( element, filterId, attributeId, parame
     var parameterName = undefined;
     for ( var parameterVariable in parameters ) {
         if ( parameters.hasOwnProperty(parameterVariable) ) {
-            var parameterViewer = filterViewer.append( 'div' ).style( "margin-left", "10px");
+            var parameterEditor = filterEditor.append( 'div' ).style( "margin-left", "10px");
 
             // look up parameter type in filter instance
             for ( var p = 0; p < filterInstance.parameters.length; ++p ) {
@@ -184,7 +192,7 @@ Filter.prototype.renderEditor = function( element, filterId, attributeId, parame
                 }
             }
 
-            this.renderParameterViewer( parameterViewer, parameterName, parameterType, parameters[parameterVariable] );
+            self.renderParameterEditor( parameterEditor, parameterName, parameterType, parameters[parameterVariable], parameterVariable );
         }
     }
 };
@@ -216,5 +224,45 @@ Filter.prototype.renderParameterViewer = function( element, parameterName, param
             element.html( parameterName + ' (' + parameterType + '): ' + parameterValue );
             break;
     }
+};
+
+Filter.prototype.renderParameterEditor = function( element, parameterName, parameterType, parameterValue, parameterVariable ) {
+
+    var s = "";
+    
+    s += '<div data-filter-parameter-type="' + parameterType + '">';
+    
+    switch ( parameterType ) {
+        case 'float':
+            s += parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter="' + parameterVariable + '" type="number" step="1" value="' + d3.format('f')(parameterValue) + '"></input>';
+            break;
+        case 'integer':
+            s +=  parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter="' + parameterVariable + '" type="number" step="1" value="' + d3.format('d')(parameterValue) + '"></input>';
+            break;
+        case 'subset':        
+            /*
+            var subset = parameterValue;
+
+            for (var id in subset) {
+                if (subset.hasOwnProperty(id)) {
+                    s += ( subset[id] === 1 ? '<i class="fa fw fa-square"></i>' : '<i class="fa fw fa-square-o"></i>' ) + ' '; // + id + '  ';
+                }
+            }
+            */
+            s += '<i>Sorry, there is currently no subset definition editor.</i>'
+            break;
+        case 'string':
+            // fall-through
+        default:
+            s += parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter="' + parameterVariable + '" type="text" value="' + parameterValue + '"></input>';
+            break;
+    }
+
+    s += '</div>'; 
+
+    // add to DOM
+    element.html(s);
+
+    // attach events ...
 };
 

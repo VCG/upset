@@ -55,7 +55,7 @@ function plotSelectedItems( elementId, selection ) {
     //d3.select(element).html('<p>' + selection.items.length + ' of ' + depth + ' selected</p>')
 
     for ( var i = 0; i < selection.filters.length; ++i ) {
-        filter.renderViewer(element, selection.filters[i].id, selection.filters[i].attributeId, selection.filters[i].parameters, selection.filters[i].uuid );
+        filter.renderViewer(element, selection, selection.filters[i].uuid );
     }
     
     var table = element.append("table");

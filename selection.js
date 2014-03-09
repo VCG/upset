@@ -22,6 +22,16 @@ Selection.prototype.createSelection = function( attributeId, filterId, parameter
     return ( new Selection( newItems, this.filters.concat( [ { id: filterId, parameters: parameters, attributeId: attributeId, uuid: Utilities.generateUuid() } ] ) ) );
 };
 
+Selection.prototype.getFilter = function( uuid ) {
+    for ( var i = 0; i < this.filters.length; ++i ) {
+        if ( this.filters[i].uuid === uuid ) {
+            return ( this.filters[i] );
+        }
+    }
+
+    return undefined;
+}
+
 
 // should be a singleton
 function SelectionList( palette ) {
