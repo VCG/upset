@@ -110,13 +110,21 @@ Filter.prototype.get = function( filter ) {
 
 Filter.prototype.renderViewer = function( element, filterId, attributeId, parameters, filterUuid ) {
     var filterInstance = this.get( filterId );
-    var filterViewer = element.append("div");
+    var filterViewer = element.select('#filter-' + filterUuid );
+    if ( filterViewer.empty() ) {
+        filterViewer = element.append('div').attr( 'id', 'filter-' + filterUuid );
+    }
+    var self = this;
 
-    filterViewer.html( '<div><u>' + attributes[attributeId].name +'</u>: <b>' + filterInstance.name + '</b> (<i>' + filterInstance.types + '</i>)&nbsp;<span class="filter-edit-button" data-filter-uuid="' + filterUuid + '""><i class="fa fw fa-pencil"></i></span></div>');
+    filterViewer.html( '<div><u>' + attributes[attributeId].name +'</u>: <b>' + filterInstance.name + '</b> (<i>' + filterInstance.types + '</i>)&nbsp;' + 
+        '<span class="filter-button filter-edit" data-filter-uuid="' + filterUuid + '""><i class="fa fw fa-pencil"></i></span>' +
+        '</div>');
 
-    d3.selectAll( '.filter-edit-button' ).on( 'click', function(event){
+    d3.selectAll( '.filter-edit' ).on( 'click', function(event){
         console.log( this.dataset.filterUuid );
-        alert( "You will see the edit form for this filter ..." );
+        console.log( element, filterId, attributeId, parameters, this.dataset.filterUuid );
+        self.renderEditor( element, filterId, attributeId, parameters, this.dataset.filterUuid );
+        console.log( "You should see the edit form for this filter ..." );
     });
 
     var parameterType = undefined;
@@ -137,6 +145,50 @@ Filter.prototype.renderViewer = function( element, filterId, attributeId, parame
         }
     }
 };
+
+Filter.prototype.renderEditor = function( element, filterId, attributeId, parameters, filterUuid ) {
+    var filterInstance = this.get( filterId );
+    var filterEditor = element.select('#filter-' + filterUuid );
+    if ( filterEditor.empty() ) {
+        filterEditor = element.append('div').attr( 'id', 'filter-' + filterUuid );
+    }
+    var self = this;
+
+    filterEditor.html( '<div><u>' + attributes[attributeId].name +'</u>: <b>' + filterInstance.name + '</b> (<i>' + filterInstance.types + '</i>)' + 
+        '&nbsp;<span class="filter-button filter-save" data-filter-uuid="' + filterUuid + '""><i class="fa fw fa-check"></i></span>' +
+        '&nbsp;<span class="filter-button filter-cancel" data-filter-uuid="' + filterUuid + '""><i class="fa fw fa-times"></i></span>' +
+        '</div>');
+
+    d3.selectAll( '.filter-save' ).on( 'click', function(event){
+        console.log( this.dataset.filterUuid );
+        alert( "Applying updated filter ..." );
+    });
+
+    d3.selectAll( '.filter-cancel' ).on( 'click', function(event){
+        console.log( this.dataset.filterUuid );
+        self.renderViewer( element, filterId, attributeId, parameters, this.dataset.filterUuid );
+        console.log( "Cancelled!" );
+    });
+
+    var parameterType = undefined;
+    var parameterName = undefined;
+    for ( var parameterVariable in parameters ) {
+        if ( parameters.hasOwnProperty(parameterVariable) ) {
+            var parameterViewer = filterViewer.append( 'div' ).style( "margin-left", "10px");
+
+            // look up parameter type in filter instance
+            for ( var p = 0; p < filterInstance.parameters.length; ++p ) {
+                if ( filterInstance.parameters[p].variable === parameterVariable ) {
+                    parameterType = filterInstance.parameters[p].type;
+                    parameterName = filterInstance.parameters[p].name;
+                }
+            }
+
+            this.renderParameterViewer( parameterViewer, parameterName, parameterType, parameters[parameterVariable] );
+        }
+    }
+};
+
 
 Filter.prototype.renderParameterViewer = function( element, parameterName, parameterType, parameterValue ) {
     
