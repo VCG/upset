@@ -180,9 +180,22 @@ th.attribute-header.selected {
 }
 
 .filter-button {
+    cursor: default;
     color: blue;    
 }
 
 .filter-button:hover {
+    color: darkblue;
+}
+
+.subset-state-toggle-button {
+    cursor: default;
+}
+
+.subset-state-toggle-button .fw {
+    color: blue;        
+}
+
+.subset-state-toggle-button:hover .fw {
     color: darkblue;
 }
