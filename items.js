@@ -15,17 +15,18 @@ function plotSelectionTabs( element, selections, activeSelection ) {
             .data(selections.list)
         .enter()
             .append("td")
-                .style("border", "2px solid black" )
-                .style("border-radius", "10px" )
-                .style("padding", "3px" )
-                .style("background-color", function(d,i) { return ( i === selections.getSelectionIndex( activeSelection ) ? selections.getColor( d ) : "white" ); } )
-                .style("border-color", function(d) { return selections.getColor( d ); } );
+                .attr("class", "selection-tab")
+                .classed( { 'active': function(d,i) { return ( i === selections.getSelectionIndex( activeSelection ) ? true : false ); } } )
 
+            tabs.append("i")
+                .attr( "class", "fa fa-square" )
+                .style("color", function(d,i) { return ( selections.getColor( d ) ); } )
+                .style( "margin-right", "2px");
             tabs.append("span")
-                .text(function(d) { return d.items.length; })
+                .text(function(d) { return d3.format("5d")( d.items.length ); })
                 .on("click", function(k) { // is attribute object
-                    d3.selectAll("td").style( "background-color", "white" );
-                    d3.select(this.parentNode).style( "background-color", selections.getColor(k) );                                    
+                    d3.selectAll("td").classed( { 'active': false } )
+                    d3.select(this.parentNode).classed( { 'active': true } )                                    
                     plotSelectedItems( "#item-table", k );
                 });
             tabs.append("i")

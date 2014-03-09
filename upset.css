@@ -166,3 +166,15 @@ th.attribute-header {
 th.attribute-header.selected {
     background-color: yellow;
 }
+
+.selection-tab {
+    cursor: pointer;
+    background-color: #eee;
+    border-radius: 5px;
+    padding: 4px;
+    margin-right: 4px;
+}
+
+.selection-tab.active {
+    background-color: #ccc;
+}
