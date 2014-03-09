@@ -244,6 +244,24 @@ function parseDataSet(data,dataSetDescription) {
         setCountAttribute.values[d] = setCount;
     }
     attributes.push(setCountAttribute);
+
+    var setsAttribute = {
+        name: 'Sets',
+        type: 'sets',
+        values: [],
+        sort: 1,
+    };
+
+    for ( var d = 0; d < depth; ++d ) {
+        var sets = [];
+        for (var s = 0; s < rawSets.length; s++ ) {
+            if ( rawSets[s][d] === 1 ) {
+                sets.push( s );
+            }
+        }
+        setsAttribute.values[d] = sets;
+    }
+    attributes.push(setsAttribute);
     
     //console.log( rawSets );
 
