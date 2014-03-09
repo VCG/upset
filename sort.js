@@ -69,10 +69,13 @@ var collapseAggregate = function (aggregate) {
 // ----------------------- Sort Functions ----------------------------
 
 function sortOnSetItem(set) {
+    if (!set) {
+        set = usedSets[0];
+    }
     dataRows.length = 0;
     dataRows = subSets.slice(0);
-    var setIndex = sets.indexOf(set);
-    renderRows.sort(function (a, b) {
+    var setIndex = usedSets.indexOf(set);
+    dataRows.sort(function (a, b) {
         // move all elements that contain the clicked set to the top
         if (b.combinedSets[setIndex] !== a.combinedSets[setIndex]) {
             return b.combinedSets[setIndex] - a.combinedSets[setIndex];
@@ -91,7 +94,7 @@ function sortByCombinationSize() {
     dataRows = subSets.slice(0);
 
 // sort by number of combinations
-    renderRows.sort(function (a, b) {
+    dataRows.sort(function (a, b) {
         if (a.nrCombinedSets !== b.nrCombinedSets) {
             return a.nrCombinedSets - b.nrCombinedSets;
         }
@@ -100,20 +103,21 @@ function sortByCombinationSize() {
     });
 }
 
+/** sort by size of set overlap */
 function sortBySubsetSize() {
     dataRows.length = 0;
     dataRows = subSets.slice(0);
-// sort by size of set overlap
-    renderRows.sort(function (a, b) {
+    dataRows.sort(function (a, b) {
         return b.setSize - a.setSize;
     });
 }
 
+/** sort by size of set overlap */
 function sortByExpectedValue() {
     dataRows.length = 0;
     dataRows = subSets.slice(0);
-// sort by size of set overlap
-    renderRows.sort(function (a, b) {
+
+    dataRows.sort(function (a, b) {
         return Math.abs(b.expectedValueDeviation) - Math.abs(a.expectedValueDeviation);
     });
 }
@@ -169,8 +173,8 @@ var UpSetState = {
 
 }
 
-updateState = function () {
-    UpSetState.grouping();
+updateState = function (parameter) {
+    UpSetState.grouping(parameter);
     renderRows.length = 0;
 
     var registry = {};
