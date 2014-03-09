@@ -58,6 +58,7 @@ function plot() {
     var setMatrixHeight = usedSets.length * setCellDistance + majorPadding;
     var subSetMatrixHeight;
     var h;
+    var svgHeight = 600;
 
     var rowScale;
 
@@ -77,7 +78,7 @@ function plot() {
 
     d3.select('#vis').select('svg').remove();
     var svg = d3.select('#vis').append('svg').attr('width', w)
-        .attr('height', h);
+        .attr('height', svgHeight);
 
     // Rows container for vertical panning
     var gRows = svg.append('g')
@@ -314,7 +315,7 @@ function plot() {
         })
         .call(expectedValueAxis);
 
-    // We need an invisible background to pan the subsets
+    // Invisible background to capture the pan interaction with the subsets
     gRows.append('rect').attr({
         x: 0,
         y: setMatrixHeight,
