@@ -464,8 +464,8 @@ function plot() {
                         filterList.push( { attributeId: a, id: "numericRange", parameters: { min: attributes[a].min, max: attributes[a].max }, uuid: Utilities.generateUuid() } );
                     }
 
-                    if ( attributes[a].type === 'string' ) {
-                        filterList.push( { attributeId: a, id: "regex", parameters: { pattern: "." }, uuid: Utilities.generateUuid() } );
+                    if ( attributes[a].type === 'string' || attributes[a].type === 'id' ) {
+                        filterList.push( { attributeId: a, id: "stringRegex", parameters: { pattern: "." }, uuid: Utilities.generateUuid() } );
                     }
                 }
 
