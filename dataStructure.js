@@ -16,15 +16,15 @@ var EventManager = {};
 
 /** how to use:
 
-$(EventManager).bind("tabClicked", function() {
+ $(EventManager).bind("tabClicked", function() {
     // do something
 });
 
-$(EventManager).trigger("tabClicked");
+ $(EventManager).trigger("tabClicked");
 
-$(EventManager).unbind("tabClicked");
+ $(EventManager).unbind("tabClicked");
 
-*/
+ */
 
 /** The input datasets */
 var sets = [];
@@ -32,6 +32,8 @@ var setIdToSet = {};
 /** The sets currently in use */
 var usedSets = [];
 /** The ordered and grouped subsets */
+var dataRows = [];
+/** Same as dataRows but including a wrapper for the data */
 var renderRows = [];
 /** The dynamically created subSets */
 var subSets = [];
@@ -68,7 +70,6 @@ var setGroups = [];
 /** How many sets do we want to see by default */
 var nrDefaultSets = 3;
 
-
 /**
  * The base element for all rows (sets, groups, subsets, aggregates)
  * @param id
@@ -102,7 +103,7 @@ function BaseSet(setID, setName, combinedSets, setData) {
     /** An array of all the sets that are combined in this set. The array contains a 1 if a set at the corresponding position in the sets array is combined. */
     this.combinedSets = combinedSets;
 
-    /** The number of combined renderRows */
+    /** The number of combined dataRows */
     this.nrCombinedSets = 0;
 
     for (var i = 0; i < this.combinedSets.length; i++) {
@@ -120,7 +121,6 @@ function BaseSet(setID, setName, combinedSets, setData) {
 
     this.dataRatio = this.setSize / depth;
 }
-
 
 BaseSet.prototype = Element;
 BaseSet.prototype.constructor = Element;
@@ -197,7 +197,6 @@ function Aggregate(aggregateID, aggregateName) {
     this.subSets = [];
 
     this.isCollapsed = true;
-
 
     //this.setSize = 0;
     this.expectedValue = 0;

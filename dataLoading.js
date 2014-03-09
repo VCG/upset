@@ -339,10 +339,10 @@ function setUpSubSets() {
         makeSubSet(i)
     }
 
-   // renderRows = subSets.slice(0);
+   // dataRows = subSets.slice(0);
 
     // sort by size of set overlap
-//    renderRows.sort(function (a, b) {
+//    dataRows.sort(function (a, b) {
 //        return b.setSize - a.setSize;
 //    });
 
@@ -358,7 +358,7 @@ function change() {
     sets.length = 0;
     subSets.length = 0;
     usedSets.length = 0;
-    renderRows.length = 0;
+    dataRows.length = 0;
     depth = 0;
     loadDataSet(this.options[this.selectedIndex].value);
     history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + '?dataset=' + this.selectedIndex);
@@ -378,7 +378,7 @@ function updateSetContainment(set) {
         }
     }
     subSets.length = 0;
-    renderRows.length = 0;
+    dataRows.length = 0;
     setUpSubSets();
     setUpGroupings();
     updateState();
