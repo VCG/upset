@@ -1,8 +1,7 @@
-$(EventManager).bind( "item-selection-added", function( event, data ) {
-    console.log( "Selection was added to selection list with color " + selections.getColor( data.selection ) + ' and ' + data.selection.items.length + ' items.' );
-    plotSelectedItems( data.selection );
+$(EventManager).bind("item-selection-added", function (event, data) {
+    console.log("Selection was added to selection list with color " + selections.getColor(data.selection) + ' and ' + data.selection.items.length + ' items.');
+    plotSelectedItems(data.selection);
 });
-
 
 function plot() {
 
@@ -398,7 +397,10 @@ function plot() {
             height: cellSize,
             x: 0,
             y: 0
-        })
+        }).on('click', function (d) {
+                collapseGroup(d);
+                rowTransition();
+            });
 
         //  console.log('g2: ' + groups);
 
@@ -420,9 +422,9 @@ function plot() {
         svg.selectAll('.row')
             .append('rect')
             .on('click', function (d) {
-                var selection = new Selection( d.items);
-                selections.addSelection( selection );
-                d3.select(this).style( "fill", selections.getColor( selection ) );
+                var selection = new Selection(d.items);
+                selections.addSelection(selection);
+                d3.select(this).style("fill", selections.getColor(selection));
             })
             .attr({
                 class: 'subSetSize',
@@ -513,15 +515,15 @@ function plot() {
             'click',
             function (d) {
                 UpSetState.grouping = sortByCombinationSize;
-                UpSetState.update();
+                updateState();
                 rowTransition();
             });
 
         d3.selectAll('#groupSetSize').on(
             'click',
             function (d) {
-                UpSetState.grouping =  sortBySetSizeGroups;
-                UpSetState.update();
+                UpSetState.grouping = sortBySetSizeGroups;
+                updateState();
 
                 rowTransition();
             });
@@ -530,9 +532,8 @@ function plot() {
         d3.selectAll('.setLabel').on(
             'click',
             function (d) {
-                UpSetState.grouping =  sortOnSetItem(d);
-                UpSetState.update();
-
+                UpSetState.grouping = sortOnSetItem(d);
+                updateState();
 
                 rowTransition();
             });
@@ -540,16 +541,16 @@ function plot() {
         d3.selectAll('.subsetSizeLabel').on(
             'click',
             function (d) {
-                UpSetState.grouping =  sortBySubsetSize;
-                UpSetState.update();
+                UpSetState.grouping = sortBySubsetSize;
+                updateState();
                 rowTransition();
             });
         d3.selectAll('.expectedValueLabel').on(
             'click',
             function (d) {
-                UpSetState.grouping =  sortByExpectedValue;
-                UpSetState.update();
-         
+                UpSetState.grouping = sortByExpectedValue;
+                updateState();
+
                 rowTransition();
             });
     }
