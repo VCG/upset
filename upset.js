@@ -10,9 +10,6 @@ $(EventManager).bind( "item-selection-removed", function( event, data ) {
     
     var newActiveSelectionIndex = data.index > 0 ? data.index - 1 : 0;
 
-    console.log( selections.getSize() );
-    console.log( selections.getSelection(newActiveSelectionIndex) );
-
     plotSelectionTabs( "#selection-tabs", selections, selections.getSelection(newActiveSelectionIndex) );
     plotSelectedItems( "#item-table", selections.getSelection(newActiveSelectionIndex) );        
 });
