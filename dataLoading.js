@@ -227,6 +227,27 @@ function parseDataSet(data,dataSetDescription) {
         });
     }    
 
+    // add implicit attributes
+    var setCountAttribute = {
+        name: 'Set Count',
+        type: 'integer',
+        values: [],
+        sort: 1,
+        min: 0
+    };
+
+    for ( var d = 0; d < depth; ++d ) {
+        var setCount = 0;
+        for (var s = 0; s < rawSets.length; s++ ) {
+            setCount += rawSets[s][d];
+        }
+        setCountAttribute.values[d] = setCount;
+    }
+    attributes.push(setCountAttribute);
+    
+    //console.log( rawSets );
+
+
     // load meta data    
     for ( var i = 0; i < dataSetDescription.meta.length; ++i ) {
         var metaDefinition = dataSetDescription.meta[i];
@@ -260,17 +281,21 @@ function parseDataSet(data,dataSetDescription) {
     }
 
     // add meta data summary statistics
-    for ( var i = 0; i < dataSetDescription.meta.length; ++i ) {
-        var metaDefinition = dataSetDescription.meta[i];
+    for ( var i = 0; i < attributes.length; ++i ) {
 
-        if ( metaDefinition.type === "float" || metaDefinition.type === "integer" ) {
-            attributes[i].min = metaDefinition.min || Math.min.apply( null, attributes[i].values );
-            attributes[i].max = metaDefinition.max || Math.max.apply( null, attributes[i].values );            
+        if ( attributes[i].type === "float" || attributes[i].type === "integer" ) {            
+            // explictly defined attributes might have user-defined ranges
+            if ( i < dataSetDescription.meta.length ) {            
+                attributes[i].min = dataSetDescription.meta[i].min || Math.min.apply( null, attributes[i].values );
+                attributes[i].max = dataSetDescription.meta[i].max || Math.max.apply( null, attributes[i].values );                            
+            }
+            // implicitly defined attributes
+            else {
+                attributes[i].min = attributes[i].min || Math.min.apply( null, attributes[i].values );
+                attributes[i].max = attributes[i].max || Math.max.apply( null, attributes[i].values );                            
+            }
         }
-    }    
-
-    console.log( attributes );
-
+    }   
 
     var setID = 1;
     for (var i = 0; i < rawSets.length; i++) {
