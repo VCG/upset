@@ -28,6 +28,7 @@ $(EventManager).unbind("tabClicked");
 
 /** The input datasets */
 var sets = [];
+var setIdToSet = {};
 /** The sets currently in use */
 var usedSets = [];
 /** The ordered and grouped subsets */
