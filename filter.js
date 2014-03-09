@@ -43,7 +43,7 @@ Filter = function() {
         // exact string length filter
         stringLength: {
           name: "Length",
-          types: ["string"],
+          types: ["string", "id"],
           parameters: [ { name: "Length", type: "integer", variable: "len" } ],
           test: function( item, attribute, parameters ) {
                 return ( attribute.values[item].length === parameters.len );
@@ -52,7 +52,7 @@ Filter = function() {
         // string match filter
         stringMatch: {
           name: "Find",
-          types: ["string"],
+          types: ["string", "id"],
           parameters: [ { name: "String", type: "string", variable: "pattern" } ],
           test: function( item, attribute, parameters ) {
                 return ( attribute.values[item].indexOf( parameters.pattern ) >= 0 );
@@ -61,7 +61,7 @@ Filter = function() {
         // string match filter
         stringRegex: {
           name: "Regular Expression",
-          types: ["string"],
+          types: ["string", "id"],
           parameters: [ { name: "Pattern", type: "string", variable: "pattern" } ],
           test: function( item, attribute, parameters ) {
                 return ( attribute.values[item].match( parameters.pattern ) !== null );
