@@ -167,17 +167,13 @@ Filter.prototype.renderEditor = function( element, selection, filterUuid ) { // 
         '</div>');
 
     d3.selectAll( '.filter-save' ).on( 'click', function(event){
-        console.log( this.dataset.filterUuid );
         self.parseParameterValues( this.dataset.filterUuid, selection );
         selection.applyFilters();
         self.renderViewer( element, selection, this.dataset.filterUuid );
-        console.log( "Now the new filter needs to be applied ... " );
     });
 
     d3.selectAll( '.filter-cancel' ).on( 'click', function(event){
-        console.log( this.dataset.filterUuid );
         self.renderViewer( element, selection, this.dataset.filterUuid );
-        console.log( "Cancelled!" );
     });
 
     var parameterType = undefined;
@@ -285,16 +281,14 @@ Filter.prototype.renderParameterEditor = function( element, parameterName, param
             s +=  parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="number" step="1" value="' + d3.format('d')(parameterValue) + '"></input>';
             break;
         case 'subset':        
-            /*
             var subset = parameterValue;
 
-            for (var id in subset) {
+            for (var id in subset) {                
                 if (subset.hasOwnProperty(id)) {
-                    s += ( subset[id] === 1 ? '<i class="fa fw fa-square"></i>' : '<i class="fa fw fa-square-o"></i>' ) + ' '; // + id + '  ';
+                    s += ( subset[id] === 1 ? '<i class="fa fw fa-square"></i>' : '<i class="fa fw fa-square-o"></i>' ); // + id + '  ';
+                    s += ' ' + setIdToSet[id].elementName + '<br>';
                 }
             }
-            */
-            s += '<i>Sorry, there is currently no subset definition editor.</i>'
             break;
         case 'string':
             // fall-through
