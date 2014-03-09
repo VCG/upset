@@ -1,11 +1,16 @@
 function plotSelectionTabs( element, selections, activeSelection ) {
     // clear target element
     d3.select(element).html("");
+
+    if ( selections.getSize() <= 0 ) {
+        d3.select(element).html('<p>No selections.</p>')
+        return;
+    }
     
     var table = d3.select(element).append("table");
     var tbody = table.append("tbody");
 
-    tbody.append("tr")
+    var tabs = tbody.append("tr")
             .selectAll("td")
             .data(selections.list)
         .enter()
@@ -14,12 +19,20 @@ function plotSelectionTabs( element, selections, activeSelection ) {
                 .style("border-radius", "10px" )
                 .style("padding", "3px" )
                 .style("background-color", function(d,i) { return ( i === selections.getSelectionIndex( activeSelection ) ? selections.getColor( d ) : "white" ); } )
-                .style("border-color", function(d) { return selections.getColor( d ); } )
+                .style("border-color", function(d) { return selections.getColor( d ); } );
+
+            tabs.append("span")
                 .text(function(d) { return d.items.length; })
                 .on("click", function(k) { // is attribute object
                     d3.selectAll("td").style( "background-color", "white" );
-                    d3.select(this).style( "background-color", selections.getColor(k) );                                    
+                    d3.select(this.parentNode).style( "background-color", selections.getColor(k) );                                    
                     plotSelectedItems( "#item-table", k );
+                });
+            tabs.append("i")
+                .attr( "class", "fa fa-times-circle" )
+                .style( "margin-left", "5px")
+                .on("click", function(k) { // is attribute object
+                    selections.removeSelection( k );
                 });
 }
 
@@ -28,6 +41,14 @@ function plotSelectedItems( element, selection ) {
 
     // clear target element
     d3.select(element).html("");
+
+    //console.log( "Selection is " );
+    //console.log( selection );
+    //console.trace();
+
+    if ( !selection ) {
+        return;
+    }
 
     //d3.select(element).html('<p>' + selection.items.length + ' of ' + depth + ' selected</p>')
     

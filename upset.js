@@ -6,6 +6,20 @@ $(EventManager).bind( "item-selection-added", function( event, data ) {
     plotSelectedItems( "#item-table", data.selection );
 });
 
+
+$(EventManager).bind( "item-selection-removed", function( event, data ) {
+    console.log( "Selection was removed from selection list." );
+    
+    var newActiveSelectionIndex = data.index > 0 ? data.index - 1 : 0;
+
+    console.log( selections.getSize() );
+    console.log( selections.getSelection(newActiveSelectionIndex) );
+
+    plotSelectionTabs( "#selection-tabs", selections, selections.getSelection(newActiveSelectionIndex) );
+    plotSelectedItems( "#item-table", selections.getSelection(newActiveSelectionIndex) );        
+});
+
+
 function plot() {
 
     var cellDistance = 20;
