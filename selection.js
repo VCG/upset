@@ -33,7 +33,7 @@ function SelectionList( colors ) {
                 this.list.splice(i,1);
 
                 // remove selection from color map
-                delete this.colorMap[selection];
+                delete this.colorMap[getSelectionIndex(selection)];
             }
         }
         
