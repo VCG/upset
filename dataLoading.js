@@ -199,10 +199,12 @@ function parseDataSet(data,dataSetDescription) {
             });
 
             // iterate over columns defined by this set definition block
-            for (var r = 0; r < rows.length; r++) {
-                
+            for (var r = 0; r < rows.length; r++) {                
                 // increment number of items in data set
-                allItems.push(depth++);
+                // only increment depth when we are processing the first set definition block (we will already iterate overall rows)
+                if ( i === 0 ) {
+                    allItems.push(depth++);
+                }
                 
                 for ( var s = 0; s < setDefinitionBlockLength; ++s ) {
                     rawSets[processedSetsCount+s].push(rows[r][setDefinitionBlock.start+s]);
