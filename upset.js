@@ -19,9 +19,9 @@ $(EventManager).bind("item-selection-updated", function (event, data) {
 $(EventManager).bind("item-selection-removed", function (event, data) {
     console.log("Selection was removed from selection list.");
 
-    console.log( data );
+    console.log(data);
 
-    data.selection.unmapFromSubsets( subSets );
+    data.selection.unmapFromSubsets(subSets);
 
     var newActiveSelectionIndex = data.index > 0 ? data.index - 1 : 0;
 
@@ -440,6 +440,56 @@ function plot() {
             .on('mouseover', mouseoverRow)
             .on('mouseout', mouseoutRow)
 
+//        overlay();
+//
+//        function overlay() {
+        svg.selectAll('.row')
+            .append('rect')
+            .on('click', function (d) {
+
+            })
+            .attr({
+                class: 'what',
+
+                transform: function (d) {
+                    var y = 0;
+                    if (d.data.type !== ROW_TYPE.SUBSET)
+                        y = cellSize / 3 * .4;
+                    return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
+                },
+
+                width: function (d) {
+                    var s = d.data.selections;
+                    if (typeof s !== 'object') {
+                        return 0;
+                    }
+                    var sIDs = Object.getOwnPropertyNames(s);
+                    var usedID = false;
+                    sIDs.forEach(function (prop) {
+                        var length = s[prop].length;
+                        if (length > 0) {
+                            // console.log(selections.getColorFromUuid(prop));
+                            usedID = prop;
+                        }
+                    });
+                    if (!usedID) {
+                        return 0;
+                    }
+                    d3.select(this).style("fill", selections.getColorFromUuid(usedID));
+                    return   subSetSizeScale(s[usedID].length);
+                },
+                height: function (d) {
+                    if (d.data.type === ROW_TYPE.SUBSET)
+                        return cellSize;
+                    else
+                        return cellSize / 3;
+
+                }
+            })
+            .on('mouseover', mouseoverRow)
+            .on('mouseout', mouseoutRow)
+//        }
+
         // ----------------------- expected value bars -------------------
 
         svg.selectAll('.row')
@@ -485,53 +535,6 @@ function plot() {
             .on('zoom', zooming);
 
         d3.select('.gRows').call(zoom);
-
-        overlay();
-
-        function overlay() {
-            svg.selectAll('.row')
-                .append('rect')
-                .on('click', function (d) {
-
-                })
-                .attr({
-                    class: 'subSetSize',
-
-                    transform: function (d) {
-                        var y = 0;
-                        if (d.data.type !== ROW_TYPE.SUBSET)
-                            y = cellSize / 3 * .4;
-                        return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
-                    },
-
-                    width: function (d) {
-                        var s = d.data.selections;
-                        if (typeof s !== 'object') {
-                            return 0;
-                        }
-                        var sIDs = Object.getOwnPropertyNames(s);
-                        sIDs.forEach(function (prop) {
-                            var length = s[prop].length;
-                            if (length > 0) {
-                                // console.log(selections.getColorFromUuid(prop));
-                                d3.select(this).style("fill", selections.getColorFromUuid(prop));
-                                return subSetSizeScale(length);
-                            }
-                            return 0;
-                        });
-
-//                    return subSetSizeScale(d.data.selections);
-                    },
-                    height: function (d) {
-                        if (d.data.type === ROW_TYPE.SUBSET)
-                            return cellSize;
-                        else
-                            return cellSize / 3;
-                    }
-                })
-                .on('mouseover', mouseoverRow)
-                .on('mouseout', mouseoutRow)
-        }
 
     }
 
