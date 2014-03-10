@@ -72,8 +72,14 @@ Selection.prototype.mapToSubsets = function( subsetList ) {
 
         subset.selections[this.id] = mappedItems;
     }
+}
 
-    console.log( subsetList );
+Selection.prototype.unmapFromSubsets = function( subsetList ) {
+    for ( var i = 0; i < subsetList.length; ++i ) {
+        var subset = subsetList[i];
+
+        delete subset.selections[this.id];
+    }
 }
 
 
@@ -118,9 +124,6 @@ function SelectionList( palette ) {
 
                 // remove selection from color map
                 delete this.colors[selection.id];
-
-                // clear selection id
-                selection.id = undefined;
 
                 $(EventManager).trigger( "item-selection-removed", { selection: selection, index: i } );            
 
