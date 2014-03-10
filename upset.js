@@ -37,7 +37,6 @@ $(EventManager).bind("item-selection-activated", function (event, data) {
     plotSelectedItems("#item-table", data.selection);
 });
 
-
 function plot() {
 
     var majorPadding = 5;
@@ -276,20 +275,13 @@ function plot() {
 
         var subSets = gRows.selectAll('.row')
             .data(renderRows, function (d, i) {
-                //    console.log("what: " + d.id + '' + i);
-                //  return d.id + '' + i;
                 return d.id;
-
             });
 
         var grp = subSets
             .enter()
             .append('g')
             .attr({
-                //transform: function (d, i) {
-                // return 'translate(0, ' + rowScale(d.id) + ')';
-//            return 'translate(0, ' + (textHeight + cellDistance * (i)) + ')';
-                //},
                 class: function (d) {
                     return 'row ' + d.data.type;
                 }
@@ -497,6 +489,66 @@ function plot() {
             .on('mouseover', mouseoverRow)
             .on('mouseout', mouseoutRow)
 //        }
+
+        var tmpRows = svg.selectAll('.row');
+        //.each(function (d) {
+//            console.log(d);
+//        })
+        tmpRows.selectAll('.selectionIndicators').data(function (d, i) {
+            console.log(d, i);
+            return [d.data.selections];
+        }).append('rect').attr({
+                class: 'selectionIndicators',
+                x: function (d, i) {
+                    console.log(i);
+                    return i * 10;
+                },
+                y: 10,
+                height: 30,
+                width: 7
+            }).style('fill', 'red');
+//              append('rect').attr({
+//                  class: 'selectionIndicators',
+//
+//                  transform: function (d) {
+//                      var y = 0;
+//                      if (d.data.type !== ROW_TYPE.SUBSET)
+//                          y = cellSize / 3 * .4;
+//                      return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
+//                  },
+//
+//                  width: function (d) {
+//                      var s = d.data.selections;
+//                      if (typeof s !== 'object') {
+//                          return 0;
+//                      }
+//                      var sIDs = Object.getOwnPropertyNames(s);
+//                      var usedID = false;
+//                      sIDs.forEach(function (prop) {
+//                          var length = s[prop].length;
+//                          if (length > 0) {
+//                              // console.log(selections.getColorFromUuid(prop));
+//                              usedID = prop;
+//                          }
+//                      });
+//                      if (!usedID) {
+//                          return 0;
+//                      }
+//                      d3.select(this).style("fill", selections.getColorFromUuid(usedID));
+//                      return   subSetSizeScale(s[usedID].length);
+//                  },
+//                  height: function (d) {
+//                      if (d.data.type === ROW_TYPE.SUBSET)
+//                          return cellSize;
+//                      else
+//                          return cellSize / 3;
+//
+//                  }
+//              })
+
+//        each(function (d) {
+//                console.log(d.uuid);
+//            })
 
         // ----------------------- expected value bars -------------------
 
