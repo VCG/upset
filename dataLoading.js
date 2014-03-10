@@ -126,6 +126,7 @@ function createInitialSelection() {
 
     selection.filters = filterList;
     selections.addSelection(selection);    
+    selections.setActive( selection );
 }
 
 
@@ -390,8 +391,6 @@ function change() {
     history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + '?dataset=' + this.selectedIndex);
 
     clearSelections();
-
-    console.log( selections.palette );
 }
 
 function updateSetContainment(set) {
