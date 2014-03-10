@@ -1,12 +1,16 @@
 $(EventManager).bind("item-selection-added", function (event, data) {
     console.log("Selection was added to selection list with color " + selections.getColor(data.selection) + ' and ' + data.selection.items.length + ' items.');
 
+    data.selection.mapToSubsets( subSets );
+
     plotSelectionTabs("#selection-tabs", selections, data.selection);
     plotSelectedItems("#item-table", data.selection);
 });
 
 $(EventManager).bind("item-selection-updated", function (event, data) {
     console.log('Selection was updated! New length is ' + data.selection.items.length + ' items.');
+
+    data.selection.mapToSubsets( subSets );
 
     plotSelectionTabs("#selection-tabs", selections, data.selection);
     plotSelectedItems("#item-table", data.selection);
@@ -398,8 +402,8 @@ function plot() {
                 }
 
                 selection.filters = filterList;
-                selection.applyFilters();
                 selections.addSelection(selection);
+                selection.applyFilters();
                 d3.select(this).style("fill", selections.getColor(selection));
 
                 // === Experiments ===

@@ -44,6 +44,39 @@ Selection.prototype.applyFilters = function() {
 }
 
 
+Selection.prototype.mapToSubsets = function( subsetList ) {
+    for ( var i = 0; i < subsetList.length; ++i ) {
+        var subset = subsetList[i];
+
+        // ignore empty subsets
+        if ( subset.setSize == 0 ) {
+            continue;
+        }
+
+        var subsetDefinition = {};
+        for (var x = 0; x < subset.combinedSets.length; ++x) {
+            subsetDefinition[usedSets[x].id] = subset.combinedSets[x];
+        }
+        
+        var subsetFilter = filter.get('subset');
+        var mappedItems = [];
+
+        for ( var j = 0; j < this.items.length; ++j ) {
+            if ( subsetFilter.test( this.items[j], attributes[attributes.length-1], { 'subset': subsetDefinition } ) ) {
+                mappedItems.push(this.items[j]);
+            }
+            else {
+
+            }
+        }        
+
+        subset.selections[this.id] = mappedItems;
+    }
+
+    console.log( subsetList );
+}
+
+
 Selection.prototype.getFilter = function( uuid ) {
     for ( var i = 0; i < this.filters.length; ++i ) {
         if ( this.filters[i].uuid === uuid ) {
@@ -108,6 +141,27 @@ function SelectionList( palette ) {
         return undefined;
     }
 
+    this.getSelectionIndexFromUuid = function(uuid){
+        for ( var i = 0; i < this.list.length; ++i ) {
+            if ( this.list[i].id === uuid ) {
+                return i;
+            }        
+        }
+
+        return undefined;
+    }
+
+    this.getSelectionFromUuid = function(uuid) {
+        try {
+            return ( this.list[this.getSelectionIndexFromUuid(uuid)] );
+        }
+        catch ( error ) {
+            // ignore
+        }
+
+        return undefined;
+    };    
+
     this.getSelection = function(index) {
         try {
             return ( this.list[index] );
@@ -118,6 +172,17 @@ function SelectionList( palette ) {
 
         return undefined;
     };
+
+    this.getColorFromUuid = function( uuid ) {
+        try {
+            return ( this.colors[uuid] );
+        }
+        catch ( error ) {
+            // ignore
+        }
+
+        return undefined;
+    }
 
     this.getColor = function( selection ) {
         try {

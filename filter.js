@@ -18,7 +18,6 @@ Filter = function() {
                     sets not listed are treated as "*" (do not care)
                  */
 
-                //console.log( item ) ;
                 var itemSets = attribute.values[item];
 
                 // iterate over keys in subset definitions

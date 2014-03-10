@@ -113,7 +113,7 @@ function processDataSet(dataSetDescription) {
 function run() {
     setUpSubSets();
     setUpGroupings();
-    updateState();
+    updateState();    
     plot();
     plotSetSelection();
 }
