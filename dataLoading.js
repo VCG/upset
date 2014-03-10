@@ -110,12 +110,37 @@ function processDataSet(dataSetDescription) {
     });
 }
 
+
+function clearSelections() {
+    selections = new SelectionList(); 
+}
+
+function createInitialSelection() {
+    var selection = new Selection(allItems);
+    var filterList = [];
+
+    for (var a = 0; a < attributes.length - 1; ++a) {
+        if (attributes[a].type === 'integer' || attributes[a].type === 'float') {
+            filterList.push({ attributeId: a, id: "numericRange", parameters: { min: attributes[a].min, max: attributes[a].max }, uuid: Utilities.generateUuid() });
+        }
+
+        if (attributes[a].type === 'string' || attributes[a].type === 'id') {
+            filterList.push({ attributeId: a, id: "stringRegex", parameters: { pattern: "." }, uuid: Utilities.generateUuid() });
+        }
+    }
+
+    selection.filters = filterList;
+    selections.addSelection(selection);    
+}
+
+
 function run() {
     setUpSubSets();
     setUpGroupings();
-    updateState();    
+    updateState();
     plot();
     plotSetSelection();
+    createInitialSelection();
 }
 
 
@@ -365,8 +390,16 @@ function change() {
     usedSets.length = 0;
     dataRows.length = 0;
     depth = 0;
+    allItems.length = 0;
+    attributes.length = 0;
+    selectedAttributes = {};
+
     loadDataSet(this.options[this.selectedIndex].value);
     history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + '?dataset=' + this.selectedIndex);
+
+    clearSelections();
+
+    console.log( selections.palette );
 }
 
 function updateSetContainment(set) {
