@@ -7,11 +7,13 @@ function mouseoverColumn(d, i) {
         return ii == i;
     })
         .style("opacity", 1)
+        .style("stroke", "black")
 
     d3.selectAll(".combination").selectAll("rect").filter(function (dd, ii) {
         return ii == i;
     })
         .style("opacity", 1)
+        //.style("stroke", "black")
 
     d3.selectAll(".connection.vertical").filter(function (dd, ii) {
         return ii == i;

@@ -51,7 +51,7 @@ function plot() {
     var majorPadding = 5;
     var minorPadding = 2;
     var cellDistance = 20;
-    var cellSize = cellDistance - minorPadding;
+    var cellSize = cellDistance;// - minorPadding;
     var textHeight = 60;
     var textSpacing = 3;
 
