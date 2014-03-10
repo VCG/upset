@@ -520,8 +520,6 @@ function plot() {
                 rowTransition();
             });
 
-        collapseGroups
-
         d3.selectAll('#collapseGroups').on(
             'click',
             function (d) {
@@ -535,9 +533,9 @@ function plot() {
         d3.selectAll('.setLabel').on(
             'click',
             function (d) {
-                UpSetState.grouping = sortOnSetItem(d.data);
-                updateState();
 
+                UpSetState.grouping = sortOnSetItem;
+                updateState(d);
                 rowTransition();
             });
 
