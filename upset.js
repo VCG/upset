@@ -22,12 +22,13 @@ $(EventManager).bind("item-selection-removed", function (event, data) {
 
     data.selection.unmapFromSubsets(subSets);
 
-    var newActiveSelectionIndex = data.index > 0 ? data.index - 1 : 0;
+    //var newActiveSelectionIndex = data.index > 0 ? data.index - 1 : 0;
 
     plot();
-    plotSelectionTabs("#selection-tabs", selections, selections.getSelection(newActiveSelectionIndex));
-    plotSelectedItems("#item-table", selections.getSelection(newActiveSelectionIndex));
+    plotSelectionTabs("#selection-tabs", selections, selections.getActive() );
+    plotSelectedItems("#item-table", selections.getActive());
 });
+
 
 $(EventManager).bind("item-selection-activated", function (event, data) {
     console.log('Selection ' + data.selection.id + ' was activated.');
@@ -416,6 +417,8 @@ function plot() {
                 selection.filters = filterList;
                 selections.addSelection(selection);
                 selection.applyFilters();
+                selections.setActive( selection );
+
                 d3.select(this).style("fill", selections.getColor(selection));
 
                 // === Experiments ===
