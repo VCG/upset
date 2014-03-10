@@ -138,7 +138,12 @@ SelectionList.prototype.removeSelection = function( selection ) {
             $(EventManager).trigger( "item-selection-removed", { selection: selection, index: i } );            
 
             if ( self.isActive( selection ) ) {
-                self.setActive( ( i > 0 ? self.list[i-1] : self.list[0] ) );
+                if ( self.list.length > 0 ) {
+                    self.setActive( ( i > 0 ? self.list[i-1] : self.list[0] ) );
+                }
+                else {
+                    self.setActive( undefined );                    
+                }
             }
 
             return;

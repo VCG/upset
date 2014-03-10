@@ -22,19 +22,27 @@ $(EventManager).bind("item-selection-removed", function (event, data) {
 
     data.selection.unmapFromSubsets(subSets);
 
-    var newActiveSelectionIndex = data.index > 0 ? data.index - 1 : 0;
+    //var newActiveSelectionIndex = data.index > 0 ? data.index - 1 : 0;
 
     plot();
-    plotSelectionTabs("#selection-tabs", selections, selections.getSelection(newActiveSelectionIndex));
-    plotSelectedItems("#item-table", selections.getSelection(newActiveSelectionIndex));
+    plotSelectionTabs("#selection-tabs", selections, selections.getActive() );
+    plotSelectedItems("#item-table", selections.getActive());
 });
 
-$(EventManager).bind("item-selection-activated", function (event, data) {
-    console.log('Selection ' + data.selection.id + ' was activated.');
 
-    plot();
-    plotSelectionTabs("#selection-tabs", selections, data.selection);
-    plotSelectedItems("#item-table", data.selection);
+$(EventManager).bind("item-selection-activated", function (event, data) {
+    if ( data.selection ) {
+        console.log('Selection ' + data.selection.id + ' was activated.');
+
+        plot();
+        plotSelectionTabs("#selection-tabs", selections, data.selection);
+        plotSelectedItems("#item-table", data.selection);        
+    }
+    else {
+        plot();
+        plotSelectionTabs("#selection-tabs", selections, data.selection);
+        plotSelectedItems("#item-table", data.selection);                
+    }
 });
 
 function plot() {
@@ -42,7 +50,7 @@ function plot() {
     var majorPadding = 5;
     var minorPadding = 2;
     var cellDistance = 20;
-    var cellSize = cellDistance - minorPadding;
+    var cellSize = cellDistance;// - minorPadding;
     var textHeight = 60;
     var textSpacing = 3;
 
@@ -100,6 +108,13 @@ function plot() {
         .data([
             {'x': 0, 'y': 0}
         ]);
+
+    var gScroll = svg.append('g')
+        .attr('class', 'gScroll')
+        .data([
+            {'x': 0, 'y': 0}
+        ]);
+
 
     // Extra layer for vertical panning
     svg.append('rect').attr({
@@ -408,6 +423,8 @@ function plot() {
                 selection.filters = filterList;
                 selections.addSelection(selection);
                 selection.applyFilters();
+                selections.setActive( selection );
+
                 d3.select(this).style("fill", selections.getColor(selection));
 
                 // === Experiments ===
@@ -580,21 +597,39 @@ function plot() {
             .on('mouseover', mouseoverRow)
             .on('mouseout', mouseoutRow)
 
-        function zooming() {
-            d3.select(this).attr('transform', 'translate(0, ' + d3.event.translate[0] + ')');
-            console.log(h, svgHeight)
+
+    // -------------------- panning -------------------
+
+        function panning() {
+ 
+            d3.select(this).attr('transform', 'translate(0, ' + Math.min(0,-d3.event.translate[0]) + ')');
+
             // Subset background should stick to his place
             d3.select(".background-subsets").attr('transform', function (d, i) {
-                return 'translate(' + [ 0, -d3.event.translate[0] ] + ')'
+                return 'translate(' + [ 0, Math.max(0, d3.event.translate[0]) ] + ')'
             })
 
+          // Update the scrollbar          
+          scrollbar.setValue(d3.event.translate[0]);
         }
 
-        var zoom = d3.behavior.zoom()
-            .scaleExtent([1, 10])
-            .on('zoom', zooming);
+        var pan = d3.behavior.zoom()
+            .scaleExtent([-10, 10])
+            .on('zoom', panning);
 
-        d3.select('.gRows').call(zoom);
+        d3.select('.gRows').call(pan);
+
+      // -------------------- scrollbar -------------------
+
+      var params = {
+        x: w-20,
+        y: 55,
+        height: svgHeight-55,
+        thumbHeight: 40,
+        parentEl: d3.select('.gScroll')
+      }
+
+      var scrollbar = new Scrollbar(params);
 
     }
 
