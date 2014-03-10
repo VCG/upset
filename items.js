@@ -16,7 +16,7 @@ function plotSelectionTabs( element, selections, activeSelection ) {
         .enter()
             .append("td")
                 .attr("class", "selection-tab")
-                .classed( { 'active': function(d,i) { return ( i === selections.getSelectionIndex( activeSelection ) ? true : false ); } } )
+                .classed( { 'active': function(d,i) { return ( selections.isActive(d) ); } } )
 
             tabs.append("i")
                 .attr( "class", "fa fa-square" )
@@ -25,9 +25,10 @@ function plotSelectionTabs( element, selections, activeSelection ) {
             tabs.append("span")
                 .text(function(d) { return d3.format("5d")( d.items.length ); })
                 .on("click", function(k) { // is attribute object
-                    d3.selectAll("td").classed( { 'active': false } )
-                    d3.select(this.parentNode).classed( { 'active': true } )                                    
-                    plotSelectedItems( "#item-table", k );
+                    //d3.selectAll("td").classed( { 'active': false } )
+                    //d3.select(this.parentNode).classed( { 'active': true } )  
+                    //plotSelectedItems( "#item-table", k );
+                    selections.setActive( k );
                 });
             tabs.append("i")
                 .attr( "class", "fa fa-times-circle" )

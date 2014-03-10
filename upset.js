@@ -20,8 +20,6 @@ $(EventManager).bind("item-selection-updated", function (event, data) {
 $(EventManager).bind("item-selection-removed", function (event, data) {
     console.log("Selection was removed from selection list.");
 
-    console.log(data);
-
     data.selection.unmapFromSubsets(subSets);
 
     var newActiveSelectionIndex = data.index > 0 ? data.index - 1 : 0;
@@ -30,6 +28,15 @@ $(EventManager).bind("item-selection-removed", function (event, data) {
     plotSelectionTabs("#selection-tabs", selections, selections.getSelection(newActiveSelectionIndex));
     plotSelectedItems("#item-table", selections.getSelection(newActiveSelectionIndex));
 });
+
+$(EventManager).bind("item-selection-activated", function (event, data) {
+    console.log('Selection ' + data.selection.id + ' was activated.');
+
+    plot();
+    plotSelectionTabs("#selection-tabs", selections, data.selection);
+    plotSelectedItems("#item-table", data.selection);
+});
+
 
 function plot() {
 
