@@ -31,11 +31,18 @@ $(EventManager).bind("item-selection-removed", function (event, data) {
 
 
 $(EventManager).bind("item-selection-activated", function (event, data) {
-    console.log('Selection ' + data.selection.id + ' was activated.');
+    if ( data.selection ) {
+        console.log('Selection ' + data.selection.id + ' was activated.');
 
-    plot();
-    plotSelectionTabs("#selection-tabs", selections, data.selection);
-    plotSelectedItems("#item-table", data.selection);
+        plot();
+        plotSelectionTabs("#selection-tabs", selections, data.selection);
+        plotSelectedItems("#item-table", data.selection);        
+    }
+    else {
+        plot();
+        plotSelectionTabs("#selection-tabs", selections, data.selection);
+        plotSelectedItems("#item-table", data.selection);                
+    }
 });
 
 
