@@ -95,124 +95,149 @@ Selection.prototype.getFilter = function( uuid ) {
 
 
 // should be a singleton
-function SelectionList( palette ) {
-    this.list = [];
-    this.colors = {};
-    this.palette = palette || d3.scale.category10().range();
+SelectionList = function ( palette ) {
+    var self = this;
 
-    this.addSelection = function( selection ) {
-        selection.id = this._nextId();
-        this.list.push( selection );        
+    self.list = [];
+    self.colors = {};
+    self.palette = palette || d3.scale.category10().range().slice();
 
-        this.colors[selection.id] = this._nextColor();
+    console.log( "Palette Length " + self.palette );
+};
 
-        $(EventManager).trigger( "item-selection-added", { selection: selection } );            
+SelectionList.prototype.addSelection = function( selection ) {
+    var self = this;
 
-        return this;        
-    };
+    selection.id = self._nextId();
+    self.list.push( selection );        
 
-    this.removeSelection = function( selection ) {
-        for ( var i = 0; i < this.list.length; ++i ) {
-            if ( this.list[i] === selection ) {
-                console.log( 'Deleting selection ' + i + '.' );
-                
-                // remove selection from list
-                this.list.splice(i,1);
+    self.colors[selection.id] = self._nextColor();
 
-                // return color to palette
-                this.palette.push(this.colors[selection.id]);
+    $(EventManager).trigger( "item-selection-added", { selection: selection } );            
 
-                // remove selection from color map
-                delete this.colors[selection.id];
+    return self;        
+};
 
-                $(EventManager).trigger( "item-selection-removed", { selection: selection, index: i } );            
+SelectionList.prototype.removeSelection = function( selection ) {
+    var self = this;
 
-                return;
-            }
+    for ( var i = 0; i < this.list.length; ++i ) {
+        if ( self.list[i] === selection ) {
+            console.log( 'Deleting selection ' + i + '.' );
+            
+            // remove selection from list
+            self.list.splice(i,1);
+
+            // return color to palette
+            self.palette.push(self.colors[selection.id]);
+
+            // remove selection from color map
+            delete self.colors[selection.id];
+
+            $(EventManager).trigger( "item-selection-removed", { selection: selection, index: i } );            
+
+            return;
         }
-        
-        console.log( 'Unable to delete selection.' );
-    };
+    }
+    
+    console.log( 'Unable to delete selection.' );
+};
 
-    this.getSelectionIndex = function(selection){
-        for ( var i = 0; i < this.list.length; ++i ) {
-            if ( this.list[i] === selection ) {
-                return i;
-            }        
-        }
+SelectionList.prototype.getSelectionIndex = function(selection){
+    var self = this;
 
-        return undefined;
+    for ( var i = 0; i < self.list.length; ++i ) {
+        if ( self.list[i] === selection ) {
+            return i;
+        }        
     }
 
-    this.getSelectionIndexFromUuid = function(uuid){
-        for ( var i = 0; i < this.list.length; ++i ) {
-            if ( this.list[i].id === uuid ) {
-                return i;
-            }        
-        }
+    return undefined;
+};
 
-        return undefined;
+SelectionList.prototype.getSelectionIndexFromUuid = function(uuid){
+    var self = this;
+
+    for ( var i = 0; i < self.list.length; ++i ) {
+        if ( self.list[i].id === uuid ) {
+            return i;
+        }        
     }
 
-    this.getSelectionFromUuid = function(uuid) {
-        try {
-            return ( this.list[this.getSelectionIndexFromUuid(uuid)] );
-        }
-        catch ( error ) {
-            // ignore
-        }
+    return undefined;
+};
 
-        return undefined;
-    };    
+SelectionList.prototype.getSelectionFromUuid = function(uuid) {
+    var self = this;
 
-    this.getSelection = function(index) {
-        try {
-            return ( this.list[index] );
-        }
-        catch ( error ) {
-            // ignore
-        }
-
-        return undefined;
-    };
-
-    this.getColorFromUuid = function( uuid ) {
-        try {
-            return ( this.colors[uuid] );
-        }
-        catch ( error ) {
-            // ignore
-        }
-
-        return undefined;
+    try {
+        return ( self.list[self.getSelectionIndexFromUuid(uuid)] );
+    }
+    catch ( error ) {
+        // ignore
     }
 
-    this.getColor = function( selection ) {
-        try {
-            return ( this.colors[selection.id] );
-        }
-        catch ( error ) {
-            // ignore
-        }
+    return undefined;
+};    
 
-        return undefined;
+
+SelectionList.prototype.getSelection = function(index) {
+    var self = this;
+
+    try {
+        return ( self.list[index] );
+    }
+    catch ( error ) {
+        // ignore
     }
 
-    this.getSize = function() {
-        return this.list.length;
+    return undefined;
+};
+
+SelectionList.prototype.getColorFromUuid = function( uuid ) {
+    var self = this;
+
+    try {
+        return ( self.colors[uuid] );
+    }
+    catch ( error ) {
+        // ignore
     }
 
-    this._nextColor = function() {
-        // use color pool and return black once pool is empty
-        if ( this.palette.length > 0 ) {
-            // first available color
-            return this.palette.splice(0,1)[0];
-        }
+    return undefined;
+};
 
-        return "#000";
+SelectionList.prototype.getColor = function( selection ) {
+    var self = this;
+
+    try {
+        return ( self.colors[selection.id] );
+    }
+    catch ( error ) {
+        // ignore
     }
 
-    this._nextId = function() {
-        return Utilities.generateUuid();
+    return undefined;
+};
+
+SelectionList.prototype.getSize = function() {
+    var self = this;
+
+    return self.list.length;
+};
+
+SelectionList.prototype._nextColor = function() {
+    var self = this;
+
+    // use color pool and return black once pool is empty
+    if ( self.palette.length > 0 ) {
+        // first available color
+        return self.palette.splice(0,1)[0];
     }
-}
+
+    return "#000";
+};
+
+SelectionList.prototype._nextId = function() {
+    return Utilities.generateUuid();
+};
