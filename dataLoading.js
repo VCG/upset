@@ -7,13 +7,9 @@
 
 var dataSetDescriptions;
 
-
-
-
-$.when( $.ajax( { url: 'datasets.json', dataType: 'json' } ) ).then( function( data, textStatus, jqXHR ) {
+$.when($.ajax({ url: 'datasets.json', dataType: 'json' })).then(function (data, textStatus, jqXHR) {
     loadDataSetDescriptions(data);
 });
-
 
 function loadDataSetDescriptions(dataSetList) {
 
@@ -21,31 +17,31 @@ function loadDataSetDescriptions(dataSetList) {
     var descriptionDeferreds = [];
 
     // launch requests to load data set descriptions
-    for ( var i = 0; i < dataSetList.length; ++i ) {        
-        console.log( "Loading " + dataSetList[i] )
+    for (var i = 0; i < dataSetList.length; ++i) {
+        console.log("Loading " + dataSetList[i])
 
-        descriptionDeferreds.push( 
-            $.ajax( { url: dataSetList[i], dataType: 'json' } )
+        descriptionDeferreds.push(
+            $.ajax({ url: dataSetList[i], dataType: 'json' })
         );
     }
 
     // when all requests have finished, process the responses
     $.when.apply($, descriptionDeferreds).then(
-        function(){ 
-            for ( var j = 0; j < arguments.length; ++j ) {
+        function () {
+            for (var j = 0; j < arguments.length; ++j) {
                 var description = arguments[j][0];
 
                 // preprend data file path (based on path to description in data set list)
                 description.file = dataSetList[j].substring(0, dataSetList[j].lastIndexOf('/')) + '/' + description.file;
 
-                descriptions.push( description ); 
+                descriptions.push(description);
             }
 
-            load(descriptions); 
+            load(descriptions);
         },
-        function( object, status, error ) { 
-            console.error( 'Unable to load ' + object.responseText );
-            console.error( error.message );
+        function (object, status, error) {
+            console.error('Unable to load ' + object.responseText);
+            console.error(error.message);
         }
     );
 }
@@ -66,7 +62,7 @@ function load(descriptions) {
     queryParameters['dataset'] = parseInt(queryParameters['dataset']) || 0;
 
     var header = d3.select('#header');
-    
+
     header.append('div').html('&darr; # intersections.').attr({id: 'sortIntersect',
         class: 'myButton'});
 
@@ -84,7 +80,7 @@ function load(descriptions) {
     var select = dataSelect.append('select');
     select.on('change', change)
         .selectAll('option').data(dataSetDescriptions).enter().append('option')
-        .attr('value', function (d,i) {
+        .attr('value', function (d, i) {
             return i;
         })
         .attr('id', 'dataSetSelector')
@@ -94,7 +90,7 @@ function load(descriptions) {
         .property('selected', function (d, i) {
             return (i === queryParameters['dataset'])
         });
-        
+
     loadDataSet(queryParameters['dataset']);
 }
 
@@ -102,10 +98,9 @@ function loadDataSet(index) {
     processDataSet(dataSetDescriptions[index]);
 }
 
-
 function processDataSet(dataSetDescription) {
-    d3.text(dataSetDescription.file, 'text/csv', function(data){
-        parseDataSet(data,dataSetDescription);
+    d3.text(dataSetDescription.file, 'text/csv', function (data) {
+        parseDataSet(data, dataSetDescription);
         run();
     });
 }
@@ -113,23 +108,22 @@ function processDataSet(dataSetDescription) {
 function run() {
     setUpSubSets();
     setUpGroupings();
-    updateState();    
+    updateState();
     plot();
     plotSetSelection();
 }
 
-
 function getNumberOfSets(dataSetDescription) {
     var sets = 0;
 
-    for ( var i = 0; i < dataSetDescription.sets.length; ++i ) {
+    for (var i = 0; i < dataSetDescription.sets.length; ++i) {
         var setDefinitionBlock = dataSetDescription.sets[i];
 
-        if ( setDefinitionBlock.format === 'binary') {
-            sets += setDefinitionBlock.end - setDefinitionBlock.start + 1; 
+        if (setDefinitionBlock.format === 'binary') {
+            sets += setDefinitionBlock.end - setDefinitionBlock.start + 1;
         }
         else {
-            console.error( 'Set definition format "' + setDefinitionBlock.format + '" not supported' );
+            console.error('Set definition format "' + setDefinitionBlock.format + '" not supported');
         }
     }
 
@@ -141,8 +135,8 @@ function getNumberOfAttributes(dataSetDescription) {
 }
 
 function getIdColumn(dataSetDescription) {
-    for ( var i = 0; i < dataSetDescription.meta.length; ++i ) {
-        if ( dataSetDescription.meta[i].type === "id" ) {
+    for (var i = 0; i < dataSetDescription.meta.length; ++i) {
+        if (dataSetDescription.meta[i].type === "id") {
             return dataSetDescription.meta[i].index;
         }
     }
@@ -151,10 +145,9 @@ function getIdColumn(dataSetDescription) {
     return 0;
 }
 
+function parseDataSet(data, dataSetDescription) {
 
-function parseDataSet(data,dataSetDescription) {
-
-    var dsv = d3.dsv( dataSetDescription.separator, 'text/plain');
+    var dsv = d3.dsv(dataSetDescription.separator, 'text/plain');
 
     // the raw set arrays
     var rawSets = [];
@@ -170,25 +163,25 @@ function parseDataSet(data,dataSetDescription) {
 
     // load set assignments
     var processedSetsCount = 0;
-    for ( var i = 0; i < dataSetDescription.sets.length; ++i ) {
+    for (var i = 0; i < dataSetDescription.sets.length; ++i) {
         var setDefinitionBlock = dataSetDescription.sets[i];
 
-        if ( setDefinitionBlock.format === 'binary') {
-            var setDefinitionBlockLength = setDefinitionBlock.end - setDefinitionBlock.start + 1; 
+        if (setDefinitionBlock.format === 'binary') {
+            var setDefinitionBlockLength = setDefinitionBlock.end - setDefinitionBlock.start + 1;
 
             // initialize the raw set arrays
-            for ( var setCount = 0; setCount < setDefinitionBlockLength; ++setCount ) {
+            for (var setCount = 0; setCount < setDefinitionBlockLength; ++setCount) {
                 rawSets.push(new Array());
-            }        
+            }
 
-            var rows = file.map( function (row, rowIndex) {
-                return row.map( function (value, columnIndex) {
+            var rows = file.map(function (row, rowIndex) {
+                return row.map(function (value, columnIndex) {
 
-                    if ( columnIndex >= setDefinitionBlock.start && columnIndex <= setDefinitionBlock.end ) {
+                    if (columnIndex >= setDefinitionBlock.start && columnIndex <= setDefinitionBlock.end) {
                         var intValue = parseInt(value, 10);
-                        
-                        if ( isNaN(intValue) ) {                            
-                            console.error( 'Unable to convert "' + value + '" to integer (row ' + rowIndex + ', column ' + columnIndex + ')' );
+
+                        if (isNaN(intValue)) {
+                            console.error('Unable to convert "' + value + '" to integer (row ' + rowIndex + ', column ' + columnIndex + ')');
                         }
 
                         return intValue;
@@ -200,15 +193,15 @@ function parseDataSet(data,dataSetDescription) {
 
             // iterate over columns defined by this set definition block
             for (var r = 0; r < rows.length; r++) {
-                
+
                 // increment number of items in data set
                 allItems.push(depth++);
-                
-                for ( var s = 0; s < setDefinitionBlockLength; ++s ) {
-                    rawSets[processedSetsCount+s].push(rows[r][setDefinitionBlock.start+s]);
 
-                    if ( r === 1 ) {
-                        setNames.push( header[setDefinitionBlock.start+s] );
+                for (var s = 0; s < setDefinitionBlockLength; ++s) {
+                    rawSets[processedSetsCount + s].push(rows[r][setDefinitionBlock.start + s]);
+
+                    if (r === 1) {
+                        setNames.push(header[setDefinitionBlock.start + s]);
                     }
                 }
             }
@@ -216,13 +209,13 @@ function parseDataSet(data,dataSetDescription) {
             processedSetsCount += setDefinitionBlockLength;
         }
         else {
-            console.error( 'Set definition format "' + setDefinitionBlock.format + '" not supported' );
+            console.error('Set definition format "' + setDefinitionBlock.format + '" not supported');
         }
     }
 
     // initialize attribute data structure
     attributes.length = 0;
-    for ( var i = 0; i < dataSetDescription.meta.length; ++i ) {
+    for (var i = 0; i < dataSetDescription.meta.length; ++i) {
         var metaDefinition = dataSetDescription.meta[i];
 
         attributes.push({
@@ -231,7 +224,7 @@ function parseDataSet(data,dataSetDescription) {
             values: [],
             sort: 1
         });
-    }    
+    }
 
     // add implicit attributes
     var setCountAttribute = {
@@ -242,9 +235,9 @@ function parseDataSet(data,dataSetDescription) {
         min: 0
     };
 
-    for ( var d = 0; d < depth; ++d ) {
+    for (var d = 0; d < depth; ++d) {
         var setCount = 0;
-        for (var s = 0; s < rawSets.length; s++ ) {
+        for (var s = 0; s < rawSets.length; s++) {
             setCount += rawSets[s][d];
         }
         setCountAttribute.values[d] = setCount;
@@ -258,11 +251,11 @@ function parseDataSet(data,dataSetDescription) {
         sort: 1
     };
 
-    for ( var d = 0; d < depth; ++d ) {
+    for (var d = 0; d < depth; ++d) {
         var setList = [];
-        for (var s = 0; s < rawSets.length; s++ ) {
-            if ( rawSets[s][d] === 1 ) {
-                setList.push( Math.floor( Math.pow(2,s) ) );
+        for (var s = 0; s < rawSets.length; s++) {
+            if (rawSets[s][d] === 1) {
+                setList.push(Math.floor(Math.pow(2, s)));
             }
         }
         setsAttribute.values[d] = setList;
@@ -270,60 +263,60 @@ function parseDataSet(data,dataSetDescription) {
     attributes.push(setsAttribute);
 
     // load meta data    
-    for ( var i = 0; i < dataSetDescription.meta.length; ++i ) {
+    for (var i = 0; i < dataSetDescription.meta.length; ++i) {
         var metaDefinition = dataSetDescription.meta[i];
 
-        attributes[i].values = file.map( function (row, rowIndex) {
-                var value = row[metaDefinition.index];
-                switch ( metaDefinition.type ) {
-                    case 'integer':
-                        var intValue = parseInt(value, 10);                
-                        if ( isNaN(intValue) ) {                            
-                            console.error( 'Unable to convert "' + value + '" to integer.' );
-                            return NaN;
-                        }
-                        return intValue;
-                    case 'float':
-                        var floatValue = parseFloat(value, 10);                
-                        if ( isNaN(floatValue) ) {                            
-                            console.error( 'Unable to convert "' + value + '" to float.' );
-                            return NaN;
-                        }
-                        return floatValue;
-                    case 'id':
-                        // fall-through
-                    case 'string':
-                        // fall-through
-                    default:
-                        return value;  
-                }
+        attributes[i].values = file.map(function (row, rowIndex) {
+            var value = row[metaDefinition.index];
+            switch (metaDefinition.type) {
+                case 'integer':
+                    var intValue = parseInt(value, 10);
+                    if (isNaN(intValue)) {
+                        console.error('Unable to convert "' + value + '" to integer.');
+                        return NaN;
+                    }
+                    return intValue;
+                case 'float':
+                    var floatValue = parseFloat(value, 10);
+                    if (isNaN(floatValue)) {
+                        console.error('Unable to convert "' + value + '" to float.');
+                        return NaN;
+                    }
+                    return floatValue;
+                case 'id':
+                // fall-through
+                case 'string':
+                // fall-through
+                default:
+                    return value;
+            }
 
-            });            
+        });
     }
 
     // add meta data summary statistics
-    for ( var i = 0; i < attributes.length; ++i ) {
+    for (var i = 0; i < attributes.length; ++i) {
 
-        if ( attributes[i].type === "float" || attributes[i].type === "integer" ) {            
+        if (attributes[i].type === "float" || attributes[i].type === "integer") {
             // explictly defined attributes might have user-defined ranges
-            if ( i < dataSetDescription.meta.length ) {            
-                attributes[i].min = dataSetDescription.meta[i].min || Math.min.apply( null, attributes[i].values );
-                attributes[i].max = dataSetDescription.meta[i].max || Math.max.apply( null, attributes[i].values );                            
+            if (i < dataSetDescription.meta.length) {
+                attributes[i].min = dataSetDescription.meta[i].min || Math.min.apply(null, attributes[i].values);
+                attributes[i].max = dataSetDescription.meta[i].max || Math.max.apply(null, attributes[i].values);
             }
             // implicitly defined attributes
             else {
-                attributes[i].min = attributes[i].min || Math.min.apply( null, attributes[i].values );
-                attributes[i].max = attributes[i].max || Math.max.apply( null, attributes[i].values );                            
+                attributes[i].min = attributes[i].min || Math.min.apply(null, attributes[i].values);
+                attributes[i].max = attributes[i].max || Math.max.apply(null, attributes[i].values);
             }
         }
-    }   
+    }
 
     var setID = 1;
     for (var i = 0; i < rawSets.length; i++) {
         var combinedSets = Array.apply(null, new Array(rawSets.length)).map(Number.prototype.valueOf, 0);
         combinedSets[i] = 1;
         var set = new Set(setID, setNames[i], combinedSets, rawSets[i]);
-        setIdToSet[setID] = set;        
+        setIdToSet[setID] = set;
         sets.push(set);
         if (i < nrDefaultSets) {
             set.isSelected = true;
@@ -337,12 +330,13 @@ function setUpSubSets() {
 
     combinations = Math.pow(2, usedSets.length) - 1;
 
-
+    // the max value for the cut-off
+    console.log("LENGTH = " + attributes[attributes.length - 2].max);
     for (var i = 0; i <= combinations; i++) {
         makeSubSet(i)
     }
 
-   // dataRows = subSets.slice(0);
+    // dataRows = subSets.slice(0);
 
     // sort by size of set overlap
 //    dataRows.sort(function (a, b) {
@@ -351,8 +345,7 @@ function setUpSubSets() {
 
 }
 
-function setUpGroupings()
-{
+function setUpGroupings() {
     groupBySetSize();
     groupBySet();
 }

@@ -204,7 +204,6 @@ function Aggregate(aggregateID, aggregateName) {
     this.expectedValueDeviation = 0;
 
     this.addSubSet = function (subSet) {
-        console.log('test');
         this.subSets.push(subSet);
         this.items = this.items.concat(subSet.items);
         this.setSize += subSet.setSize;

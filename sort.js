@@ -38,7 +38,7 @@ var groupBySet = function () {
         subSets.forEach(function (subSet) {
             if (subSet.combinedSets[i] !== 0) {
 
-                console.log('Adding to ' + usedSets[i].elementName + " subset " + subSet.id);
+               // console.log('Adding to ' + usedSets[i].elementName + " subset " + subSet.id);
 //                console.log('b: ' + usedSets[i].combinedSets);
                 group.addSubSet(subSet);
             }
