@@ -110,6 +110,13 @@ function plot() {
             {'x': 0, 'y': 0}
         ]);
 
+    var gScroll = svg.append('g')
+        .attr('class', 'gScroll')
+        .data([
+            {'x': 0, 'y': 0}
+        ]);
+
+
     // Extra layer for vertical panning
     svg.append('rect').attr({
         x: 0,
@@ -538,21 +545,96 @@ function plot() {
             .on('mouseover', mouseoverRow)
             .on('mouseout', mouseoutRow)
 
-        function zooming() {
-            d3.select(this).attr('transform', 'translate(0, ' + d3.event.translate[0] + ')');
-            console.log(h, svgHeight)
+
+    // -------------------- panning -------------------
+
+        function panning() {
+            d3.select(this).attr('transform', 'translate(0, ' + -d3.event.translate[0] + ')');
+
+
             // Subset background should stick to his place
             d3.select(".background-subsets").attr('transform', function (d, i) {
-                return 'translate(' + [ 0, -d3.event.translate[0] ] + ')'
+                return 'translate(' + [ 0, d3.event.translate[0] ] + ')'
             })
 
         }
 
-        var zoom = d3.behavior.zoom()
-            .scaleExtent([1, 10])
-            .on('zoom', zooming);
+        var pan = d3.behavior.zoom()
+            .scaleExtent([-10, 10])
+            .on('zoom', panning);
 
-        d3.select('.gRows').call(zoom);
+        d3.select('.gRows').call(pan);
+
+    // -------------------- scrollbar -------------------
+
+    var params = {
+      top: 55,
+      height: svgHeight-55,
+      thumbHeight: 40
+    }
+
+    var dragScrollbar = d3.behavior.drag()
+            .origin(Object)
+            .on("dragstart", dragstartScrollbar)
+            .on("drag", dragScrollbar)
+            .on("dragend", dragendScrollbar);
+
+     var backgroundScrollbar = gScroll.append("rect").attr({
+        x: w-20,
+        y: params.top,
+        width: 20,
+        height: params.height,
+        fill: 'lightgray',
+        class: "scrollbar-background"      
+      });
+
+    var gThumb = gScroll.selectAll(".scrollbar-thumb")
+        .data([{value: this.value, dx:0, x:0, y:0}])
+        .enter()
+        .append("g")
+        .attr("class","scrollbar-thumb")
+        .on("mouseover", function(d){
+            d3.select(this).style("cursor", "pointer")
+        })
+        .call(dragScrollbar);
+
+      gThumb.append("rect")
+          .attr("width", 20)
+          .attr("height", params.thumbHeight)
+          .attr("x", w-20)
+          .attr("y", params.top)
+          .attr("rx", 20)
+          .attr("ry", 10)          
+          .attr("fill", "gray")
+
+      function dragstartScrollbar(d) {
+        d.dx = 0;
+
+      }
+
+
+      function dragendScrollbar(d) {
+        
+      }
+
+      function dragScrollbar(d) {
+        d.y += d3.event.dy;
+        if(d.y>0 && d.y<params.height-params.thumbHeight) {
+          gThumb.attr("transform", "translate("+[0, d.y]+")");
+ 
+            d3.select(".gRows").attr('transform', 'translate(0, ' + -d.y + ')');
+
+            // Subset background should stick to his place
+            d3.select(".background-subsets").attr('transform', function (d, i) {
+                return 'translate(' + [ 0, d.y ] + ')'
+            })
+
+
+        }
+      
+
+
+      }
 
     }
 
