@@ -11,6 +11,7 @@ $(EventManager).bind("item-selection-updated", function (event, data) {
     console.log('Selection was updated! New length is ' + data.selection.items.length + ' items.');
 
     data.selection.mapToSubsets(subSets);
+    plot();
 
     plotSelectionTabs("#selection-tabs", selections, data.selection);
     plotSelectedItems("#item-table", data.selection);
@@ -25,7 +26,7 @@ $(EventManager).bind("item-selection-removed", function (event, data) {
 
     var newActiveSelectionIndex = data.index > 0 ? data.index - 1 : 0;
 
-    plot.overlay();
+    plot();
     plotSelectionTabs("#selection-tabs", selections, selections.getSelection(newActiveSelectionIndex));
     plotSelectedItems("#item-table", selections.getSelection(newActiveSelectionIndex));
 });
