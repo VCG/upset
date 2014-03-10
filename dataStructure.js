@@ -140,6 +140,7 @@ function SubSet(setID, setName, combinedSets, itemList, expectedValue) {
     BaseSet.call(this, setID, setName, combinedSets, itemList);
     this.type = ROW_TYPE.SUBSET;
     this.expectedValue = expectedValue;
+    this.selections = {};
 
     // this.expectedValueDeviation = this.setSize - this.expectedValue;
     this.expectedValueDeviation = (this.dataRatio - this.expectedValue) * depth;
