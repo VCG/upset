@@ -100,6 +100,7 @@ SelectionList = function ( palette ) {
 
     self.list = [];
     self.colors = {};
+    self.active = {};
     self.palette = palette || d3.scale.category10().range().slice();
 
     console.log( "Palette Length " + self.palette );
@@ -135,6 +136,10 @@ SelectionList.prototype.removeSelection = function( selection ) {
             delete self.colors[selection.id];
 
             $(EventManager).trigger( "item-selection-removed", { selection: selection, index: i } );            
+
+            if ( self.isActive( selection ) ) {
+                self.setActive( ( i > 0 ? self.list[i-1] : self.list[0] ) );
+            }
 
             return;
         }
@@ -224,6 +229,44 @@ SelectionList.prototype.getSize = function() {
     var self = this;
 
     return self.list.length;
+};
+
+SelectionList.prototype.isActive = function( selection ) {
+    var self = this;
+
+    return ( self.active === selection );
+};
+
+SelectionList.prototype.isActiveByUuid = function( uuid ) {
+    var self = this;
+
+    return ( self.active.uuid === uuid );
+};
+
+SelectionList.prototype.getActive = function( ) {
+    var self = this;
+
+    return ( self.active );
+};
+
+SelectionList.prototype.setActive = function( selection ) {
+    var self = this;
+
+    self.active = selection;
+
+    $(EventManager).trigger( "item-selection-activated", { selection: selection } );            
+
+    return ( self );
+};
+
+SelectionList.prototype.setActiveByUuid = function( uuid ) {
+    var self = this;
+
+    self.active = self.getSelectionFromUuid( uuid );
+
+    $(EventManager).trigger( "item-selection-activated", { selection: self.active } );
+
+    return ( self );
 };
 
 SelectionList.prototype._nextColor = function() {
