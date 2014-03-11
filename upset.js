@@ -117,6 +117,13 @@ function plot() {
         ]);
 
 
+    var gQuery = svg.append('g')
+        .attr('class', 'gQuery')
+        .data([
+            {'x': 0, 'y': 0}
+        ]);
+
+
     // Extra layer for vertical panning
     svg.append('rect').attr({
         x: 0,
@@ -330,7 +337,7 @@ function plot() {
         // scale for the set containment
         var setScale = d3.scale.ordinal().domain([0, 1]).range(grays);
 
-        subSets.filter(function (d) {
+        var combinationRows = subSets.filter(function (d) {
             return d.data.type === ROW_TYPE.SUBSET;
         }).selectAll('g').data(function (d) {
                 // binding in an array of size one
@@ -339,24 +346,41 @@ function plot() {
         ).enter()
             .append('g')
             .attr({class: 'combination'
+            })
+
+
+        // add transparent background to make it sensitive for interaction
+        combinationRows.append("rect").attr({
+                class:"backgroundRect",
+                x:0,
+                y:0,
+                width:setVisWidth,
+                height:cellSize
+            }).style({
+                opacity:0,
+                fill:"white"
+            }).on({
+                'mouseover': mouseoverCell,
+                'mouseout': mouseoutCell
             });
 //            .each(function (d) {
 //                console.log(d);
 //            });
 
-        svg.selectAll('.combination').selectAll('rect').data(function (d) {
+
+        svg.selectAll('.combination').selectAll('circle').data(function (d) {
             return d;
         }).enter()
-            .append('rect')
+            .append('circle')
             .on('click', function (d) {
                 // click event for cells
             })
-            .attr('x', function (d, i) {
-                return (cellDistance) * i;
+            .attr('cx', function (d, i) {
+                return (cellDistance) * i + cellSize/2;
             })
             .attr({
-                width: cellSize,
-                height: cellSize,
+                r: cellSize/2-1,
+                cy:cellSize/2,
                 class: 'cell'
             })
             .style('fill', function (d) {
@@ -578,6 +602,10 @@ function plot() {
       }
 
       var scrollbar = new Scrollbar(params);
+
+
+
+
 
     }
 
