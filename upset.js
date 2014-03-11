@@ -116,6 +116,13 @@ function plot() {
         ]);
 
 
+    var gQuery = svg.append('g')
+        .attr('class', 'gQuery')
+        .data([
+            {'x': 0, 'y': 0}
+        ]);
+
+
     // Extra layer for vertical panning
     svg.append('rect').attr({
         x: 0,
@@ -167,8 +174,8 @@ function plot() {
         height: textHeight - 2,
         class: 'connection vertical'
     })
-        .on('mouseover', mouseoverColumn)
-        .on('mouseout', mouseoutColumn)
+    .on('mouseover', mouseoverColumn)
+    .on('mouseout', mouseoutColumn)
 
     // background bar
     setLabels
@@ -182,7 +189,9 @@ function plot() {
                 return setSizeScale(d.setSize);
             },
             width: cellSize//setRowScale.rangeBand()
-        });
+        })
+        .on('mouseover', mouseoverColumn)
+        .on('mouseout', mouseoutColumn)
 
     setLabels.append('text').text(
         function (d) {
@@ -322,33 +331,55 @@ function plot() {
         // scale for the set containment
         var setScale = d3.scale.ordinal().domain([0, 1]).range(grays);
 
-        subSets.filter(function (d) {
+        var combinationRows = subSets.filter(function (d) {
             return d.data.type === ROW_TYPE.SUBSET;
-        }).selectAll('g').data(function (d) {
+        })
+
+        // add transparent background to make each row it sensitive for interaction
+        combinationRows.selectAll('.backgroundRect').data(function (d) {return [d]})
+            .enter().append("rect").attr({
+                class:"backgroundRect",
+                x:0,
+                y:0,
+                width:setVisWidth,
+                height:cellSize
+            })
+            .style({
+                   "fill-opacity":0,
+                    fill:"grey" // for debugging
+                })
+            .on({
+                    'mouseover': mouseoverRow,
+                    'mouseout': mouseoutRow
+                });
+
+        combinationRows.selectAll('g').data(function (d) {
                 // binding in an array of size one
                 return [d.data.combinedSets];
             }
         ).enter()
             .append('g')
             .attr({class: 'combination'
-            });
+            })
+
 //            .each(function (d) {
 //                console.log(d);
 //            });
 
-        svg.selectAll('.combination').selectAll('rect').data(function (d) {
+
+        svg.selectAll('.combination').selectAll('circle').data(function (d) {
             return d;
         }).enter()
-            .append('rect')
+            .append('circle')
             .on('click', function (d) {
                 // click event for cells
             })
-            .attr('x', function (d, i) {
-                return (cellDistance) * i;
+            .attr('cx', function (d, i) {
+                return (cellDistance) * i + cellSize/2;
             })
             .attr({
-                width: cellSize,
-                height: cellSize,
+                r: cellSize/2-1,
+                cy:cellSize/2,
                 class: 'cell'
             })
             .style('fill', function (d) {
@@ -397,42 +428,8 @@ function plot() {
         svg.selectAll('.row')
             .append('rect')
             .on('click', function (d) {
-                // extract a subset definition for use with the subset filter
-                var subsetDefinition = {};
-                for (var x = 0; x < d.data.combinedSets.length; ++x) {
-                    subsetDefinition[usedSets[x].id] = d.data.combinedSets[x];
-                }
-
-                var filterList = [];
-
-                // create subset filter and create new selection based on all items
-                var selection = new Selection(allItems);
-
-                filterList.push({ attributeId: attributes.length - 1, id: "subset", parameters: { subset: subsetDefinition }, uuid: Utilities.generateUuid() });
-
-                for (var a = 0; a < attributes.length - 1; ++a) {
-                    if (attributes[a].type === 'integer' || attributes[a].type === 'float') {
-                        filterList.push({ attributeId: a, id: "numericRange", parameters: { min: attributes[a].min, max: attributes[a].max }, uuid: Utilities.generateUuid() });
-                    }
-
-                    if (attributes[a].type === 'string' || attributes[a].type === 'id') {
-                        filterList.push({ attributeId: a, id: "stringRegex", parameters: { pattern: "." }, uuid: Utilities.generateUuid() });
-                    }
-                }
-
-                selection.filters = filterList;
-                selections.addSelection(selection);
-                selection.applyFilters();
-                selections.setActive( selection );
-
-                d3.select(this).style("fill", selections.getColor(selection));
-
-                // === Experiments ===
-                // create a set count filter and create new selection based on previous subset
-                //selections.addSelection(selection.createSelection( attributes.length-2, "numericRange", { min: "1", max: "1" } ));                
-
-                // create a regex filter on name and create new selection based on previous subset
-                //selections.addSelection(selection.createSelection( 0, "stringRegex", { pattern: "^[A-B].+$" } ));                
+                //createSelectionForSubSetBar( d );
+                var selection = Selection.fromSubset(d.data.combinedSets);
             })
             .attr({
                 class: 'subSetSize',
@@ -463,7 +460,7 @@ function plot() {
         svg.selectAll('.row')
             .append('rect')
             .on('click', function (d) {
-
+                var selection = Selection.fromSubset(d.data.combinedSets);
             })
             .attr({
                 class: 'what',
@@ -630,6 +627,10 @@ function plot() {
       }
 
       var scrollbar = new Scrollbar(params);
+
+
+
+
 
     }
 
