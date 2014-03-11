@@ -33,7 +33,7 @@ function mouseoutColumn(d, i) {
 
     d3.selectAll(".connection, .combination rect, .setSize")
         .style("opacity", 1)
-        .style("stroke", "black")
+        .style("stroke", "white")
 
 }
 

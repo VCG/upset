@@ -168,8 +168,8 @@ function plot() {
         height: textHeight - 2,
         class: 'connection vertical'
     })
-        .on('mouseover', mouseoverColumn)
-        .on('mouseout', mouseoutColumn)
+    .on('mouseover', mouseoverColumn)
+    .on('mouseout', mouseoutColumn)
 
     // background bar
     setLabels
@@ -183,7 +183,9 @@ function plot() {
                 return setSizeScale(d.setSize);
             },
             width: cellSize//setRowScale.rangeBand()
-        });
+        })
+        .on('mouseover', mouseoverColumn)
+        .on('mouseout', mouseoutColumn)
 
     setLabels.append('text').text(
         function (d) {
