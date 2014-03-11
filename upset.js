@@ -577,31 +577,47 @@ function plot() {
     // -------------------- panning -------------------
 
         function panning() {
- 
-            d3.select(this).attr('transform', 'translate(0, ' + Math.min(0,-d3.event.translate[0]) + ')');
 
-            // Subset background should stick to his place
-            d3.select(".background-subsets").attr('transform', function (d, i) {
-                return 'translate(' + [ 0, Math.max(0, d3.event.translate[0]) ] + ')'
-            })
+
+          var trans = Math.min(Math.min(0,-d3.event.translate[0]), params.viewportHeight-params.rowsHeight);
+
+          var offset = params.viewportHeight-params.rowsHeight;
+
+          console.log("trans", trans, Math.min(0,d3.event.translate[0]), Math.max(0, params.rowsHeight-params.viewportHeight) )
+
+          d3.event.translate[0] = Math.min(0,d3.event.translate[0]);
+          //if(params.rowsHeight>params.viewportHeight) {
+
+          // Moving rows containing the subsets
+          d3.select(this).attr('transform', 'translate(0, ' + trans + ')');
+
+          // Rows background should stick to his place
+          d3.select(".background-subsets").attr('transform', function (d, i) {
+              return 'translate(' + [ 0, -trans] + ')'
+          })
 
           // Update the scrollbar          
           scrollbar.setValue(d3.event.translate[0]);
+
+
+          console.log(params.rowsHeight, params.viewportHeight, subSets.length, setGroups.length, d3.transform(d3.select(this).attr("transform")).translate[1], trans)
+
         }
 
         var pan = d3.behavior.zoom()
-            .scaleExtent([-10, 10])
+          //  .scaleExtent([-10, 10])
             .on('zoom', panning);
 
         d3.select('.gRows').call(pan);
 
       // -------------------- scrollbar -------------------
 
-      var params = {
+      params = {
         x: w-20,
         y: 55,
         height: svgHeight-55,
-        thumbHeight: 40,
+        viewportHeight: svgHeight-55,
+        rowsHeight: subSetMatrixHeight,
         parentEl: d3.select('.gScroll')
       }
 
