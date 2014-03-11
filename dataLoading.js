@@ -62,6 +62,10 @@ function load(descriptions) {
 
     queryParameters['dataset'] = parseInt(queryParameters['dataset']) || 0;
     queryParameters['duration'] = queryParameters['duration'] || 2000;
+    queryParameters['orderBy'] = queryParameters['orderBy'] || "subsetSize"; // deviation, intersection, specific set
+    queryParameters['groupBy'] = queryParameters['groupBy'] || "set"; // setSize, 
+    queryParameters['selection'] = queryParameters['selection'] || "";
+    // Missing item space query..
 
     var header = d3.select('#header');
 
@@ -391,8 +395,18 @@ function change() {
     selectedAttributes = {};
 
     loadDataSet(this.options[this.selectedIndex].value);
-    history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + '?dataset=' + this.selectedIndex);
+    queryParameters['dataset'] = this.options[this.selectedIndex].value;
 
+    var urlQueryString = "";
+     console.log("qa", queryParameters.length)
+    if(Object.keys(queryParameters).length > 0) {
+        urlQueryString = "?";
+        for(var q in queryParameters)
+            urlQueryString += (q + "=" + queryParameters[q]) + "&";
+        urlQueryString = urlQueryString.substring(0, urlQueryString.length - 1);
+    }
+
+    history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + urlQueryString);
     clearSelections();
 }
 
