@@ -40,15 +40,11 @@ function mouseoutColumn(d, i) {
 function mouseoverRow(d, i) {
 
     d3.selectAll(".row .backgroundRect")
-        .style("stroke",null)
-
-
-    d3.selectAll(".row .backgroundRect").filter(function (dd, ii) {
-        return d.id == dd.id
-        })
-        .style("stroke", "black")
-
-
+        .style("stroke",
+            function(dd){
+                if (d.id == dd.id) return "black";
+                else null;
+            })
 }
 
 function mouseoutRow(d, i) {
@@ -60,7 +56,6 @@ function mouseoutRow(d, i) {
 function mouseoverCell(d, i) {
 
     mouseoverColumn(d, i);
-    console.log("row:",d3.selectAll(".row").data().indexOf(d3.select(this).node().parentNode.parentNode.__data__));
     mouseoverRow(d3.select(this).node().parentNode.parentNode.__data__, 1)
 
 }

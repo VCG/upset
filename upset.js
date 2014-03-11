@@ -362,12 +362,14 @@ function plot() {
             .attr({class: 'combination'
             })
 
+
+
 //            .each(function (d) {
 //                console.log(d);
 //            });
 
 
-        svg.selectAll('.combination').selectAll('circle').data(function (d) {
+        svg.selectAll('.combination').selectAll('.cell').data(function (d) {
             return d;
         }).enter()
             .append('circle')
@@ -388,6 +390,35 @@ function plot() {
             })
             .on('mouseover', mouseoverCell)
             .on('mouseout', mouseoutCell)
+
+
+
+
+        // add the connecting line for cells
+        svg.selectAll('.combination').selectAll('.cellConnector').data(
+            function (d) {
+                // get maximum and minimum index of cells with value 1
+                var extent= d3.extent(
+                    d.map(function(dd,i){ if (dd==1) return i; else return -1;})
+                     .filter(function(dd,i){return dd>=0;})
+                )
+
+                // dont do anything if there is only one (or none) cell
+                if (extent[0]==extent[1]) return [];
+                else return [extent];
+            }
+        ).enter().append("line").attr({
+                class:"cellConnector",
+                x1:function(d){ return (cellDistance) * d[0] + cellSize/2;},
+                x2:function(d){ return (cellDistance) * d[1] + cellSize/2;},
+                y1:cellSize/2,
+                y2:cellSize/2
+            }).style({
+                "stroke":setScale(1),
+                "stroke-width":3
+            })
+
+
 
         // Handling groups
 
@@ -598,31 +629,47 @@ function plot() {
     // -------------------- panning -------------------
 
         function panning() {
- 
-            d3.select(this).attr('transform', 'translate(0, ' + Math.min(0,-d3.event.translate[0]) + ')');
 
-            // Subset background should stick to his place
-            d3.select(".background-subsets").attr('transform', function (d, i) {
-                return 'translate(' + [ 0, Math.max(0, d3.event.translate[0]) ] + ')'
-            })
+
+          var trans = Math.min(Math.min(0,-d3.event.translate[0]), params.viewportHeight-params.rowsHeight);
+
+          var offset = params.viewportHeight-params.rowsHeight;
+
+          console.log("trans", trans, Math.min(0,d3.event.translate[0]), Math.max(0, params.rowsHeight-params.viewportHeight) )
+
+          d3.event.translate[0] = Math.min(0,d3.event.translate[0]);
+          //if(params.rowsHeight>params.viewportHeight) {
+
+          // Moving rows containing the subsets
+          d3.select(this).attr('transform', 'translate(0, ' + trans + ')');
+
+          // Rows background should stick to his place
+          d3.select(".background-subsets").attr('transform', function (d, i) {
+              return 'translate(' + [ 0, -trans] + ')'
+          })
 
           // Update the scrollbar          
           scrollbar.setValue(d3.event.translate[0]);
+
+
+          console.log(params.rowsHeight, params.viewportHeight, subSets.length, setGroups.length, d3.transform(d3.select(this).attr("transform")).translate[1], trans)
+
         }
 
         var pan = d3.behavior.zoom()
-            .scaleExtent([-10, 10])
+          //  .scaleExtent([-10, 10])
             .on('zoom', panning);
 
         d3.select('.gRows').call(pan);
 
       // -------------------- scrollbar -------------------
 
-      var params = {
+      params = {
         x: w-20,
         y: 55,
         height: svgHeight-55,
-        thumbHeight: 40,
+        viewportHeight: svgHeight-55,
+        rowsHeight: subSetMatrixHeight,
         parentEl: d3.select('.gScroll')
       }
 
