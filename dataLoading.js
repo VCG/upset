@@ -51,7 +51,8 @@ function load(descriptions) {
     dataSetDescriptions = descriptions;
 
     // Variables from query string
-    var queryParameters = {}, queryString = location.search.substring(1),
+    queryParameters = {};
+    var queryString = location.search.substring(1),
         re = /([^&=]+)=([^&]*)/g, m;
 
     // Creates a map with the query string parameters
@@ -60,6 +61,7 @@ function load(descriptions) {
     }
 
     queryParameters['dataset'] = parseInt(queryParameters['dataset']) || 0;
+    queryParameters['duration'] = queryParameters['duration'] || 2000;
 
     var header = d3.select('#header');
 
