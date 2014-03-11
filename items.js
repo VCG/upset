@@ -13,7 +13,7 @@ function plotSelectionTabs( element, selections, activeSelection ) {
     if ( selections.getSize() <= 0 ) {
         d3.select(element).append('p' )
             .attr( 'class', 'selection-tab-list' )
-            .html( 'No selections.' );
+            .html( 'No selections. Click <i class="fa fw fa-plus"></i> button to add a new selection.' );
 
         return;
     }
