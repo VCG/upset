@@ -2,12 +2,26 @@ function plotSelectionTabs( element, selections, activeSelection ) {
     // clear target element
     d3.select(element).html("");
 
+    d3.select(element)
+        .append('span')
+        .attr('class', 'selection-button')
+        .html('<i title="New selection" class="fa fw fa-plus"></i>')
+        .on("click", function(event){
+            createInitialSelection();
+        });    
+
     if ( selections.getSize() <= 0 ) {
-        d3.select(element).html('<p>No selections.</p>')
+        d3.select(element).append('p' )
+            .attr( 'class', 'selection-tab-list' )
+            .html( 'No selections.' );
+
         return;
     }
-    
-    var table = d3.select(element).append("table");
+
+    var table = d3.select(element)
+        .append("table")
+        .attr("class", "selection-tab-list");
+
     var tbody = table.append("tbody");
 
     var tabs = tbody.append("tr")

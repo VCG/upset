@@ -1,7 +1,8 @@
 function mouseoverColumn(d, i) {
 
     d3.selectAll(".connection, .combination rect, .setSize")
-        .style("opacity", .3)
+    //    .style("opacity", .3)
+    .style("stroke", "white")
 
     d3.selectAll(".connection.diagonal").filter(function (dd, ii) {
         return ii == i;
@@ -13,42 +14,48 @@ function mouseoverColumn(d, i) {
         return ii == i;
     })
         .style("opacity", 1)
-        //.style("stroke", "black")
+        .style("stroke", "black")
 
     d3.selectAll(".connection.vertical").filter(function (dd, ii) {
         return ii == i;
     })
         .style("opacity", 1)
+        .style("stroke", "black")
 
     d3.selectAll(".setSize").filter(function (dd, ii) {
         return ii == i;
     })
         .style("opacity", 1)
-
+        .style("stroke", "black")
 }
 
 function mouseoutColumn(d, i) {
 
-    d3.selectAll(".connection, .combination rect, .setSize").style("opacity", 1)
+    d3.selectAll(".connection, .combination rect, .setSize")
+        .style("opacity", 1)
+        .style("stroke", "black")
 
 }
 
 function mouseoverRow(d, i) {
 
     d3.selectAll(".row")
-        .style("opacity", .3)
+    //    .style("opacity", .3)
+       //     .style("stroke", "white")
 
     d3.selectAll(".row").filter(function (dd, ii) {
         return ii == i;
     })
         .style("opacity", 1)
+        .style("stroke", "black")
 
 }
 
 function mouseoutRow(d, i) {
 
-    d3.selectAll(".row").style("opacity", 1)
-
+    d3.selectAll(".row")
+        .style("opacity", 1)
+      //  .style("stroke", "white")
 }
 
 function mouseoverCell(d, i) {

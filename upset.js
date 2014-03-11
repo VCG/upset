@@ -321,7 +321,7 @@ function plot() {
 
         //  var rows = svg.selectAll('.row');
         subSets.transition().duration(function (d, i) {
-                return 2000;
+                return queryParameters['duration'];
             }
         ).attr({transform: function (d) {
                 return 'translate(0, ' + rowScale(d.id) + ')';

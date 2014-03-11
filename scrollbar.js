@@ -21,6 +21,9 @@ function Scrollbar(params) {
 	this.min = params.min;
 	this.max = params.max;
 
+	this.ordinal_axis = d3.scale.ordinal().domain(d3.range(this.min, this.max+1)).rangePoints([0, this.height]);
+	this.linear_axis = d3.scale.linear().domain([this.min, this.max]).range([0, this.height]);
+
   var dragScrollbar = d3.behavior.drag()
           .origin(Object)
           .on("dragstart", dragstartScrollbar)
