@@ -370,12 +370,14 @@ function plot() {
             .attr({class: 'combination'
             })
 
+
+
 //            .each(function (d) {
 //                console.log(d);
 //            });
 
 
-        svg.selectAll('.combination').selectAll('circle').data(function (d) {
+        svg.selectAll('.combination').selectAll('.cell').data(function (d) {
             return d;
         }).enter()
             .append('circle')
@@ -396,6 +398,35 @@ function plot() {
             })
             .on('mouseover', mouseoverCell)
             .on('mouseout', mouseoutCell)
+
+
+
+
+        // add the connecting line for cells
+        svg.selectAll('.combination').selectAll('.cellConnector').data(
+            function (d) {
+                // get maximum and minimum index of cells with value 1
+                var extent= d3.extent(
+                    d.map(function(dd,i){ if (dd==1) return i; else return -1;})
+                     .filter(function(dd,i){return dd>=0;})
+                )
+
+                // dont do anything if there is only one (or none) cell
+                if (extent[0]==extent[1]) return [];
+                else return [extent];
+            }
+        ).enter().append("line").attr({
+                class:"cellConnector",
+                x1:function(d){ return (cellDistance) * d[0] + cellSize/2;},
+                x2:function(d){ return (cellDistance) * d[1] + cellSize/2;},
+                y1:cellSize/2,
+                y2:cellSize/2
+            }).style({
+                "stroke":setScale(1),
+                "stroke-width":3
+            })
+
+
 
         // Handling groups
 
