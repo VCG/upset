@@ -343,20 +343,23 @@ function plot() {
             return d.data.type === ROW_TYPE.SUBSET;
         })
 
-        // add transparent background to make it sensitive for interaction
-        combinationRows.append("rect").attr({
-            class:"backgroundRect",
-            x:0,
-            y:0,
-            width:setVisWidth,
-            height:cellSize
-        }).style({
-                opacity:0,
-                fill:"white"
-            }).on({
-                'mouseover': mouseoverRow,
-                'mouseout': mouseoutRow
-            });
+        // add transparent background to make each row it sensitive for interaction
+        combinationRows.selectAll('.backgroundRect').data(function (d) {return [d]})
+            .enter().append("rect").attr({
+                class:"backgroundRect",
+                x:0,
+                y:0,
+                width:setVisWidth,
+                height:cellSize
+            })
+            .style({
+                   "fill-opacity":0,
+                    fill:"grey" // for debugging
+                })
+            .on({
+                    'mouseover': mouseoverRow,
+                    'mouseout': mouseoutRow
+                });
 
         combinationRows.selectAll('g').data(function (d) {
                 // binding in an array of size one
