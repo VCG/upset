@@ -339,7 +339,24 @@ function plot() {
 
         var combinationRows = subSets.filter(function (d) {
             return d.data.type === ROW_TYPE.SUBSET;
-        }).selectAll('g').data(function (d) {
+        })
+
+        // add transparent background to make it sensitive for interaction
+        combinationRows.append("rect").attr({
+            class:"backgroundRect",
+            x:0,
+            y:0,
+            width:setVisWidth,
+            height:cellSize
+        }).style({
+                opacity:0,
+                fill:"white"
+            }).on({
+                'mouseover': mouseoverRow,
+                'mouseout': mouseoutRow
+            });
+
+        combinationRows.selectAll('g').data(function (d) {
                 // binding in an array of size one
                 return [d.data.combinedSets];
             }
@@ -348,21 +365,6 @@ function plot() {
             .attr({class: 'combination'
             })
 
-
-        // add transparent background to make it sensitive for interaction
-        combinationRows.append("rect").attr({
-                class:"backgroundRect",
-                x:0,
-                y:0,
-                width:setVisWidth,
-                height:cellSize
-            }).style({
-                opacity:0,
-                fill:"white"
-            }).on({
-                'mouseover': mouseoverCell,
-                'mouseout': mouseoutCell
-            });
 //            .each(function (d) {
 //                console.log(d);
 //            });
