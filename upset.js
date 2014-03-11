@@ -405,42 +405,8 @@ function plot() {
         svg.selectAll('.row')
             .append('rect')
             .on('click', function (d) {
-                // extract a subset definition for use with the subset filter
-                var subsetDefinition = {};
-                for (var x = 0; x < d.data.combinedSets.length; ++x) {
-                    subsetDefinition[usedSets[x].id] = d.data.combinedSets[x];
-                }
-
-                var filterList = [];
-
-                // create subset filter and create new selection based on all items
-                var selection = new Selection(allItems);
-
-                filterList.push({ attributeId: attributes.length - 1, id: "subset", parameters: { subset: subsetDefinition }, uuid: Utilities.generateUuid() });
-
-                for (var a = 0; a < attributes.length - 1; ++a) {
-                    if (attributes[a].type === 'integer' || attributes[a].type === 'float') {
-                        filterList.push({ attributeId: a, id: "numericRange", parameters: { min: attributes[a].min, max: attributes[a].max }, uuid: Utilities.generateUuid() });
-                    }
-
-                    if (attributes[a].type === 'string' || attributes[a].type === 'id') {
-                        filterList.push({ attributeId: a, id: "stringRegex", parameters: { pattern: "." }, uuid: Utilities.generateUuid() });
-                    }
-                }
-
-                selection.filters = filterList;
-                selections.addSelection(selection);
-                selection.applyFilters();
-                selections.setActive( selection );
-
-                d3.select(this).style("fill", selections.getColor(selection));
-
-                // === Experiments ===
-                // create a set count filter and create new selection based on previous subset
-                //selections.addSelection(selection.createSelection( attributes.length-2, "numericRange", { min: "1", max: "1" } ));                
-
-                // create a regex filter on name and create new selection based on previous subset
-                //selections.addSelection(selection.createSelection( 0, "stringRegex", { pattern: "^[A-B].+$" } ));                
+                //createSelectionForSubSetBar( d );
+                var selection = Selection.fromSubset(d.data.combinedSets);
             })
             .attr({
                 class: 'subSetSize',
@@ -471,7 +437,7 @@ function plot() {
         svg.selectAll('.row')
             .append('rect')
             .on('click', function (d) {
-
+                var selection = Selection.fromSubset(d.data.combinedSets);
             })
             .attr({
                 class: 'what',
