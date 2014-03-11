@@ -172,6 +172,12 @@ th.attribute-header.selected {
     background-color: yellow;
 }
 
+.selection-tab-list {
+    display: inline-block;
+    height: 20px;
+    margin-left: 5px;
+}
+
 .selection-tab {
     cursor: pointer;
     background-color: #eee;
@@ -183,6 +189,20 @@ th.attribute-header.selected {
 .selection-tab.active {
     background-color: #ccc;
 }
+
+.selection-button {
+    cursor: pointer;
+    background-color: #eee;
+    border-radius: 5px;
+    padding: 4px;
+    margin-right: 4px;
+    display: inline-block;
+}
+
+.selection-button:hover {
+    background-color: #ccc;
+}
+
 
 .filter-button {
     cursor: default;
