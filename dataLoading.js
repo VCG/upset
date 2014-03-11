@@ -137,6 +137,7 @@ function run() {
     setUpGroupings();
     updateState();
     plot();
+
     plotSetSelection();
     createInitialSelection();
 }

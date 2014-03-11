@@ -5,7 +5,7 @@ function plotSelectionTabs( element, selections, activeSelection ) {
     d3.select(element)
         .append('span')
         .attr('class', 'selection-button')
-        .html('<i class="fa fw fa-plus"></i>')
+        .html('<i title="New selection" class="fa fw fa-plus"></i>')
         .on("click", function(event){
             createInitialSelection();
         });    
