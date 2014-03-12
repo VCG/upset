@@ -103,21 +103,33 @@ function plot() {
     var svg = d3.select('#vis').append('svg').attr('width', w)
         .attr('height', svgHeight);
 
+    var vis = svg.append("g").attr({
+        class:"visContainer",
+        "transform":"translate("+0+","+10+")"
+    })
+
+    // define a clipping path for scrolling (@hen)
+    svg.append("clipPath").attr({
+        id:"visClipping"
+    }).append("rect").attr('width', w)
+        .attr('height', svgHeight);
+    vis.attr("clip-path","url(#visClipping)")
+
     // Rows container for vertical panning
-    var gRows = svg.append('g')
+    var gRows = vis.append('g')
         .attr('class', 'gRows')
         .data([
             {'x': 0, 'y': 0}
         ]);
 
-    var gScroll = svg.append('g')
+    var gScroll = vis.append('g')
         .attr('class', 'gScroll')
         .data([
             {'x': 0, 'y': 0}
         ]);
 
 
-    var gQuery = svg.append('g')
+    var gQuery = vis.append('g')
         .attr('class', 'gQuery')
         .data([
             {'x': 0, 'y': 0}
@@ -125,7 +137,7 @@ function plot() {
 
 
     // Extra layer for vertical panning
-    svg.append('rect').attr({
+    vis.append('rect').attr({
         x: 0,
         y: 0,
         width: w,
@@ -144,7 +156,7 @@ function plot() {
         return d.id;
     }));
 
-    var setGrp = svg.selectAll('.setRow')
+    var setGrp = vis.selectAll('.setRow')
         .data(usedSets)
         .enter()
         .append('g')
@@ -163,7 +175,7 @@ function plot() {
 
     // ------------ the set labels -------------------
 
-    var setLabels = svg.selectAll('.setLabel')
+    var setLabels = vis.selectAll('.setLabel')
         .data(usedSets)
         .enter();
 
@@ -212,7 +224,7 @@ function plot() {
 
     // ------------------- set size bars header --------------------
 
-    svg.append('rect')
+    vis.append('rect')
         .attr({
             class: 'labelBackground subsetSizeLabel',
             transform: 'translate(' + xStartSetSizes + ',' + ( labelTopPadding) + ')',
@@ -221,7 +233,7 @@ function plot() {
 
         });
 
-    svg.append('text').text('Subset Size')
+    vis.append('text').text('Subset Size')
         .attr({
             class: 'columnLabel subsetSizeLabel',
             transform: 'translate(' + (xStartSetSizes + subSetSizeWidth / 2) + ',' + (labelTopPadding + 10) + ')'
@@ -234,7 +246,7 @@ function plot() {
 
     var subSetSizeAxis = d3.svg.axis().scale(subSetSizeScale).orient('top').ticks(4);
 
-    svg.append('g').attr()
+    vis.append('g').attr()
         .attr({class: 'axis',
             transform: 'translate(' + xStartSetSizes + ',' + ( textHeight - 5) + ')'
         })
@@ -242,7 +254,7 @@ function plot() {
 
     // ------------ expected value header -----------------------
 
-    svg.append('rect')
+    vis.append('rect')
         .attr({
             class: 'labelBackground expectedValueLabel',
             // id: ,
@@ -252,7 +264,7 @@ function plot() {
 
         });
 
-    svg.append('text').text('Deviation from Expected Value')
+    vis.append('text').text('Deviation from Expected Value')
         .attr({
             class: 'columnLabel expectedValueLabel',
             transform: 'translate(' + (xStartExpectedValues + expectedValueWidth / 2) + ',' + ( labelTopPadding + 10) + ')'
@@ -273,7 +285,7 @@ function plot() {
 
     var expectedValueAxis = d3.svg.axis().scale(expectedValueScale).orient('top').ticks(4);
 
-    svg.append('g').attr()
+    vis.append('g').attr()
         .attr({class: 'axis',
             transform: 'translate(' + xStartExpectedValues + ',' + (textHeight - 5) + ')'
         })
@@ -377,7 +389,7 @@ function plot() {
 //            });
 
 
-        svg.selectAll('.combination').selectAll('.cell').data(function (d) {
+        vis.selectAll('.combination').selectAll('.cell').data(function (d) {
             return d;
         }).enter()
             .append('circle')
@@ -403,7 +415,7 @@ function plot() {
 
 
         // add the connecting line for cells
-        svg.selectAll('.combination').selectAll('.cellConnector').data(
+        vis.selectAll('.combination').selectAll('.cellConnector').data(
             function (d) {
                 // get maximum and minimum index of cells with value 1
                 var extent= d3.extent(
@@ -430,7 +442,7 @@ function plot() {
 
         // Handling groups
 
-        var groups = svg.selectAll('.row').select(function (d, i) {
+        var groups = vis.selectAll('.row').select(function (d, i) {
             if (d.data.type === ROW_TYPE.GROUP || d.data.type === ROW_TYPE.AGGREGATE)
                 return this;
             return null;
@@ -464,7 +476,7 @@ function plot() {
 
         // ------------------------ set size bars -------------------
 
-        svg.selectAll('.row')
+        vis.selectAll('.row')
             .append('rect')
             .on('click', function (d) {
                 //createSelectionForSubSetBar( d );
@@ -496,7 +508,7 @@ function plot() {
 //        overlay();
 //
 //        function overlay() {
-        svg.selectAll('.row')
+        vis.selectAll('.row')
             .append('rect')
             .on('click', function (d) {
                 var selection = Selection.fromSubset(d.data.combinedSets);
@@ -545,7 +557,7 @@ function plot() {
 
         // ----------------------- expected value bars -------------------
 
-        svg.selectAll('.row')
+        vis.selectAll('.row')
             .append('rect')
             .attr({
                 class: function (d) {
