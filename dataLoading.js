@@ -61,7 +61,7 @@ function load(descriptions) {
     }
 
     queryParameters['dataset'] = parseInt(queryParameters['dataset']) || 0;
-    queryParameters['duration'] = queryParameters['duration'] || 000;
+    queryParameters['duration'] = queryParameters['duration'] || 1000;
     queryParameters['orderBy'] = queryParameters['orderBy'] || "subsetSize"; // deviation, intersection, specific set
     queryParameters['groupBy'] = queryParameters['groupBy'] || "set"; // setSize, 
     queryParameters['selection'] = queryParameters['selection'] || "";
@@ -138,7 +138,7 @@ function createInitialSelection() {
 
 function run() {
     setUpSubSets();
-    setUpGroupings();
+   // setUpGroupings();
     updateState();
     plot();
 
@@ -380,10 +380,10 @@ function setUpSubSets() {
 
 }
 
-function setUpGroupings() {
-    groupBySetSize();
-    groupBySet();
-}
+//function setUpGroupings() {
+//    groupBySetSize();
+//    groupBySet();
+//}
 
 function change() {
     sets.length = 0;
@@ -427,7 +427,7 @@ function updateSetContainment(set) {
     subSets.length = 0;
     dataRows.length = 0;
     setUpSubSets();
-    setUpGroupings();
+  //  setUpGroupings();
     updateState();
     plot();
     plotSetSelection();

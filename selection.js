@@ -9,12 +9,61 @@ Selection = function (items, filters) {
     this.id = undefined;
 };
 
-Selection.fromSubset = function (subset) {
+
+Selection.createSubsetDefinition = function( subsets ) {
+    
+    if ( !(subsets[0] instanceof Object) ) {
+        var newSubsets = [];
+        newSubsets.push( subsets );
+        subsets = newSubsets;
+    }
+    else {
+        //subsets = subsets[0];
+    }
+
+    console.log( "subsets" );
+    console.log( subsets );
+
+    var subsetDefinition = {};
+
+    for ( var s = 0; s < subsets.length; ++s ) {
+        var subset = subsets[s].combinedSets;
+
+        console.log( "subset" );
+        console.log( subset );
+
+        for (var x = 0; x < subset.length; ++x) {
+            if ( subsetDefinition.hasOwnProperty( usedSets[x].id ) ) {
+                if ( subsetDefinition[usedSets[x].id] !== subset[x] ) {
+                    subsetDefinition[usedSets[x].id] = 2;
+                }
+            }
+            else {
+                subsetDefinition[usedSets[x].id] = subset[x];
+            }
+        }        
+    }
+
+    console.log( "subsetDefinition" );
+    console.log( subsetDefinition );
+
+    return ( subsetDefinition );
+};
+
+
+/** Create a selection from a subset */
+Selection.fromSubset = function ( subsets ) {
     // extract a subset definition for use with the subset filter
+
+    var subsetDefinition = Selection.createSubsetDefinition( subsets );
+
+    /*
     var subsetDefinition = {};
     for (var x = 0; x < subset.length; ++x) {
         subsetDefinition[usedSets[x].id] = subset[x];
     }
+    */
+    
 
     var filterList = [];
 
@@ -36,17 +85,8 @@ Selection.fromSubset = function (subset) {
     selection.filters = filterList;
     selection.applyFilters();
 
-    //d3.select(this).style("fill", selections.getColor(selection));
-
-    // === Experiments ===
-    // create a set count filter and create new selection based on previous subset
-    //selections.addSelection(selection.createSelection( attributes.length-2, "numericRange", { min: "1", max: "1" } ));                
-
-    // create a regex filter on name and create new selection based on previous subset
-    //selections.addSelection(selection.createSelection( 0, "stringRegex", { pattern: "^[A-B].+$" } ));                
-
     return selection;
-}
+};
 
 Selection.prototype.createSelection = function (attributeId, filterId, parameters) {
     var newItems = [];
@@ -285,6 +325,9 @@ SelectionList.prototype.isActive = function (selection) {
 
 SelectionList.prototype.isActiveByUuid = function (uuid) {
     var self = this;
+    if (!self.active) {
+        return false;
+    }
     return ( self.active.id === uuid );
 };
 
