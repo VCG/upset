@@ -57,6 +57,8 @@ function plot() {
     var setSizeWidth = 700;
     var subSetSizeWidth = 300;
 
+    var leftOffset = 60;
+
     /** The width from the start of the set vis to the right edge */
 
 
@@ -103,7 +105,7 @@ function plot() {
 
     var vis = svg.append("g").attr({
         class: "visContainer",
-        "transform": "translate(" + 60 + "," + 120 + ")"
+        "transform": "translate(" + leftOffset + "," + 120 + ")"
     })
 
     // define a clipping path for scrolling (@hen)
@@ -111,7 +113,7 @@ function plot() {
         id: "visClipping"
     }).append("rect").attr('width', w)
         .attr('height', svgHeight)
-        .attr("transform", "translate(" + -60 + "," + 0 + ")")
+        .attr("transform", "translate(" + -leftOffset + "," + 0 + ")")
     vis.attr("clip-path", "url(#visClipping)")
 
     // Rows container for vertical panning
@@ -163,12 +165,6 @@ function plot() {
         },
             class: 'setRow'});
 
-    // ------------------- set size bars --------------------
-
-    // scale for the size of the subSets, also used for the sets
-    var setSizeScale = d3.scale.linear().domain([0, d3.max(usedSets, function (d) {
-        return d.setSize;
-    })]).nice().range([0, textHeight]);
 
     // ------------ the set labels -------------------
 
@@ -184,28 +180,9 @@ function plot() {
           height: textHeight - 2,
           class: 'connection vertical',
         })
-   //     .attr("transform", "skewX(45)")
         .on('mouseover', mouseoverColumn)
         .on('mouseout', mouseoutColumn)
 
-/*
-    // background bar
-    setLabels
-        .append('rect')
-        .attr({
-            class: 'setSize',
-            transform: function (d, i) {
-                return 'skewX(45) translate(' + (cellDistance * (i )) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize)) + ')'
-            }, // ' + (textHeight - 5) + ')'
-            height: function (d) {
-                return setSizeScale(d.setSize);
-            },
-            width: cellSize//setRowScale.rangeBand()
-        })
-      //  .attr("transform", "skewX(45)")
-        .on('mouseover', mouseoverColumn)
-        .on('mouseout', mouseoutColumn)
-*/
     setLabels.append('text').text(
         function (d) {
             return d.elementName.substring(0, truncateAfter);
@@ -446,9 +423,9 @@ function plot() {
 
         groups.append('rect').attr({
             class: 'groupBackGround',
-            width: setVisWidth,
+            width: setVisWidth + leftOffset,
             height: cellSize,
-            x: 0,
+            x: -leftOffset,
             y: 0
         }).on('click', function (d) {
                 collapseGroup(d.data);
@@ -465,8 +442,8 @@ function plot() {
         })
             .attr({class: 'groupLabel',
                 y: cellSize - 3,
-                x: 3,
-                'font-size': cellSize - 4
+                x: -leftOffset,
+                'font-size': cellSize - 6
 
             });
 

@@ -144,6 +144,7 @@ function run() {
 
     plotSetSelection();
     createInitialSelection();
+    plotSetOverview();
 }
 
 function getNumberOfSets(dataSetDescription) {
@@ -430,7 +431,7 @@ function updateSetContainment(set) {
     updateState();
     plot();
     plotSetSelection();
-
+    plotSetOverview();
 }
 
 function addSet(set) {
