@@ -8,42 +8,42 @@ var SET_BASED_GROUPING_PREFIX = "SetG_";
 
 var idCache = {};
 
-var groupBySetSize = function () {
-    sizeGroups = [];
-    sizeGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset'));
+var groupBySetSize = function (subSets, level) {
+    var newGroups = [];
+    newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
     for (var i = 0; i < usedSets.length; i++) {
-        sizeGroups.push(new Group(SET_SIZE_GROUP_PREFIX + (i + 1), (i + 1) + '-Set Subsets'));
+        newGroups.push(new Group(SET_SIZE_GROUP_PREFIX + (i + 1), (i + 1) + '-Set Subsets'));
     }
     subSets.forEach(function (subSet) {
-        var group = sizeGroups[subSet.nrCombinedSets]
+        var group = newGroups[subSet.nrCombinedSets]
         if (group != null)
             group.addSubSet(subSet);
         else
-            console.log('Fail' + group + subSet.nrCombinedSets);
+            console.log('Fail ' + group + subSet.nrCombinedSets);
     })
+    return newGroups
 }
 
 /**
  * Creates groups for all sets containing all subsets of this set
  */
-var groupBySet = function () {
-    console.log();
-    setGroups = [];
-    setGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset'));
+var groupBySet = function (subSets, level) {
+
+    var newGroups = [];
+    newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
     for (var i = 0; i < usedSets.length; i++) {
         var group = new Group(SET_BASED_GROUPING_PREFIX + (i + 1), usedSets[i].elementName);
 
-        setGroups.push(group);
+        newGroups.push(group);
 
         subSets.forEach(function (subSet) {
             if (subSet.combinedSets[i] !== 0) {
 
-               // console.log('Adding to ' + usedSets[i].elementName + " subset " + subSet.id);
-//                console.log('b: ' + usedSets[i].combinedSets);
                 group.addSubSet(subSet);
             }
         });
     }
+    return newGroups;
 }
 
 /** Collapse or uncollapse group */
@@ -157,25 +157,36 @@ var sortByGroup = function (groupList) {
 
 /** Sort by set size using groups */
 var sortBySetSizeGroups = function () {
-    sortByGroup(sizeGroups);
+    sortByGroup(levelOneGroups);
 }
 
 /** Sort by the groups containing all subsets of each sets */
 var sortBySetGroups = function () {
-    sortByGroup(setGroups);
+    sortByGroup(levelOneGroups);
 }
 
 var UpSetState = {
     collapseAll: false,
     unCollapseAll: false,
-    grouping: sortBySetSizeGroups
+    grouping: groupBySet,
+    levelTwoGrouping: groupBySetSize
 //    sorting: sortBySubsetSize,
 
 }
 
 updateState = function (parameter) {
-    UpSetState.grouping(parameter);
+    if (UpSetState.grouping) {
+        levelOneGroups = UpSetState.grouping(subSets);
+    }
+
+    if (UpSetState.levelTwoGrouping) {
+        levelOneGroups.forEach(function (group) {
+            group.nestedGroups = UpSetState.levelTwoGrouping(group.subSets, 2);
+        });
+    }
+
     renderRows.length = 0;
+    sortByGroup(levelOneGroups);
 
     var registry = {};
     dataRows.forEach(function (element) {
@@ -195,6 +206,4 @@ updateState = function (parameter) {
         renderRows.push(wrapper);
 
     });
-
 }
-

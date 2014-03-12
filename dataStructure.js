@@ -67,6 +67,10 @@ var sizeGroups = [];
 /** Groups of subsets driven by set containment */
 var setGroups = [];
 
+/** The current primary grouping */
+// TODO this is static for testing only
+var levelOneGroups = setGroups;
+
 /** How many sets do we want to see by default */
 var nrDefaultSets = 3;
 
@@ -154,11 +158,19 @@ SubSet.prototype.toString = function () {
 SubSet.prototype = Set;
 SubSet.prototype.constructor = SubSet;
 
-function Group(groupID, groupName) {
+function Group(groupID, groupName, level) {
     Element.call(this, groupID, groupName);
     this.type = ROW_TYPE.GROUP;
 
     this.isCollapsed = false;
+
+    this.nestedGroups = undefined;
+
+    /** the nesting level of the group, 1 is no nesting, 2 is one level down */
+    this.level = 1;
+    if (level) {
+        this.level = level;
+    }
 
     /** all subsets */
     this.subSets = [];
