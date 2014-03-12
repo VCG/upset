@@ -163,7 +163,6 @@ function plot() {
         },
             class: 'setRow'});
 
-
     // ------------ the set labels -------------------
 
     var setLabels = vis.selectAll('.setLabel')
@@ -171,13 +170,13 @@ function plot() {
         .enter();
 
     setLabels.append('rect').attr({
-          transform: function (d, i) {
-              return 'skewX(45) translate(' + (cellDistance * i - leftOffset) + ', 0)';
-          },
-          width: cellSize,
-          height: textHeight - 2,
-          class: 'connection vertical',
-        })
+        transform: function (d, i) {
+            return 'skewX(45) translate(' + (cellDistance * i - leftOffset) + ', 0)';
+        },
+        width: cellSize,
+        height: textHeight - 2,
+        class: 'connection vertical',
+    })
         .on('mouseover', mouseoverColumn)
         .on('mouseout', mouseoutColumn)
 
@@ -194,7 +193,7 @@ function plot() {
             }
 
         })
-       
+
         .on('mouseover', mouseoverColumn)
         .on('mouseout', mouseoutColumn)
 
@@ -420,12 +419,12 @@ function plot() {
         })
 
         groups.append('rect').attr({
-              class: 'groupBackGround',
-              width: setVisWidth + leftOffset,
-              height: cellSize,
-              x: -leftOffset,
-              y: 0
-            }).on('click', function (d) {
+            class: 'groupBackGround',
+            width: setVisWidth + leftOffset,
+            height: cellSize,
+            x: -leftOffset,
+            y: 0
+        }).on('click', function (d) {
                 collapseGroup(d.data);
                 rowTransition();
             });
@@ -438,43 +437,45 @@ function plot() {
             else if (d.data.type === ROW_TYPE.AGGREGATE)
                 return String.fromCharCode(8709) + '-subsets (' + d.data.subSets.length + ') ';
         })
-        .attr({class: 'groupLabel',
-            y: cellSize - 3,
-            x: -leftOffset,
-            'font-size': cellSize - 6
+            .attr({class: 'groupLabel',
+                y: cellSize - 3,
+                x: -leftOffset,
+                'font-size': cellSize - 6
 
-        });
+            });
 
         // ------------------------ set size bars -------------------
 
         vis.selectAll('.row')
             .append('rect')
-            .on('click', function (d) {
-                //createSelectionForSubSetBar( d );
-                var selection = Selection.fromSubset(d.data.combinedSets);
-            })
-            .attr({
-                class: 'subSetSize',
+                .on('click', function (d) {
+                    //     createSelectionForSubSetBar(d);
+                    if (d.data.type === ROW_TYPE.SUBSET) {
+                        var selection = Selection.fromSubset(d.data.combinedSets);
+                    }
+                })
+                .attr({
+                    class: 'subSetSize',
 
-                transform: function (d) {
-                    var y = 0;
-                    if (d.data.type !== ROW_TYPE.SUBSET)
-                        y = 0;//cellSize / 3 * .4;
-                    return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
-                },
+                    transform: function (d) {
+                        var y = 0;
+                        if (d.data.type !== ROW_TYPE.SUBSET)
+                            y = 0;//cellSize / 3 * .4;
+                        return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
+                    },
 
-                width: function (d) {
-                    return subSetSizeScale(d.data.setSize);
-                },
-                height: function (d) {
-                    if (d.data.type === ROW_TYPE.SUBSET)
-                        return cellSize;
-                    else
-                        return cellSize;// / 3;
-                }
-            })
-            .on('mouseover', mouseoverRow)
-            .on('mouseout', mouseoutRow)
+                    width: function (d) {
+                        return subSetSizeScale(d.data.setSize);
+                    },
+                    height: function (d) {
+                        if (d.data.type === ROW_TYPE.SUBSET)
+                            return cellSize;
+                        else
+                            return cellSize;// / 3;
+                    }
+                })
+                .on('mouseover', mouseoverRow)
+                .on('mouseout', mouseoutRow);
 
         renderOverlay();
         // Rendering the highlights for selections on top of the selected subsets
@@ -482,7 +483,9 @@ function plot() {
             vis.selectAll('.row')
                 .append('rect')
                 .on('click', function (d) {
-                    var selection = Selection.fromSubset(d.data.combinedSets);
+                    if (d.data.type === ROW_TYPE.SUBSET) {
+                        var selection = Selection.fromSubset(d.data.combinedSets);
+                    }
                 })
                 .attr({
                     class: 'what',

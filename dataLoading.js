@@ -61,7 +61,7 @@ function load(descriptions) {
     }
 
     queryParameters['dataset'] = parseInt(queryParameters['dataset']) || 0;
-    queryParameters['duration'] = queryParameters['duration'] || 000;
+    queryParameters['duration'] = queryParameters['duration'] || 1000;
     queryParameters['orderBy'] = queryParameters['orderBy'] || "subsetSize"; // deviation, intersection, specific set
     queryParameters['groupBy'] = queryParameters['groupBy'] || "set"; // setSize, 
     queryParameters['selection'] = queryParameters['selection'] || "";

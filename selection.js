@@ -9,6 +9,7 @@ Selection = function (items, filters) {
     this.id = undefined;
 };
 
+/** Create a selection from a subset */
 Selection.fromSubset = function (subset) {
     // extract a subset definition for use with the subset filter
     var subsetDefinition = {};
@@ -34,7 +35,10 @@ Selection.fromSubset = function (subset) {
     }
 
     selection.filters = filterList;
+    selections.addSelection(selection);
+
     selection.applyFilters();
+    selections.setActive(selection);
 
     //d3.select(this).style("fill", selections.getColor(selection));
 
@@ -285,6 +289,9 @@ SelectionList.prototype.isActive = function (selection) {
 
 SelectionList.prototype.isActiveByUuid = function (uuid) {
     var self = this;
+    if (!self.active) {
+        return false;
+    }
     return ( self.active.id === uuid );
 };
 
