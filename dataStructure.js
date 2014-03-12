@@ -164,7 +164,7 @@ function Group(groupID, groupName) {
     this.subSets = [];
     /** the visible subsets */
     this.visibleSets = [];
-    this.aggregate = new Aggregate('empty' + groupID, 'Empty Subsets');
+    this.aggregate = new Aggregate('empty' + groupID, ' Subsets');
     /** the hidden/aggregated subsets */
     this.hiddenSets = [];
 

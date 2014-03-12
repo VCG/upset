@@ -50,14 +50,14 @@ function plot() {
     var minorPadding = 2;
     var cellDistance = 20;
     var cellSize = cellDistance;// - minorPadding;
-    var textHeight = 60;
+    var textHeight = 90;
     var textSpacing = 3;
 
     var xStartSetSizes = cellDistance * usedSets.length + majorPadding;
     var setSizeWidth = 700;
     var subSetSizeWidth = 300;
 
-    var leftOffset = 60;
+    var leftOffset = 90;
 
     /** The width from the start of the set vis to the right edge */
 
@@ -145,8 +145,6 @@ function plot() {
     });
     //####################### SETS ##################################################
 
-    var rowRientation = 'vertical'; // 'vertical'
-
     var setRowScale = d3.scale.ordinal().rangeRoundBands([ 0, usedSets.length * (cellSize + 2)], 0);
 
     var subSetSizeHeight = textHeight - majorPadding;
@@ -174,7 +172,7 @@ function plot() {
 
     setLabels.append('rect').attr({
           transform: function (d, i) {
-              return 'skewX(45) translate(' + (cellDistance * i - 3* cellDistance) + ', 0)';
+              return 'skewX(45) translate(' + (cellDistance * i - leftOffset) + ', 0)';
           },
           width: cellSize,
           height: textHeight - 2,
@@ -192,7 +190,7 @@ function plot() {
                 return d.elementName.substring(0, truncateAfter);
             },
             transform: function (d, i) {
-                return 'skewX(45) translate(' + (cellDistance * (i ) + cellDistance / 2 - 3 * cellDistance) + ',' + (textHeight - textSpacing) + ')rotate(270)';
+                return 'skewX(45) translate(' + (cellDistance * (i ) + cellDistance / 2 - leftOffset) + ',' + (textHeight - textSpacing) + ')rotate(270)';
             }
 
         })
@@ -438,7 +436,7 @@ function plot() {
             if (d.data.type === ROW_TYPE.GROUP)
                 return d.data.elementName;
             else if (d.data.type === ROW_TYPE.AGGREGATE)
-                return d.data.subSets.length + ' empty subsets';
+                return String.fromCharCode(8709) + '-subsets (' + d.data.subSets.length + ') ';
         })
             .attr({class: 'groupLabel',
                 y: cellSize - 3,
@@ -461,7 +459,7 @@ function plot() {
                 transform: function (d) {
                     var y = 0;
                     if (d.data.type !== ROW_TYPE.SUBSET)
-                        y = cellSize / 3 * .4;
+                        y = 0;//cellSize / 3 * .4;
                     return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
                 },
 
@@ -472,7 +470,7 @@ function plot() {
                     if (d.data.type === ROW_TYPE.SUBSET)
                         return cellSize;
                     else
-                        return cellSize / 3;
+                        return cellSize;// / 3;
                 }
             })
             .on('mouseover', mouseoverRow)
@@ -492,7 +490,7 @@ function plot() {
                     transform: function (d) {
                         var y = 0;
                         if (d.data.type !== ROW_TYPE.SUBSET)
-                            y = cellSize / 3 * .4;
+                            y = 0; //cellSize / 3 * .4;
                         return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
                     },
 
@@ -521,7 +519,7 @@ function plot() {
                         if (d.data.type === ROW_TYPE.SUBSET)
                             return cellSize;
                         else
-                            return cellSize / 3;
+                            return cellSize// / 3;
 
                     }
                 })
@@ -580,7 +578,7 @@ function plot() {
                     start += xStartExpectedValues;
                     var y = 0;
                     if (d.data.type !== ROW_TYPE.SUBSET)
-                        y = cellSize / 3 * 1.7;
+                        y = 0;//cellSize / 3 * 1.7;
                     return 'translate(' + start + ', ' + y + ')';
                 },
                 width: function (d) {
@@ -591,7 +589,7 @@ function plot() {
                     if (d.data.type === ROW_TYPE.SUBSET)
                         return cellSize;
                     else
-                        return cellSize / 3;
+                        return cellSize;// / 3;
                 }
             })
             .on('mouseover', mouseoverRow)
