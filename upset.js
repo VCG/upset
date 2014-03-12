@@ -176,32 +176,35 @@ function plot() {
         .enter();
 
     setLabels.append('rect').attr({
-        transform: function (d, i) {
-            return 'translate(' + (cellDistance * i ) + ', 0)';
-        },
-        width: cellSize,
-        height: textHeight - 2,
-        class: 'connection vertical'
-    })
+          transform: function (d, i) {
+              return 'skewX(45) translate(' + (cellDistance * i - 3* cellDistance) + ', 0)';
+          },
+          width: cellSize,
+          height: textHeight - 2,
+          class: 'connection vertical',
+        })
+   //     .attr("transform", "skewX(45)")
         .on('mouseover', mouseoverColumn)
         .on('mouseout', mouseoutColumn)
 
+/*
     // background bar
     setLabels
         .append('rect')
         .attr({
             class: 'setSize',
             transform: function (d, i) {
-                return 'translate(' + (cellDistance * (i )) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize)) + ')'
+                return 'skewX(45) translate(' + (cellDistance * (i )) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize)) + ')'
             }, // ' + (textHeight - 5) + ')'
             height: function (d) {
                 return setSizeScale(d.setSize);
             },
             width: cellSize//setRowScale.rangeBand()
         })
+      //  .attr("transform", "skewX(45)")
         .on('mouseover', mouseoverColumn)
         .on('mouseout', mouseoutColumn)
-
+*/
     setLabels.append('text').text(
         function (d) {
             return d.elementName.substring(0, truncateAfter);
@@ -211,10 +214,11 @@ function plot() {
                 return d.elementName.substring(0, truncateAfter);
             },
             transform: function (d, i) {
-                return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (textHeight - textSpacing) + ')rotate(270)';
+                return 'skewX(45) translate(' + (cellDistance * (i ) + cellDistance / 2 - 3 * cellDistance) + ',' + (textHeight - textSpacing) + ')rotate(270)';
             }
 
         })
+       
         .on('mouseover', mouseoverColumn)
         .on('mouseout', mouseoutColumn)
 
