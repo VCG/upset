@@ -83,6 +83,9 @@ function plot() {
 
     var rowScale;
 
+
+
+
     function initRows() {
 
         subSetMatrixHeight = renderRows.length * cellDistance;
@@ -126,11 +129,15 @@ function plot() {
             {'x': 0, 'y': 0}
         ]);
 
-    var gQuery = vis.append('g')
+    var gQuery = svg.append('g')
         .attr('class', 'gQuery')
+        .attr("transform","translate("+-5+","+2+")")
         .data([
             {'x': 0, 'y': 0}
         ]);
+
+
+    var setGrouping = new SetGrouping({width: setVisWidth, queryElement:gQuery, visElement: vis, cellSize: cellSize, usedSets:usedSets});
 
     // Extra layer for vertical panning
     vis.append('rect').attr({
