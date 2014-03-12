@@ -9,13 +9,61 @@ Selection = function (items, filters) {
     this.id = undefined;
 };
 
+
+Selection.createSubsetDefinition = function( subsets ) {
+    
+    if ( !(subsets[0] instanceof Object) ) {
+        var newSubsets = [];
+        newSubsets.push( subsets );
+        subsets = newSubsets;
+    }
+    else {
+        //subsets = subsets[0];
+    }
+
+    console.log( "subsets" );
+    console.log( subsets );
+
+    var subsetDefinition = {};
+
+    for ( var s = 0; s < subsets.length; ++s ) {
+        var subset = subsets[s].combinedSets;
+
+        console.log( "subset" );
+        console.log( subset );
+
+        for (var x = 0; x < subset.length; ++x) {
+            if ( subsetDefinition.hasOwnProperty( usedSets[x].id ) ) {
+                if ( subsetDefinition[usedSets[x].id] !== subset[x] ) {
+                    subsetDefinition[usedSets[x].id] = 2;
+                }
+            }
+            else {
+                subsetDefinition[usedSets[x].id] = subset[x];
+            }
+        }        
+    }
+
+    console.log( "subsetDefinition" );
+    console.log( subsetDefinition );
+
+    return ( subsetDefinition );
+};
+
+
 /** Create a selection from a subset */
-Selection.fromSubset = function (subset) {
+Selection.fromSubset = function ( subsets ) {
     // extract a subset definition for use with the subset filter
+
+    var subsetDefinition = Selection.createSubsetDefinition( subsets );
+
+    /*
     var subsetDefinition = {};
     for (var x = 0; x < subset.length; ++x) {
         subsetDefinition[usedSets[x].id] = subset[x];
     }
+    */
+    
 
     var filterList = [];
 
@@ -38,7 +86,7 @@ Selection.fromSubset = function (subset) {
     selection.applyFilters();
 
     return selection;
-}
+};
 
 Selection.prototype.createSelection = function (attributeId, filterId, parameters) {
     var newItems = [];

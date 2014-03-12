@@ -466,7 +466,13 @@ function plot() {
             .append('rect')
             .on('click', function (d) {
                 if (d.data.type === ROW_TYPE.SUBSET) {
-                    var selection = Selection.fromSubset(d.data.combinedSets);
+                    var selection = Selection.fromSubset(d.data);
+                    selections.addSelection(selection);
+                    selections.setActive(selection);
+                }
+                if (d.data.type === ROW_TYPE.GROUP) {
+                    console.log( d.data );
+                    var selection = Selection.fromSubset(d.data.subSets);
                     selections.addSelection(selection);
                     selections.setActive(selection);
                 }
@@ -504,7 +510,7 @@ function plot() {
                 .append('rect')
                 .on('click', function (d) {
                     if (d.data.type === ROW_TYPE.SUBSET) {
-                        var selection = Selection.fromSubset(d.data.combinedSets);
+                        var selection = Selection.fromSubset(d.data);
                         selections.addSelection(selection);
                         selections.setActive(selection);
                     }
