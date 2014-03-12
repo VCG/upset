@@ -176,7 +176,7 @@ function plot() {
           },
           width: cellSize,
           height: textHeight - 2,
-          class: 'connection vertical',
+          class: 'connection vertical'
         })
         .on('mouseover', mouseoverColumn)
         .on('mouseout', mouseoutColumn)
@@ -300,15 +300,32 @@ function plot() {
                 }
             });
 
-        subSets.exit().remove();
-
-        //  var rows = svg.selectAll('.row');
-        subSets.transition().duration(function (d, i) {
+        subSets.exit().remove();/*
+        .transition().duration(function (d, i) {
                 return queryParameters['duration'];
             }
         ).attr({transform: function (d) {
                 return 'translate(0, ' + rowScale(d.id) + ')';
 
+            }, class: function (d) {
+              if(d.data.type === ROW_TYPE.SUBSET) {
+                return 'translate(0, ' + rowScale("SetSizeG_"+d.data.nrCombinedSets+"_1") + ')';
+                alert("test")
+              }
+              else
+                return 'row ' + d.data.type;
+            }})
+      */
+        //  var rows = svg.selectAll('.row');
+        subSets.transition().duration(function (d, i) {
+            if(d.data.type === ROW_TYPE.SUBSET)
+                return queryParameters['duration'];
+            else
+              return queryParameters['duration'];
+            }).attr({transform: function (d) {
+
+                return 'translate(0, ' + rowScale(d.id) + ')';
+                  
             }, class: function (d) {
                 //    console.log(d.type);
                 return 'row ' + d.data.type;
