@@ -103,14 +103,15 @@ function plot() {
 
     var vis = svg.append("g").attr({
         class: "visContainer",
-        "transform": "translate(" + 0 + "," + 10 + ")"
+        "transform": "translate(" + 60 + "," + 120 + ")"
     })
 
     // define a clipping path for scrolling (@hen)
     svg.append("clipPath").attr({
         id: "visClipping"
     }).append("rect").attr('width', w)
-        .attr('height', svgHeight);
+        .attr('height', svgHeight)
+        .attr("transform", "translate(" + -60 + "," + 0 + ")")
     vis.attr("clip-path", "url(#visClipping)")
 
     // Rows container for vertical panning
