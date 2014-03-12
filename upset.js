@@ -50,12 +50,14 @@ function plot() {
     var minorPadding = 2;
     var cellDistance = 20;
     var cellSize = cellDistance;// - minorPadding;
-    var textHeight = 60;
+    var textHeight = 90;
     var textSpacing = 3;
 
     var xStartSetSizes = cellDistance * usedSets.length + majorPadding;
     var setSizeWidth = 700;
     var subSetSizeWidth = 300;
+
+    var leftOffset = 90;
 
     /** The width from the start of the set vis to the right edge */
 
@@ -106,14 +108,15 @@ function plot() {
 
     var vis = svg.append("g").attr({
         class: "visContainer",
-        "transform": "translate(" + 0 + "," + 10 + ")"
+        "transform": "translate(" + leftOffset + "," + 120 + ")"
     })
 
     // define a clipping path for scrolling (@hen)
     svg.append("clipPath").attr({
         id: "visClipping"
     }).append("rect").attr('width', w)
-        .attr('height', svgHeight);
+        .attr('height', svgHeight)
+        .attr("transform", "translate(" + -leftOffset + "," + 0 + ")")
     vis.attr("clip-path", "url(#visClipping)")
 
     // Rows container for vertical panning
@@ -149,8 +152,6 @@ function plot() {
     });
     //####################### SETS ##################################################
 
-    var rowRientation = 'vertical'; // 'vertical'
-
     var setRowScale = d3.scale.ordinal().rangeRoundBands([ 0, usedSets.length * (cellSize + 2)], 0);
 
     var subSetSizeHeight = textHeight - majorPadding;
@@ -169,12 +170,6 @@ function plot() {
         },
             class: 'setRow'});
 
-    // ------------------- set size bars --------------------
-
-    // scale for the size of the subSets, also used for the sets
-    var setSizeScale = d3.scale.linear().domain([0, d3.max(usedSets, function (d) {
-        return d.setSize;
-    })]).nice().range([0, textHeight]);
 
     // ------------ the set labels -------------------
 
@@ -183,28 +178,12 @@ function plot() {
         .enter();
 
     setLabels.append('rect').attr({
-        transform: function (d, i) {
-            return 'translate(' + (cellDistance * i ) + ', 0)';
-        },
-        width: cellSize,
-        height: textHeight - 2,
-        class: 'connection vertical'
-    })
-        .on('mouseover', mouseoverColumn)
-        .on('mouseout', mouseoutColumn)
-
-    // background bar
-    setLabels
-        .append('rect')
-        .attr({
-            class: 'setSize',
-            transform: function (d, i) {
-                return 'translate(' + (cellDistance * (i )) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize)) + ')'
-            }, // ' + (textHeight - 5) + ')'
-            height: function (d) {
-                return setSizeScale(d.setSize);
-            },
-            width: cellSize//setRowScale.rangeBand()
+          transform: function (d, i) {
+              return 'skewX(45) translate(' + (cellDistance * i - leftOffset) + ', 0)';
+          },
+          width: cellSize,
+          height: textHeight - 2,
+          class: 'connection vertical'
         })
         .on('mouseover', mouseoverColumn)
         .on('mouseout', mouseoutColumn)
@@ -218,10 +197,11 @@ function plot() {
                 return d.elementName.substring(0, truncateAfter);
             },
             transform: function (d, i) {
-                return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (textHeight - textSpacing) + ')rotate(270)';
+                return 'skewX(45) translate(' + (cellDistance * (i ) + cellDistance / 2 - leftOffset) + ',' + (textHeight - textSpacing) + ')rotate(270)';
             }
 
         })
+       
         .on('mouseover', mouseoverColumn)
         .on('mouseout', mouseoutColumn)
 
@@ -327,15 +307,32 @@ function plot() {
                 }
             });
 
-        subSets.exit().remove();
-
-        //  var rows = svg.selectAll('.row');
-        subSets.transition().duration(function (d, i) {
+        subSets.exit().remove();/*
+        .transition().duration(function (d, i) {
                 return queryParameters['duration'];
             }
         ).attr({transform: function (d) {
                 return 'translate(0, ' + rowScale(d.id) + ')';
 
+            }, class: function (d) {
+              if(d.data.type === ROW_TYPE.SUBSET) {
+                return 'translate(0, ' + rowScale("SetSizeG_"+d.data.nrCombinedSets+"_1") + ')';
+                alert("test")
+              }
+              else
+                return 'row ' + d.data.type;
+            }})
+      */
+        //  var rows = svg.selectAll('.row');
+        subSets.transition().duration(function (d, i) {
+            if(d.data.type === ROW_TYPE.SUBSET)
+                return queryParameters['duration'];
+            else
+              return queryParameters['duration'];
+            }).attr({transform: function (d) {
+
+                return 'translate(0, ' + rowScale(d.id) + ')';
+                  
             }, class: function (d) {
                 //    console.log(d.type);
                 return 'row ' + d.data.type;
@@ -447,12 +444,12 @@ function plot() {
         })
 
         groups.append('rect').attr({
-            class: 'groupBackGround',
-            width: setVisWidth,
-            height: cellSize,
-            x: 0,
-            y: 0
-        }).on('click', function (d) {
+              class: 'groupBackGround',
+              width: setVisWidth + leftOffset,
+              height: cellSize,
+              x: -leftOffset,
+              y: 0
+            }).on('click', function (d) {
                 collapseGroup(d.data);
                 rowTransition();
             });
@@ -463,14 +460,14 @@ function plot() {
             if (d.data.type === ROW_TYPE.GROUP)
                 return d.data.elementName;
             else if (d.data.type === ROW_TYPE.AGGREGATE)
-                return d.data.subSets.length + ' empty subsets';
+                return String.fromCharCode(8709) + '-subsets (' + d.data.subSets.length + ') ';
         })
-            .attr({class: 'groupLabel',
-                y: cellSize - 3,
-                x: 3,
-                'font-size': cellSize - 4
+        .attr({class: 'groupLabel',
+            y: cellSize - 3,
+            x: -leftOffset,
+            'font-size': cellSize - 6
 
-            });
+        });
 
         // ------------------------ set size bars -------------------
 
@@ -486,7 +483,7 @@ function plot() {
                 transform: function (d) {
                     var y = 0;
                     if (d.data.type !== ROW_TYPE.SUBSET)
-                        y = cellSize / 3 * .4;
+                        y = 0;//cellSize / 3 * .4;
                     return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
                 },
 
@@ -497,7 +494,7 @@ function plot() {
                     if (d.data.type === ROW_TYPE.SUBSET)
                         return cellSize;
                     else
-                        return cellSize / 3;
+                        return cellSize;// / 3;
                 }
             })
             .on('mouseover', mouseoverRow)
@@ -517,7 +514,7 @@ function plot() {
                     transform: function (d) {
                         var y = 0;
                         if (d.data.type !== ROW_TYPE.SUBSET)
-                            y = cellSize / 3 * .4;
+                            y = 0; //cellSize / 3 * .4;
                         return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
                     },
 
@@ -546,7 +543,7 @@ function plot() {
                         if (d.data.type === ROW_TYPE.SUBSET)
                             return cellSize;
                         else
-                            return cellSize / 3;
+                            return cellSize// / 3;
 
                     }
                 })
@@ -605,7 +602,7 @@ function plot() {
                     start += xStartExpectedValues;
                     var y = 0;
                     if (d.data.type !== ROW_TYPE.SUBSET)
-                        y = cellSize / 3 * 1.7;
+                        y = 0;//cellSize / 3 * 1.7;
                     return 'translate(' + start + ', ' + y + ')';
                 },
                 width: function (d) {
@@ -616,7 +613,7 @@ function plot() {
                     if (d.data.type === ROW_TYPE.SUBSET)
                         return cellSize;
                     else
-                        return cellSize / 3;
+                        return cellSize;// / 3;
                 }
             })
             .on('mouseover', mouseoverRow)
