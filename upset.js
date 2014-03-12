@@ -22,8 +22,6 @@ $(EventManager).bind("item-selection-removed", function (event, data) {
 
     data.selection.unmapFromSubsets(subSets);
 
-    //var newActiveSelectionIndex = data.index > 0 ? data.index - 1 : 0;
-
     plot();
     plotSelectionTabs("#selection-tabs", selections, selections.getActive());
     plotSelectedItems("#item-table", selections.getActive());
@@ -466,15 +464,15 @@ function plot() {
 
         vis.selectAll('.row')
             .append('rect')
-                .on('click', function (d) {
-                    //     createSelectionForSubSetBar(d);
-                    if (d.data.type === ROW_TYPE.SUBSET) {
-                        var selection = Selection.fromSubset(d.data.combinedSets);
-                    }
-                })
-                .attr({
-                    class: 'subSetSize',
-
+            .on('click', function (d) {
+                if (d.data.type === ROW_TYPE.SUBSET) {
+                    var selection = Selection.fromSubset(d.data.combinedSets);
+                    selections.addSelection(selection);
+                    selections.setActive(selection);
+                }
+            })
+            .attr({
+                class: 'subSetSize',
                     transform: function (d) {
                         var y = 0;
                         if (d.data.type !== ROW_TYPE.SUBSET)
@@ -498,11 +496,17 @@ function plot() {
         renderOverlay();
         // Rendering the highlights for selections on top of the selected subsets
         function renderOverlay() {
+            if ( selections.getSize() == 0 ) {
+                return;
+            }
+
             vis.selectAll('.row')
                 .append('rect')
                 .on('click', function (d) {
                     if (d.data.type === ROW_TYPE.SUBSET) {
                         var selection = Selection.fromSubset(d.data.combinedSets);
+                        selections.addSelection(selection);
+                        selections.setActive(selection);
                     }
                 })
                 .attr({

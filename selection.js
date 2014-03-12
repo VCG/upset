@@ -35,19 +35,7 @@ Selection.fromSubset = function (subset) {
     }
 
     selection.filters = filterList;
-    selections.addSelection(selection);
-
     selection.applyFilters();
-    selections.setActive(selection);
-
-    //d3.select(this).style("fill", selections.getColor(selection));
-
-    // === Experiments ===
-    // create a set count filter and create new selection based on previous subset
-    //selections.addSelection(selection.createSelection( attributes.length-2, "numericRange", { min: "1", max: "1" } ));                
-
-    // create a regex filter on name and create new selection based on previous subset
-    //selections.addSelection(selection.createSelection( 0, "stringRegex", { pattern: "^[A-B].+$" } ));                
 
     return selection;
 }
