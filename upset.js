@@ -25,26 +25,24 @@ $(EventManager).bind("item-selection-removed", function (event, data) {
     //var newActiveSelectionIndex = data.index > 0 ? data.index - 1 : 0;
 
     plot();
-    plotSelectionTabs("#selection-tabs", selections, selections.getActive() );
+    plotSelectionTabs("#selection-tabs", selections, selections.getActive());
     plotSelectedItems("#item-table", selections.getActive());
 });
 
-
 $(EventManager).bind("item-selection-activated", function (event, data) {
-    if ( data.selection ) {
+    if (data.selection) {
         console.log('Selection ' + data.selection.id + ' was activated.');
 
         plot();
         plotSelectionTabs("#selection-tabs", selections, data.selection);
-        plotSelectedItems("#item-table", data.selection);        
+        plotSelectedItems("#item-table", data.selection);
     }
     else {
         plot();
         plotSelectionTabs("#selection-tabs", selections, data.selection);
-        plotSelectedItems("#item-table", data.selection);                
+        plotSelectedItems("#item-table", data.selection);
     }
 });
-
 
 function plot() {
 
@@ -128,13 +126,11 @@ function plot() {
             {'x': 0, 'y': 0}
         ]);
 
-
     var gQuery = vis.append('g')
         .attr('class', 'gQuery')
         .data([
             {'x': 0, 'y': 0}
         ]);
-
 
     // Extra layer for vertical panning
     vis.append('rect').attr({
@@ -187,8 +183,8 @@ function plot() {
         height: textHeight - 2,
         class: 'connection vertical'
     })
-    .on('mouseover', mouseoverColumn)
-    .on('mouseout', mouseoutColumn)
+        .on('mouseover', mouseoverColumn)
+        .on('mouseout', mouseoutColumn)
 
     // background bar
     setLabels
@@ -312,20 +308,13 @@ function plot() {
 
         var subSets = gRows.selectAll('.row')
             .data(renderRows, function (d, i) {
-                //    console.log("what: " + d.id + '' + i);
-                //  return d.id + '' + i;
                 return d.id;
-
             });
 
         var grp = subSets
             .enter()
             .append('g')
             .attr({
-                //transform: function (d, i) {
-                // return 'translate(0, ' + rowScale(d.id) + ')';
-//            return 'translate(0, ' + (textHeight + cellDistance * (i)) + ')';
-                //},
                 class: function (d) {
                     return 'row ' + d.data.type;
                 }
@@ -356,22 +345,24 @@ function plot() {
         })
 
         // add transparent background to make each row it sensitive for interaction
-        combinationRows.selectAll('.backgroundRect').data(function (d) {return [d]})
+        combinationRows.selectAll('.backgroundRect').data(function (d) {
+            return [d]
+        })
             .enter().append("rect").attr({
-                class:"backgroundRect",
-                x:0,
-                y:0,
-                width:setVisWidth,
-                height:cellSize
+                class: "backgroundRect",
+                x: 0,
+                y: 0,
+                width: setVisWidth,
+                height: cellSize
             })
             .style({
-                   "fill-opacity":0,
-                    fill:"grey" // for debugging
-                })
+                "fill-opacity": 0,
+                fill: "grey" // for debugging
+            })
             .on({
-                    'mouseover': mouseoverRow,
-                    'mouseout': mouseoutRow
-                });
+                'mouseover': mouseoverRow,
+                'mouseout': mouseoutRow
+            });
 
         combinationRows.selectAll('g').data(function (d) {
                 // binding in an array of size one
@@ -382,12 +373,9 @@ function plot() {
             .attr({class: 'combination'
             })
 
-
-
 //            .each(function (d) {
 //                console.log(d);
 //            });
-
 
         vis.selectAll('.combination').selectAll('.cell').data(function (d) {
             return d;
@@ -397,11 +385,11 @@ function plot() {
                 // click event for cells
             })
             .attr('cx', function (d, i) {
-                return (cellDistance) * i + cellSize/2;
+                return (cellDistance) * i + cellSize / 2;
             })
             .attr({
-                r: cellSize/2-1,
-                cy:cellSize/2,
+                r: cellSize / 2 - 1,
+                cy: cellSize / 2,
                 class: 'cell'
             })
             .style('fill', function (d) {
@@ -411,34 +399,37 @@ function plot() {
             .on('mouseover', mouseoverCell)
             .on('mouseout', mouseoutCell)
 
-
-
-
         // add the connecting line for cells
         vis.selectAll('.combination').selectAll('.cellConnector').data(
             function (d) {
                 // get maximum and minimum index of cells with value 1
-                var extent= d3.extent(
-                    d.map(function(dd,i){ if (dd==1) return i; else return -1;})
-                     .filter(function(dd,i){return dd>=0;})
+                var extent = d3.extent(
+                    d.map(function (dd, i) {
+                        if (dd == 1) return i; else return -1;
+                    })
+                        .filter(function (dd, i) {
+                            return dd >= 0;
+                        })
                 )
 
                 // dont do anything if there is only one (or none) cell
-                if (extent[0]==extent[1]) return [];
+                if (extent[0] == extent[1]) return [];
                 else return [extent];
             }
         ).enter().append("line").attr({
-                class:"cellConnector",
-                x1:function(d){ return (cellDistance) * d[0] + cellSize/2;},
-                x2:function(d){ return (cellDistance) * d[1] + cellSize/2;},
-                y1:cellSize/2,
-                y2:cellSize/2
+                class: "cellConnector",
+                x1: function (d) {
+                    return (cellDistance) * d[0] + cellSize / 2;
+                },
+                x2: function (d) {
+                    return (cellDistance) * d[1] + cellSize / 2;
+                },
+                y1: cellSize / 2,
+                y2: cellSize / 2
             }).style({
-                "stroke":setScale(1),
-                "stroke-width":3
+                "stroke": setScale(1),
+                "stroke-width": 3
             })
-
-
 
         // Handling groups
 
@@ -530,12 +521,16 @@ function plot() {
                     }
                     var sIDs = Object.getOwnPropertyNames(s);
                     var usedID = false;
+                    var alternativeID;
                     sIDs.forEach(function (prop) {
                         var length = s[prop].length;
-                        if (length > 0) {
+
+                        //if (s.isActiveByUuid(prop)) {
+                            if(length > 0) {
                             // console.log(selections.getColorFromUuid(prop));
                             usedID = prop;
                         }
+
                     });
                     if (!usedID) {
                         return 0;
@@ -554,6 +549,66 @@ function plot() {
             .on('mouseover', mouseoverRow)
             .on('mouseout', mouseoutRow)
 //        }
+
+        var tmpRows = svg.selectAll('.row');
+        //.each(function (d) {
+//            console.log(d);
+//        })
+        tmpRows.selectAll('.selectionIndicators').data(function (d, i) {
+            console.log("WWW" + d + i);
+            return [d.data.selections];
+        }).enter().append('rect').attr({
+                class: 'selectionIndicators',
+                x: function (d, i) {
+                    console.log("Woooooo" + i);
+                    return i * 10;
+                },
+                y: 0,
+                height: 30,
+                width: 7
+            }).style('fill', 'red');
+//              append('rect').attr({
+//                  class: 'selectionIndicators',
+//
+//                  transform: function (d) {
+//                      var y = 0;
+//                      if (d.data.type !== ROW_TYPE.SUBSET)
+//                          y = cellSize / 3 * .4;
+//                      return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
+//                  },
+//
+//                  width: function (d) {
+//                      var s = d.data.selections;
+//                      if (typeof s !== 'object') {
+//                          return 0;
+//                      }
+//                      var sIDs = Object.getOwnPropertyNames(s);
+//                      var usedID = false;
+//                      sIDs.forEach(function (prop) {
+//                          var length = s[prop].length;
+//                          if (length > 0) {
+//                              // console.log(selections.getColorFromUuid(prop));
+//                              usedID = prop;
+//                          }
+//                      });
+//                      if (!usedID) {
+//                          return 0;
+//                      }
+//                      d3.select(this).style("fill", selections.getColorFromUuid(usedID));
+//                      return   subSetSizeScale(s[usedID].length);
+//                  },
+//                  height: function (d) {
+//                      if (d.data.type === ROW_TYPE.SUBSET)
+//                          return cellSize;
+//                      else
+//                          return cellSize / 3;
+//
+//                  }
+//              })
+
+//        each(function (d) {
+//                console.log(d.uuid);
+//            })
 
         // ----------------------- expected value bars -------------------
 
@@ -585,59 +640,52 @@ function plot() {
             .on('mouseover', mouseoverRow)
             .on('mouseout', mouseoutRow)
 
-
-    // -------------------- panning -------------------
+        // -------------------- panning -------------------
 
         function panning() {
 
+            var trans = Math.min(Math.min(0, -d3.event.translate[0]), params.viewportHeight - params.rowsHeight);
 
-          var trans = Math.min(Math.min(0,-d3.event.translate[0]), params.viewportHeight-params.rowsHeight);
+            var offset = params.viewportHeight - params.rowsHeight;
 
-          var offset = params.viewportHeight-params.rowsHeight;
+            console.log("trans", trans, Math.min(0, d3.event.translate[0]), Math.max(0, params.rowsHeight - params.viewportHeight))
 
-          console.log("trans", trans, Math.min(0,d3.event.translate[0]), Math.max(0, params.rowsHeight-params.viewportHeight) )
+            d3.event.translate[0] = Math.min(0, d3.event.translate[0]);
+            //if(params.rowsHeight>params.viewportHeight) {
 
-          d3.event.translate[0] = Math.min(0,d3.event.translate[0]);
-          //if(params.rowsHeight>params.viewportHeight) {
+            // Moving rows containing the subsets
+            d3.select(this).attr('transform', 'translate(0, ' + trans + ')');
 
-          // Moving rows containing the subsets
-          d3.select(this).attr('transform', 'translate(0, ' + trans + ')');
+            // Rows background should stick to his place
+            d3.select(".background-subsets").attr('transform', function (d, i) {
+                return 'translate(' + [ 0, -trans] + ')'
+            })
 
-          // Rows background should stick to his place
-          d3.select(".background-subsets").attr('transform', function (d, i) {
-              return 'translate(' + [ 0, -trans] + ')'
-          })
+            // Update the scrollbar
+            scrollbar.setValue(d3.event.translate[0]);
 
-          // Update the scrollbar          
-          scrollbar.setValue(d3.event.translate[0]);
-
-
-          console.log(params.rowsHeight, params.viewportHeight, subSets.length, setGroups.length, d3.transform(d3.select(this).attr("transform")).translate[1], trans)
+            console.log(params.rowsHeight, params.viewportHeight, subSets.length, setGroups.length, d3.transform(d3.select(this).attr("transform")).translate[1], trans)
 
         }
 
         var pan = d3.behavior.zoom()
-          //  .scaleExtent([-10, 10])
+            //  .scaleExtent([-10, 10])
             .on('zoom', panning);
 
         d3.select('.gRows').call(pan);
 
-      // -------------------- scrollbar -------------------
+        // -------------------- scrollbar -------------------
 
-      params = {
-        x: w-20,
-        y: 55,
-        height: svgHeight-55,
-        viewportHeight: svgHeight-55,
-        rowsHeight: subSetMatrixHeight,
-        parentEl: d3.select('.gScroll')
-      }
+        params = {
+            x: w - 20,
+            y: 55,
+            height: svgHeight - 55,
+            viewportHeight: svgHeight - 55,
+            rowsHeight: subSetMatrixHeight,
+            parentEl: d3.select('.gScroll')
+        }
 
-      var scrollbar = new Scrollbar(params);
-
-
-
-
+        var scrollbar = new Scrollbar(params);
 
     }
 
