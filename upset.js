@@ -420,12 +420,12 @@ function plot() {
         })
 
         groups.append('rect').attr({
-            class: 'groupBackGround',
-            width: setVisWidth + leftOffset,
-            height: cellSize,
-            x: -leftOffset,
-            y: 0
-        }).on('click', function (d) {
+              class: 'groupBackGround',
+              width: setVisWidth + leftOffset,
+              height: cellSize,
+              x: -leftOffset,
+              y: 0
+            }).on('click', function (d) {
                 collapseGroup(d.data);
                 rowTransition();
             });
@@ -438,12 +438,12 @@ function plot() {
             else if (d.data.type === ROW_TYPE.AGGREGATE)
                 return String.fromCharCode(8709) + '-subsets (' + d.data.subSets.length + ') ';
         })
-            .attr({class: 'groupLabel',
-                y: cellSize - 3,
-                x: -leftOffset,
-                'font-size': cellSize - 6
+        .attr({class: 'groupLabel',
+            y: cellSize - 3,
+            x: -leftOffset,
+            'font-size': cellSize - 6
 
-            });
+        });
 
         // ------------------------ set size bars -------------------
 

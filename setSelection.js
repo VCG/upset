@@ -93,7 +93,7 @@ function plotSetOverview() {
     })
 
 
-    var setLabels = overview.selectAll('.setLabel')
+    var usedSetsLabels = overview.append("g").attr("class", "usedSets").selectAll('.setLabel')
         .data(usedSets)
         .enter();
 
@@ -104,9 +104,21 @@ function plotSetOverview() {
         return d.setSize;
     })]).nice().range([0, textHeight]);
 
+    usedSetsLabels
+        .append('rect')
+        .attr({
+            class: 'setSizeBackground',
+            transform: function (d, i) {
+                return 'translate(' + (cellDistance * (i )) + ', 60)'
+            }, // ' + (textHeight - 5) + ')'
+            height: textHeight,
+            width: cellSize//setRowScale.rangeBand()
+        })
+        .on('click', setClicked)
+
 
     // background bar
-    setLabels
+    usedSetsLabels
         .append('rect')
         .attr({
             class: 'setSize',
@@ -121,7 +133,53 @@ function plotSetOverview() {
       //  .attr("transform", "skewX(45)")
         .on('mouseover', mouseoverColumn)
         .on('mouseout', mouseoutColumn)
+        .on('click', setClicked)
 
+    var unusedSets = sets.filter(function(n) {
+        return usedSets.indexOf(n) == -1
+    });
+
+    var usedSetsLabels = overview.append("g").attr("class", "unusedSets").selectAll('.unsedSetsLabel')
+        .data(unusedSets)
+        .enter();
+
+        usedSetsLabels
+                .append('rect')
+                .attr({
+                    class: 'unusedSetSizeBackground',
+                    transform: function (d, i) {
+                        return 'translate(' + (cellDistance * (i ) + usedSets.length*cellSize) + ', 60)'
+                    },
+                    height: textHeight,
+                    width: cellSize
+                })
+                .on('click', setClicked)
+
+
+        // background bar
+        usedSetsLabels
+            .append('rect')
+            .attr({
+                class: 'unusedSetSize',
+                transform: function (d, i) {
+                    return 'translate(' + (cellDistance * (i ) + usedSets.length*cellSize) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 60) + ')'
+                }, // ' + (textHeight - 5) + ')'
+                height: function (d) {
+                    return setSizeScale(d.setSize);
+                },
+                width: cellSize
+            })
+            .on('mouseover', mouseoverColumn)
+            .on('mouseout', mouseoutColumn)
+            .on('click', setClicked)
+
+
+
+    function setClicked(d) {
+        console.log(d);
+        updateSetContainment(d);        
+        console.log(d.elementName + ": " + d.isSelected);
+    }
 
 
 }

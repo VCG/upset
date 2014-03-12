@@ -69,6 +69,20 @@ h1 {
     fill: #bbb0fb;
 }
 
+.unusedSetSize {
+    fill: lightgray;
+}
+
+.setSizeBackground, .unusedSetSizeBackground {
+    fill: #f0f0f0;
+    stroke: white;
+}
+
+.setSizeBackground:hover {
+    stroke: gray;
+    shape-rendering: crispEdges;
+}
+
 /** The subSet size bar */
 .subSetSize {
     fill: #636363; /*#078600;*/
