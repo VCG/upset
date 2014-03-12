@@ -169,8 +169,8 @@ function plotSetOverview() {
                 },
                 width: cellSize
             })
-            .on('mouseover', mouseoverColumn)
-            .on('mouseout', mouseoutColumn)
+           // .on('mouseover', mouseoverColumn)
+           // .on('mouseout', mouseoutColumn)
             .on('click', setClicked)
 
 
