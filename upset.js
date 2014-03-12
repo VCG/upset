@@ -525,11 +525,12 @@ function plot() {
                     sIDs.forEach(function (prop) {
                         var length = s[prop].length;
 
-                        //if (s.isActiveByUuid(prop)) {
-                            if(length > 0) {
+                        if (selections.isActiveByUuid(prop)) {
+                         //   if(length > 0) {
                             // console.log(selections.getColorFromUuid(prop));
                             usedID = prop;
                         }
+                        else alternativeID
 
                     });
                     if (!usedID) {
