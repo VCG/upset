@@ -145,6 +145,11 @@ SelectionList = function (palette) {
     console.log("Palette Length " + self.palette);
 };
 
+SelectionList.prototype.getSelections = function () {
+    var self = this;
+    return selections.list;
+}
+
 SelectionList.prototype.addSelection = function (selection) {
     var self = this;
 

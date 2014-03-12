@@ -102,16 +102,16 @@ function plot() {
         .attr('height', svgHeight);
 
     var vis = svg.append("g").attr({
-        class:"visContainer",
-        "transform":"translate("+0+","+10+")"
+        class: "visContainer",
+        "transform": "translate(" + 0 + "," + 10 + ")"
     })
 
     // define a clipping path for scrolling (@hen)
     svg.append("clipPath").attr({
-        id:"visClipping"
+        id: "visClipping"
     }).append("rect").attr('width', w)
         .attr('height', svgHeight);
-    vis.attr("clip-path","url(#visClipping)")
+    vis.attr("clip-path", "url(#visClipping)")
 
     // Rows container for vertical panning
     var gRows = vis.append('g')
@@ -496,120 +496,94 @@ function plot() {
             .on('mouseover', mouseoverRow)
             .on('mouseout', mouseoutRow)
 
-//        overlay();
-//
-//        function overlay() {
-        vis.selectAll('.row')
-            .append('rect')
-            .on('click', function (d) {
-                var selection = Selection.fromSubset(d.data.combinedSets);
-            })
-            .attr({
-                class: 'what',
+        renderOverlay();
+        // Rendering the highlights for selections on top of the selected subsets
+        function renderOverlay() {
+            vis.selectAll('.row')
+                .append('rect')
+                .on('click', function (d) {
+                    var selection = Selection.fromSubset(d.data.combinedSets);
+                })
+                .attr({
+                    class: 'what',
 
-                transform: function (d) {
-                    var y = 0;
-                    if (d.data.type !== ROW_TYPE.SUBSET)
-                        y = cellSize / 3 * .4;
-                    return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
-                },
+                    transform: function (d) {
+                        var y = 0;
+                        if (d.data.type !== ROW_TYPE.SUBSET)
+                            y = cellSize / 3 * .4;
+                        return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
+                    },
 
-                width: function (d) {
-                    var s = d.data.selections;
-                    if (typeof s !== 'object') {
-                        return 0;
-                    }
-                    var sIDs = Object.getOwnPropertyNames(s);
-                    var usedID = false;
-                    var alternativeID;
-                    sIDs.forEach(function (prop) {
-                        var length = s[prop].length;
-
-                        if (selections.isActiveByUuid(prop)) {
-                         //   if(length > 0) {
-                            // console.log(selections.getColorFromUuid(prop));
-                            usedID = prop;
+                    width: function (d) {
+                        var s = d.data.selections;
+                        if (typeof s !== 'object') {
+                            return 0;
                         }
-                        else alternativeID
 
-                    });
-                    if (!usedID) {
-                        return 0;
+                        var usedID = false;
+                        //   var alternativeID;
+                        var sIDs = Object.getOwnPropertyNames(s);
+                        sIDs.forEach(function (prop) {
+                            var length = s[prop].length;
+                            if (selections.isActiveByUuid(prop)) {
+                                usedID = prop;
+                            }
+                        });
+                        if (!usedID) {
+                            return 0;
+                        }
+                        d3.select(this).style("fill", selections.getColorFromUuid(usedID));
+                        return   subSetSizeScale(s[usedID].length);
+                    },
+                    height: function (d) {
+                        if (d.data.type === ROW_TYPE.SUBSET)
+                            return cellSize;
+                        else
+                            return cellSize / 3;
+
                     }
-                    d3.select(this).style("fill", selections.getColorFromUuid(usedID));
-                    return   subSetSizeScale(s[usedID].length);
-                },
-                height: function (d) {
-                    if (d.data.type === ROW_TYPE.SUBSET)
-                        return cellSize;
-                    else
-                        return cellSize / 3;
+                })
+                .on('mouseover', mouseoverRow)
+                .on('mouseout', mouseoutRow)
 
-                }
+            // the triangles for the multiple selections
+
+            var selIndicatorRows = svg.selectAll('.row');
+            selIndicatorRows.selectAll('.selectionIndicators').data(function (d, i) {
+                if (!d.data.selections)
+                    return [];
+                var selectionIDs = Object.getOwnPropertyNames(d.data.selections);
+                var selArray = selectionIDs.map(function (k) {
+                    return {uuid: k, items: d.data.selections[k]};
+                });
+                selArray = selArray.filter(function (d) {
+                    return d.items.length !== 0;
+                })
+                return selArray;
             })
-            .on('mouseover', mouseoverRow)
-            .on('mouseout', mouseoutRow)
-//        }
+                .enter()
+                .append('path').attr({
+                    class: 'selectionIndicators',
+                    transform: function (d, i) {
 
-        var tmpRows = svg.selectAll('.row');
-        //.each(function (d) {
-//            console.log(d);
-//        })
-        tmpRows.selectAll('.selectionIndicators').data(function (d, i) {
-            console.log("WWW" + d + i);
-            return [d.data.selections];
-        }).enter().append('rect').attr({
-                class: 'selectionIndicators',
-                x: function (d, i) {
-                    console.log("Woooooo" + i);
-                    return i * 10;
-                },
-                y: 0,
-                height: 30,
-                width: 7
-            }).style('fill', 'red');
-//              append('rect').attr({
-//                  class: 'selectionIndicators',
-//
-//                  transform: function (d) {
-//                      var y = 0;
-//                      if (d.data.type !== ROW_TYPE.SUBSET)
-//                          y = cellSize / 3 * .4;
-//                      return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
-//                  },
-//
-//                  width: function (d) {
-//                      var s = d.data.selections;
-//                      if (typeof s !== 'object') {
-//                          return 0;
-//                      }
-//                      var sIDs = Object.getOwnPropertyNames(s);
-//                      var usedID = false;
-//                      sIDs.forEach(function (prop) {
-//                          var length = s[prop].length;
-//                          if (length > 0) {
-//                              // console.log(selections.getColorFromUuid(prop));
-//                              usedID = prop;
-//                          }
-//                      });
-//                      if (!usedID) {
-//                          return 0;
-//                      }
-//                      d3.select(this).style("fill", selections.getColorFromUuid(usedID));
-//                      return   subSetSizeScale(s[usedID].length);
-//                  },
-//                  height: function (d) {
-//                      if (d.data.type === ROW_TYPE.SUBSET)
-//                          return cellSize;
-//                      else
-//                          return cellSize / 3;
-//
-//                  }
-//              })
+                        return 'translate(' + (xStartSetSizes + subSetSizeScale(d.items.length)) + ' , ' + 0 +
+                            ')';
+                    },
+                    d: function (d) {
+                        return  " M -5 0  L  5 0  L 0 6 z M 0 6 L 0 " + cellSize;
+                    },
 
-//        each(function (d) {
-//                console.log(d.uuid);
-//            })
+                    stroke: 'white',
+                    "stroke-width": 1,
+                    fill: function (d, i) {
+                        return selections.getColorFromUuid(d.uuid);
+                    }
+                }).on('click', function (d) {
+                    selections.setActiveByUuid(d.uuid);
+                    renderOverlay();
+                })
+
+        }
 
         // ----------------------- expected value bars -------------------
 
