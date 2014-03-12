@@ -74,7 +74,26 @@ Filter = function() {
           test: function( item, attribute, parameters ) {
                 return ( attribute.values[item] >= parameters.min && attribute.values[item] <= parameters.max );
             }           
-        }
+        },
+        // numeric minimum filter
+        numericMinimum: {
+          name: "Minimum",
+          types: ["float", "integer"],
+          parameters: [ { name: "Minimum", type: "float", variable: "min" } ],
+          test: function( item, attribute, parameters ) {
+                return ( attribute.values[item] >= parameters.min );
+            }           
+        },
+        // numeric maximum filter
+        numericMaximum: {
+          name: "Maximum",
+          types: ["float", "integer"],
+          parameters: [ { name: "Maximum", type: "float", variable: "max" } ],
+          test: function( item, attribute, parameters ) {
+                return ( attribute.values[item] <= parameters.max );
+            }           
+        }        
+
     }
 };
 
