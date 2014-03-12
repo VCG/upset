@@ -34,9 +34,7 @@ Selection.fromSubset = function (subset) {
     }
 
     selection.filters = filterList;
-    selections.addSelection(selection);
     selection.applyFilters();
-    selections.setActive(selection);
 
     //d3.select(this).style("fill", selections.getColor(selection));
 
