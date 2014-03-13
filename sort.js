@@ -47,6 +47,7 @@ var groupBySet = function (subSets, level) {
 /** Collapse or uncollapse group */
 var collapseGroup = function (group) {
     group.isCollapsed = !group.isCollapsed;
+    UpSetState.collapseChanged = true;
     updateState();
 };
 
@@ -55,6 +56,7 @@ var toggleCollapseAll = function () {
         UpSetState.unCollapseAll = true;
     }
     UpSetState.collapseAll = !UpSetState.collapseAll;
+    UpSetState.collapseChanged = true;
     updateState();
 };
 
@@ -163,7 +165,6 @@ var unwrapGroups = function (groupList) {
     return dataRows;
 };
 
-
 var StateMap = {
     groupBySetSize: groupBySetSize,
     groupBySet: groupBySet,
@@ -189,18 +190,21 @@ var StateOpt = {
 var UpSetState = {
     collapseAll: false,
     unCollapseAll: false,
+    collapseChanged: false,
     grouping: StateOpt.groupBySet,
     levelTwoGrouping: StateOpt.groupBySetSize,
-    sorting: StateOpt.sortBySubSetSize
+    sorting: undefined
 };
 
+var previousState = false;
+
 var updateState = function (parameter) {
+
     // true if pure sorting - no grouping
-    if (UpSetState.sorting && !UpSetState.grouping) {
+    if ((UpSetState.sorting && !UpSetState.grouping) && (!previousState ||(previousState && previousState.sorting !== UpSetState.sorting))) {
         dataRows = StateMap[StateOpt[UpSetState.sorting]](subSets, parameter);
     }
-
-    if (UpSetState.grouping) {
+    else if (UpSetState.grouping && (!previousState || (previousState && previousState.grouping !== UpSetState.grouping || previousState.levelTwoGrouping !== UpSetState.levelTwoGrouping))) {
         levelOneGroups = StateMap[StateOpt[UpSetState.grouping]](subSets);
 
         if (UpSetState.levelTwoGrouping) {
@@ -209,7 +213,15 @@ var updateState = function (parameter) {
             });
         }
         dataRows = unwrapGroups(levelOneGroups);
+
     }
+    else if (UpSetState.collapseChanged && UpSetState.grouping) {
+        dataRows = unwrapGroups(levelOneGroups);
+     }
+
+    // unwrapGroups deals with collapse, so we can reset it
+    UpSetState.collapseChanged = false;
+
     renderRows.length = 0;
 
     var registry = {};
@@ -230,4 +242,5 @@ var updateState = function (parameter) {
         renderRows.push(wrapper);
 
     });
+    previousState = JSON.parse(JSON.stringify(UpSetState));
 };
