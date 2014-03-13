@@ -31,19 +31,16 @@ function plotSelectionTabs( element, selections, activeSelection ) {
             .append("td")
                 .attr("class", "selection-tab")
                 .classed( { 'active': function(d,i) { return ( selections.isActive(d) ); } } )
+                .on("click", function(k) { // is attribute object
+                    selections.setActive( k );
+                });
 
             tabs.append("i")
                 .attr( "class", "fa fa-square" )
                 .style("color", function(d,i) { return ( selections.getColor( d ) ); } )
                 .style( "margin-right", "2px");
             tabs.append("span")
-                .text(function(d) { return d3.format("5d")( d.items.length ); })
-                .on("click", function(k) { // is attribute object
-                    //d3.selectAll("td").classed( { 'active': false } )
-                    //d3.select(this.parentNode).classed( { 'active': true } )  
-                    //plotSelectedItems( "#item-table", k );
-                    selections.setActive( k );
-                });
+                .text(function(d) { return d3.format("5d")( d.items.length ); });
             tabs.append("i")
                 .attr( "class", "fa fa-times-circle" )
                 .style( "margin-left", "5px")

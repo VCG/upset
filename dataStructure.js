@@ -45,8 +45,10 @@ var attributes = [];
 var selectedAttributes = {};
 /** The number of combinations that are currently active */
 var combinations = 0;
-/** The depth of the dataset, i.e., how many records it contains */
+
 var depth = 0;
+
+/** The depth of the dataset, i.e., how many records it contains */
 
 /** an array representing all items */
 var allItems = [];
@@ -68,7 +70,7 @@ var sizeGroups = [];
 var setGroups = [];
 
 /** Venn diagram for tutorial mode */
-var venn = new VennDiagram( "#venn-vis", 50 );
+var venn = new VennDiagram("#venn-vis", 50);
 
 /** The current primary grouping */
 // TODO this is static for testing only
@@ -231,10 +233,26 @@ Aggregate.prototype = Element;
 Aggregate.prototype.constructor = Element;
 
 function makeSubSet(setMask) {
+
+    var bitMask = 1;
+
+    var tempMask = setMask;
+    var sum = 0;
+    for (var i = 0; i < usedSets.length; i++) {
+        if ((tempMask & bitMask) === 1) {
+            sum += 1;
+            if (sum > UpSetState.maxCardinality) {
+                return;
+            }
+        }
+        tempMask = tempMask >> 1;
+    }
+    if (sum < UpSetState.minCardinality) {
+        return;
+    }
     var originalSetMask = setMask;
 
     var combinedSets = Array.apply(null, new Array(usedSets.length)).map(Number.prototype.valueOf, 0);
-    var bitMask = 1;
 
     var combinedData = Array.apply(null, new Array(depth)).map(Number.prototype.valueOf, 1);
 
