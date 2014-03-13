@@ -628,31 +628,39 @@ function plot() {
 
         // -------------------- panning -------------------
 
-        function panning() {
+        function panning(d) {
 
-            var trans = Math.min(Math.min(0, -d3.event.translate[0]), params.viewportHeight - params.rowsHeight);
+            var dy = d3.event.translate[0]-prev_y;
+            prev_y = d3.event.translate[0];
+
+            console.log("pann", d, d.y, dy, d3.event.translate)
+
+            d.y += dy;
+            d.y = Math.min(0, d.y);
+           // d.y = Math.min(Math.min(0, d.y), params.viewportHeight - params.rowsHeight);
 
             var offset = params.viewportHeight - params.rowsHeight;
 
-            console.log("trans", trans, Math.min(0, d3.event.translate[0]), Math.max(0, params.rowsHeight - params.viewportHeight))
+           // console.log("trans", trans, Math.min(0, d3.event.translate[0]), Math.max(0, params.rowsHeight - params.viewportHeight))
 
-            d3.event.translate[0] = Math.min(0, d3.event.translate[0]);
+           // d3.event.translate[0] = Math.min(0, d3.event.translate[0]);
             //if(params.rowsHeight>params.viewportHeight) {
 
             // Moving rows containing the subsets
-            d3.select(this).attr('transform', 'translate(0, ' + trans + ')');
+            d3.select(this).attr('transform', 'translate(0, ' + d.y + ')');
 
             // Rows background should stick to his place
             d3.select(".background-subsets").attr('transform', function (d, i) {
-                return 'translate(' + [ 0, -trans] + ')'
+                return 'translate(' + [ 0, -d.y] + ')'
             })
 
             // Update the scrollbar
             scrollbar.setValue(d3.event.translate[0]);
 
-            console.log(params.rowsHeight, params.viewportHeight, subSets.length, setGroups.length, d3.transform(d3.select(this).attr("transform")).translate[1], trans)
+          //  console.log(params.rowsHeight, params.viewportHeight, subSets.length, setGroups.length, d3.transform(d3.select(this).attr("transform")).translate[1], trans)
 
         }
+        var prev_y = 0;
 
         var pan = d3.behavior.zoom()
             //  .scaleExtent([-10, 10])
