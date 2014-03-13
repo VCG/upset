@@ -40,8 +40,6 @@ function mouseoutColumn(d, i) {
 function mouseoverRow(d, i) {
 
     // plot Venn diagram with highlighting of selected subset
-
-    console.log(d);
     if ( d.data.type === 'SUBSET_TYPE') {
         plotVenn( "#venn-vis", 50, [ d.data ] );
     }
