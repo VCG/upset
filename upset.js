@@ -34,6 +34,7 @@ $(EventManager).bind("item-selection-activated", function (event, data) {
         plot();
         plotSelectionTabs("#selection-tabs", selections, data.selection);
         plotSelectedItems("#item-table", data.selection);
+        plotSetOverview();
     }
     else {
         plot();
