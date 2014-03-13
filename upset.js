@@ -1,5 +1,5 @@
 $(EventManager).bind("item-selection-added", function (event, data) {
-   // console.log("Selection was added to selection list with color " + selections.getColor(data.selection) + ' and ' + data.selection.items.length + ' items.');
+    // console.log("Selection was added to selection list with color " + selections.getColor(data.selection) + ' and ' + data.selection.items.length + ' items.');
 
     data.selection.mapToSubsets(subSets);
 
@@ -29,7 +29,7 @@ $(EventManager).bind("item-selection-removed", function (event, data) {
 
 $(EventManager).bind("item-selection-activated", function (event, data) {
     if (data.selection) {
- //       console.log('Selection ' + data.selection.id + ' was activated.');
+        //       console.log('Selection ' + data.selection.id + ' was activated.');
 
         plot();
         plotSelectionTabs("#selection-tabs", selections, data.selection);
@@ -111,7 +111,7 @@ function plot() {
     svg.append("clipPath").attr({
         id: "visClipping"
     }).append("rect").attr('width', w)
-        .attr('height', svgHeight+150)
+        .attr('height', svgHeight + 150)
         .attr("transform", "translate(" + -leftOffset + "," + 0 + ")")
     vis.attr("clip-path", "url(#visClipping)")
 
@@ -170,13 +170,13 @@ function plot() {
 
     setLabels.append('rect').attr({
 
-          transform: function (d, i) {
-              return 'skewX(45) translate(' + (cellDistance * i - leftOffset) + ', 0)';
-          },
-          width: cellSize,
-          height: textHeight - 2,
-          class: 'connection vertical'
-        })
+        transform: function (d, i) {
+            return 'skewX(45) translate(' + (cellDistance * i - leftOffset) + ', 0)';
+        },
+        width: cellSize,
+        height: textHeight - 2,
+        class: 'connection vertical'
+    })
         .on('mouseover', mouseoverColumn)
         .on('mouseout', mouseoutColumn)
 
@@ -299,32 +299,33 @@ function plot() {
                 }
             });
 
-        subSets.exit().remove();/*
-        .transition().duration(function (d, i) {
-                return queryParameters['duration'];
-            }
-        ).attr({transform: function (d) {
-                return 'translate(0, ' + rowScale(d.id) + ')';
+        subSets.exit().remove();
+        /*
+         .transition().duration(function (d, i) {
+         return queryParameters['duration'];
+         }
+         ).attr({transform: function (d) {
+         return 'translate(0, ' + rowScale(d.id) + ')';
 
-            }, class: function (d) {
-              if(d.data.type === ROW_TYPE.SUBSET) {
-                return 'translate(0, ' + rowScale("SetSizeG_"+d.data.nrCombinedSets+"_1") + ')';
-                alert("test")
-              }
-              else
-                return 'row ' + d.data.type;
-            }})
-      */
+         }, class: function (d) {
+         if(d.data.type === ROW_TYPE.SUBSET) {
+         return 'translate(0, ' + rowScale("SetSizeG_"+d.data.nrCombinedSets+"_1") + ')';
+         alert("test")
+         }
+         else
+         return 'row ' + d.data.type;
+         }})
+         */
         //  var rows = svg.selectAll('.row');
         subSets.transition().duration(function (d, i) {
-            if(d.data.type === ROW_TYPE.SUBSET)
+            if (d.data.type === ROW_TYPE.SUBSET)
                 return queryParameters['duration'];
             else
-              return queryParameters['duration'];
-            }).attr({transform: function (d) {
+                return queryParameters['duration'];
+        }).attr({transform: function (d) {
 
                 return 'translate(0, ' + rowScale(d.id) + ')';
-                  
+
             }, class: function (d) {
                 //    console.log(d.type);
                 return 'row ' + d.data.type;
@@ -472,7 +473,7 @@ function plot() {
                     selections.setActive(selection);
                 }
                 if (d.data.type === ROW_TYPE.GROUP) {
-                   // console.log( d.data );
+                    // console.log( d.data );
                     var selection = Selection.fromSubset(d.data.subSets);
                     selections.addSelection(selection);
                     selections.setActive(selection);
@@ -480,30 +481,30 @@ function plot() {
             })
             .attr({
                 class: 'subSetSize',
-                    transform: function (d) {
-                        var y = 0;
-                        if (d.data.type !== ROW_TYPE.SUBSET)
-                            y = 0;//cellSize / 3 * .4;
-                        return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
-                    },
+                transform: function (d) {
+                    var y = 0;
+                    if (d.data.type !== ROW_TYPE.SUBSET)
+                        y = 0;//cellSize / 3 * .4;
+                    return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
+                },
 
-                    width: function (d) {
-                        return subSetSizeScale(d.data.setSize);
-                    },
-                    height: function (d) {
-                        if (d.data.type === ROW_TYPE.SUBSET)
-                            return cellSize;
-                        else
-                            return cellSize;// / 3;
-                    }
-                })
-                .on('mouseover', mouseoverRow)
-                .on('mouseout', mouseoutRow);
+                width: function (d) {
+                    return subSetSizeScale(d.data.setSize);
+                },
+                height: function (d) {
+                    if (d.data.type === ROW_TYPE.SUBSET)
+                        return cellSize;
+                    else
+                        return cellSize;// / 3;
+                }
+            })
+            .on('mouseover', mouseoverRow)
+            .on('mouseout', mouseoutRow);
 
         renderOverlay();
         // Rendering the highlights for selections on top of the selected subsets
         function renderOverlay() {
-            if ( selections.getSize() == 0 ) {
+            if (selections.getSize() == 0) {
                 return;
             }
 
@@ -614,7 +615,7 @@ function plot() {
                     return 'translate(' + start + ', ' + y + ')';
                 },
                 width: function (d) {
-                  //  console.log(d.data.expectedValueDeviation)
+                    //  console.log(d.data.expectedValueDeviation)
                     return Math.abs(expectedValueScale(d.data.expectedValueDeviation) - expectedValueScale(0));
                 },
                 height: function (d) {
@@ -631,27 +632,26 @@ function plot() {
 
         function panning(d) {
 
-        //    console.log("pann", d, d.y)
-d3.event.scale = 1
-            var dy = d3.event.translate[0]-prev_y;
+            //    console.log("pann", d, d.y)
+            d3.event.scale = 1
+            var dy = d3.event.translate[0] - prev_y;
             prev_y = d3.event.translate[0];
 
-        //    console.log("pann", d, d.y, dy, d3.event.translate, d3.event.translate*d3.event.scale)
-
+            //    console.log("pann", d, d.y, dy, d3.event.translate, d3.event.translate*d3.event.scale)
 
             d.y += dy;
             d.y = Math.max(0, d.y);
 
-           // d.y = Math.min(Math.min(0, d.y), params.viewportHeight - params.rowsHeight);
+            // d.y = Math.min(Math.min(0, d.y), params.viewportHeight - params.rowsHeight);
 
             var offset = params.viewportHeight - params.rowsHeight;
             var offsetRemain = Math.min(params.viewportHeight - params.rowsHeight, 0);
             //d.y = Math.min(0, d.y+offsetRemain);
-        //    console.log("ssss", d, d.y, d.y+offsetRemain, offsetRemain , d3.event.scale)
+            //    console.log("ssss", d, d.y, d.y+offsetRemain, offsetRemain , d3.event.scale)
 
-           // console.log("trans", trans, Math.min(0, d3.event.translate[0]), Math.max(0, params.rowsHeight - params.viewportHeight))
+            // console.log("trans", trans, Math.min(0, d3.event.translate[0]), Math.max(0, params.rowsHeight - params.viewportHeight))
 
-           // d3.event.translate[0] = Math.min(0, d3.event.translate[0]);
+            // d3.event.translate[0] = Math.min(0, d3.event.translate[0]);
             //if(params.rowsHeight>params.viewportHeight) {
 
             // Moving rows containing the subsets
@@ -665,15 +665,13 @@ d3.event.scale = 1
             // Update the scrollbar
             scrollbar.setValue(d3.event.translate[0]);
 
-          //  console.log(params.rowsHeight, params.viewportHeight, subSets.length, setGroups.length, d3.transform(d3.select(this).attr("transform")).translate[1], trans)
+            //  console.log(params.rowsHeight, params.viewportHeight, subSets.length, setGroups.length, d3.transform(d3.select(this).attr("transform")).translate[1], trans)
 
         }
 
-
-       var pan = d3.behavior.zoom()
-          //  .scaleExtent([0, 10])
+        var pan = d3.behavior.zoom()
+            //  .scaleExtent([0, 10])
             .on('zoom', panning);
-
 
         var prev_y = 0;
         d3.select('.gRows').call(pan);
@@ -778,5 +776,6 @@ d3.event.scale = 1
                 updateState();
                 rowTransition();
             });
+        d3.select('minCardinality')
     }
 }

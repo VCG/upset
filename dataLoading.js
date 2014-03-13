@@ -84,6 +84,24 @@ function load(descriptions) {
     header.append('div').html('Toggle Collapse of All Groups.').attr({id: 'collapseGroups',
         class: 'myButton'});
 
+    header.append('input').attr({id: 'minCardinality', type: 'number', min: '0', max: '12'});
+
+    header.append('input').attr({id: 'maxCardinality', type: 'number', min: '0', max: '12'})
+
+    var maxCardSpinner = document.getElementById('maxCardinality');
+    var minCardSpinner = document.getElementById('minCardinality');
+    var updateCardinality = function (e) {
+
+        UpSetState.maxCardinality = maxCardSpinner.value;
+        UpSetState.minCardinality = minCardSpinner.value;
+        UpSetState.forceUpdate = true;
+        run();
+    }
+
+    maxCardSpinner.addEventListener('input', updateCardinality);
+    minCardSpinner.addEventListener('input', updateCardinality);
+
+
     var dataSelect = header.append('div').text('Choose Dataset');
 
     var select = dataSelect.append('select');
@@ -114,9 +132,8 @@ function processDataSet(dataSetDescription) {
     });
 }
 
-
 function clearSelections() {
-    selections = new SelectionList(); 
+    selections = new SelectionList();
 }
 
 function createInitialSelection() {
@@ -134,14 +151,13 @@ function createInitialSelection() {
     }
 
     selection.filters = filterList;
-    selections.addSelection(selection);    
-    selections.setActive( selection );
+    selections.addSelection(selection);
+    selections.setActive(selection);
 }
-
 
 function run() {
     setUpSubSets();
-   // setUpGroupings();
+    // setUpGroupings();
     updateState();
     plot();
 
@@ -333,6 +349,8 @@ function parseDataSet(data, dataSetDescription) {
         });
     }
 
+    var max
+
     // add meta data summary statistics
     for (var i = 0; i < attributes.length; ++i) {
 
@@ -369,25 +387,21 @@ function setUpSubSets() {
 
     combinations = Math.pow(2, usedSets.length) - 1;
 
+    if (UpSetState.maxCardinality === undefined || UpSetState.minCardinality === undefined) {
+        UpSetState.maxCardinality = attributes[attributes.length - 2].max;
+        UpSetState.minCardinality = 0;
+        document.getElementById('maxCardinality').value = UpSetState.maxCardinality;
+        document.getElementById('minCardinality').value = UpSetState.minCardinality;
+    }
+
+    subSets.length = 0;
     // the max value for the cut-off
-   // console.log("LENGTH = " + attributes[attributes.length - 2].max);
+    // console.log("LENGTH = " + attributes[attributes.length - 2].max);
     for (var i = 0; i <= combinations; i++) {
         makeSubSet(i)
     }
 
-    // dataRows = subSets.slice(0);
-
-    // sort by size of set overlap
-//    dataRows.sort(function (a, b) {
-//        return b.setSize - a.setSize;
-//    });
-
 }
-
-//function setUpGroupings() {
-//    groupBySetSize();
-//    groupBySet();
-//}
 
 function change() {
     sets.length = 0;
@@ -404,10 +418,10 @@ function change() {
     queryParameters['dataset'] = this.options[this.selectedIndex].value;
 
     var urlQueryString = "";
-   //  console.log("qa", queryParameters.length)
-    if(Object.keys(queryParameters).length > 0) {
+    //  console.log("qa", queryParameters.length)
+    if (Object.keys(queryParameters).length > 0) {
         urlQueryString = "?";
-        for(var q in queryParameters)
+        for (var q in queryParameters)
             urlQueryString += (q + "=" + queryParameters[q]) + "&";
         urlQueryString = urlQueryString.substring(0, urlQueryString.length - 1);
     }
@@ -432,7 +446,7 @@ function updateSetContainment(set) {
     subSets.length = 0;
     dataRows.length = 0;
     setUpSubSets();
-  //  setUpGroupings();
+    //  setUpGroupings();
     previousState = undefined;
     updateState();
     plot();

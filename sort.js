@@ -9,7 +9,8 @@ var SET_BASED_GROUPING_PREFIX = "SetG_";
 var groupBySetSize = function (subSets, level) {
     var newGroups = [];
     newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
-    for (var i = 0; i < usedSets.length; i++) {
+    var maxSetSize = Math.min(usedSets.length, UpSetState.maxCardinality);
+    for (var i = UpSetState.minCardinality; i < maxSetSize; i++) {
         newGroups.push(new Group(SET_SIZE_GROUP_PREFIX + (i + 1), (i + 1) + '-Set Subsets'));
     }
     subSets.forEach(function (subSet) {
@@ -193,18 +194,26 @@ var UpSetState = {
     collapseChanged: false,
     grouping: StateOpt.groupBySet,
     levelTwoGrouping: StateOpt.groupBySetSize,
-    sorting: undefined
+    sorting: undefined,
+
+    /** Sets the upper threshold of cardinality of subsets */
+    maxCardinality: undefined,
+    /** Sets the lower threshold of cardinality of subsets */
+    minCardinality: undefined,
+
+    forceUpdate: false
 };
 
 var previousState = false;
 
 var updateState = function (parameter) {
 
+    var forceUpdate = !previousState || UpSetState.forceUpdate;
     // true if pure sorting - no grouping
-    if ((UpSetState.sorting && !UpSetState.grouping) && (!previousState ||(previousState && previousState.sorting !== UpSetState.sorting))) {
+    if ((UpSetState.sorting && !UpSetState.grouping) && (forceUpdate || (previousState && previousState.sorting !== UpSetState.sorting))) {
         dataRows = StateMap[StateOpt[UpSetState.sorting]](subSets, parameter);
     }
-    else if (UpSetState.grouping && (!previousState || (previousState && previousState.grouping !== UpSetState.grouping || previousState.levelTwoGrouping !== UpSetState.levelTwoGrouping))) {
+    else if (UpSetState.grouping && (forceUpdate || (previousState && previousState.grouping !== UpSetState.grouping || previousState.levelTwoGrouping !== UpSetState.levelTwoGrouping))) {
         levelOneGroups = StateMap[StateOpt[UpSetState.grouping]](subSets);
 
         if (UpSetState.levelTwoGrouping) {
@@ -217,10 +226,11 @@ var updateState = function (parameter) {
     }
     else if (UpSetState.collapseChanged && UpSetState.grouping) {
         dataRows = unwrapGroups(levelOneGroups);
-     }
+    }
 
     // unwrapGroups deals with collapse, so we can reset it
     UpSetState.collapseChanged = false;
+    UpSetState.forceUpdate = false;
 
     renderRows.length = 0;
 
