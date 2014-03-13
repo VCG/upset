@@ -397,6 +397,7 @@ function change() {
     allItems.length = 0;
     attributes.length = 0;
     selectedAttributes = {};
+    previousState = undefined;
 
     loadDataSet(this.options[this.selectedIndex].value);
     queryParameters['dataset'] = this.options[this.selectedIndex].value;
@@ -431,6 +432,7 @@ function updateSetContainment(set) {
     dataRows.length = 0;
     setUpSubSets();
   //  setUpGroupings();
+    previousState = undefined;
     updateState();
     plot();
     plotSetSelection();
