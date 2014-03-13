@@ -85,7 +85,7 @@ function plotSetOverview() {
     var setCellSize = 10;
     var textHeight = 60;
 
-    console.log("here", d3.select('#vis').select('svg'))
+   // console.log("here", d3.select('#vis').select('svg'))
 
     var overview = d3.select('#vis').select('svg').append("g").attr({
         class: "visOverview",
