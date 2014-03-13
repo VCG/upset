@@ -114,6 +114,14 @@ h1 {
     cursor: s-resize;
 }
 
+.addButton {
+    dominant-baseline: central;
+    font: 13px sans-serif;
+    text-anchor: middle;
+    cursor: row-resize;
+}
+
+
 .groupBackGround {
     fill: #d3d3d3;
 }

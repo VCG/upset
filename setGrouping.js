@@ -35,9 +35,9 @@ function SetGrouping(params){
 
     var init = function(){
 
-        vis.attr({
-            "transform":"translate("+0+","+(collapseHeight+6)+")"
-        })
+//        vis.attr({
+//            "transform":"translate("+0+","+(collapseHeight+6)+")"
+//        })
 
         gQuery.append("rect").attr({
             class:"menuPlaceholder menuPlaceholderRect",
@@ -170,9 +170,6 @@ function SetGrouping(params){
     init();
 
 
-    vis.attr({
-        "transform":"translate("+0+","+(collapseHeight+2)+")"
-    })
 
 
     var toggleCircle= function(id){
