@@ -6,8 +6,6 @@ var SET_SIZE_GROUP_PREFIX = 'SetSizeG_';
 var EMPTY_GROUP_ID = 'EmptyGroup';
 var SET_BASED_GROUPING_PREFIX = "SetG_";
 
-var idCache = {};
-
 var groupBySetSize = function (subSets, level) {
     var newGroups = [];
     newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
@@ -15,13 +13,13 @@ var groupBySetSize = function (subSets, level) {
         newGroups.push(new Group(SET_SIZE_GROUP_PREFIX + (i + 1), (i + 1) + '-Set Subsets'));
     }
     subSets.forEach(function (subSet) {
-        var group = newGroups[subSet.nrCombinedSets]
+        var group = newGroups[subSet.nrCombinedSets];
         if (group != null)
             group.addSubSet(subSet);
         else
             console.log('Fail ' + group + subSet.nrCombinedSets);
     })
-    return newGroups
+    return newGroups;
 }
 
 /**
@@ -44,36 +42,36 @@ var groupBySet = function (subSets, level) {
         });
     }
     return newGroups;
-}
+};
 
 /** Collapse or uncollapse group */
 var collapseGroup = function (group) {
     group.isCollapsed = !group.isCollapsed;
+    UpSetState.collapseChanged = true;
     updateState();
-}
+};
 
 var toggleCollapseAll = function () {
     if (UpSetState.collapseAll) {
         UpSetState.unCollapseAll = true;
     }
     UpSetState.collapseAll = !UpSetState.collapseAll;
+    UpSetState.collapseChanged = true;
     updateState();
-}
+};
 
 var collapseAggregate = function (aggregate) {
     aggregate.isCollapsed = !aggregate.isCollapsed;
     updateState();
-
-}
+};
 
 // ----------------------- Sort Functions ----------------------------
 
-function sortOnSetItem(set) {
+function sortBySetItem(subSets, set) {
     if (!set) {
         set = usedSets[0];
     }
-    dataRows.length = 0;
-    dataRows = subSets.slice(0);
+    var dataRows = subSets.slice(0);
     var setIndex = usedSets.indexOf(set);
     dataRows.sort(function (a, b) {
         // move all elements that contain the clicked set to the top
@@ -87,11 +85,11 @@ function sortOnSetItem(set) {
         // if the number of combined sets is identical, we can pick the largest one
         return b.id - a.id;
     });
+    return dataRows;
 }
 
-function sortByCombinationSize() {
-    dataRows.length = 0;
-    dataRows = subSets.slice(0);
+function sortByCombinationSize(subsets) {
+    var dataRows = subSets.slice(0);
 
 // sort by number of combinations
     dataRows.sort(function (a, b) {
@@ -101,29 +99,35 @@ function sortByCombinationSize() {
         // if the number of combined sets is identical, we can pick the largest one
         return b.id - a.id;
     });
+    return dataRows;
 }
 
 /** sort by size of set overlap */
-function sortBySubsetSize() {
-    dataRows.length = 0;
-    dataRows = subSets.slice(0);
+function sortBySubSetSize(subsets) {
+    var dataRows = subSets.slice(0);
     dataRows.sort(function (a, b) {
         return b.setSize - a.setSize;
     });
+    return dataRows;
 }
 
 /** sort by size of set overlap */
-function sortByExpectedValue() {
-    dataRows.length = 0;
-    dataRows = subSets.slice(0);
+function sortByExpectedValue(subSets) {
+    var dataRows = subSets.slice(0);
 
     dataRows.sort(function (a, b) {
         return Math.abs(b.expectedValueDeviation) - Math.abs(a.expectedValueDeviation);
     });
+    return dataRows;
 }
 
-var sortByGroup = function (groupList) {
-    dataRows.length = 0;
+/**
+ * Takes a list of groups and writes them into an array, according to the nesting & collapse rules
+ * @param groupList
+ * @returns {*}
+ */
+var unwrapGroups = function (groupList) {
+    var dataRows = []
     for (var i = 0; i < groupList.length; i++) {
         var group = groupList[i];
         // ignoring an empty empty group
@@ -138,61 +142,93 @@ var sortByGroup = function (groupList) {
             group.isCollapsed = false;
         }
         if (!group.isCollapsed) {
-            for (var j = 0; j < group.visibleSets.length; j++) {
-                dataRows.push(group.visibleSets[j]);
+
+            if (UpSetState.levelTwoGrouping && group.nestedGroups) {
+                dataRows = dataRows.concat(unwrapGroups(group.nestedGroups, []));
             }
-            if (group.aggregate.subSets.length > 0) {
-                dataRows.push(group.aggregate);
-                if (!group.aggregate.isCollapsed) {
-                    for (var j = 0; j < group.aggregate.subSets.length; j++) {
-                        dataRows.push(group.aggregate.subSets[j]);
+            else {
+                for (var j = 0; j < group.visibleSets.length; j++) {
+                    dataRows.push(group.visibleSets[j]);
+                }
+                if (group.aggregate.subSets.length > 0) {
+                    dataRows.push(group.aggregate);
+                    if (!group.aggregate.isCollapsed) {
+                        for (var k = 0; k < group.aggregate.subSets.length; k++) {
+                            dataRows.push(group.aggregate.subSets[k]);
+                        }
                     }
                 }
             }
         }
     }
     UpSetState.unCollapseAll = false;
+    return dataRows;
+};
 
-}
+var StateMap = {
+    groupBySetSize: groupBySetSize,
+    groupBySet: groupBySet,
 
-/** Sort by set size using groups */
-var sortBySetSizeGroups = function () {
-    sortByGroup(levelOneGroups);
-}
+    sortByCombinationSize: sortByCombinationSize,
+    sortBySubSetSize: sortBySubSetSize,
+    sortByExpectedValue: sortByExpectedValue,
+    sortBySubSetSize: sortBySubSetSize,
+    sortBySetItem: sortBySetItem
+};
 
-/** Sort by the groups containing all subsets of each sets */
-var sortBySetGroups = function () {
-    sortByGroup(levelOneGroups);
-}
+var StateOpt = {
+    groupBySetSize: 'groupBySetSize',
+    groupBySet: 'groupBySet',
+
+    sortByCombinationSize: 'sortByCombinationSize',
+    sortBySubSetSize: 'sortBySubSetSize',
+    sortByExpectedValue: 'sortByExpectedValue',
+    sortBySubSetSize: 'sortBySubSetSize',
+    sortBySetItem: 'sortBySetItem'
+};
 
 var UpSetState = {
     collapseAll: false,
     unCollapseAll: false,
-    grouping: groupBySet,
-    levelTwoGrouping: groupBySetSize
-//    sorting: sortBySubsetSize,
+    collapseChanged: false,
+    grouping: StateOpt.groupBySet,
+    levelTwoGrouping: StateOpt.groupBySetSize,
+    sorting: undefined
+};
 
-}
+var previousState = false;
 
-updateState = function (parameter) {
-    if (UpSetState.grouping) {
-        levelOneGroups = UpSetState.grouping(subSets);
+var updateState = function (parameter) {
+
+    // true if pure sorting - no grouping
+    if ((UpSetState.sorting && !UpSetState.grouping) && (!previousState ||(previousState && previousState.sorting !== UpSetState.sorting))) {
+        dataRows = StateMap[StateOpt[UpSetState.sorting]](subSets, parameter);
     }
+    else if (UpSetState.grouping && (!previousState || (previousState && previousState.grouping !== UpSetState.grouping || previousState.levelTwoGrouping !== UpSetState.levelTwoGrouping))) {
+        levelOneGroups = StateMap[StateOpt[UpSetState.grouping]](subSets);
 
-    if (UpSetState.levelTwoGrouping) {
-        levelOneGroups.forEach(function (group) {
-            group.nestedGroups = UpSetState.levelTwoGrouping(group.subSets, 2);
-        });
+        if (UpSetState.levelTwoGrouping) {
+            levelOneGroups.forEach(function (group) {
+                group.nestedGroups = StateMap[StateOpt[UpSetState.levelTwoGrouping]](group.subSets, 2);
+            });
+        }
+        dataRows = unwrapGroups(levelOneGroups);
+
     }
+    else if (UpSetState.collapseChanged && UpSetState.grouping) {
+        dataRows = unwrapGroups(levelOneGroups);
+     }
+
+    // unwrapGroups deals with collapse, so we can reset it
+    UpSetState.collapseChanged = false;
 
     renderRows.length = 0;
-    sortByGroup(levelOneGroups);
 
     var registry = {};
     dataRows.forEach(function (element) {
         var count = 1;
         if (registry.hasOwnProperty(element.id)) {
-            var count = registry[element.id];
+            count = registry[element.id];
             count += 1;
             registry[element.id] = count;
         }
@@ -206,4 +242,5 @@ updateState = function (parameter) {
         renderRows.push(wrapper);
 
     });
-}
+    previousState = JSON.parse(JSON.stringify(UpSetState));
+};

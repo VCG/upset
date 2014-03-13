@@ -238,3 +238,37 @@ th.attribute-header.selected {
 .subset-state-toggle-button:hover .fw {
     color: darkblue;
 }
+
+
+.venn-zero-set-area {
+    fill: #eee;
+}
+
+.venn-one-set-area {
+    fill: #ccc;
+}
+
+.venn-two-set-area {
+    fill: #aaa;
+}
+
+.venn-three-set-area {
+    fill: #999;
+}
+
+
+.venn-zero-set-area-active {
+    fill: #fee;
+}
+
+.venn-one-set-area-active {
+    fill: #fcc;
+}
+
+.venn-two-set-area-active {
+    fill: #faa;
+}
+
+.venn-three-set-area-active {
+    fill: #f99;
+}

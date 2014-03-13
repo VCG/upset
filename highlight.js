@@ -39,6 +39,15 @@ function mouseoutColumn(d, i) {
 
 function mouseoverRow(d, i) {
 
+    // plot Venn diagram with highlighting of selected subset
+    if ( d.data.type === 'SUBSET_TYPE') {
+        venn.plot( [ d.data ] );
+    }
+
+    if ( d.data.type === 'GROUP_TYPE') {
+        venn.plot( d.data.subSets );
+    }
+
     d3.selectAll(".row .backgroundRect")
         .style("stroke",
             function(dd){
@@ -48,6 +57,9 @@ function mouseoverRow(d, i) {
 }
 
 function mouseoutRow(d, i) {
+
+    // plot Venn diagram without highlighting
+    venn.plot();
 
     d3.selectAll(".row .backgroundRect")
         .style("stroke",null)
