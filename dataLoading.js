@@ -78,6 +78,9 @@ function load(descriptions) {
     header.append('div').html('Group by Sets.').attr({id: 'groupSet',
         class: 'myButton'});
 
+    header.append('div').html('Group by Sets then Set Size.').attr({id: 'groupSetThenSize',
+        class: 'myButton'});
+
     header.append('div').html('Toggle Collapse of All Groups.').attr({id: 'collapseGroups',
         class: 'myButton'});
 

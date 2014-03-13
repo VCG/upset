@@ -688,7 +688,9 @@ function plot() {
         d3.selectAll('#sortIntersect').on(
             'click',
             function (d) {
-                UpSetState.grouping = sortByCombinationSize;
+                UpSetState.sorting = StateOpt.sortByCombinationSize;
+                UpSetState.grouping = undefined;
+                UpSetState.levelTwoGrouping = undefined;
                 updateState();
                 rowTransition();
             });
@@ -696,18 +698,27 @@ function plot() {
         d3.selectAll('#groupSetSize').on(
             'click',
             function (d) {
-                UpSetState.grouping = sortBySetSizeGroups;
+                UpSetState.grouping = StateOpt.groupBySetSize;
+                UpSetState.levelTwoGrouping = undefined;
                 updateState();
-
                 rowTransition();
             });
 
         d3.selectAll('#groupSet').on(
             'click',
             function (d) {
-                UpSetState.grouping = sortBySetGroups;
+                UpSetState.grouping = StateOpt.groupBySet;
+                UpSetState.levelTwoGrouping = undefined;
                 updateState();
+                rowTransition();
+            });
 
+        d3.selectAll('#groupSetThenSize').on(
+            'click',
+            function (d) {
+                UpSetState.grouping = StateOpt.groupBySet;
+                UpSetState.levelTwoGrouping = StateOpt.groupBySetSize;
+                updateState();
                 rowTransition();
             });
 
@@ -716,7 +727,6 @@ function plot() {
             function (d) {
                 toggleCollapseAll();
                 updateState();
-
                 rowTransition();
             });
 
@@ -725,7 +735,9 @@ function plot() {
             'click',
             function (d) {
 
-                UpSetState.grouping = sortOnSetItem;
+                UpSetState.sorting = StateOpt.sortBySetItem;
+                UpSetState.grouping = undefined;
+                UpSetState.levelTwoGrouping = undefined;
                 updateState(d);
                 rowTransition();
             });
@@ -733,16 +745,19 @@ function plot() {
         d3.selectAll('.subsetSizeLabel').on(
             'click',
             function (d) {
-                UpSetState.grouping = sortBySubsetSize;
+                UpSetState.sorting = StateOpt.sortBySubSetSize;
+                UpSetState.grouping = undefined;
+                UpSetState.levelTwoGrouping = undefined;
                 updateState();
                 rowTransition();
             });
         d3.selectAll('.expectedValueLabel').on(
             'click',
-            function (d) {
-                UpSetState.grouping = sortByExpectedValue;
+            function () {
+                UpSetState.sorting = StateOpt.sortByExpectedValue;
+                UpSetState.grouping = undefined;
+                UpSetState.levelTwoGrouping = undefined;
                 updateState();
-
                 rowTransition();
             });
     }
