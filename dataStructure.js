@@ -67,6 +67,9 @@ var sizeGroups = [];
 /** Groups of subsets driven by set containment */
 var setGroups = [];
 
+/** Venn diagram for tutorial mode */
+var venn = new VennDiagram( "#venn-vis", 50 );
+
 /** The current primary grouping */
 // TODO this is static for testing only
 var levelOneGroups = setGroups;
