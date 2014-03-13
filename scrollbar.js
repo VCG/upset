@@ -44,6 +44,8 @@ function Scrollbar(params) {
       y: params.y    
     });
 
+  this.parentEl.selectAll(".scrollbar-thumb").remove()
+
   this.gThumb = this.parentEl.selectAll(".scrollbar-thumb")
       .data([{value: this.value, dx:0, x:0, y:0}])
       .enter()
