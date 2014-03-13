@@ -265,10 +265,10 @@ th.attribute-header.selected {
     fill: #fcc;
 }
 
-.venn-two-set-area .active {
+.venn-two-set-area-active {
     fill: #faa;
 }
 
-.venn-three-set-area .active {
+.venn-three-set-area-active {
     fill: #f99;
 }

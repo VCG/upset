@@ -8,19 +8,28 @@
  */
 
 
-var isActive = function( areaSubset, highlightSubset ) {
-	var hitCounter = 0;
+var isActive = function( areaSets, highlightSubsets ) {
 
-	for ( var i = 0; i < areaSubset.length; ++i ) {
-		if ( areaSubset[i] === highlightSubset[i] ) {
-			++hitCounter;
-		}
+	if ( !highlightSubsets ) {
+		return false;
 	}
 
-	return ( hitCounter === areaSubset.length ? true : false );
+	for ( var s = 0; s < highlightSubsets.length; ++s ) {
+		var hitCounter = 0;
+		for ( var i = 0; i < areaSets.length; ++i ) {
+			if ( areaSets[i] === highlightSubsets[s].combinedSets[i] ) {
+				++hitCounter;
+			}		
+		}
+		if ( hitCounter === areaSets.length ) {
+			return ( true );
+		}		
+	}
+
+	return ( false );
 }
 
-var plotVenn = function(element, radius, highlightSubset ) {
+var plotVenn = function(element, radius, highlightSubsets ) {
 
 	var width = radius * 550/180 + radius;
 	var height = radius * 300/180 + radius + .5*radius;
@@ -32,10 +41,10 @@ var plotVenn = function(element, radius, highlightSubset ) {
 	    .attr("height", height);
 
 	var vis = svg.append("svg:rect")
-		    .attr("width", width)
-		    .attr("height", height)
-	    	.attr("class", "venn-zero-set-area");
-	    	//.classed( { "active": isActive( [0,0,0], highlightSubset ) } );
+	    .attr("width", width)
+	    .attr("height", height)
+	    .attr("class", function() { return ( isActive( [0,0,0], highlightSubsets ) ? "venn-zero-set-area-active" : "venn-zero-set-area" ); } );
+	    	//.classed( { "active": isActive( [0,0,0], highlightSubsets ) } );
 	 
 	var defs = svg.append("svg:defs");
 	 
@@ -64,7 +73,7 @@ var plotVenn = function(element, radius, highlightSubset ) {
 	    .attr("clip-path", "url(#circle1)")
 	    .attr("width", width)
 	    .attr("height", height)
-	    .attr("class", function() { return ( isActive( [1,0,0], highlightSubset.combinedSets ) ? "venn-one-set-area-active" : "venn-one-set-area" ); } );
+	    .attr("class", function() { return ( isActive( [1,0,0], highlightSubsets ) ? "venn-one-set-area-active" : "venn-one-set-area" ); } );
 	    //.style("fill", "#ccc" );
 	    //.style("fill", "#ff0000");
 	 
@@ -72,7 +81,7 @@ var plotVenn = function(element, radius, highlightSubset ) {
 	    .attr("clip-path", "url(#circle2)")
 	    .attr("width", width)
 	    .attr("height", height)
-	    .attr("class", function() { return ( isActive( [0,1,0], highlightSubset.combinedSets ) ? "venn-one-set-area-active" : "venn-one-set-area" ); } );
+	    .attr("class", function() { return ( isActive( [0,1,0], highlightSubsets ) ? "venn-one-set-area-active" : "venn-one-set-area" ); } );
 	    //.style("fill", function() { return ( ) } );
 	    //.style("fill", "#00ff00");
 	 
@@ -80,7 +89,7 @@ var plotVenn = function(element, radius, highlightSubset ) {
 	    .attr("clip-path", "url(#circle3)")
 	    .attr("width", width)
 	    .attr("height", height)
-	    .attr("class", function() { return ( isActive( [0,0,1], highlightSubset.combinedSets ) ? "venn-one-set-area-active" : "venn-one-set-area" ); } );
+	    .attr("class", function() { return ( isActive( [0,0,1], highlightSubsets ) ? "venn-one-set-area-active" : "venn-one-set-area" ); } );
 	    //.style("fill", "#0000ff");
 	 
 	svg.append("svg:g")
@@ -89,9 +98,7 @@ var plotVenn = function(element, radius, highlightSubset ) {
 	    .attr("clip-path", "url(#circle2)")
 	    .attr("width", width)
 	    .attr("height", height)
-	    //.style("fill", "#aaa");	    
-	    .attr("class", "venn-two-set-area" );
-	    //.style("fill", "#ffff00");
+	    .attr("class", function() { return ( isActive( [1,1,0], highlightSubsets ) ? "venn-two-set-area-active" : "venn-two-set-area" ); } );
 	 
 	svg.append("svg:g")
 	    .attr("clip-path", "url(#circle2)")
@@ -99,9 +106,7 @@ var plotVenn = function(element, radius, highlightSubset ) {
 	    .attr("clip-path", "url(#circle3)")
 	    .attr("width", width)
 	    .attr("height", height)
-	    .attr("class", "venn-two-set-area" );
-	    //.style("fill", "#aaa");	    
-	    //.style("fill", "#00ffff");
+	    .attr("class", function() { return ( isActive( [0,1,1], highlightSubsets ) ? "venn-two-set-area-active" : "venn-two-set-area" ); } );
 	 
 	svg.append("svg:g")
 	    .attr("clip-path", "url(#circle3)")
@@ -109,9 +114,7 @@ var plotVenn = function(element, radius, highlightSubset ) {
 	    .attr("clip-path", "url(#circle1)")
 	    .attr("width", width)
 	    .attr("height", height)
-	    .attr("class", "venn-two-set-area" );
-	    //.style("fill", "#aaa");	    
-	    //.style("fill", "#ff00ff");
+	    .attr("class", function() { return ( isActive( [1,0,1], highlightSubsets ) ? "venn-two-set-area-active" : "venn-two-set-area" ); } );
 	 
 	svg.append("svg:g")
 	    .attr("clip-path", "url(#circle3)")
@@ -121,7 +124,5 @@ var plotVenn = function(element, radius, highlightSubset ) {
 	    .attr("clip-path", "url(#circle1)")
 	    .attr("width", width)
 	    .attr("height", height)
-	    .attr("class", "venn-three-set-area" );
-	    //.style("fill", "#999");	    
-	    //.style("fill", "#ffffff");	
+	    .attr("class", function() { return ( isActive( [1,1,1], highlightSubsets ) ? "venn-three-set-area-active" : "venn-three-set-area" ); } );
 }
