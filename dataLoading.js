@@ -146,7 +146,8 @@ function run() {
     plot();
 
     plotSetSelection();
-    createInitialSelection();
+    selections.setActive();
+    //createInitialSelection();
     plotSetOverview();
 }
 
