@@ -180,7 +180,7 @@ SelectionList = function (palette) {
     self.active = {};
     self.palette = palette || d3.scale.category10().range().slice();
 
-    console.log("Palette Length " + self.palette);
+  //  console.log("Palette Length " + self.palette);
 };
 
 SelectionList.prototype.getSelections = function () {

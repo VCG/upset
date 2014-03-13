@@ -369,7 +369,7 @@ function setUpSubSets() {
     combinations = Math.pow(2, usedSets.length) - 1;
 
     // the max value for the cut-off
-    console.log("LENGTH = " + attributes[attributes.length - 2].max);
+   // console.log("LENGTH = " + attributes[attributes.length - 2].max);
     for (var i = 0; i <= combinations; i++) {
         makeSubSet(i)
     }
@@ -403,7 +403,7 @@ function change() {
     queryParameters['dataset'] = this.options[this.selectedIndex].value;
 
     var urlQueryString = "";
-     console.log("qa", queryParameters.length)
+   //  console.log("qa", queryParameters.length)
     if(Object.keys(queryParameters).length > 0) {
         urlQueryString = "?";
         for(var q in queryParameters)

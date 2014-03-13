@@ -1,5 +1,5 @@
 $(EventManager).bind("item-selection-added", function (event, data) {
-    console.log("Selection was added to selection list with color " + selections.getColor(data.selection) + ' and ' + data.selection.items.length + ' items.');
+   // console.log("Selection was added to selection list with color " + selections.getColor(data.selection) + ' and ' + data.selection.items.length + ' items.');
 
     data.selection.mapToSubsets(subSets);
 
@@ -8,7 +8,7 @@ $(EventManager).bind("item-selection-added", function (event, data) {
 });
 
 $(EventManager).bind("item-selection-updated", function (event, data) {
-    console.log('Selection was updated! New length is ' + data.selection.items.length + ' items.');
+    //console.log('Selection was updated! New length is ' + data.selection.items.length + ' items.');
 
     data.selection.mapToSubsets(subSets);
     plot();
@@ -18,7 +18,7 @@ $(EventManager).bind("item-selection-updated", function (event, data) {
 });
 
 $(EventManager).bind("item-selection-removed", function (event, data) {
-    console.log("Selection was removed from selection list.");
+//    console.log("Selection was removed from selection list.");
 
     data.selection.unmapFromSubsets(subSets);
 
@@ -29,7 +29,7 @@ $(EventManager).bind("item-selection-removed", function (event, data) {
 
 $(EventManager).bind("item-selection-activated", function (event, data) {
     if (data.selection) {
-        console.log('Selection ' + data.selection.id + ' was activated.');
+ //       console.log('Selection ' + data.selection.id + ' was activated.');
 
         plot();
         plotSelectionTabs("#selection-tabs", selections, data.selection);
@@ -472,7 +472,7 @@ function plot() {
                     selections.setActive(selection);
                 }
                 if (d.data.type === ROW_TYPE.GROUP) {
-                    console.log( d.data );
+                   // console.log( d.data );
                     var selection = Selection.fromSubset(d.data.subSets);
                     selections.addSelection(selection);
                     selections.setActive(selection);
@@ -614,7 +614,7 @@ function plot() {
                     return 'translate(' + start + ', ' + y + ')';
                 },
                 width: function (d) {
-                    console.log(d.data.expectedValueDeviation)
+                  //  console.log(d.data.expectedValueDeviation)
                     return Math.abs(expectedValueScale(d.data.expectedValueDeviation) - expectedValueScale(0));
                 },
                 height: function (d) {
@@ -631,12 +631,12 @@ function plot() {
 
         function panning(d) {
 
-            console.log("pann", d, d.y)
+        //    console.log("pann", d, d.y)
 d3.event.scale = 1
             var dy = d3.event.translate[0]-prev_y;
             prev_y = d3.event.translate[0];
 
-            console.log("pann", d, d.y, dy, d3.event.translate, d3.event.translate*d3.event.scale)
+        //    console.log("pann", d, d.y, dy, d3.event.translate, d3.event.translate*d3.event.scale)
 
 
             d.y += dy;
@@ -647,7 +647,7 @@ d3.event.scale = 1
             var offset = params.viewportHeight - params.rowsHeight;
             var offsetRemain = Math.min(params.viewportHeight - params.rowsHeight, 0);
             //d.y = Math.min(0, d.y+offsetRemain);
-            console.log("ssss", d, d.y, d.y+offsetRemain, offsetRemain , d3.event.scale)
+        //    console.log("ssss", d, d.y, d.y+offsetRemain, offsetRemain , d3.event.scale)
 
            // console.log("trans", trans, Math.min(0, d3.event.translate[0]), Math.max(0, params.rowsHeight - params.viewportHeight))
 
