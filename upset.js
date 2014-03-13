@@ -110,7 +110,7 @@ function plot() {
     svg.append("clipPath").attr({
         id: "visClipping"
     }).append("rect").attr('width', w)
-        .attr('height', svgHeight)
+        .attr('height', svgHeight+150)
         .attr("transform", "translate(" + -leftOffset + "," + 0 + ")")
     vis.attr("clip-path", "url(#visClipping)")
 
@@ -118,7 +118,7 @@ function plot() {
     var gRows = vis.append('g')
         .attr('class', 'gRows')
         .data([
-            {'x': 0, 'y': 0}
+            {'x': 0, 'y': 0, 'dx': 0, 'dy': 0}
         ]);
 
     var gScroll = vis.append('g')
@@ -630,16 +630,23 @@ function plot() {
 
         function panning(d) {
 
+            console.log("pann", d, d.y)
+d3.event.scale = 1
             var dy = d3.event.translate[0]-prev_y;
             prev_y = d3.event.translate[0];
 
-            console.log("pann", d, d.y, dy, d3.event.translate)
+            console.log("pann", d, d.y, dy, d3.event.translate, d3.event.translate*d3.event.scale)
+
 
             d.y += dy;
-            d.y = Math.min(0, d.y);
+            d.y = Math.max(0, d.y);
+
            // d.y = Math.min(Math.min(0, d.y), params.viewportHeight - params.rowsHeight);
 
             var offset = params.viewportHeight - params.rowsHeight;
+            var offsetRemain = Math.min(params.viewportHeight - params.rowsHeight, 0);
+            //d.y = Math.min(0, d.y+offsetRemain);
+            console.log("ssss", d, d.y, d.y+offsetRemain, offsetRemain , d3.event.scale)
 
            // console.log("trans", trans, Math.min(0, d3.event.translate[0]), Math.max(0, params.rowsHeight - params.viewportHeight))
 
@@ -647,11 +654,11 @@ function plot() {
             //if(params.rowsHeight>params.viewportHeight) {
 
             // Moving rows containing the subsets
-            d3.select(this).attr('transform', 'translate(0, ' + d.y + ')');
+            d3.select(this).attr('transform', 'translate(0, ' + -d.y + ')');
 
             // Rows background should stick to his place
             d3.select(".background-subsets").attr('transform', function (d, i) {
-                return 'translate(' + [ 0, -d.y] + ')'
+                return 'translate(' + [ 0, d.y] + ')'
             })
 
             // Update the scrollbar
@@ -660,21 +667,23 @@ function plot() {
           //  console.log(params.rowsHeight, params.viewportHeight, subSets.length, setGroups.length, d3.transform(d3.select(this).attr("transform")).translate[1], trans)
 
         }
-        var prev_y = 0;
 
-        var pan = d3.behavior.zoom()
-            //  .scaleExtent([-10, 10])
+
+       var pan = d3.behavior.zoom()
+          //  .scaleExtent([0, 10])
             .on('zoom', panning);
 
+
+        var prev_y = 0;
         d3.select('.gRows').call(pan);
 
         // -------------------- scrollbar -------------------
 
         params = {
-            x: w - 20,
-            y: 55,
-            height: svgHeight - 55,
-            viewportHeight: svgHeight - 55,
+            x: w - 20 - leftOffset,
+            y: 85,
+            height: svgHeight - 205,
+            viewportHeight: svgHeight - 210,
             rowsHeight: subSetMatrixHeight,
             parentEl: d3.select('.gScroll')
         }
