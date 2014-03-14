@@ -85,13 +85,10 @@ function plotSetOverview() {
     var setCellSize = 10;
     var textHeight = 60;
 
-   // console.log("here", d3.select('#vis').select('svg'))
-
     var overview = d3.select('#vis').select('svg').append("g").attr({
         class: "visOverview",
         "transform": "translate(" + 0 + "," + 0 + ")"
     })
-
 
     var usedSetsLabels = overview.append("g").attr("class", "usedSets").selectAll('.setLabel')
         .data(usedSets)
@@ -100,7 +97,7 @@ function plotSetOverview() {
     // ------------------- set size bars --------------------
 
     // scale for the size of the subSets, also used for the sets
-    var setSizeScale = d3.scale.linear().domain([0, d3.max(usedSets, function (d) {
+    var setSizeScale = d3.scale.linear().domain([0, d3.max(sets, function (d) {
         return d.setSize;
     })]).nice().range([0, textHeight]);
 
@@ -139,41 +136,75 @@ function plotSetOverview() {
         return usedSets.indexOf(n) == -1
     });
 
-    var usedSetsLabels = overview.append("g").attr("class", "unusedSets").selectAll('.unsedSetsLabel')
+    var truncateAfter = 15;
+
+    var xScale = d3.scale.ordinal()
+        .domain(d3.range(unusedSets.length))
+        .rangeRoundBands([0, unusedSets.length+cellSize], 0.05); 
+
+    var sortSets = function (a, b) {
+        return b.setSize - a.setSize;
+    };
+
+
+    var unusedSetsLabels = overview.append("g").attr("class", "unusedSets").selectAll('.unsedSetsLabel')
         .data(unusedSets)
         .enter();
 
-        usedSetsLabels
-                .append('rect')
-                .attr({
-                    class: 'unusedSetSizeBackground',
-                    transform: function (d, i) {
-                        return 'translate(' + (cellDistance * (i ) + usedSets.length*cellSize) + ', 60)'
-                    },
-                    height: textHeight,
-                    width: cellSize
-                })
-                .on('click', setClicked)
-
-
-        // background bar
-        usedSetsLabels
+    unusedSetsLabels
             .append('rect')
+            .sort(sortSets)
             .attr({
-                class: 'unusedSetSize',
+                class: 'unusedSetSizeBackground',
                 transform: function (d, i) {
-                    return 'translate(' + (cellDistance * (i ) + usedSets.length*cellSize) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 60) + ')'
-                }, // ' + (textHeight - 5) + ')'
-                height: function (d) {
-                    return setSizeScale(d.setSize);
+                    return 'translate(' + (cellDistance * (i ) + usedSets.length*cellSize) + ', 60)'
                 },
+                height: textHeight,
                 width: cellSize
             })
-           // .on('mouseover', mouseoverColumn)
-           // .on('mouseout', mouseoutColumn)
             .on('click', setClicked)
 
+    // background bar
+    unusedSetsLabels
+        .append('rect')
+        .sort(sortSets)
+        .attr({
+            class: 'unusedSetSize',
+            transform: function (d, i) {
+                return 'translate(' + (cellDistance * (i ) + usedSets.length*cellSize) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 60) + ')'
+            }, // ' + (textHeight - 5) + ')'
+            height: function (d) {
+                return setSizeScale(d.setSize);
+            },
+            width: cellSize
+        })
+       // .on('mouseover', mouseoverColumn)
+       // .on('mouseout', mouseoutColumn)
+        .on('click', setClicked)
 
+    unusedSetsLabels
+        .append('text').text(
+          function (d) {
+              return d.elementName.substring(0, truncateAfter);
+          })
+        .sort(sortSets)
+        .attr({
+            class: 'setLabel',
+            id: function (d) {
+                return d.elementName.substring(0, truncateAfter);
+            },
+                transform: function (d, i) {
+                    return 'translate(' + (cellDistance * (i + 1) + usedSets.length*cellSize + 5) + ', 115) rotate(90)'
+                },
+            y: cellSize - 3,
+            x: 3,
+            'text-anchor': 'end'
+
+//            transform: function (d, i) {
+//                return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (setMatrixHeight + textHeight - textSpacing) + ')rotate(270)';
+//            }
+      })
+      .on('click', setClicked)
 
     function setClicked(d) {
         console.log(d);
