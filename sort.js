@@ -68,11 +68,24 @@ var collapseAggregate = function (aggregate) {
 
 // ----------------------- Sort Functions ----------------------------
 
+function getFilteredSubSets() {
+    if (!UpSetState.hideEmpties) {
+        return subSets.slice(0);
+    }
+    var filteredSubSets = []
+    for (var i = 0; i < subSets.length; i++) {
+        if (subSets[i].items.length > 0) {
+            filteredSubSets.push(subSets[i]);
+        }
+    }
+    return filteredSubSets;
+}
+
 function sortBySetItem(subSets, set) {
     if (!set) {
         set = usedSets[0];
     }
-    var dataRows = subSets.slice(0);
+    var dataRows = getFilteredSubSets();
     var setIndex = usedSets.indexOf(set);
     dataRows.sort(function (a, b) {
         // move all elements that contain the clicked set to the top
@@ -90,7 +103,8 @@ function sortBySetItem(subSets, set) {
 }
 
 function sortByCombinationSize(subsets) {
-    var dataRows = subSets.slice(0);
+    var dataRows = getFilteredSubSets();
+    ;
 
 // sort by number of combinations
     dataRows.sort(function (a, b) {
@@ -105,7 +119,7 @@ function sortByCombinationSize(subsets) {
 
 /** sort by size of set overlap */
 function sortBySubSetSize(subsets) {
-    var dataRows = subSets.slice(0);
+    var dataRows = getFilteredSubSets();
     dataRows.sort(function (a, b) {
         return b.setSize - a.setSize;
     });
@@ -114,7 +128,7 @@ function sortBySubSetSize(subsets) {
 
 /** sort by size of set overlap */
 function sortByExpectedValue(subSets) {
-    var dataRows = subSets.slice(0);
+    var dataRows = getFilteredSubSets();
 
     dataRows.sort(function (a, b) {
         return Math.abs(b.expectedValueDeviation) - Math.abs(a.expectedValueDeviation);
@@ -132,7 +146,7 @@ var unwrapGroups = function (groupList) {
     for (var i = 0; i < groupList.length; i++) {
         var group = groupList[i];
         // ignoring an empty empty group
-        if (group.id === EMPTY_GROUP_ID && group.setSize === 0) {
+        if (group.id === EMPTY_GROUP_ID && group.setSize === 0 || (group.visibleSets.length === 0 && UpSetState.hideEmpties)) {
             continue;
         }
         dataRows.push(group);
@@ -151,7 +165,7 @@ var unwrapGroups = function (groupList) {
                 for (var j = 0; j < group.visibleSets.length; j++) {
                     dataRows.push(group.visibleSets[j]);
                 }
-                if (group.aggregate.subSets.length > 0) {
+                if (group.aggregate.subSets.length > 0 && !UpSetState.hideEmpties) {
                     dataRows.push(group.aggregate);
                     if (!group.aggregate.isCollapsed) {
                         for (var k = 0; k < group.aggregate.subSets.length; k++) {
@@ -196,6 +210,9 @@ var UpSetState = {
     levelTwoGrouping: StateOpt.groupBySetSize,
     sorting: undefined,
 
+    /** hide empty subsets, groups and aggregates */
+    hideEmpties: true,
+
     /** Sets the upper threshold of cardinality of subsets */
     maxCardinality: undefined,
     /** Sets the lower threshold of cardinality of subsets */
@@ -208,7 +225,7 @@ var previousState = false;
 
 var updateState = function (parameter) {
 
-    var forceUpdate = !previousState || UpSetState.forceUpdate;
+    var forceUpdate = !previousState || UpSetState.forceUpdate || (UpSetState.hideEmpties != previousState.hideEmpties);
     // true if pure sorting - no grouping
     if ((UpSetState.sorting && !UpSetState.grouping) && (forceUpdate || (previousState && previousState.sorting !== UpSetState.sorting))) {
         dataRows = StateMap[StateOpt[UpSetState.sorting]](subSets, parameter);

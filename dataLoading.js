@@ -84,9 +84,9 @@ function load(descriptions) {
     header.append('div').html('Toggle Collapse of All Groups.').attr({id: 'collapseGroups',
         class: 'myButton'});
 
-    header.append('input').attr({id: 'minCardinality', type: 'number', min: '0', max: '12'});
+    header.append('span').html('Min Cardinality').append('input').attr({id: 'minCardinality', type: 'number', min: '0', max: '12'});
 
-    header.append('input').attr({id: 'maxCardinality', type: 'number', min: '0', max: '12'})
+    header.append('span').html('Max Cardinality').append('input').attr({id: 'maxCardinality', type: 'number', min: '0', max: '12'});
 
     var maxCardSpinner = document.getElementById('maxCardinality');
     var minCardSpinner = document.getElementById('minCardinality');
@@ -96,11 +96,22 @@ function load(descriptions) {
         UpSetState.minCardinality = minCardSpinner.value;
         UpSetState.forceUpdate = true;
         run();
-    }
+    };
 
     maxCardSpinner.addEventListener('input', updateCardinality);
     minCardSpinner.addEventListener('input', updateCardinality);
 
+    header.append('span').html('Hide empty subsets').append('input').attr({id: 'hideEmpties', type: 'checkbox', checked: UpSetState.hideEmpties})
+
+    var hideEmptiesCheck = document.getElementById('hideEmpties');
+
+    var hideEmptiesFu = function (e) {
+        UpSetState.hideEmpties = hideEmptiesCheck.checked;
+        updateState();
+        // TODO: need to call updateTransition instead, but this needs to be exposed first
+        plot();
+    };
+    hideEmptiesCheck.addEventListener('click', hideEmptiesFu);
 
     var dataSelect = d3.select("#dataset-selector").append('div').text('Choose Dataset');
 
