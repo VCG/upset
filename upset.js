@@ -186,8 +186,9 @@ function plot( width, height ) {
             grays: grays,
             belowVis:gRows,
             buttonX:-leftOffset,
-            buttonY:textHeight-20
-
+            buttonY:textHeight-20,
+            stateObject: UpSetState,
+            callAfterSubmit:[updateState, rowTransition]
 
         }
 

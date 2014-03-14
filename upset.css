@@ -104,6 +104,7 @@ h1 {
     font: sans-serif;
     text-anchor: left;
     cursor: s-resize;
+    font-size:11pt;
 }
 
 .columnLabel {
