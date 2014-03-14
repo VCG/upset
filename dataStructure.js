@@ -26,6 +26,9 @@ var EventManager = {};
 
  */
 
+/** the user interface */
+var ui; // initialized on document ready event
+
 /** The input datasets */
 var sets = [];
 var setIdToSet = {};

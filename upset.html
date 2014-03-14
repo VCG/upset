@@ -15,6 +15,7 @@
 	<script type="text/javascript" src="filter.js" /></script>
 	<script type="text/javascript" src="selection.js" /></script>
 	<script type="text/javascript" src="dataStructure.js" /></script>
+	<script type="text/javascript" src="ui.js" /></script>	
 	<script type="text/javascript" src="setSelection.js" /></script>
 	<script type="text/javascript" src="sort.js" /></script>
 	<script type="text/javascript" src="highlight.js" /></script>
@@ -27,11 +28,11 @@
 <body>
 
 
-<div class="app-header">
+<div class="ui-header">
 	<div class="header-container">
 		<div id="title">UpSet</div>
 		<div class="button-panel button-panel-right">
-			<div id="show-menu-button" class="app-button app-button-menu">
+			<div id="show-menu-button" class="ui-button ui-button-menu">
 			  <i class="fa fa-wrench"></i>
 			</div>
 		</div>
@@ -40,24 +41,24 @@
 	</div>
 </div>
 
-<div class="app-menu">
+<div class="ui-menu">
 	<div class="menu-container">
 		<div id="header"></div>
 	</div>
 </div>
 
-<div class="app-container">
-    <div class="app-row">
-        <!--<div class="app-column app-column-25">-->
+<div class="ui-container">
+    <div class="ui-row">
+        <!--<div class="ui-column ui-column-25">-->
 			<!--<div id="setSelect"></div>-->
 		<!--</div>-->
-        <div class="app-column app-column-66">
+        <div class="ui-column ui-column-66">
         	<div id="set-vis-container" data-height-ratio="1" class="fixed-y-container">
 				<div id="vis"></div>
 			</div>
         </div>
        
-        <div class="app-column app-column-33">
+        <div class="ui-column ui-column-33">
 			<!-- <div id="venn-vis"></div> -->
 
 			<div id="item-vis-container">
@@ -77,32 +78,21 @@
 
 
 <script>
-		function sizing() {
-			var fixedYContainers = $('.fixed-y-container');
-		    fixedYContainers.map( function(index) {
-		    	console.log( $(fixedYContainers[index]).attr("id") );
-
-		    	console.log( parseInt( $(fixedYContainers[index]).css("min-height") ) + " -- " + parseFloat( $(fixedYContainers[index]).attr("data-height-ratio") ) );
-
-		    	var targetHeight = ( $(window).height() - $(this).offset().top - 20 ) * parseFloat( $(fixedYContainers[index]).attr("data-height-ratio") );
-		    	
-		    	var minHeight = parseInt( $('.fixed-y-container').css( "min-height" ) );
-		    	var maxHeight = parseInt( $('.fixed-y-container').css( "max-height" ) ) || targetHeight;
-
-		    	var newHeight = Math.min( Math.max( targetHeight, minHeight ), maxHeight );
-		    	$(this).css('height', newHeight + 'px');  
-	    	});
-		}
-
-		$(window).resize(sizing);
-
 		$(document).ready( function(){
-			$(".app-menu").hide();
-			sizing();
+			ui = new Ui();
+			
+			$(window).resize(ui.resize);
 
-			$( "#show-menu-button").on( "click", function( event ){
-				$(".app-menu").slideToggle( { step: sizing } );
-				$( "#show-menu-button").toggleClass( "fa-rotate-90");
+			$(EventManager).bind("ui-resize", function (event, data) {
+			    ui.updateFixedHeightContainers();
+			});
+
+			$(EventManager).bind("ui-vertical-resize", function (event, data) {
+			    ui.updateFixedHeightContainers();
+			});
+
+			$(EventManager).bind("ui-horizontal-resize", function (event, data) {
+				// nothing so far
 			});
 		});
 </script>

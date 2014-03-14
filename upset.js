@@ -43,7 +43,20 @@ $(EventManager).bind("item-selection-activated", function (event, data) {
     }
 });
 
-function plot() {
+$(EventManager).bind("ui-resize", function (event, data) {
+    plot( Math.floor( data.newWidth * .66 ), Math.floor( data.newHeight ) );
+});
+
+$(EventManager).bind("ui-vertical-resize", function (event, data) {
+    plot( undefined, Math.floor( data.newHeight ) );
+});
+
+$(EventManager).bind("ui-horizontal-resize", function (event, data) {
+    plot( Math.floor( data.newWidth * .66 ), undefined );
+});
+
+
+function plot( width, height ) {
 
     var majorPadding = 5;
     var minorPadding = 2;
@@ -76,11 +89,11 @@ function plot() {
     var setCellDistance = 12;
     var setCellSize = 10;
 
-    var w = 850;
+    var w = width || 850;
     //  var setMatrixHeight = setCellDistance + majorPadding;
     var subSetMatrixHeight;
     var h;
-    var svgHeight = 600;
+    var svgHeight = height || 600;
 
     var rowScale;
 
@@ -108,7 +121,7 @@ function plot() {
     var vis = svg.append("g").attr({
         class: "visContainer",
         "transform": "translate(" + leftOffset + "," + 120 + ")"
-    })
+    });
 
     // define a clipping path for scrolling (@hen)
     svg.append("clipPath").attr({
@@ -244,7 +257,7 @@ function plot() {
 
         });
 
-    vis.append('text').text('Subset Size')
+    vis.append('text').text('Subset Size' )
         .attr({
             class: 'columnLabel subsetSizeLabel',
             transform: 'translate(' + (xStartSetSizes + subSetSizeWidth / 2) + ',' + (labelTopPadding + 10) + ')'
@@ -723,7 +736,7 @@ function plot() {
             parentEl: d3.select('.gScroll')
         }
 
-        var scrollbar = new Scrollbar(params);
+        var scrollbar = new Scrollbar(params);        
 
     }
 
@@ -825,4 +838,10 @@ function plot() {
             });
         d3.select('minCardinality')
     }
+
+    vis.append('text').text('SVG ' + w + "/" + svgHeight )
+        .attr({
+            transform: 'translate(0, '+ (labelTopPadding + 10) + ')'
+        });
+
 }

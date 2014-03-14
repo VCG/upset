@@ -337,11 +337,11 @@ select {
     padding-right: 20px;
 }
 
-.app-button {
+.ui-button {
     color: #666;
 }
 
-.app-button:hover {
+.ui-button:hover {
     color: #136382;
     text-shadow:0 0 10px #3fa0c7
 }
@@ -392,12 +392,12 @@ select {
 {
     margin:0;padding:0;
 }
-html,body,.app-container
+html,body,.ui-container
 {
     height:100%;
 }
 
-.app-container
+.ui-container
 {
     display:table;
     width: 100%;
@@ -411,23 +411,23 @@ html,body,.app-container
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
-.app-header
+.ui-header
 {
     height: 30px;
 }
 
-.app-menu
+.ui-menu
 {
     height: 50px;
 }
 
-.app-row
+.ui-row
 {
     height: 100%;
     display: table-row;
 }
 
-.app-column {
+.ui-column {
     display: table-cell;
     vertical-align: top;
     padding-top: 20px;
@@ -436,27 +436,28 @@ html,body,.app-container
     padding-right: 10px;
 }
 
-.app-column .app-column-25
+.ui-column .ui-column-25
 {
     background: pink;
     width: 25%;
 }
 
-.app-column .app-column-75
+.ui-column .ui-column-75
 {
     background: yellow;
     width: 75%;
     min-width: 75%;
 }
 
-.app-column .app-column-33
+.ui-column .ui-column-33
 {
     background: pink;
     width: 33%;
 }
 
-.app-column .app-column-66
+.ui-column .ui-column-66
 {
     background: lightpurple;
     width: 66%;
+    min-width: 66%;
 }
