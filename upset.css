@@ -147,8 +147,8 @@ h1 {
 }
 
 .connection {
-    /* stroke: #333333;*/
-    /*stroke-width: 1;*/
+     stroke: white;
+    stroke-width: 1;
     fill: #f0f0f0;
 }
 

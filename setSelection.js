@@ -90,7 +90,6 @@ function plotSetOverview() {
         "transform": "translate(" + 0 + "," + 0 + ")"
     })
 
-
     var usedSetsLabels = overview.append("g").attr("class", "usedSets").selectAll('.setLabel')
         .data(usedSets)
         .enter();
@@ -137,40 +136,61 @@ function plotSetOverview() {
         return usedSets.indexOf(n) == -1
     });
 
-    var usedSetsLabels = overview.append("g").attr("class", "unusedSets").selectAll('.unsedSetsLabel')
+    var truncateAfter = 15;
+
+    var unusedSetsLabels = overview.append("g").attr("class", "unusedSets").selectAll('.unsedSetsLabel')
         .data(unusedSets)
         .enter();
 
-        usedSetsLabels
-                .append('rect')
-                .attr({
-                    class: 'unusedSetSizeBackground',
-                    transform: function (d, i) {
-                        return 'translate(' + (cellDistance * (i ) + usedSets.length*cellSize) + ', 60)'
-                    },
-                    height: textHeight,
-                    width: cellSize
-                })
-                .on('click', setClicked)
-
-
-        // background bar
-        usedSetsLabels
+    unusedSetsLabels
             .append('rect')
             .attr({
-                class: 'unusedSetSize',
+                class: 'unusedSetSizeBackground',
                 transform: function (d, i) {
-                    return 'translate(' + (cellDistance * (i ) + usedSets.length*cellSize) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 60) + ')'
-                }, // ' + (textHeight - 5) + ')'
-                height: function (d) {
-                    return setSizeScale(d.setSize);
+                    return 'translate(' + (cellDistance * (i ) + usedSets.length*cellSize) + ', 60)'
                 },
+                height: textHeight,
                 width: cellSize
             })
-           // .on('mouseover', mouseoverColumn)
-           // .on('mouseout', mouseoutColumn)
             .on('click', setClicked)
 
+    // background bar
+    unusedSetsLabels
+        .append('rect')
+        .attr({
+            class: 'unusedSetSize',
+            transform: function (d, i) {
+                return 'translate(' + (cellDistance * (i ) + usedSets.length*cellSize) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 60) + ')'
+            }, // ' + (textHeight - 5) + ')'
+            height: function (d) {
+                return setSizeScale(d.setSize);
+            },
+            width: cellSize
+        })
+       // .on('mouseover', mouseoverColumn)
+       // .on('mouseout', mouseoutColumn)
+        .on('click', setClicked)
+
+    unusedSetsLabels.append('text').text(
+        function (d) {
+            return d.elementName.substring(0, truncateAfter);
+        }).attr({
+            class: 'setLabel',
+            id: function (d) {
+                return d.elementName.substring(0, truncateAfter);
+            },
+                transform: function (d, i) {
+                    return 'translate(' + (cellDistance * (i + 1) + usedSets.length*cellSize + 5) + ', 115) rotate(90)'
+                },
+            y: cellSize - 3,
+            x: 3,
+            'text-anchor': 'end'
+
+//            transform: function (d, i) {
+//                return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (setMatrixHeight + textHeight - textSpacing) + ')rotate(270)';
+//            }
+      })
+      .on('click', setClicked)
 
     function setClicked(d) {
         console.log(d);

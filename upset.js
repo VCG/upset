@@ -240,9 +240,9 @@ function plot( width, height ) {
                 return d.elementName.substring(0, truncateAfter);
             },
             transform: function (d, i) {
-                return 'skewX(45) translate(' + (cellDistance * (i) + cellDistance / 2 - leftOffset) + ',' + (textHeight - textSpacing) + ')rotate(270)';
-            }
-
+                return 'translate(' + (cellDistance * i + 5) + ',' + (textHeight - textSpacing - 2) + ')rotate(45)';
+            },
+            'text-anchor': 'end'
         })
 
         .on('mouseover', mouseoverColumn)
