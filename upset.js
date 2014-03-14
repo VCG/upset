@@ -12,9 +12,9 @@ $(EventManager).bind("item-selection-updated", function (event, data) {
 
     data.selection.mapToSubsets(subSets);
     plot();
-
     plotSelectionTabs("#selection-tabs", selections, data.selection);
     plotSelectedItems("#item-table", data.selection);
+    plotSetOverview();
 });
 
 $(EventManager).bind("item-selection-removed", function (event, data) {
@@ -25,6 +25,7 @@ $(EventManager).bind("item-selection-removed", function (event, data) {
     plot();
     plotSelectionTabs("#selection-tabs", selections, selections.getActive());
     plotSelectedItems("#item-table", selections.getActive());
+    plotSetOverview();
 });
 
 $(EventManager).bind("item-selection-activated", function (event, data) {
@@ -40,6 +41,7 @@ $(EventManager).bind("item-selection-activated", function (event, data) {
         plot();
         plotSelectionTabs("#selection-tabs", selections, data.selection);
         plotSelectedItems("#item-table", data.selection);
+        plotSetOverview();
     }
 });
 
