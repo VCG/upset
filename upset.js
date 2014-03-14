@@ -84,6 +84,9 @@ function plot() {
 
     var rowScale;
 
+    var grays = [ '#f0f0f0', '#636363'];
+
+
     function initRows() {
 
         subSetMatrixHeight = renderRows.length * cellDistance;
@@ -117,7 +120,9 @@ function plot() {
 
     // Rows container for vertical panning
     var gRows = vis.append('g')
-        .attr('class', 'gRows')
+        .attr(
+            {'class': 'gRows', "transform":"translate(0,0)"}
+        )
         .data([
             {'x': 0, 'y': 0, 'dx': 0, 'dy': 0}
         ]);
@@ -128,11 +133,15 @@ function plot() {
             {'x': 0, 'y': 0}
         ]);
 
-    var gQuery = vis.append('g')
+    var gQuery = svg.append('g')
         .attr('class', 'gQuery')
+        .attr("transform","translate("+-5+","+2+")")
         .data([
             {'x': 0, 'y': 0}
         ]);
+
+
+
 
     // Extra layer for vertical panning
     vis.append('rect').attr({
@@ -142,6 +151,33 @@ function plot() {
         height: (textHeight - 5),
         fill: 'white'
     });
+
+
+    //####################### LogicPanel ##################################################
+
+    var logicPanelNode = vis.append("g").attr({
+        class:"logicPanel",
+        "transform":"translate("+-leftOffset+","+(textHeight+5)+")"
+    })
+
+    var logicPanel = new LogicPanel(
+        {width: setVisWidth+leftOffset,
+            visElement: vis,
+            panelElement:logicPanelNode,
+            cellSize: cellSize,
+            usedSets:usedSets,
+            grays: grays,
+            belowVis:gRows,
+            buttonX:-leftOffset,
+            buttonY:textHeight-20
+
+
+        }
+
+    );
+
+
+
     //####################### SETS ##################################################
 
     var setRowScale = d3.scale.ordinal().rangeRoundBands([ 0, usedSets.length * (cellSize + 2)], 0);
@@ -333,7 +369,7 @@ function plot() {
 
         // ------------ the combination matrix ----------------------
 
-        var grays = [ '#f0f0f0', '#636363'];
+
         // scale for the set containment
         var setScale = d3.scale.ordinal().domain([0, 1]).range(grays);
 
@@ -728,6 +764,17 @@ function plot() {
                 updateState();
                 rowTransition();
             });
+
+
+        d3.selectAll('#groupDeviation').on(
+            'click',
+            function (d) {
+                UpSetState.grouping = StateOpt.groupByDeviation;
+                UpSetState.levelTwoGrouping = undefined;
+                updateState();
+                rowTransition();
+            });
+
 
         d3.selectAll('#groupSetThenSize').on(
             'click',

@@ -6,6 +6,27 @@ var SET_SIZE_GROUP_PREFIX = 'SetSizeG_';
 var EMPTY_GROUP_ID = 'EmptyGroup';
 var SET_BASED_GROUPING_PREFIX = "SetG_";
 
+var groupByDeviation = function (subSets, level) {
+    var newGroups = [];
+    newGroups.push(new Group('GROUP_POS_DEV', 'Positive Expected Value', level));
+    newGroups.push(new Group('GROUP_POS_NEG', 'Negative Expected Value', level));
+    newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
+    for (var i = 0; i < subSets.length; i++) {
+        var index = 0
+        if (subSets[i].expectedValueDeviation > 0) {
+            index = 0;
+        }
+        else if (subSets[i].expectedValueDeviation < 0) {
+            index = 1;
+        }
+        else {
+            index = 2;
+        }
+        newGroups[index].addSubSet(subSets[i])
+    }
+    return newGroups;
+}
+
 var groupBySetSize = function (subSets, level) {
     var newGroups = [];
     newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
@@ -28,6 +49,8 @@ var groupBySetSize = function (subSets, level) {
  */
 var groupBySet = function (subSets, level) {
 
+    // TODO add empty subset
+
     var newGroups = [];
     newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
     for (var i = 0; i < usedSets.length; i++) {
@@ -37,7 +60,6 @@ var groupBySet = function (subSets, level) {
 
         subSets.forEach(function (subSet) {
             if (subSet.combinedSets[i] !== 0) {
-
                 group.addSubSet(subSet);
             }
         });
@@ -104,7 +126,6 @@ function sortBySetItem(subSets, set) {
 
 function sortByCombinationSize(subsets) {
     var dataRows = getFilteredSubSets();
-    ;
 
 // sort by number of combinations
     dataRows.sort(function (a, b) {
@@ -183,6 +204,7 @@ var unwrapGroups = function (groupList) {
 var StateMap = {
     groupBySetSize: groupBySetSize,
     groupBySet: groupBySet,
+    groupByDeviation: groupByDeviation,
 
     sortByCombinationSize: sortByCombinationSize,
     sortBySubSetSize: sortBySubSetSize,
@@ -194,6 +216,7 @@ var StateMap = {
 var StateOpt = {
     groupBySetSize: 'groupBySetSize',
     groupBySet: 'groupBySet',
+    groupByDeviation: 'groupByDeviation',
 
     sortByCombinationSize: 'sortByCombinationSize',
     sortBySubSetSize: 'sortBySubSetSize',

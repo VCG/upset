@@ -114,6 +114,14 @@ h1 {
     cursor: s-resize;
 }
 
+.addButton {
+    dominant-baseline: central;
+    font: 13px sans-serif;
+    text-anchor: middle;
+    cursor: row-resize;
+}
+
+
 .groupBackGround {
     fill: #d3d3d3;
 }
@@ -278,6 +286,15 @@ th.attribute-header.selected {
     float: left;
 }
 
+/*--- logic --*/
+.logicPanelCircle {
+    stroke-width:2pt;
+}
+
+.logicPanelHeaderCircle {
+    stroke-width:1pt;
+}
+
 #dataset-selector {
     float: right;
 }
@@ -285,7 +302,6 @@ th.attribute-header.selected {
 select {
     margin-left: 5px;
 }
-
 
 .header-container {
     padding-top: 5px;
