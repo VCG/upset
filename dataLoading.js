@@ -102,7 +102,7 @@ function load(descriptions) {
     minCardSpinner.addEventListener('input', updateCardinality);
 
 
-    var dataSelect = header.append('div').text('Choose Dataset');
+    var dataSelect = d3.select("#dataset-selector").append('div').text('Choose Dataset');
 
     var select = dataSelect.append('select');
     select.on('change', change)

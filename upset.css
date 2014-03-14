@@ -272,3 +272,122 @@ th.attribute-header.selected {
 .venn-three-set-area-active {
     fill: #f99;
 }
+
+#title {
+    font-weight: bold;
+    float: left;
+}
+
+#dataset-selector {
+    float: right;
+}
+
+select {
+    margin-left: 5px;
+}
+
+
+.header-container {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background: lightgray;
+    border-bottom: 2px solid darkgray;
+
+    display: block;
+    height: 20px;
+}
+
+.padded-container {
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-bottom: 10px;
+    padding-right: 20px;
+}
+
+.fixed-y-container {
+    overflow: scroll;
+}
+
+.fixed-y-container:hover {
+    background: lightyellow;    
+    border: 2px dashed yellow;
+}
+
+#main-vis-container {
+    height: 400px;
+}
+
+#item-vis-container {
+    height: 200px;
+}
+
+#item-table-container {
+    height: 500px;
+}
+
+*
+{
+    margin:0;padding:0;
+}
+html,body,.app-container
+{
+    height:100%;
+}
+
+.app-container
+{
+    display:table;
+    width: 100%;
+    margin-top: -75px;
+    padding-top: 75px;
+
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.app-header
+{
+    height: 75px;
+}
+
+.app-row
+{
+    height: 100%;
+    display: table-row;
+}
+
+.app-column {
+    display: table-cell;
+    vertical-align: top;
+    padding: 5px;
+}
+
+.app-column .app-column-25
+{
+    background: pink;
+    width: 25%;
+}
+
+.app-column .app-column-75
+{
+    background: yellow;
+    width: 75%;
+    min-width: 75%;
+}
+
+.app-column .app-column-33
+{
+    background: pink;
+    width: 33%;
+}
+
+.app-column .app-column-66
+{
+    background: lightpurple;
+    width: 66%;
+}
