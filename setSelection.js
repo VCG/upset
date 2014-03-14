@@ -97,7 +97,7 @@ function plotSetOverview() {
     // ------------------- set size bars --------------------
 
     // scale for the size of the subSets, also used for the sets
-    var setSizeScale = d3.scale.linear().domain([0, d3.max(usedSets, function (d) {
+    var setSizeScale = d3.scale.linear().domain([0, d3.max(sets, function (d) {
         return d.setSize;
     })]).nice().range([0, textHeight]);
 
@@ -138,12 +138,22 @@ function plotSetOverview() {
 
     var truncateAfter = 15;
 
+    var xScale = d3.scale.ordinal()
+        .domain(d3.range(unusedSets.length))
+        .rangeRoundBands([0, unusedSets.length+cellSize], 0.05); 
+
+    var sortSets = function (a, b) {
+        return b.setSize - a.setSize;
+    };
+
+
     var unusedSetsLabels = overview.append("g").attr("class", "unusedSets").selectAll('.unsedSetsLabel')
         .data(unusedSets)
         .enter();
 
     unusedSetsLabels
             .append('rect')
+            .sort(sortSets)
             .attr({
                 class: 'unusedSetSizeBackground',
                 transform: function (d, i) {
@@ -157,6 +167,7 @@ function plotSetOverview() {
     // background bar
     unusedSetsLabels
         .append('rect')
+        .sort(sortSets)
         .attr({
             class: 'unusedSetSize',
             transform: function (d, i) {
@@ -171,10 +182,13 @@ function plotSetOverview() {
        // .on('mouseout', mouseoutColumn)
         .on('click', setClicked)
 
-    unusedSetsLabels.append('text').text(
-        function (d) {
-            return d.elementName.substring(0, truncateAfter);
-        }).attr({
+    unusedSetsLabels
+        .append('text').text(
+          function (d) {
+              return d.elementName.substring(0, truncateAfter);
+          })
+        .sort(sortSets)
+        .attr({
             class: 'setLabel',
             id: function (d) {
                 return d.elementName.substring(0, truncateAfter);
