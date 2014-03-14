@@ -68,20 +68,28 @@ Ui.prototype.initialize = function() {
 }
 
 Ui.prototype.createHeader = function() {
+    var self = this;
+    
     $( "#show-menu-button").on( "click", function( event ){
-        Ui.toggleMenu();
+        self.toggleMenu();
     });    
 }
 
 Ui.prototype.showMenu = function() {
+    var self = this;
+
     $(".ui-menu").show();
 }
 
 Ui.prototype.hideMenu = function() {
+    var self = this;
+
     $(".ui-menu").hide();
 }
 
 Ui.prototype.toggleMenu = function() {
-    $(".ui-menu").slideToggle( { step: Ui.resize } );
+    var self = this;
+
+    $(".ui-menu").slideToggle( { step: self.updateFixedHeightContainers } );
     $( "#show-menu-button").toggleClass( "fa-rotate-90");
 }
