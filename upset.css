@@ -280,3 +280,12 @@ th.attribute-header.selected {
 .venn-three-set-area-active {
     fill: #f99;
 }
+
+
+/*--- logic --*/
+.logicPanelCircle {
+    stroke-width:2pt;
+}
+.logicPanelHeaderCircle {
+    stroke-width:1pt;
+}
