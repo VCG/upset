@@ -20,6 +20,8 @@
 	<script type="text/javascript" src="highlight.js" /></script>
 	<script type="text/javascript" src="scrollbar.js" /></script>
 	<script type="text/javascript" src="items.js" /></script>
+	<script type="text/javascript" src="setGrouping.js"></script>
+	<script type="text/javascript" src="logicPanel.js"></script>
 	<script type="text/javascript" src="upset.js" /></script>    
 </head>
 <body>
@@ -28,6 +30,12 @@
 <div class="app-header">
 	<div class="header-container">
 		<div id="title">UpSet</div>
+		<div class="button-panel button-panel-right">
+			<div id="show-menu-button" class="app-button app-button-menu">
+			  <i class="fa fa-wrench"></i>
+			</div>
+		</div>
+
 		<div id="dataset-selector"></div>
 	</div>
 </div>
@@ -48,17 +56,18 @@
 				<div id="vis"></div>
 			</div>
         </div>
+       
         <div class="app-column app-column-33">
 			<!-- <div id="venn-vis"></div> -->
 
-			<div id="item-vis-container" data-height-ratio=".30" class="padded-container fixed-y-container">
+			<div id="item-vis-container">
 				<div id="item-vis"></div>
 			</div>
 
-			<div id="selection-vis-container" data-height-ratio=".10" class="fixed-y-container padded-container">
+			<div id="selection-vis-container">
 				<div id="selection-tabs"></div>
 			</div>
-			<div id="item-table-container" data-height-ratio=".60" class="padded-container fixed-y-container">
+			<div id="item-table-container" data-height-ratio="1" class="fixed-y-container">
 				<div id="item-table"></div>        	
 			</div>
         </div>
@@ -75,9 +84,7 @@
 
 		    	console.log( parseInt( $(fixedYContainers[index]).css("min-height") ) + " -- " + parseFloat( $(fixedYContainers[index]).attr("data-height-ratio") ) );
 
-
-		    	//$(fixedYContainers[index]
-		    	var targetHeight = ( $(window).height() - $(this).offset().top - 70 ) * parseFloat( $(fixedYContainers[index]).attr("data-height-ratio") );
+		    	var targetHeight = ( $(window).height() - $(this).offset().top - 20 ) * parseFloat( $(fixedYContainers[index]).attr("data-height-ratio") );
 		    	
 		    	var minHeight = parseInt( $('.fixed-y-container').css( "min-height" ) );
 		    	var maxHeight = parseInt( $('.fixed-y-container').css( "max-height" ) ) || targetHeight;
@@ -90,7 +97,13 @@
 		$(window).resize(sizing);
 
 		$(document).ready( function(){
+			$(".app-menu").hide();
 			sizing();
+
+			$( "#show-menu-button").on( "click", function( event ){
+				$(".app-menu").slideToggle( { step: sizing } );
+				$( "#show-menu-button").toggleClass( "fa-rotate-90");
+			});
 		});
 </script>
 

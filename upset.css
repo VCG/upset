@@ -50,7 +50,7 @@ h1 {
 }
 
 #header {
-    padding: 10px 10px 10px 10px;
+    padding: 0;
 }
 
 .axis path,
@@ -97,7 +97,6 @@ h1 {
 }
 
 .setLabel:hover {
-
 }
 
 .groupLabel {
@@ -284,6 +283,7 @@ th.attribute-header.selected {
 #title {
     font-weight: bold;
     float: left;
+    color: #000;
 }
 
 /*--- logic --*/
@@ -294,6 +294,7 @@ th.attribute-header.selected {
 .logicPanelHeaderCircle {
     stroke-width:1pt;
 }
+
 
 #dataset-selector {
     float: right;
@@ -308,11 +309,13 @@ select {
     padding-bottom: 5px;
     padding-left: 10px;
     padding-right: 10px;
-    background: lightgray;
-    border-bottom: 2px solid darkgray;
+    background: #ccc;
+    border-bottom: 2px solid #999;
 
     display: block;
-    height: 30px;
+    height: 20px;
+
+    color: #666;
 }
 
 .menu-container {
@@ -320,8 +323,8 @@ select {
     padding-bottom: 5px;
     padding-left: 10px;
     padding-right: 10px;
-    background: lightblue;
-    border-bottom: 2px solid darkblue;
+    background: #eee;
+    border-bottom: 2px solid #999;
 
     display: block;
     height: 40px;
@@ -334,14 +337,23 @@ select {
     padding-right: 20px;
 }
 
+.app-button {
+    color: #666;
+}
+
+.app-button:hover {
+    color: #136382;
+    text-shadow:0 0 10px #3fa0c7
+}
+
+
 .fixed-y-container {
     overflow-y: scroll;
-    border: 2px solid hotpink;
+    border-bottom: 2px solid pink;
 }
 
 .fixed-y-container:hover {
-    background: lightyellow;    
-    border: 2px dashed yellow;
+    border-bottom: 2px solid red;
 }
 
 #set-vis-container {
@@ -362,6 +374,20 @@ select {
     min-height: 400px;
 }
 
+.button-panel {
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 5px;
+}
+
+.button-panel-right {
+    float: right;
+}
+
+.button-panel-left {
+    float: left;
+}
+
 *
 {
     margin:0;padding:0;
@@ -375,8 +401,8 @@ html,body,.app-container
 {
     display:table;
     width: 100%;
-    margin-top: -70px; /* header + menu */
-    padding-top: 70px;
+    margin-top: -80px; /* header + menu */
+    padding-top: 80px;
 
     min-height: 100%;
     height: auto !important;
@@ -392,7 +418,7 @@ html,body,.app-container
 
 .app-menu
 {
-    height: 40px;
+    height: 50px;
 }
 
 .app-row
@@ -404,7 +430,10 @@ html,body,.app-container
 .app-column {
     display: table-cell;
     vertical-align: top;
-    padding: 5px;
+    padding-top: 20px;
+
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .app-column .app-column-25
