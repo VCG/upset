@@ -85,8 +85,6 @@ function plotSetOverview() {
     var setCellSize = 10;
     var textHeight = 60;
 
-   // console.log("here", d3.select('#vis').select('svg'))
-
     var overview = d3.select('#vis').select('svg').append("g").attr({
         class: "visOverview",
         "transform": "translate(" + 0 + "," + 0 + ")"
@@ -172,7 +170,6 @@ function plotSetOverview() {
            // .on('mouseover', mouseoverColumn)
            // .on('mouseout', mouseoutColumn)
             .on('click', setClicked)
-
 
 
     function setClicked(d) {

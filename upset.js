@@ -89,7 +89,7 @@ function plot( width, height ) {
     var setCellDistance = 12;
     var setCellSize = 10;
 
-    var w = width || 850;
+    var w = cellDistance * usedSets.length + majorPadding + leftOffset + subSetSizeWidth + expectedValueWidth + 50;
     //  var setMatrixHeight = setCellDistance + majorPadding;
     var subSetMatrixHeight;
     var h;
