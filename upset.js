@@ -93,7 +93,7 @@ function plot( width, height ) {
     //  var setMatrixHeight = setCellDistance + majorPadding;
     var subSetMatrixHeight;
     var h;
-    var svgHeight = height || 600;
+    var svgHeight = 10000; //height || 600;
 
     var rowScale;
 
@@ -124,12 +124,14 @@ function plot( width, height ) {
     });
 
     // define a clipping path for scrolling (@hen)
+    /*
     svg.append("clipPath").attr({
         id: "visClipping"
     }).append("rect").attr('width', w)
         .attr('height', svgHeight + 150)
         .attr("transform", "translate(" + -leftOffset + "," + 0 + ")")
     vis.attr("clip-path", "url(#visClipping)")
+    */
 
     // Rows container for vertical panning
     var gRows = vis.append('g')
@@ -140,11 +142,13 @@ function plot( width, height ) {
             {'x': 0, 'y': 0, 'dx': 0, 'dy': 0}
         ]);
 
+    /*
     var gScroll = vis.append('g')
         .attr('class', 'gScroll')
         .data([
             {'x': 0, 'y': 0}
         ]);
+    */
 
     var gQuery = svg.append('g')
         .attr('class', 'gQuery')
@@ -712,21 +716,24 @@ function plot( width, height ) {
             })
 
             // Update the scrollbar
-            scrollbar.setValue(d3.event.translate[0]);
+            //scrollbar.setValue(d3.event.translate[0]);
 
             //  console.log(params.rowsHeight, params.viewportHeight, subSets.length, setGroups.length, d3.transform(d3.select(this).attr("transform")).translate[1], trans)
 
         }
 
+        /*
         var pan = d3.behavior.zoom()
             //  .scaleExtent([0, 10])
             .on('zoom', panning);
 
         var prev_y = 0;
         d3.select('.gRows').call(pan);
+        */
 
         // -------------------- scrollbar -------------------
 
+        /*
         params = {
             x: w - 20 - leftOffset,
             y: 85,
@@ -737,6 +744,7 @@ function plot( width, height ) {
         }
 
         var scrollbar = new Scrollbar(params);        
+        */
 
     }
 
