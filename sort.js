@@ -52,8 +52,13 @@ var handleLogicGroups= function(subsets,dataRows,level){
 //    console.log(addGroups);
 
     if (addGroups.length>0){
-        addGroups.forEach(function(addGroup){
-            dataRows.unshift(addGroup);
+        var groupElements= unwrapGroups(addGroups)
+        console.log(groupElements
+        );
+
+        groupElements.reverse()
+        groupElements.forEach(function(addGroup){
+            dataRows.unshift(addGroup)
         })
     }
 
@@ -309,11 +314,7 @@ var updateState = function (parameter) {
 
     var forceUpdate = !previousState || UpSetState.forceUpdate || (UpSetState.hideEmpties != previousState.hideEmpties);
 
-    if(UpSetState.logicGroupChanged ){
-        handleLogicGroups(subSets,levelOneGroups,1);
-        UpSetState.logicGroupChanged = false;
-        console.log("datarows:",levelOneGroups[0]);
-    }
+
 
     // true if pure sorting - no grouping
     if ((UpSetState.sorting && !UpSetState.grouping) && (forceUpdate || (previousState && previousState.sorting !== UpSetState.sorting))) {
@@ -334,6 +335,11 @@ var updateState = function (parameter) {
         dataRows = unwrapGroups(levelOneGroups);
     }
 
+    if(UpSetState.logicGroupChanged ){
+        handleLogicGroups(subSets,dataRows,1);
+        UpSetState.logicGroupChanged = false;
+//        console.log("datarows:",levelOneGroups[0]);
+    }
 
 
 
