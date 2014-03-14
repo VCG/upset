@@ -729,6 +729,17 @@ function plot() {
                 rowTransition();
             });
 
+
+        d3.selectAll('#groupDeviation').on(
+            'click',
+            function (d) {
+                UpSetState.grouping = StateOpt.groupByDeviation;
+                UpSetState.levelTwoGrouping = undefined;
+                updateState();
+                rowTransition();
+            });
+
+
         d3.selectAll('#groupSetThenSize').on(
             'click',
             function (d) {
