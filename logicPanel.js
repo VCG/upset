@@ -116,11 +116,11 @@ function LogicPanel(params){
         // define first orClause as dontcare ANDs
         logicExpression.orClauses[0] = {};
         usedSets.forEach(function(d){
-//            logicExpression.orClauses[0].clauses.push({state:logicState.DONTCARE, subsetID: d.id});
-            logicExpression.orClauses[0][d.id]={state:Math.floor(Math.random()*3)};
+            logicExpression.orClauses[0][d.id]={state:logicState.DONTCARE};
+//            logicExpression.orClauses[0][d.id]={state:Math.floor(Math.random()*3)};
         })
 
-        console.log(logicExpression);
+
         actualOrClause=0;
         isNewPanel= true;
         renderActualPanel();
@@ -131,8 +131,8 @@ function LogicPanel(params){
         var id = logicExpression.orClauses.length;
         logicExpression.orClauses[id] = {};
         usedSets.forEach(function(d){
-//            logicExpression.orClauses[id][d.id]= {state:logicState.DONTCARE};
-            logicExpression.orClauses[id][d.id]={state:Math.floor(Math.random()*3)};
+            logicExpression.orClauses[id][d.id]= {state:logicState.DONTCARE};
+//            logicExpression.orClauses[id][d.id]={state:Math.floor(Math.random()*3)};
         })
         actualOrClause= id;
         renderActualPanel();
