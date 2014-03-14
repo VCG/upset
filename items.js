@@ -32,7 +32,10 @@ function plotSelectionTabs( element, selections, activeSelection ) {
                 .attr("class", "selection-tab")
                 .classed( { 'active': function(d,i) { return ( selections.isActive(d) ); } } )
                 .on("click", function(k) { // is attribute object
-                    selections.setActive( k );
+                    // check if selection has been deleted or not
+                    if ( selections.getSelectionFromUuid( k.id ) ) {
+                        selections.setActive( k );
+                    }
                 });
 
             tabs.append("i")
