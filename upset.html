@@ -8,6 +8,19 @@
     <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
     <link rel="stylesheet" type="text/css" href="upset.css">
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+	<script type="text/javascript" src="venn.js" /></script>
+	<script type="text/javascript" src="utilities.js" /></script>
+	<script type="text/javascript" src="dataLoading.js" /></script>
+	<script type="text/javascript" src="filter.js" /></script>
+	<script type="text/javascript" src="selection.js" /></script>
+	<script type="text/javascript" src="dataStructure.js" /></script>
+	<script type="text/javascript" src="setSelection.js" /></script>
+	<script type="text/javascript" src="sort.js" /></script>
+	<script type="text/javascript" src="highlight.js" /></script>
+	<script type="text/javascript" src="scrollbar.js" /></script>
+	<script type="text/javascript" src="items.js" /></script>
+	<script type="text/javascript" src="upset.js" /></script>    
 </head>
 <body>
 
@@ -17,8 +30,12 @@
 		<div id="title">UpSet</div>
 		<div id="dataset-selector"></div>
 	</div>
+</div>
 
-	<div id="header"></div>
+<div class="app-menu">
+	<div class="menu-container">
+		<div id="header"></div>
+	</div>
 </div>
 
 <div class="app-container">
@@ -26,22 +43,22 @@
         <!--<div class="app-column app-column-25">-->
 			<!--<div id="setSelect"></div>-->
 		<!--</div>-->
-        <div class="app-column app-column-50">
-        	<div id="set-vis-container" class="fixed-y-container">
+        <div class="app-column app-column-66">
+        	<div id="set-vis-container" data-height-ratio="1" class="fixed-y-container">
 				<div id="vis"></div>
 			</div>
         </div>
-        <div class="app-column app-column-25">
-			<div id="venn-vis"></div>
+        <div class="app-column app-column-33">
+			<!-- <div id="venn-vis"></div> -->
 
-			<div id="item-vis-container" class="padded-container fixed-y-container">
+			<div id="item-vis-container" data-height-ratio=".30" class="padded-container fixed-y-container">
 				<div id="item-vis"></div>
 			</div>
 
-			<div class="padded-container">			
+			<div id="selection-vis-container" data-height-ratio=".10" class="fixed-y-container padded-container">
 				<div id="selection-tabs"></div>
 			</div>
-			<div id="item-table-container" class="padded-container fixed-y-container">
+			<div id="item-table-container" data-height-ratio=".60" class="padded-container fixed-y-container">
 				<div id="item-table"></div>        	
 			</div>
         </div>
@@ -49,17 +66,33 @@
 </div>
 
 
-<script type="text/javascript" src="venn.js" /></script>
-<script type="text/javascript" src="utilities.js" /></script>
-<script type="text/javascript" src="dataLoading.js" /></script>
-<script type="text/javascript" src="filter.js" /></script>
-<script type="text/javascript" src="selection.js" /></script>
-<script type="text/javascript" src="dataStructure.js" /></script>
-<script type="text/javascript" src="setSelection.js" /></script>
-<script type="text/javascript" src="sort.js" /></script>
-<script type="text/javascript" src="highlight.js" /></script>
-<script type="text/javascript" src="scrollbar.js" /></script>
-<script type="text/javascript" src="items.js" /></script>
-<script type="text/javascript" src="upset.js" /></script>
+
+<script>
+		function sizing() {
+			var fixedYContainers = $('.fixed-y-container');
+		    fixedYContainers.map( function(index) {
+		    	console.log( $(fixedYContainers[index]).attr("id") );
+
+		    	console.log( parseInt( $(fixedYContainers[index]).css("min-height") ) + " -- " + parseFloat( $(fixedYContainers[index]).attr("data-height-ratio") ) );
+
+
+		    	//$(fixedYContainers[index]
+		    	var targetHeight = ( $(window).height() - $(this).offset().top - 70 ) * parseFloat( $(fixedYContainers[index]).attr("data-height-ratio") );
+		    	
+		    	var minHeight = parseInt( $('.fixed-y-container').css( "min-height" ) );
+		    	var maxHeight = parseInt( $('.fixed-y-container').css( "max-height" ) ) || targetHeight;
+
+		    	var newHeight = Math.min( Math.max( targetHeight, minHeight ), maxHeight );
+		    	$(this).css('height', newHeight + 'px');  
+	    	});
+		}
+
+		$(window).resize(sizing);
+
+		$(document).ready( function(){
+			sizing();
+		});
+</script>
+
 </body>
 </html>

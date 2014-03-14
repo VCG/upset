@@ -296,7 +296,19 @@ select {
     border-bottom: 2px solid darkgray;
 
     display: block;
-    height: 20px;
+    height: 30px;
+}
+
+.menu-container {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background: lightblue;
+    border-bottom: 2px solid darkblue;
+
+    display: block;
+    height: 40px;
 }
 
 .padded-container {
@@ -308,6 +320,7 @@ select {
 
 .fixed-y-container {
     overflow-y: scroll;
+    border: 2px solid hotpink;
 }
 
 .fixed-y-container:hover {
@@ -315,16 +328,22 @@ select {
     border: 2px dashed yellow;
 }
 
-#main-vis-container {
-    height: 400px;
+#set-vis-container {
+    min-height: 600px;
 }
 
 #item-vis-container {
-    height: 200px;
+    min-height: 200px;
+    max-height: 400px;
+}
+
+#selection-vis-container {
+    min-height: 100px;
+    max-height: 100px;
 }
 
 #item-table-container {
-    height: 500px;
+    min-height: 400px;
 }
 
 *
@@ -340,8 +359,8 @@ html,body,.app-container
 {
     display:table;
     width: 100%;
-    margin-top: -75px;
-    padding-top: 75px;
+    margin-top: -70px; /* header + menu */
+    padding-top: 70px;
 
     min-height: 100%;
     height: auto !important;
@@ -352,7 +371,12 @@ html,body,.app-container
 }
 .app-header
 {
-    height: 75px;
+    height: 30px;
+}
+
+.app-menu
+{
+    height: 40px;
 }
 
 .app-row
