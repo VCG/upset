@@ -27,16 +27,15 @@ function loadDataSetDescriptions(dataSetList) {
     for (var i = 0; i < dataSetList.length; ++i) {
         console.log("Loading " + dataSetList[i])
 
-        var deferred = $.ajax({ url: dataSetList[i], dataType: 'json', async: false });
+        var deferred = $.ajax({ url: dataSetList[i], dataType: 'json', async: false })
+            .success(function(response) {
+                var description = response; //deferred.responseJSON;
 
-        if ( deferred.statusText === "success" ) {
-            var description = deferred.responseJSON;
+                // preprend data file path (based on path to description in data set list)
+                description.file = dataSetList[i].substring(0, dataSetList[i].lastIndexOf('/')) + '/' + description.file;
 
-            // preprend data file path (based on path to description in data set list)
-            description.file = dataSetList[i].substring(0, dataSetList[i].lastIndexOf('/')) + '/' + description.file;
-
-            descriptions.push(description);
-        }
+                descriptions.push(description);                
+            });
     }
 
     load(descriptions);
