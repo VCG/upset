@@ -758,7 +758,7 @@ function plot( width, height ) {
     }
 
     function setUpSortSelections() {
-        d3.selectAll('#sortIntersect').on(
+        d3.selectAll('#sortNrSetsInIntersection').on(
             'click',
             function (d) {
                 UpSetState.sorting = StateOpt.sortByCombinationSize;
@@ -768,16 +768,16 @@ function plot( width, height ) {
                 rowTransition();
             });
 
-        d3.selectAll('#groupSetSize').on(
+        d3.selectAll('#groupByIntersectionSize').on(
             'click',
             function (d) {
-                UpSetState.grouping = StateOpt.groupBySetSize;
+                UpSetState.grouping = StateOpt.groupByIntersectionSize;
                 UpSetState.levelTwoGrouping = undefined;
                 updateState();
                 rowTransition();
             });
 
-        d3.selectAll('#groupSet').on(
+        d3.selectAll('#groupBySet').on(
             'click',
             function (d) {
                 UpSetState.grouping = StateOpt.groupBySet;
@@ -787,10 +787,10 @@ function plot( width, height ) {
             });
 
 
-        d3.selectAll('#groupDeviation').on(
+        d3.selectAll('#groupByRelevanceMeasure').on(
             'click',
             function (d) {
-                UpSetState.grouping = StateOpt.groupByDeviation;
+                UpSetState.grouping = StateOpt.groupByRelevanceMeasure;
                 UpSetState.levelTwoGrouping = undefined;
                 updateState();
                 rowTransition();
@@ -801,12 +801,12 @@ function plot( width, height ) {
             'click',
             function (d) {
                 UpSetState.grouping = StateOpt.groupBySet;
-                UpSetState.levelTwoGrouping = StateOpt.groupBySetSize;
+                UpSetState.levelTwoGrouping = StateOpt.groupByIntersectionSize;
                 updateState();
                 rowTransition();
             });
 
-        d3.selectAll('#collapseGroups').on(
+        d3.selectAll('#collapseAll').on(
             'click',
             function (d) {
                 toggleCollapseAll();
@@ -826,7 +826,7 @@ function plot( width, height ) {
                 rowTransition();
             });
 
-        d3.selectAll('.subsetSizeLabel').on(
+        d3.selectAll('#sortIntersectionSize').on(
             'click',
             function (d) {
                 UpSetState.sorting = StateOpt.sortBySubSetSize;

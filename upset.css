@@ -106,6 +106,10 @@ h1 {
 .setLabel:hover {
 }
 
+.configTable {
+    float: left;
+}
+
 .groupLabel {
     /*dominant-baseline: central;*/
     font: sans-serif;
@@ -335,7 +339,7 @@ select {
     border-bottom: 2px solid #999;
 
     display: block;
-    height: 40px;
+    height: 100px;
 }
 
 .padded-container {

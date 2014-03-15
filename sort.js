@@ -65,7 +65,7 @@ var handleLogicGroups= function(subsets,dataRows,level){
 
 }
 
-var groupByDeviation = function (subSets, level) {
+var groupByRelevanceMeasure = function (subSets, level) {
     var newGroups = [];
     newGroups.push(new Group('GROUP_POS_DEV', 'Positive Expected Value', level));
     newGroups.push(new Group('GROUP_POS_NEG', 'Negative Expected Value', level));
@@ -86,7 +86,7 @@ var groupByDeviation = function (subSets, level) {
     return newGroups;
 }
 
-var groupBySetSize = function (subSets, level) {
+var groupByIntersectionSize = function (subSets, level) {
     var newGroups = [];
     newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
     var maxSetSize = Math.min(usedSets.length, UpSetState.maxCardinality);
@@ -261,9 +261,9 @@ var unwrapGroups = function (groupList) {
 };
 
 var StateMap = {
-    groupBySetSize: groupBySetSize,
+    groupByIntersectionSize: groupByIntersectionSize,
     groupBySet: groupBySet,
-    groupByDeviation: groupByDeviation,
+    groupByRelevanceMeasure: groupByRelevanceMeasure,
 
     sortByCombinationSize: sortByCombinationSize,
     sortBySubSetSize: sortBySubSetSize,
@@ -273,9 +273,9 @@ var StateMap = {
 };
 
 var StateOpt = {
-    groupBySetSize: 'groupBySetSize',
+    groupByIntersectionSize: 'groupByIntersectionSize',
     groupBySet: 'groupBySet',
-    groupByDeviation: 'groupByDeviation',
+    groupByRelevanceMeasure: 'groupByRelevanceMeasure',
 
     sortByCombinationSize: 'sortByCombinationSize',
     sortBySubSetSize: 'sortBySubSetSize',
@@ -289,16 +289,16 @@ var UpSetState = {
     unCollapseAll: false,
     collapseChanged: false,
     grouping: StateOpt.groupBySet,
-    levelTwoGrouping: StateOpt.groupBySetSize,
+    levelTwoGrouping: StateOpt.groupByIntersectionSize,
     sorting: undefined,
 
     /** hide empty subsets, groups and aggregates */
     hideEmpties: true,
 
     /** Sets the upper threshold of cardinality of subsets */
-    maxCardinality: undefined,
+    maxCardinality: 12,
     /** Sets the lower threshold of cardinality of subsets */
-    minCardinality: undefined,
+    minCardinality: 0,
 
     forceUpdate: false,
 

@@ -9,21 +9,7 @@
     <link rel="stylesheet" type="text/css" href="upset.css">
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
-	<script type="text/javascript" src="venn.js" /></script>
-	<script type="text/javascript" src="utilities.js" /></script>
-	<script type="text/javascript" src="dataLoading.js" /></script>
-	<script type="text/javascript" src="filter.js" /></script>
-	<script type="text/javascript" src="selection.js" /></script>
-	<script type="text/javascript" src="dataStructure.js" /></script>
-	<script type="text/javascript" src="ui.js" /></script>	
-	<script type="text/javascript" src="setSelection.js" /></script>
-	<script type="text/javascript" src="sort.js" /></script>
-	<script type="text/javascript" src="highlight.js" /></script>
-	<script type="text/javascript" src="scrollbar.js" /></script>
-	<script type="text/javascript" src="items.js" /></script>
-	<script type="text/javascript" src="setGrouping.js"></script>
-	<script type="text/javascript" src="logicPanel.js"></script>
-	<script type="text/javascript" src="upset.js" /></script>    
+
 </head>
 <body>
 
@@ -43,9 +29,56 @@
 
 <div class="ui-menu">
 	<div class="menu-container">
-		<div id="header"></div>
+		<div id="header">
+
+        <div id="groupConfig" class="configTable">
+        <table>
+        <tr><th colspan='2'>First, group by<th></tr>
+        <tr><td><input type='radio' id='groupBySet' name="groupL1"></td><td>Sets</td></tr>
+        <tr><td><input type='radio' id='groupByIntersectionSize' name="groupL1"></td><td>Intersection Size</td></tr>
+        <tr><td><input type='radio' id='groupByRelevanceMeasure' name="groupL1"></td><td>Relevance Measure</td></tr>
+        <tr><td><input type='radio' id='noGrouping' name="groupL1"></td><td>Don't Group</td></tr>
+</table>
+        </div>
+
+<div id="groupL2Config" class="configTable">
+        <table>
+        <tr><th colspan='2'>Then, group by<th></tr>
+        <tr><td><input type='radio' id='groupBySetL2' name="groupL2"></td><td>Sets</td></tr>
+        <tr><td><input type='radio' id='groupByIntersectionSizeL2' name="groupL2"></td><td>Intersection Size</td></tr>
+        <tr><td><input type='radio' id='groupByRelevanceMeasureL2' name="groupL2"></td><td>Relevance Measure</td></tr>
+        <tr><td><input type='radio' id='noGroupingL2' name="groupL2"></td><td>Don't Group</td></tr>
+</table>
+</div>
+
+<div id="sortConfig" class="configTable">
+        <table>
+        <tr><th colspan='2'>Sort by<th></tr>
+        <tr><td><input type='radio' id='sortIntersectionSize' name='sort'></td><td>Intersection Size</td></tr>
+        <tr><td><input type='radio' id='sortNrSetsInIntersection' name='sort'></td><td># Sets in Intersection</td></tr>
+        </table>
+            </div>
+
+<div id='options' class='configTable'>
+        <table>
+        <tr><th colspan = '2'>Options</th></tr>
+        <tr><td><input type='checkbox' id='collapseAll'></td><td>Collapse All Groups</td></tr>
+        <tr><td><input type='checkbox' id='hideEmpties' checked='true'></td><td>Hide Empty Intersections</td></tr>
+</table>
+</div>
+
+<div id='options' class='configTable'>
+        <table>
+        <tr><th colspan = '2'>Limit to</th></tr>
+        <tr><td>At least <input id: 'minCardinality' type='number' min='0' max='12' value = '0'> intersections.<td></tr>
+        <tr><td>At most <input id: 'maxCardinality' type='number' min='0' max='12'> intersections.<td></tr>
+</table>
+</div>
+		</div>
 	</div>
 </div>
+
+
 
 <div class="ui-container">
     <div class="ui-row">
@@ -57,7 +90,7 @@
 				<div id="vis"></div>
 			</div>
         </div>
-       
+
         <div class="ui-column ui-column-33">
 			<!-- <div id="venn-vis"></div> -->
 
@@ -69,18 +102,32 @@
 				<div id="selection-tabs"></div>
 			</div>
 			<div id="item-table-container" data-height-ratio="1" class="fixed-y-container">
-				<div id="item-table"></div>        	
+				<div id="item-table"></div>
 			</div>
         </div>
     </div>
 </div>
 
 
-
+<script type="text/javascript" src="venn.js" /></script>
+<script type="text/javascript" src="utilities.js" /></script>
+<script type="text/javascript" src="dataLoading.js" /></script>
+<script type="text/javascript" src="filter.js" /></script>
+<script type="text/javascript" src="selection.js" /></script>
+<script type="text/javascript" src="dataStructure.js" /></script>
+<script type="text/javascript" src="ui.js" /></script>
+<script type="text/javascript" src="setSelection.js" /></script>
+<script type="text/javascript" src="sort.js" /></script>
+<script type="text/javascript" src="highlight.js" /></script>
+<script type="text/javascript" src="scrollbar.js" /></script>
+<script type="text/javascript" src="items.js" /></script>
+<script type="text/javascript" src="setGrouping.js"></script>
+<script type="text/javascript" src="logicPanel.js"></script>
+<script type="text/javascript" src="upset.js" /></script>
 <script>
 		$(document).ready( function(){
 			ui = new Ui();
-			
+
 			$(window).resize(ui.resize);
 
 			$(EventManager).bind("ui-resize", function (event, data) {

@@ -45,66 +45,21 @@ function loadDataSetDescriptions(dataSetList) {
         }
     );
 }
+var setUpConfiguration = function () {
 
-function load(descriptions) {
 
-    dataSetDescriptions = descriptions;
-
-    // Variables from query string
-    queryParameters = {};
-    var queryString = location.search.substring(1),
-        re = /([^&=]+)=([^&]*)/g, m;
-
-    // Creates a map with the query string parameters
-    while (m = re.exec(queryString)) {
-        queryParameters[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-    }
-
-    queryParameters['dataset'] = parseInt(queryParameters['dataset']) || 0;
-    queryParameters['duration'] = queryParameters['duration'] || 1000;
-    queryParameters['orderBy'] = queryParameters['orderBy'] || "subsetSize"; // deviation, intersection, specific set
-    queryParameters['groupBy'] = queryParameters['groupBy'] || "set"; // setSize, 
-    queryParameters['selection'] = queryParameters['selection'] || "";
-    // Missing item space query..
-
-    var header = d3.select('#header');
-
-    header.append('div').html('&darr; # intersections.').attr({id: 'sortIntersect',
-        class: 'myButton'});
-
-    header.append('div').html('Group by set size.').attr({id: 'groupSetSize',
-        class: 'myButton'});
-
-    header.append('div').html('Group by Sets.').attr({id: 'groupSet',
-        class: 'myButton'});
-
-    header.append('div').html('Group by Deviation.').attr({id: 'groupDeviation',
-        class: 'myButton'});
-
-    header.append('div').html('Group by Sets then Set Size.').attr({id: 'groupSetThenSize',
-        class: 'myButton'});
-
-    header.append('div').html('Toggle Collapse of All Groups.').attr({id: 'collapseGroups',
-        class: 'myButton'});
-
-    header.append('span').html('Min Cardinality').append('input').attr({id: 'minCardinality', type: 'number', min: '0', max: '12'});
-
-    header.append('span').html('Max Cardinality').append('input').attr({id: 'maxCardinality', type: 'number', min: '0', max: '12'});
-
-    var maxCardSpinner = document.getElementById('maxCardinality');
-    var minCardSpinner = document.getElementById('minCardinality');
-    var updateCardinality = function (e) {
-
-        UpSetState.maxCardinality = maxCardSpinner.value;
-        UpSetState.minCardinality = minCardSpinner.value;
-        UpSetState.forceUpdate = true;
-        run();
-    };
-
-    maxCardSpinner.addEventListener('input', updateCardinality);
-    minCardSpinner.addEventListener('input', updateCardinality);
-
-    header.append('span').html('Hide empty subsets').append('input').attr({id: 'hideEmpties', type: 'checkbox', checked: UpSetState.hideEmpties})
+//    var maxCardSpinner = document.getElementById('maxCardinality');
+//    var minCardSpinner = document.getElementById('minCardinality');
+//    var updateCardinality = function (e) {
+//
+//        UpSetState.maxCardinality = maxCardSpinner.value;
+//        UpSetState.minCardinality = minCardSpinner.value;
+//        UpSetState.forceUpdate = true;
+//        run();
+//    };
+//
+//    maxCardSpinner.addEventListener('input', updateCardinality);
+//    minCardSpinner.addEventListener('input', updateCardinality);
 
     var hideEmptiesCheck = document.getElementById('hideEmpties');
 
@@ -131,6 +86,30 @@ function load(descriptions) {
         .property('selected', function (d, i) {
             return (i === queryParameters['dataset'])
         });
+}
+
+function load(descriptions) {
+
+    dataSetDescriptions = descriptions;
+
+    // Variables from query string
+    queryParameters = {};
+    var queryString = location.search.substring(1),
+        re = /([^&=]+)=([^&]*)/g, m;
+
+    // Creates a map with the query string parameters
+    while (m = re.exec(queryString)) {
+        queryParameters[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+    }
+
+    queryParameters['dataset'] = parseInt(queryParameters['dataset']) || 0;
+    queryParameters['duration'] = queryParameters['duration'] || 1000;
+    queryParameters['orderBy'] = queryParameters['orderBy'] || "subsetSize"; // deviation, intersection, specific set
+    queryParameters['groupBy'] = queryParameters['groupBy'] || "set"; // setSize, 
+    queryParameters['selection'] = queryParameters['selection'] || "";
+    // Missing item space query..
+
+    setUpConfiguration();
 
     loadDataSet(queryParameters['dataset']);
 }
@@ -401,12 +380,12 @@ function setUpSubSets() {
 
     combinations = Math.pow(2, usedSets.length) - 1;
 
-    if (UpSetState.maxCardinality === undefined || UpSetState.minCardinality === undefined) {
-        UpSetState.maxCardinality = attributes[attributes.length - 2].max;
-        UpSetState.minCardinality = 0;
-        document.getElementById('maxCardinality').value = UpSetState.maxCardinality;
-        document.getElementById('minCardinality').value = UpSetState.minCardinality;
-    }
+//    if (UpSetState.maxCardinality === undefined || UpSetState.minCardinality === undefined) {
+//        UpSetState.maxCardinality = attributes[attributes.length - 2].max;
+//        UpSetState.minCardinality = 0;
+//        document.getElementById('maxCardinality').value = UpSetState.maxCardinality;
+//        document.getElementById('minCardinality').value = UpSetState.minCardinality;
+//    }
 
     subSets.length = 0;
     // the max value for the cut-off
