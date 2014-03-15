@@ -4,15 +4,18 @@
 
 function LogicPanel(params){
 
-    var width = params.width;
-    var vis = params.visElement;
-    var panel = params.panelElement;
-    var cellSize = params.cellSize;
-    var usedSets = params.usedSets;
-    var grays = params.grays;
-    var belowVis = params.belowVis;
-    var buttonX = params.buttonX;
-    var buttonY = params.buttonY;
+    var width = params.width;          // width for the whole row
+    var vis = params.visElement;       // the node for whole vis
+    var panel = params.panelElement;    // panel element
+    var cellSize = params.cellSize;     // cell size for a particular subset indicator (circle)
+    var usedSets = params.usedSets;     // all used Sets
+    var grays = params.grays;           // range of grays used for dot labeling
+    var belowVis = params.belowVis;     // the vis node below the panel (to be translated)
+    var buttonX = params.buttonX;       // button X coordinate
+    var buttonY = params.buttonY;       // button Y coordinate
+
+    var stateObject= params.stateObject
+    var callAfterSubmit = params.callAfterSubmit;
 
 
     // to be bound !!
@@ -31,16 +34,18 @@ function LogicPanel(params){
     var isNewPanel = true;
     var belowVisRestoreTranslate = "translate(0,0)"
 
-    var logicExpression = {orClauses:[]}
+    var actualGroupLabel = "Logic Group"
+
+    var logicExpression = {groupName:"", orClauses:[]}
     var actualOrClause = 1;
     var logicState ={
         NOT:0,
         DONTCARE:2,
         MUST:1
-
-
     }
 
+
+    // the color for logic related stuff (highlighting & button)
     const logicColor = "#a1d99b";
 
     var addLogicButton = {}
@@ -120,6 +125,7 @@ function LogicPanel(params){
 //            logicExpression.orClauses[0][d.id]={state:Math.floor(Math.random()*3)};
         })
 
+        logicExpression["id"] = "LogicGroup_"+(new Date().getTime())
 
         actualOrClause=0;
         isNewPanel= true;
@@ -143,12 +149,15 @@ function LogicPanel(params){
         if (index != actualOrClause){
             actualOrClause= index;
             renderActualPanel();
+        }else{
+            actualOrClause = -1;
+            renderActualPanel();
         }
     }
 
     var removeRow = function(index){
         logicExpression.orClauses.splice(index,1)
-        actualOrClause=0;
+        actualOrClause=actualOrClause-1;
         if (logicExpression.orClauses.length==0) destroyPanel();
         else renderActualPanel();
     }
@@ -160,19 +169,24 @@ function LogicPanel(params){
         console.log("here");
          panel.selectAll(".logicPanelRow").filter(function(d,i){return (i==actualOrClause)})
              .each(function(d){
-                 renderSelectorTable(this, true, false);
+                 renderSelectorTable(this, true, false, actualOrClause);
                 })
 
     }
 
-    function renderSelectorTable(node, isExpanded, animated) {
+    function renderSelectorTable(node, isExpanded, animated, rowIndex) {
 
 //        logicPanelSelectionTable
 //        logicPanelSelectionHeader
 //
 
         var nodeSelector = d3.select(node);
-        var headerCircles = nodeSelector.select(".logicPanelSelectionHeader")
+        console.log(nodeSelector);
+        var panelTableHeader = nodeSelector.select(".logicPanelSelectionHeader");
+        panelTableHeader.on({
+            click:function(d) {selectRow(rowIndex);}
+        })
+        var headerCircles = panelTableHeader
             .selectAll(".logicPanelHeaderCircle")
             .data(function(d){return Object.keys(d).map(function(dd){
                         return {subsetID:dd, state: d[dd].state}
@@ -304,14 +318,49 @@ function LogicPanel(params){
     }
 
     function submitExpression() {
-        console.log(logicExpression);
+        logicExpression.groupName = actualGroupLabel;
+
+        stateObject.logicGroups.push(logicExpression);
+        stateObject.logicGroupChanged=true;
+        if (callAfterSubmit!=null)
+            callAfterSubmit.forEach(function(d){
+                d();
+            })
+
         destroyPanel();
+    }
+
+    function changeGroupLabel() {
+        console.log("enter");
+        var label = prompt("Group label:",actualGroupLabel);
+        if (label !=null){
+            actualGroupLabel = label
+            panel.select("#fakeGroup").select("text").text(actualGroupLabel);
+        }
+
     }
 
     var renderActualPanel= function(){
 
+        if (isNewPanel){
+            var fakeGroup = panel.append("g").attr({id:"fakeGroup"})
+            fakeGroup.append("rect").attr({
+                x:0,
+                y:0,
+                width:width,
+                height:cellSize,
+                class:"groupBackGround"
+            })
+            fakeGroup.append("text").attr({
+                x:0,
+                y:cellSize-3,
+                class:"groupLabel"
+            }).text(actualGroupLabel)
+        }
+
+
         // calculate y positions
-        var yCummulate =0;
+        var yCummulate =cellSize;
         var yOffsets = logicExpression.orClauses.map(function(d,i){
                 var returnValue = yCummulate;
                 yCummulate+=(i==actualOrClause)?uncollapseHeight:collapseHeight;
@@ -329,7 +378,7 @@ function LogicPanel(params){
         }).style("opacity",0.000001)
 
         // add row buttons
-        logicPanelRowEnter.append("text").text("select")
+        logicPanelRowEnter.append("text").text("V")
             .attr("class","addButton logicPanelSelect")
             .style("text-anchor","start")
             .on("click", function(d,i){selectRow(i)});
@@ -341,7 +390,7 @@ function LogicPanel(params){
             class:"logicPanelRect",
             width:width,
             height:function(d,i){
-                return (i==actualOrClause)?uncollapseHeight:collapseHeight
+                return uncollapseHeight
             }
             }).style({
                 fill:"none",
@@ -356,22 +405,30 @@ function LogicPanel(params){
         logicPanelRows.transition().attr({
             "transform":function(d,i){
                 return "translate("+0+","+(yOffsets[i])+")"
+            },
+            height:function(d,i){
+                return (i==actualOrClause)?uncollapseHeight:collapseHeight
             }
         }).style("opacity",1);
 
         logicPanelRows.select(".logicPanelSelect").transition().attr({
             x:10,
             y: function(d,i){
-                if (actualOrClause==i) return uncollapseHeight/2;
-                else return collapseHeight/2;
+//                if (actualOrClause==i) return uncollapseHeight/2;
+//                else
+                    return collapseHeight/2;
             }
-        })
+        }).text(function(d,i){
+                if (actualOrClause==i) return "^";
+                else return "";
+            })
 
         logicPanelRows.select(".logicPanelRemove").transition().attr({
             x:60,
             y: function(d,i){
-                if (actualOrClause==i) return uncollapseHeight/2;
-                else return collapseHeight/2;
+//                if (actualOrClause==i) return uncollapseHeight/2;
+//                else
+                    return collapseHeight/2;
             }
         })
 
@@ -382,11 +439,11 @@ function LogicPanel(params){
 
 
         logicPanelRows.each(function(d,i){
-            renderSelectorTable(this, i==actualOrClause, true);
+            renderSelectorTable(this, i==actualOrClause, true, i);
         })
 
 
-        var endOfPanel = (logicExpression.orClauses.length-1)*collapseHeight+uncollapseHeight+10
+        var endOfPanel = yCummulate+10
         if (isNewPanel){
             var buttonGroup =  panel.append("g").attr({
                 id:"logicPanelButtons"
@@ -394,10 +451,10 @@ function LogicPanel(params){
                     "transform":"translate("+0+","+endOfPanel+")"
                 })
 
-            buttonGroup.append("text").text("add").attr({
+            buttonGroup.append("text").text("add OR").attr({
                 id:"logicPanelAddText",
                 class:"addButton",
-                x:20
+                x:25
 //                "transform":"translate("+0+","+endOfPanel+")"
             }).style({
 //                    "text-anchor":"start"
@@ -406,10 +463,10 @@ function LogicPanel(params){
                     "click":function(){addOrClause();}
                 })
 
-            buttonGroup.append("text").text("submit").attr({
+            buttonGroup.append("text").text("create").attr({
                 id:"logicPanelSubmitText",
                 class:"addButton",
-                x:100
+                x:230
 //                "transform":"translate("+35+","+endOfPanel+")"
             }).style({
 //                    "text-anchor":"start"
@@ -421,7 +478,7 @@ function LogicPanel(params){
             buttonGroup.append("text").text("cancel").attr({
                 id:"logicPanelCancelText",
                 class:"addButton",
-                x:150
+                x:280
 //                "transform":"translate("+70+","+endOfPanel+")"
             }).style({
 //                    "text-anchor":"start"
@@ -430,15 +487,28 @@ function LogicPanel(params){
                     "click":function(){destroyPanel();}
                 })
 
+            buttonGroup.append("text").text("change group label").attr({
+                id:"logicPanelCancelText",
+                class:"addButton",
+                x:120
+//                "transform":"translate("+70+","+endOfPanel+")"
+            }).style({
+//                    "text-anchor":"start"
+                })
+                .on({
+                    "click":function(){changeGroupLabel();}
+                })
 
-            isNewPanel=false;
+
+
+
         }else{
             panel.select("#logicPanelButtons").transition().attr({
                 "transform":"translate("+0+","+endOfPanel+")"
             })
         }
 
-
+        isNewPanel=false;
 
 
 
@@ -469,6 +539,9 @@ function LogicPanel(params){
     var destroyPanel = function(){
         panel.selectAll(".logicPanelRow").remove();
         panel.select("#logicPanelButtons").remove();
+        panel.select("#fakeGroup").remove();
+
+
         belowVis.transition().attr({
             "transform":belowVisRestoreTranslate
         })

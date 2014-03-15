@@ -12,9 +12,9 @@ $(EventManager).bind("item-selection-updated", function (event, data) {
 
     data.selection.mapToSubsets(subSets);
     plot();
-
     plotSelectionTabs("#selection-tabs", selections, data.selection);
     plotSelectedItems("#item-table", data.selection);
+    plotSetOverview();
 });
 
 $(EventManager).bind("item-selection-removed", function (event, data) {
@@ -25,6 +25,7 @@ $(EventManager).bind("item-selection-removed", function (event, data) {
     plot();
     plotSelectionTabs("#selection-tabs", selections, selections.getActive());
     plotSelectedItems("#item-table", selections.getActive());
+    plotSetOverview();
 });
 
 $(EventManager).bind("item-selection-activated", function (event, data) {
@@ -40,6 +41,7 @@ $(EventManager).bind("item-selection-activated", function (event, data) {
         plot();
         plotSelectionTabs("#selection-tabs", selections, data.selection);
         plotSelectedItems("#item-table", data.selection);
+        plotSetOverview();
     }
 });
 
@@ -69,7 +71,7 @@ function plot( width, height ) {
     var setSizeWidth = 700;
     var subSetSizeWidth = 300;
 
-    var leftOffset = 90;
+    var leftOffset = 90, topOffset = 120;
 
     /** The width from the start of the set vis to the right edge */
 
@@ -89,7 +91,7 @@ function plot( width, height ) {
     var setCellDistance = 12;
     var setCellSize = 10;
 
-    var w = width || 850;
+    var w = cellDistance * usedSets.length + majorPadding + leftOffset + subSetSizeWidth + expectedValueWidth + 50;
     //  var setMatrixHeight = setCellDistance + majorPadding;
     var subSetMatrixHeight;
     var h;
@@ -120,7 +122,7 @@ function plot( width, height ) {
 
     var vis = svg.append("g").attr({
         class: "visContainer",
-        "transform": "translate(" + leftOffset + "," + 120 + ")"
+        "transform": "translate(" + leftOffset + "," + topOffset + ")"
     });
 
     // define a clipping path for scrolling (@hen)
@@ -157,9 +159,7 @@ function plot( width, height ) {
             {'x': 0, 'y': 0}
         ]);
 
-
-
-
+/*
     // Extra layer for vertical panning
     vis.append('rect').attr({
         x: 0,
@@ -168,7 +168,7 @@ function plot( width, height ) {
         height: (textHeight - 5),
         fill: 'white'
     });
-
+*/
 
     //####################### LogicPanel ##################################################
 
@@ -186,8 +186,9 @@ function plot( width, height ) {
             grays: grays,
             belowVis:gRows,
             buttonX:-leftOffset,
-            buttonY:textHeight-20
-
+            buttonY:textHeight-20,
+            stateObject: UpSetState,
+            callAfterSubmit:[updateState, rowTransition]
 
         }
 
@@ -197,7 +198,7 @@ function plot( width, height ) {
 
     //####################### SETS ##################################################
 
-    var setRowScale = d3.scale.ordinal().rangeRoundBands([ 0, usedSets.length * (cellSize + 2)], 0);
+    var setRowScale = d3.scale.ordinal().rangeRoundBands([0, usedSets.length * (cellSize + 2)], 0);
 
     var subSetSizeHeight = textHeight - majorPadding;
 
@@ -242,9 +243,9 @@ function plot( width, height ) {
                 return d.elementName.substring(0, truncateAfter);
             },
             transform: function (d, i) {
-                return 'skewX(45) translate(' + (cellDistance * (i ) + cellDistance / 2 - leftOffset) + ',' + (textHeight - textSpacing) + ')rotate(270)';
-            }
-
+                return 'translate(' + (cellDistance * i + 5) + ',' + (textHeight - textSpacing - 2) + ')rotate(45)';
+            },
+            'text-anchor': 'end'
         })
 
         .on('mouseover', mouseoverColumn)
@@ -255,7 +256,7 @@ function plot( width, height ) {
     vis.append('rect')
         .attr({
             class: 'labelBackground subsetSizeLabel',
-            transform: 'translate(' + xStartSetSizes + ',' + ( labelTopPadding) + ')',
+            transform: 'translate(' + xStartSetSizes + ',' + (labelTopPadding) + ')',
             height: '20',
             width: subSetSizeWidth
 
@@ -276,7 +277,7 @@ function plot( width, height ) {
 
     vis.append('g').attr()
         .attr({class: 'axis',
-            transform: 'translate(' + xStartSetSizes + ',' + ( textHeight - 5) + ')'
+            transform: 'translate(' + xStartSetSizes + ',' + (textHeight - 5) + ')'
         })
         .call(subSetSizeAxis);
 
@@ -337,7 +338,6 @@ function plot( width, height ) {
     function plotSubSets() {
 
         // ------------------- the rows -----------------------
-
         var subSets = gRows.selectAll('.row')
             .data(renderRows, function (d, i) {
                 return d.id;
@@ -346,43 +346,35 @@ function plot( width, height ) {
         var grp = subSets
             .enter()
             .append('g')
-            .attr({
-                class: function (d) {
+            .attr({transform: function (d) {
+                if (d.data.type === ROW_TYPE.SUBSET)
+                    return 'translate(0, ' + rowScale(d.id) + ')';
+                else
+                    return 'translate(0, '+textHeight+')';
+                }, class: function (d) {
                     return 'row ' + d.data.type;
                 }
-            });
+            }).style("opacity", function (d) {
+              if (d.data.type === ROW_TYPE.SUBSET)
+                  return gRows.selectAll('.row')[0].length ? 1 : 0;
+              else
+                  return gRows.selectAll('.row')[0].length ? 0 : 1;
+              })
+
 
         subSets.exit().remove();
-        /*
-         .transition().duration(function (d, i) {
-         return queryParameters['duration'];
-         }
-         ).attr({transform: function (d) {
-         return 'translate(0, ' + rowScale(d.id) + ')';
 
-         }, class: function (d) {
-         if(d.data.type === ROW_TYPE.SUBSET) {
-         return 'translate(0, ' + rowScale("SetSizeG_"+d.data.nrCombinedSets+"_1") + ')';
-         alert("test")
-         }
-         else
-         return 'row ' + d.data.type;
-         }})
-         */
-        //  var rows = svg.selectAll('.row');
-        subSets.transition().duration(function (d, i) {
-            if (d.data.type === ROW_TYPE.SUBSET)
-                return queryParameters['duration'];
-            else
-                return queryParameters['duration'];
-        }).attr({transform: function (d) {
-
-                return 'translate(0, ' + rowScale(d.id) + ')';
-
-            }, class: function (d) {
-                //    console.log(d.type);
-                return 'row ' + d.data.type;
-            }});
+        subSets
+            .transition().duration(function (d, i) {
+                if (d.data.type === ROW_TYPE.SUBSET)
+                    return queryParameters['duration'];
+                else
+                    return queryParameters['duration'];
+            }).attr({transform: function (d) {
+                    return 'translate(0, ' + rowScale(d.id) + ')';
+                }, class: function (d) {
+                    return 'row ' + d.data.type;
+                }}).transition().duration(100).style("opacity", 1);
 
         // ------------ the combination matrix ----------------------
 
@@ -393,7 +385,7 @@ function plot( width, height ) {
         var combinationRows = subSets.filter(function (d) {
             return d.data.type === ROW_TYPE.SUBSET;
         })
-
+/*
         // add transparent background to make each row it sensitive for interaction
         combinationRows.selectAll('.backgroundRect').data(function (d) {
             return [d]
@@ -413,7 +405,7 @@ function plot( width, height ) {
                 'mouseover': mouseoverRow,
                 'mouseout': mouseoutRow
             });
-
+*/
         combinationRows.selectAll('g').data(function (d) {
                 // binding in an array of size one
                 return [d.data.combinedSets];

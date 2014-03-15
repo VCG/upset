@@ -85,15 +85,14 @@ h1 {
 
 /** The subSet size bar */
 .subSetSize {
-    fill: pink;
 }
 
 .subSetSize.row-type-subset {
-    fill: #232323; /*#078600;*/    
+    fill: #737373; 
 }
 
 .subSetSize.row-type-group {
-    fill: #838383; 
+    fill: #535353;
 }
 
 /** The labels for the vertical set names */
@@ -112,6 +111,7 @@ h1 {
     font: sans-serif;
     text-anchor: left;
     cursor: s-resize;
+    font-size:11pt;
 }
 
 .columnLabel {
@@ -155,8 +155,8 @@ h1 {
 }
 
 .connection {
-    /* stroke: #333333;*/
-    /*stroke-width: 1;*/
+     stroke: white;
+    stroke-width: 1;
     fill: #f0f0f0;
 }
 

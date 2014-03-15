@@ -6,6 +6,65 @@ var SET_SIZE_GROUP_PREFIX = 'SetSizeG_';
 var EMPTY_GROUP_ID = 'EmptyGroup';
 var SET_BASED_GROUPING_PREFIX = "SetG_";
 
+var handleLogicGroups= function(subsets,dataRows,level){
+    var addGroups = [];
+    var oldGroupIDs = {};
+    if (previousState!=false) previousState.logicGroups.forEach(function(d){oldGroupIDs[d.id]=1})
+    UpSetState.logicGroups.forEach(function(d){
+        if (d.id in oldGroupIDs){}
+        else {
+            var group = new Group(d.id, d.groupName, level);
+            var compareList= []
+            d.orClauses.forEach(function(orClause){
+
+                var compareObject = []
+                for (key in orClause){
+                    compareObject.push(orClause[key].state);
+                }
+                compareList.push(compareObject)
+            })
+
+            var isAhit = true;
+            subsets.forEach(function(subset){
+
+                isAhit = true;
+                var combinedSets = subset.combinedSets;
+                compareList.forEach(function(compare){
+                    var csLength = combinedSets.length;
+                    if (isAhit && csLength==compare.length ){
+                        for (var i =0; i<csLength;i++){
+                            isAhit &= (
+                                (combinedSets[i]==compare[i])
+                                || compare[i]==2 );
+                        }
+
+
+                    }
+                })
+
+                if (isAhit) group.addSubSet(subset);
+
+            })
+
+            addGroups.push(group)
+        };
+    })
+//    console.log(addGroups);
+
+    if (addGroups.length>0){
+        var groupElements= unwrapGroups(addGroups)
+        console.log(groupElements
+        );
+
+        groupElements.reverse()
+        groupElements.forEach(function(addGroup){
+            dataRows.unshift(addGroup)
+        })
+    }
+
+
+}
+
 var groupByDeviation = function (subSets, level) {
     var newGroups = [];
     newGroups.push(new Group('GROUP_POS_DEV', 'Positive Expected Value', level));
@@ -241,7 +300,12 @@ var UpSetState = {
     /** Sets the lower threshold of cardinality of subsets */
     minCardinality: undefined,
 
-    forceUpdate: false
+    forceUpdate: false,
+
+    /** user defined logic groups **/
+    logicGroups:[],
+    logicGroupChanged:false
+
 };
 
 var previousState = false;
@@ -249,6 +313,9 @@ var previousState = false;
 var updateState = function (parameter) {
 
     var forceUpdate = !previousState || UpSetState.forceUpdate || (UpSetState.hideEmpties != previousState.hideEmpties);
+
+
+
     // true if pure sorting - no grouping
     if ((UpSetState.sorting && !UpSetState.grouping) && (forceUpdate || (previousState && previousState.sorting !== UpSetState.sorting))) {
         dataRows = StateMap[StateOpt[UpSetState.sorting]](subSets, parameter);
@@ -267,6 +334,17 @@ var updateState = function (parameter) {
     else if (UpSetState.collapseChanged && UpSetState.grouping) {
         dataRows = unwrapGroups(levelOneGroups);
     }
+
+    if(UpSetState.logicGroupChanged ){
+        handleLogicGroups(subSets,dataRows,1);
+        UpSetState.logicGroupChanged = false;
+//        console.log("datarows:",levelOneGroups[0]);
+    }
+
+
+
+
+
 
     // unwrapGroups deals with collapse, so we can reset it
     UpSetState.collapseChanged = false;
