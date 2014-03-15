@@ -68,6 +68,7 @@ var setUpConfiguration = function () {
         updateState();
         // TODO: need to call updateTransition instead, but this needs to be exposed first
         plot();
+        plotSetOverview();
     };
     hideEmptiesCheck.addEventListener('click', hideEmptiesFu);
 
