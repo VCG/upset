@@ -46,19 +46,18 @@ $(EventManager).bind("item-selection-activated", function (event, data) {
 });
 
 $(EventManager).bind("ui-resize", function (event, data) {
-    plot( Math.floor( data.newWidth * .66 ), Math.floor( data.newHeight ) );
+    plot(Math.floor(data.newWidth * .66), Math.floor(data.newHeight));
 });
 
 $(EventManager).bind("ui-vertical-resize", function (event, data) {
-    plot( undefined, Math.floor( data.newHeight ) );
+    plot(undefined, Math.floor(data.newHeight));
 });
 
 $(EventManager).bind("ui-horizontal-resize", function (event, data) {
-    plot( Math.floor( data.newWidth * .66 ), undefined );
+    plot(Math.floor(data.newWidth * .66), undefined);
 });
 
-
-function plot( width, height ) {
+function plot(width, height) {
 
     var majorPadding = 5;
     var minorPadding = 2;
@@ -101,7 +100,6 @@ function plot( width, height ) {
 
     var grays = [ '#f0f0f0', '#636363'];
 
-
     function initRows() {
 
         subSetMatrixHeight = renderRows.length * cellDistance;
@@ -127,74 +125,72 @@ function plot( width, height ) {
 
     // define a clipping path for scrolling (@hen)
     /*
-    svg.append("clipPath").attr({
-        id: "visClipping"
-    }).append("rect").attr('width', w)
-        .attr('height', svgHeight + 150)
-        .attr("transform", "translate(" + -leftOffset + "," + 0 + ")")
-    vis.attr("clip-path", "url(#visClipping)")
-    */
+     svg.append("clipPath").attr({
+     id: "visClipping"
+     }).append("rect").attr('width', w)
+     .attr('height', svgHeight + 150)
+     .attr("transform", "translate(" + -leftOffset + "," + 0 + ")")
+     vis.attr("clip-path", "url(#visClipping)")
+     */
 
     // Rows container for vertical panning
     var gRows = vis.append('g')
         .attr(
-            {'class': 'gRows', "transform":"translate(0,0)"}
-        )
+        {'class': 'gRows', "transform": "translate(0,0)"}
+    )
         .data([
             {'x': 0, 'y': 0, 'dx': 0, 'dy': 0}
         ]);
 
     /*
-    var gScroll = vis.append('g')
-        .attr('class', 'gScroll')
-        .data([
-            {'x': 0, 'y': 0}
-        ]);
-    */
+     var gScroll = vis.append('g')
+     .attr('class', 'gScroll')
+     .data([
+     {'x': 0, 'y': 0}
+     ]);
+     */
 
     var gQuery = svg.append('g')
         .attr('class', 'gQuery')
-        .attr("transform","translate("+-5+","+2+")")
+        .attr("transform", "translate(" + -5 + "," + 2 + ")")
         .data([
             {'x': 0, 'y': 0}
         ]);
 
-/*
-    // Extra layer for vertical panning
-    vis.append('rect').attr({
-        x: 0,
-        y: 0,
-        width: w,
-        height: (textHeight - 5),
-        fill: 'white'
-    });
-*/
+    /*
+     // Extra layer for vertical panning
+     vis.append('rect').attr({
+     x: 0,
+     y: 0,
+     width: w,
+     height: (textHeight - 5),
+     fill: 'white'
+     });
+     */
 
     //####################### LogicPanel ##################################################
 
     var logicPanelNode = vis.append("g").attr({
-        class:"logicPanel",
-        "transform":"translate("+-leftOffset+","+(textHeight+5)+")"
+        class: "logicPanel",
+        "transform": "translate(" + -leftOffset + "," + (textHeight + 5) + ")"
     })
 
     var logicPanel = new LogicPanel(
-        {width: setVisWidth+leftOffset,
+        {width: setVisWidth + leftOffset,
             visElement: vis,
-            panelElement:logicPanelNode,
+            panelElement: logicPanelNode,
             cellSize: cellSize,
-            usedSets:usedSets,
+            usedSets: usedSets,
             grays: grays,
-            belowVis:gRows,
-            buttonX:-leftOffset,
-            buttonY:textHeight-20,
+            belowVis: gRows,
+            buttonX: -leftOffset,
+            buttonY: textHeight - 20,
             stateObject: UpSetState,
-            callAfterSubmit:[updateState, rowTransition]
+            callAfterSubmit: [updateState, rowTransition]
 
         }
 
     );
-
-
 
     //####################### SETS ##################################################
 
@@ -262,7 +258,7 @@ function plot( width, height ) {
 
         });
 
-    vis.append('text').text('Subset Size' )
+    vis.append('text').text('Subset Size')
         .attr({
             class: 'columnLabel subsetSizeLabel',
             transform: 'translate(' + (xStartSetSizes + subSetSizeWidth / 2) + ',' + (labelTopPadding + 10) + ')'
@@ -350,17 +346,16 @@ function plot( width, height ) {
                 if (d.data.type === ROW_TYPE.SUBSET)
                     return 'translate(0, ' + rowScale(d.id) + ')';
                 else
-                    return 'translate(0, '+textHeight+')';
-                }, class: function (d) {
-                    return 'row ' + d.data.type;
-                }
+                    return 'translate(0, ' + textHeight + ')';
+            }, class: function (d) {
+                return 'row ' + d.data.type;
+            }
             }).style("opacity", function (d) {
-              if (d.data.type === ROW_TYPE.SUBSET)
-                  return gRows.selectAll('.row')[0].length ? 1 : 0;
-              else
-                  return gRows.selectAll('.row')[0].length ? 0 : 1;
-              })
-
+                if (d.data.type === ROW_TYPE.SUBSET)
+                    return gRows.selectAll('.row')[0].length ? 1 : 0;
+                else
+                    return gRows.selectAll('.row')[0].length ? 0 : 1;
+            })
 
         subSets.exit().remove();
 
@@ -371,13 +366,12 @@ function plot( width, height ) {
                 else
                     return queryParameters['duration'];
             }).attr({transform: function (d) {
-                    return 'translate(0, ' + rowScale(d.id) + ')';
-                }, class: function (d) {
-                    return 'row ' + d.data.type;
-                }}).transition().duration(100).style("opacity", 1);
+                return 'translate(0, ' + rowScale(d.id) + ')';
+            }, class: function (d) {
+                return 'row ' + d.data.type;
+            }}).transition().duration(100).style("opacity", 1);
 
         // ------------ the combination matrix ----------------------
-
 
         // scale for the set containment
         var setScale = d3.scale.ordinal().domain([0, 1]).range(grays);
@@ -385,27 +379,27 @@ function plot( width, height ) {
         var combinationRows = subSets.filter(function (d) {
             return d.data.type === ROW_TYPE.SUBSET;
         })
-/*
-        // add transparent background to make each row it sensitive for interaction
-        combinationRows.selectAll('.backgroundRect').data(function (d) {
-            return [d]
-        })
-            .enter().append("rect").attr({
-                class: "backgroundRect",
-                x: 0,
-                y: 0,
-                width: setVisWidth,
-                height: cellSize
-            })
-            .style({
-                "fill-opacity": 0,
-                fill: "grey" // for debugging
-            })
-            .on({
-                'mouseover': mouseoverRow,
-                'mouseout': mouseoutRow
-            });
-*/
+        /*
+         // add transparent background to make each row it sensitive for interaction
+         combinationRows.selectAll('.backgroundRect').data(function (d) {
+         return [d]
+         })
+         .enter().append("rect").attr({
+         class: "backgroundRect",
+         x: 0,
+         y: 0,
+         width: setVisWidth,
+         height: cellSize
+         })
+         .style({
+         "fill-opacity": 0,
+         fill: "grey" // for debugging
+         })
+         .on({
+         'mouseover': mouseoverRow,
+         'mouseout': mouseoutRow
+         });
+         */
         combinationRows.selectAll('g').data(function (d) {
                 // binding in an array of size one
                 return [d.data.combinedSets];
@@ -524,12 +518,12 @@ function plot( width, height ) {
                     selections.setActive(selection);
                 }
             })
-            .attr( "class", function(d) {
+            .attr("class", function (d) {
                 if (d.data.type === ROW_TYPE.SUBSET) {
-                   return ( 'subSetSize row-type-subset' );
+                    return ( 'subSetSize row-type-subset' );
                 }
                 if (d.data.type === ROW_TYPE.GROUP) {
-                   return ( 'subSetSize row-type-group' );
+                    return ( 'subSetSize row-type-group' );
                 }
             })
             .attr({
@@ -723,28 +717,28 @@ function plot( width, height ) {
         }
 
         /*
-        var pan = d3.behavior.zoom()
-            //  .scaleExtent([0, 10])
-            .on('zoom', panning);
+         var pan = d3.behavior.zoom()
+         //  .scaleExtent([0, 10])
+         .on('zoom', panning);
 
-        var prev_y = 0;
-        d3.select('.gRows').call(pan);
-        */
+         var prev_y = 0;
+         d3.select('.gRows').call(pan);
+         */
 
         // -------------------- scrollbar -------------------
 
         /*
-        params = {
-            x: w - 20 - leftOffset,
-            y: 85,
-            height: svgHeight - 205,
-            viewportHeight: svgHeight - 210,
-            rowsHeight: subSetMatrixHeight,
-            parentEl: d3.select('.gScroll')
-        }
+         params = {
+         x: w - 20 - leftOffset,
+         y: 85,
+         height: svgHeight - 205,
+         viewportHeight: svgHeight - 210,
+         rowsHeight: subSetMatrixHeight,
+         parentEl: d3.select('.gScroll')
+         }
 
-        var scrollbar = new Scrollbar(params);        
-        */
+         var scrollbar = new Scrollbar(params);
+         */
 
     }
 
@@ -768,6 +762,8 @@ function plot( width, height ) {
                 rowTransition();
             });
 
+        // ----------- grouping L1 -------------------------
+
         d3.selectAll('#groupByIntersectionSize').on(
             'click',
             function (d) {
@@ -775,6 +771,7 @@ function plot( width, height ) {
                 UpSetState.levelTwoGrouping = undefined;
                 updateState();
                 rowTransition();
+//                d3.selectAll('#groupByIntersectionSizeL2').attr('disabled', true);
             });
 
         d3.selectAll('#groupBySet').on(
@@ -786,7 +783,6 @@ function plot( width, height ) {
                 rowTransition();
             });
 
-
         d3.selectAll('#groupByRelevanceMeasure').on(
             'click',
             function (d) {
@@ -796,20 +792,66 @@ function plot( width, height ) {
                 rowTransition();
             });
 
-
-        d3.selectAll('#groupSetThenSize').on(
+        d3.selectAll('#noGrouping').on(
             'click',
             function (d) {
-                UpSetState.grouping = StateOpt.groupBySet;
+                UpSetState.grouping = undefined;
+                UpSetState.levelTwoGrouping = undefined;
+                updateState();
+                rowTransition();
+            });
+
+
+        // ---------------- Grouping L2 -----------
+
+        d3.selectAll('#groupByIntersectionSizeL2').on(
+            'click',
+            function (d) {
                 UpSetState.levelTwoGrouping = StateOpt.groupByIntersectionSize;
                 updateState();
                 rowTransition();
             });
 
+        d3.selectAll('#groupBySetL2').on(
+            'click',
+            function (d) {
+                UpSetState.levelTwoGrouping = StateOpt.groupBySet;
+                updateState();
+                rowTransition();
+            });
+
+        d3.selectAll('#groupByRelevanceMeasureL2').on(
+            'click',
+            function (d) {
+                              UpSetState.levelTwoGrouping = StateOpt.groupByRelevanceMeasure;
+                updateState();
+                rowTransition();
+            });
+
+        d3.selectAll('#noGroupingL2').on(
+            'click',
+            function (d) {
+                UpSetState.levelTwoGrouping = undefined;
+                updateState();
+                rowTransition();
+            });
+
+        // ------- options ----
+
         d3.selectAll('#collapseAll').on(
             'click',
             function (d) {
-                toggleCollapseAll();
+                UpSetState.collapseAll = true;
+                UpSetState.collapseChanged = true;
+                updateState();
+                rowTransition();
+            });
+
+        d3.selectAll('#expandAll').on(
+            'click',
+            function (d) {
+                UpSetState.expandAll = true;
+                UpSetState.collapseChanged = true;
                 updateState();
                 rowTransition();
             });
@@ -847,9 +889,9 @@ function plot( width, height ) {
         d3.select('minCardinality')
     }
 
-    vis.append('text').text('SVG ' + w + "/" + svgHeight )
+    vis.append('text').text('SVG ' + w + "/" + svgHeight)
         .attr({
-            transform: 'translate(0, '+ (labelTopPadding + 10) + ')'
+            transform: 'translate(0, ' + (labelTopPadding + 10) + ')'
         });
 
 }

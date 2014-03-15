@@ -133,14 +133,14 @@ var collapseGroup = function (group) {
     updateState();
 };
 
-var toggleCollapseAll = function () {
-    if (UpSetState.collapseAll) {
-        UpSetState.unCollapseAll = true;
-    }
-    UpSetState.collapseAll = !UpSetState.collapseAll;
-    UpSetState.collapseChanged = true;
-    updateState();
-};
+//var toggleCollapseAll = function () {
+//    if (UpSetState.collapseAll) {
+//        UpSetState.unCollapseAll = true;
+//    }
+//    UpSetState.collapseAll = !UpSetState.collapseAll;
+//    UpSetState.collapseChanged = true;
+//    updateState();
+//};
 
 var collapseAggregate = function (aggregate) {
     aggregate.isCollapsed = !aggregate.isCollapsed;
@@ -233,7 +233,7 @@ var unwrapGroups = function (groupList) {
         if (UpSetState.collapseAll) {
             group.isCollapsed = true;
         }
-        if (UpSetState.unCollapseAll) {
+        if (UpSetState.expandAll) {
             group.isCollapsed = false;
         }
         if (!group.isCollapsed) {
@@ -256,7 +256,9 @@ var unwrapGroups = function (groupList) {
             }
         }
     }
-    UpSetState.unCollapseAll = false;
+    UpSetState.expandAll = false;
+    UpSetState.collapseAll = false;
+    UpSetState.collapseChanged = false;
     return dataRows;
 };
 
@@ -286,10 +288,10 @@ var StateOpt = {
 
 var UpSetState = {
     collapseAll: false,
-    unCollapseAll: false,
-    collapseChanged: false,
+    expandAll: false,
+   // collapseChanged: false,
     grouping: StateOpt.groupBySet,
-    levelTwoGrouping: StateOpt.groupByIntersectionSize,
+    levelTwoGrouping: undefined,
     sorting: undefined,
 
     /** hide empty subsets, groups and aggregates */
@@ -313,7 +315,6 @@ var previousState = false;
 var updateState = function (parameter) {
 
     var forceUpdate = !previousState || UpSetState.forceUpdate || (UpSetState.hideEmpties != previousState.hideEmpties);
-
 
 
     // true if pure sorting - no grouping
@@ -346,8 +347,7 @@ var updateState = function (parameter) {
 
 
 
-    // unwrapGroups deals with collapse, so we can reset it
-    UpSetState.collapseChanged = false;
+    
     UpSetState.forceUpdate = false;
 
     renderRows.length = 0;

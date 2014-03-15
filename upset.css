@@ -6,49 +6,6 @@ h1 {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-/*div #sortIntersect{*/
-/*float: right;*/
-/*}*/
-
-.myButton {
-    -moz-box-shadow: inset 0px 1px 0px 0px #9acc85;
-    -webkit-box-shadow: inset 0px 1px 0px 0px #9acc85;
-    box-shadow: inset 0px 1px 0px 0px #9acc85;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #74ad5a), color-stop(1, #68a54b));
-    background: -moz-linear-gradient(top, #74ad5a 5%, #68a54b 100%);
-    background: -webkit-linear-gradient(top, #74ad5a 5%, #68a54b 100%);
-    background: -o-linear-gradient(top, #74ad5a 5%, #68a54b 100%);
-    background: -ms-linear-gradient(top, #74ad5a 5%, #68a54b 100%);
-    background: linear-gradient(to bottom, #74ad5a 5%, #68a54b 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#74ad5a', endColorstr='#68a54b', GradientType=0);
-    background-color: #74ad5a;
-    border: 1px solid #3b6e22;
-    display: inline-block;
-    cursor: pointer;
-    color: #ffffff;
-    font-family: arial;
-    font-size: 13px;
-    font-weight: bold;
-    padding: 6px 12px;
-    text-decoration: none;
-}
-
-.myButton:hover {
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #68a54b), color-stop(1, #74ad5a));
-    background: -moz-linear-gradient(top, #68a54b 5%, #74ad5a 100%);
-    background: -webkit-linear-gradient(top, #68a54b 5%, #74ad5a 100%);
-    background: -o-linear-gradient(top, #68a54b 5%, #74ad5a 100%);
-    background: -ms-linear-gradient(top, #68a54b 5%, #74ad5a 100%);
-    background: linear-gradient(to bottom, #68a54b 5%, #74ad5a 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#68a54b', endColorstr='#74ad5a', GradientType=0);
-    background-color: #68a54b;
-}
-
-.myButton:active {
-    position: relative;
-    top: 1px;
-}
-
 #header {
     padding: 0;
 }
@@ -88,7 +45,7 @@ h1 {
 }
 
 .subSetSize.row-type-subset {
-    fill: #737373; 
+    fill: #737373;
 }
 
 .subSetSize.row-type-group {
@@ -115,7 +72,7 @@ h1 {
     font: sans-serif;
     text-anchor: left;
     cursor: s-resize;
-    font-size:11pt;
+    font-size: 11pt;
 }
 
 .columnLabel {
@@ -131,7 +88,6 @@ h1 {
     text-anchor: middle;
     cursor: row-resize;
 }
-
 
 .groupBackGround {
     fill: #d3d3d3;
@@ -159,7 +115,7 @@ h1 {
 }
 
 .connection {
-     stroke: white;
+    stroke: white;
     stroke-width: 1;
     fill: #f0f0f0;
 }
@@ -236,10 +192,9 @@ th.attribute-header.selected {
     background-color: #ccc;
 }
 
-
 .filter-button {
     cursor: default;
-    color: blue;    
+    color: blue;
 }
 
 .filter-button:hover {
@@ -251,13 +206,12 @@ th.attribute-header.selected {
 }
 
 .subset-state-toggle-button .fw {
-    color: blue;        
+    color: blue;
 }
 
 .subset-state-toggle-button:hover .fw {
     color: darkblue;
 }
-
 
 .venn-zero-set-area {
     fill: #eee;
@@ -274,7 +228,6 @@ th.attribute-header.selected {
 .venn-three-set-area {
     fill: #999;
 }
-
 
 .venn-zero-set-area-active {
     fill: #fee;
@@ -300,13 +253,12 @@ th.attribute-header.selected {
 
 /*--- logic --*/
 .logicPanelCircle {
-    stroke-width:2pt;
+    stroke-width: 2pt;
 }
 
 .logicPanelHeaderCircle {
-    stroke-width:1pt;
+    stroke-width: 1pt;
 }
-
 
 #dataset-selector {
     float: right;
@@ -355,9 +307,8 @@ select {
 
 .ui-button:hover {
     color: #136382;
-    text-shadow:0 0 10px #3fa0c7
+    text-shadow: 0 0 10px #3fa0c7
 }
-
 
 .fixed-y-container {
     overflow-y: scroll;
@@ -400,18 +351,17 @@ select {
     float: left;
 }
 
-*
-{
-    margin:0;padding:0;
-}
-html,body,.ui-container
-{
-    height:100%;
+* {
+    margin: 0;
+    padding: 0;
 }
 
-.ui-container
-{
-    display:table;
+html, body, .ui-container {
+    height: 100%;
+}
+
+.ui-container {
+    display: table;
     width: 100%;
     margin-top: -80px; /* header + menu */
     padding-top: 80px;
@@ -423,18 +373,16 @@ html,body,.ui-container
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
-.ui-header
-{
+
+.ui-header {
     height: 30px;
 }
 
-.ui-menu
-{
+.ui-menu {
     height: 50px;
 }
 
-.ui-row
-{
+.ui-row {
     height: 100%;
     display: table-row;
 }
@@ -448,28 +396,34 @@ html,body,.ui-container
     padding-right: 10px;
 }
 
-.ui-column .ui-column-25
-{
+.ui-column .ui-column-25 {
     background: pink;
     width: 25%;
 }
 
-.ui-column .ui-column-75
-{
+.ui-column .ui-column-75 {
     background: yellow;
     width: 75%;
     min-width: 75%;
 }
 
-.ui-column .ui-column-33
-{
+.ui-column .ui-column-33 {
     background: pink;
     width: 33%;
 }
 
-.ui-column .ui-column-66
-{
+.ui-column .ui-column-66 {
     background: lightpurple;
     width: 66%;
     min-width: 66%;
+}
+
+/** ============ Configuration ============== */
+.option {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.option:hover{
+    background: #bdbdbd;
 }
