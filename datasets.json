@@ -6,5 +6,6 @@
     "data/test/test.json",
     "data/test/test_2set.json",
     "data/mutations/mutations5.json",
-    "data/mutations/mutations20.json"
+    "data/mutations/mutations20.json",
+    "data/countries/countries.json"
 ]
