@@ -115,7 +115,10 @@ function plot(width, height) {
     initRows();
 
     d3.select('#vis').select('svg').remove();
-    var svg = d3.select('#vis').append('svg').attr('width', w)
+    var svg = d3.select('#vis')
+        .style('width', w-250 + "px")
+      .append('svg')
+        .attr('width', w)
         .attr('height', svgHeight);
 
     var vis = svg.append("g").attr({
