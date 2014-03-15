@@ -374,4 +374,9 @@ var updateState = function (parameter) {
 
     queryParameters["grouping"] = UpSetState.grouping;
     updateQueryParameters();
+
+    var status = $('#configStatus');
+    console.log(status);
+    status.append('Do you want to see status text here?');
+    console.log(status.prop('text'));
 };
