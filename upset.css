@@ -419,6 +419,10 @@ html, body, .ui-container {
 }
 
 /** ============ Configuration ============== */
+.configTable {
+    padding-right: 10px;
+}
+
 .option {
     text-decoration: underline;
     cursor: pointer;

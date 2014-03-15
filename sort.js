@@ -304,7 +304,7 @@ var UpSetState = {
     hideEmpties: true,
 
     /** Sets the upper threshold of cardinality of subsets */
-    maxCardinality: 12,
+    maxCardinality: undefined,
     /** Sets the lower threshold of cardinality of subsets */
     minCardinality: 0,
 

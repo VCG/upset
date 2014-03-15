@@ -47,19 +47,20 @@ function loadDataSetDescriptions(dataSetList) {
 }
 var setUpConfiguration = function () {
 
+    var maxCardSpinner = document.getElementById('maxCardinality');
+    var minCardSpinner = document.getElementById('minCardinality');
 
-//    var maxCardSpinner = document.getElementById('maxCardinality');
-//    var minCardSpinner = document.getElementById('minCardinality');
-//    var updateCardinality = function (e) {
-//
-//        UpSetState.maxCardinality = maxCardSpinner.value;
-//        UpSetState.minCardinality = minCardSpinner.value;
-//        UpSetState.forceUpdate = true;
-//        run();
-//    };
-//
-//    maxCardSpinner.addEventListener('input', updateCardinality);
-//    minCardSpinner.addEventListener('input', updateCardinality);
+
+    var updateCardinality = function (e) {
+
+        UpSetState.maxCardinality = maxCardSpinner.value;
+        UpSetState.minCardinality = minCardSpinner.value;
+        UpSetState.forceUpdate = true;
+        run();
+    };
+
+    maxCardSpinner.addEventListener('input', updateCardinality);
+    minCardSpinner.addEventListener('input', updateCardinality);
 
     var hideEmptiesCheck = document.getElementById('hideEmpties');
 
@@ -374,14 +375,20 @@ function parseDataSet(data, dataSetDescription) {
         }
         setID = setID << 1;
     }
+
+    UpSetState.maxCardinality = attributes[attributes.length - 2].max;
+    var maxCardSpinner = document.getElementById('maxCardinality');
+    maxCardSpinner.value = UpSetState.maxCardinality;
+    maxCardSpinner.max = UpSetState.maxCardinality;
 }
 
 function setUpSubSets() {
 
     combinations = Math.pow(2, usedSets.length) - 1;
 
+
 //    if (UpSetState.maxCardinality === undefined || UpSetState.minCardinality === undefined) {
-//        UpSetState.maxCardinality = attributes[attributes.length - 2].max;
+//
 //        UpSetState.minCardinality = 0;
 //        document.getElementById('maxCardinality').value = UpSetState.maxCardinality;
 //        document.getElementById('minCardinality').value = UpSetState.minCardinality;

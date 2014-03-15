@@ -116,8 +116,8 @@ function plot(width, height) {
 
     d3.select('#vis').select('svg').remove();
     var svg = d3.select('#vis')
-        .style('width', w-250 + "px")
-      .append('svg')
+        .style('width', w - 250 + "px")
+        .append('svg')
         .attr('width', w)
         .attr('height', svgHeight);
 
@@ -296,7 +296,7 @@ function plot(width, height) {
     vis.append('text').text('Deviation from Expected Value')
         .attr({
             class: 'columnLabel',
-          //  id: 'sortRelevanceMeasureGlobal',
+            //  id: 'sortRelevanceMeasureGlobal',
             transform: 'translate(' + (xStartExpectedValues + expectedValueWidth / 2) + ',' + ( labelTopPadding + 10) + ')'
         });
 
@@ -758,6 +758,27 @@ function plot(width, height) {
 
     function setUpSortSelections() {
 
+        /** Passing true will disable the group */
+        function toggleGroupingL2(disable) {
+            var noGroupingL2 = $('#noGroupingL2');
+
+            if (disable) {
+                noGroupingL2.prop('checked', true);
+            }
+            noGroupingL2.prop('disabled', disable);
+
+            $('#groupByIntersectionSizeL2').prop('disabled', disable);
+            $('#groupBySetL2').prop('disabled', disable);
+            $('#groupByRelevanceMeasureL2').prop('disabled', disable);
+        }
+
+        function disableL2Equivalent(id) {
+            var l2 = $(id);
+            if (l2.prop('checked')) {
+                $('#noGroupingL2').prop('checked', true);
+            }
+            l2.prop('disabled', true);
+        }
 
         // ----------- grouping L1 -------------------------
 
@@ -766,6 +787,9 @@ function plot(width, height) {
             function (d) {
                 UpSetState.grouping = StateOpt.groupByIntersectionSize;
                 UpSetState.levelTwoGrouping = undefined;
+                toggleGroupingL2(false);
+                disableL2Equivalent('#groupByIntersectionSizeL2');
+
                 updateState();
                 rowTransition();
 //                d3.selectAll('#groupByIntersectionSizeL2').attr('disabled', true);
@@ -776,6 +800,9 @@ function plot(width, height) {
             function (d) {
                 UpSetState.grouping = StateOpt.groupBySet;
                 UpSetState.levelTwoGrouping = undefined;
+                toggleGroupingL2(false);
+                disableL2Equivalent('#groupBySetL2');
+
                 updateState();
                 rowTransition();
             });
@@ -785,6 +812,8 @@ function plot(width, height) {
             function (d) {
                 UpSetState.grouping = StateOpt.groupByRelevanceMeasure;
                 UpSetState.levelTwoGrouping = undefined;
+                toggleGroupingL2(false);
+                disableL2Equivalent('#groupByRelevanceMeasureL2');
                 updateState();
                 rowTransition();
             });
@@ -795,6 +824,9 @@ function plot(width, height) {
                 UpSetState.grouping = undefined;
                 UpSetState.levelTwoGrouping = undefined;
                 UpSetState.forceUpdate = true;
+
+                toggleGroupingL2(true);
+
                 updateState();
                 rowTransition();
             });
@@ -883,6 +915,10 @@ function plot(width, height) {
                 UpSetState.sorting = StateOpt.sortBySubSetSize;
                 UpSetState.grouping = undefined;
                 UpSetState.levelTwoGrouping = undefined;
+                $('#noGroupingL2').prop('checked', true);
+                $('#noGrouping').prop('checked', true);
+                $('#sortIntersectionSize').prop('checked', true);
+
                 updateState();
                 rowTransition();
             });
@@ -903,6 +939,9 @@ function plot(width, height) {
                 UpSetState.sorting = StateOpt.sortByExpectedValue;
                 UpSetState.grouping = undefined;
                 UpSetState.levelTwoGrouping = undefined;
+                $('#noGroupingL2').prop('checked', true);
+                $('#noGrouping').prop('checked', true);
+                $('#sortRelevanceMeasure').prop('checked', true);
                 updateState();
                 rowTransition();
             });
