@@ -338,7 +338,6 @@ function plot( width, height ) {
     function plotSubSets() {
 
         // ------------------- the rows -----------------------
-
         var subSets = gRows.selectAll('.row')
             .data(renderRows, function (d, i) {
                 return d.id;
@@ -348,30 +347,23 @@ function plot( width, height ) {
             .enter()
             .append('g')
             .attr({transform: function (d) {
+                if (d.data.type === ROW_TYPE.SUBSET)
+                    return 'translate(0, ' + rowScale(d.id) + ')';
+                else
                     return 'translate(0, '+textHeight+')';
-                },class: function (d) {
+                }, class: function (d) {
                     return 'row ' + d.data.type;
                 }
-            });
+            }).style("opacity", function (d) {
+              if (d.data.type === ROW_TYPE.SUBSET)
+                  return gRows.selectAll('.row')[0].length ? 1 : 0;
+              else
+                  return gRows.selectAll('.row')[0].length ? 0 : 1;
+              })
+
 
         subSets.exit().remove();
-        /*
-         .transition().duration(function (d, i) {
-         return queryParameters['duration'];
-         }
-         ).attr({transform: function (d) {
-         return 'translate(0, ' + rowScale(d.id) + ')';
 
-         }, class: function (d) {
-         if(d.data.type === ROW_TYPE.SUBSET) {
-         return 'translate(0, ' + rowScale("SetSizeG_"+d.data.nrCombinedSets+"_1") + ')';
-         alert("test")
-         }
-         else
-         return 'row ' + d.data.type;
-         }})
-         */
-        //  var rows = svg.selectAll('.row');
         subSets
             .transition().duration(function (d, i) {
                 if (d.data.type === ROW_TYPE.SUBSET)
@@ -382,7 +374,7 @@ function plot( width, height ) {
                     return 'translate(0, ' + rowScale(d.id) + ')';
                 }, class: function (d) {
                     return 'row ' + d.data.type;
-                }});
+                }}).transition().duration(100).style("opacity", 1);
 
         // ------------ the combination matrix ----------------------
 
