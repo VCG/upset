@@ -252,6 +252,7 @@ function plot(width, height) {
     vis.append('rect')
         .attr({
             class: 'labelBackground subsetSizeLabel',
+            id: 'sortIntersectionSizeGlobal',
             transform: 'translate(' + xStartSetSizes + ',' + (labelTopPadding) + ')',
             height: '20',
             width: subSetSizeWidth
@@ -282,7 +283,7 @@ function plot(width, height) {
     vis.append('rect')
         .attr({
             class: 'labelBackground expectedValueLabel',
-            // id: ,
+            id: 'sortRelevanceMeasureGlobal',
             transform: 'translate(' + xStartExpectedValues + ',' + ( labelTopPadding) + ')',
             height: '20',
             width: expectedValueWidth
@@ -291,7 +292,8 @@ function plot(width, height) {
 
     vis.append('text').text('Deviation from Expected Value')
         .attr({
-            class: 'columnLabel expectedValueLabel',
+            class: 'columnLabel',
+          //  id: 'sortRelevanceMeasureGlobal',
             transform: 'translate(' + (xStartExpectedValues + expectedValueWidth / 2) + ',' + ( labelTopPadding + 10) + ')'
         });
 
@@ -752,15 +754,7 @@ function plot(width, height) {
     }
 
     function setUpSortSelections() {
-        d3.selectAll('#sortNrSetsInIntersection').on(
-            'click',
-            function (d) {
-                UpSetState.sorting = StateOpt.sortByCombinationSize;
-                UpSetState.grouping = undefined;
-                UpSetState.levelTwoGrouping = undefined;
-                updateState();
-                rowTransition();
-            });
+
 
         // ----------- grouping L1 -------------------------
 
@@ -797,10 +791,10 @@ function plot(width, height) {
             function (d) {
                 UpSetState.grouping = undefined;
                 UpSetState.levelTwoGrouping = undefined;
+                UpSetState.forceUpdate = true;
                 updateState();
                 rowTransition();
             });
-
 
         // ---------------- Grouping L2 -----------
 
@@ -823,7 +817,7 @@ function plot(width, height) {
         d3.selectAll('#groupByRelevanceMeasureL2').on(
             'click',
             function (d) {
-                              UpSetState.levelTwoGrouping = StateOpt.groupByRelevanceMeasure;
+                UpSetState.levelTwoGrouping = StateOpt.groupByRelevanceMeasure;
                 updateState();
                 rowTransition();
             });
@@ -855,6 +849,7 @@ function plot(width, height) {
                 updateState();
                 rowTransition();
             });
+        // --------- sortings ------
 
         // sort based on occurrence of one specific data item
         d3.selectAll('.setLabel').on(
@@ -868,7 +863,18 @@ function plot(width, height) {
                 rowTransition();
             });
 
-        d3.selectAll('#sortIntersectionSize').on(
+        d3.selectAll('#sortNrSetsInIntersection').on(
+            'click',
+            function (d) {
+                UpSetState.sorting = StateOpt.sortByCombinationSize;
+//                UpSetState.grouping = undefined;
+//                UpSetState.levelTwoGrouping = undefined;
+                UpSetState.forceUpdate = true;
+                updateState();
+                rowTransition();
+            });
+
+        d3.selectAll('#sortIntersectionSizeGlobal').on(
             'click',
             function (d) {
                 UpSetState.sorting = StateOpt.sortBySubSetSize;
@@ -877,7 +883,18 @@ function plot(width, height) {
                 updateState();
                 rowTransition();
             });
-        d3.selectAll('.expectedValueLabel').on(
+
+        d3.selectAll('#sortIntersectionSize').on(
+            'click',
+            function (d) {
+                UpSetState.sorting = StateOpt.sortBySubSetSize;
+                UpSetState.forceUpdate = true;
+                updateState();
+                rowTransition();
+            });
+
+        // Not preserving the grouping
+        d3.selectAll('#sortRelevanceMeasureGlobal').on(
             'click',
             function () {
                 UpSetState.sorting = StateOpt.sortByExpectedValue;
@@ -886,7 +903,17 @@ function plot(width, height) {
                 updateState();
                 rowTransition();
             });
-        d3.select('minCardinality')
+
+        // Preserving the grouping
+        d3.selectAll('#sortRelevanceMeasure').on(
+            'click',
+            function () {
+                UpSetState.sorting = StateOpt.sortByExpectedValue;
+                UpSetState.forceUpdate = true;
+                updateState();
+                rowTransition();
+            });
+
     }
 
     vis.append('text').text('SVG ' + w + "/" + svgHeight)

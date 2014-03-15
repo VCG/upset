@@ -427,3 +427,7 @@ html, body, .ui-container {
 .option:hover{
     background: #bdbdbd;
 }
+
+.configHeader {
+    font-weight: bold;
+}

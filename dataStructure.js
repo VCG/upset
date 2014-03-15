@@ -80,7 +80,7 @@ var venn = new VennDiagram("#venn-vis", 50);
 var levelOneGroups = setGroups;
 
 /** How many sets do we want to see by default */
-var nrDefaultSets = 3;
+var nrDefaultSets = 6;
 
 /**
  * The base element for all rows (sets, groups, subsets, aggregates)

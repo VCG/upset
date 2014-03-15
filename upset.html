@@ -96,20 +96,21 @@
             </div>
 
             <div id="sortConfig" class="configTable">
-                <table>
-                    <tr>
-                        <th colspan='2'>Sort by
-                        <th>
-                    </tr>
-                    <tr>
-                        <td><input type='radio' id='sortIntersectionSize' name='sort'></td>
-                        <td>Intersection Size</td>
-                    </tr>
-                    <tr>
-                        <td><input type='radio' id='sortNrSetsInIntersection' name='sort'></td>
-                        <td># Sets in Intersection</td>
-                    </tr>
-                </table>
+               <div class="configHeader">
+                   Sort by
+               </div>
+
+                <div><input type='radio' id='sortNrSetsInIntersection' name='sort' checked="true">
+                    <label for="sortNrSetsInIntersection"># Sets in Intersection</label></div>
+
+                      <div><input type='radio' id='sortIntersectionSize' name='sort'><label for="sortIntersectionSize">
+                       Intersection Size</label></div>
+
+
+
+                <div><input type='radio' id="sortRelevanceMeasure" name='sort'>
+                    <label for="sortRelevanceMeasure"> Relevance Measure</label></div>
+
             </div>
 
             <div id='options' class='configTable'>
