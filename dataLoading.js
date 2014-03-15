@@ -7,9 +7,14 @@
 
 var dataSetDescriptions;
 
-$.when($.ajax({ url: 'datasets.json', dataType: 'json' })).then(function (data, textStatus, jqXHR) {
-    loadDataSetDescriptions(data);
-});
+$.when($.ajax({ url: 'datasets.json', dataType: 'json' })).then(
+    function (data, textStatus, jqXHR) {
+        loadDataSetDescriptions(data);
+    },
+    function(data, textStatus, jqXHR) {
+        console.error( 'Error loading "' + this.url + '".' );
+    });
+
 
 function loadDataSetDescriptions(dataSetList) {
 
@@ -20,31 +25,21 @@ function loadDataSetDescriptions(dataSetList) {
     for (var i = 0; i < dataSetList.length; ++i) {
         console.log("Loading " + dataSetList[i])
 
-        descriptionDeferreds.push(
-            $.ajax({ url: dataSetList[i], dataType: 'json' })
-        );
+        var deferred = $.ajax({ url: dataSetList[i], dataType: 'json', async: false });
+
+        if ( deferred.statusText === "success" ) {
+            var description = deferred.responseJSON;
+
+            // preprend data file path (based on path to description in data set list)
+            description.file = dataSetList[i].substring(0, dataSetList[i].lastIndexOf('/')) + '/' + description.file;
+
+            descriptions.push(description);
+        }
     }
 
-    // when all requests have finished, process the responses
-    $.when.apply($, descriptionDeferreds).then(
-        function () {
-            for (var j = 0; j < arguments.length; ++j) {
-                var description = arguments[j][0];
-
-                // preprend data file path (based on path to description in data set list)
-                description.file = dataSetList[j].substring(0, dataSetList[j].lastIndexOf('/')) + '/' + description.file;
-
-                descriptions.push(description);
-            }
-
-            load(descriptions);
-        },
-        function (object, status, error) {
-            console.error('Unable to load ' + object.responseText);
-            console.error(error.message);
-        }
-    );
+    load(descriptions);
 }
+
 var setUpConfiguration = function () {
 
 
