@@ -7,5 +7,8 @@
     "data/test/test_2set.json",
     "data/mutations/mutations5.json",
     "data/mutations/mutations20.json",
-    "data/countries/countries.json"
+    "data/countries/countries.json",
+    "../UpSet-Data/data/variants/allvcf_10x.json",
+    "../UpSet-Data/data/variants/allvcf_20x.json",
+    "../UpSet-Data/data/variants/allvcf_30x.json"
 ]
