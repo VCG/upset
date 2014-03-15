@@ -888,6 +888,8 @@ function plot(width, height) {
                 rowTransition();
             });
 
+        // --------- sortings ------
+
         // sort based on occurrence of one specific data item
         d3.selectAll('.setLabel').on(
             'click',
@@ -900,7 +902,18 @@ function plot(width, height) {
                 rowTransition();
             });
 
-        d3.selectAll('#sortIntersectionSize').on(
+        d3.selectAll('#sortNrSetsInIntersection').on(
+            'click',
+            function (d) {
+                UpSetState.sorting = StateOpt.sortByCombinationSize;
+//                UpSetState.grouping = undefined;
+//                UpSetState.levelTwoGrouping = undefined;
+                UpSetState.forceUpdate = true;
+                updateState();
+                rowTransition();
+            });
+
+        d3.selectAll('#sortIntersectionSizeGlobal').on(
             'click',
             function (d) {
                 UpSetState.sorting = StateOpt.sortBySubSetSize;
@@ -913,7 +926,18 @@ function plot(width, height) {
                 updateState();
                 rowTransition();
             });
-        d3.selectAll('.expectedValueLabel').on(
+
+        d3.selectAll('#sortIntersectionSize').on(
+            'click',
+            function (d) {
+                UpSetState.sorting = StateOpt.sortBySubSetSize;
+                UpSetState.forceUpdate = true;
+                updateState();
+                rowTransition();
+            });
+
+        // Not preserving the grouping
+        d3.selectAll('#sortRelevanceMeasureGlobal').on(
             'click',
             function () {
                 UpSetState.sorting = StateOpt.sortByExpectedValue;
@@ -925,8 +949,19 @@ function plot(width, height) {
                 updateState();
                 rowTransition();
             });
-        d3.select('minCardinality')
+
+        // Preserving the grouping
+        d3.selectAll('#sortRelevanceMeasure').on(
+            'click',
+            function () {
+                UpSetState.sorting = StateOpt.sortByExpectedValue;
+                UpSetState.forceUpdate = true;
+                updateState();
+                rowTransition();
+            });
+
     }
+
 
     vis.append('text').text('SVG ' + w + "/" + svgHeight)
         .attr({
