@@ -85,7 +85,15 @@ h1 {
 
 /** The subSet size bar */
 .subSetSize {
-    fill: #636363; /*#078600;*/
+    fill: pink;
+}
+
+.subSetSize.row-type-subset {
+    fill: #232323; /*#078600;*/    
+}
+
+.subSetSize.row-type-group {
+    fill: #838383; 
 }
 
 /** The labels for the vertical set names */

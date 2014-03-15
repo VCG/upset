@@ -532,8 +532,16 @@ function plot( width, height ) {
                     selections.setActive(selection);
                 }
             })
+            .attr( "class", function(d) {
+                if (d.data.type === ROW_TYPE.SUBSET) {
+                   return ( 'subSetSize row-type-subset' );
+                }
+                if (d.data.type === ROW_TYPE.GROUP) {
+                   return ( 'subSetSize row-type-group' );
+                }
+            })
             .attr({
-                class: 'subSetSize',
+                //class: 'subSetSize',
                 transform: function (d) {
                     var y = 0;
                     if (d.data.type !== ROW_TYPE.SUBSET)
