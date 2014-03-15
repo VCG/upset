@@ -41,24 +41,23 @@
                         <!--<option id='noGrouping' value="noGrouping">No Grouping</option>-->
                     <!--</select>-->
             <!--</span>-->
-                <table>
-                    <tr>
-                        <th>First, group by
-                        </th>
-                    </tr>
-                    <tr>
-                        <td><input type='radio' id='groupBySet' name="group" checked="true"><label for="groupBySet">Sets</label></td>
-                    </tr>
-                    <tr>
-                        <td><input type='radio' id='groupByIntersectionSize' name="group"><label for="groupByIntersectionSize">Intersection Size</label></td>
-                    </tr>
-                    <tr>
-                        <td><input type='radio' id='groupByRelevanceMeasure' name="group"><label for="groupByRelevanceMeasure">Relevance Measure</label></td>
-                    </tr>
-                    <tr>
-                        <td><input type='radio' id='noGrouping' name="group"><label for="noGrouping">Don't Group</label></td>
-                    </tr>
-                </table>
+
+                <div class="configHeader">First, group by
+                     </div>
+                    
+                    
+                        <div><input type='radio' id='groupBySet' name="group" checked="true"><label for="groupBySet">Sets</label></div>
+
+
+                <div><input type='radio' id='groupByIntersectionSize' name="group"><label for="groupByIntersectionSize">Intersection Size</label></div>
+
+
+                <div><input type='radio' id='groupByRelevanceMeasure' name="group"><label for="groupByRelevanceMeasure">Relevance Measure</label></div>
+
+
+                <div><input type='radio' id='noGrouping' name="group"><label for="noGrouping">Don't Group</label></div>
+                    
+                
             </div>
 
             <!--<div id="groupL2Config" class="configTable">-->
@@ -75,75 +74,70 @@
             <!--</div>-->
 
             <div id="groupL2Config" class="configTable">
-                <table>
-                    <tr>
-                        <th>Then, group by
-                        </th>
-                    </tr>
-                    <tr>
-                        <td><input type='radio' id='groupBySetL2' name="groupL2"><label for="groupBySetL2">Sets</label></td>
-                    </tr>
-                    <tr>
-                        <td><input type='radio' id='groupByIntersectionSizeL2' name="groupL2"><label for="groupByIntersectionSizeL2">Intersection Size</label></td>
-                    </tr>
-                    <tr>
-                        <td><input type='radio' id='groupByRelevanceMeasureL2' name="groupL2"><label for="groupByRelevanceMeasureL2">Relevance Measure</label></td>
-                    </tr>
-                    <tr>
-                        <td><input type='radio' id='noGroupingL2' name="groupL2" checked="true"><label for="noGroupingL2">Don't Group</label></td>
-                    </tr>
-                </table>
+                <div class="configHeader">Then, group by</div>
+                     <div><input type='radio' id='groupBySetL2' name="groupL2"><label for="groupBySetL2">Sets</label></div>
+                    
+                    
+                        <div><input type='radio' id='groupByIntersectionSizeL2' name="groupL2"><label for="groupByIntersectionSizeL2">Intersection Size</label></div>
+                    
+                    
+                        <div><input type='radio' id='groupByRelevanceMeasureL2' name="groupL2"><label for="groupByRelevanceMeasureL2">Relevance Measure</label></div>
+                    
+                    
+                        <div><input type='radio' id='noGroupingL2' name="groupL2" checked="true"><label for="noGroupingL2">Don't Group</label></div>
+                    
+                
             </div>
 
             <div id="sortConfig" class="configTable">
-                <table>
-                    <tr>
-                        <th colspan='2'>Sort by
-                        <th>
-                    </tr>
-                    <tr>
-                        <td><input type='radio' id='sortIntersectionSize' name='sort'></td>
-                        <td>Intersection Size</td>
-                    </tr>
-                    <tr>
-                        <td><input type='radio' id='sortNrSetsInIntersection' name='sort'></td>
-                        <td># Sets in Intersection</td>
-                    </tr>
-                </table>
+               <div class="configHeader">
+                   Sort by
+               </div>
+
+                <div><input type='radio' id='sortNrSetsInIntersection' name='sort' checked="true">
+                    <label for="sortNrSetsInIntersection"># Sets in Intersection</label></div>
+
+                      <div><input type='radio' id='sortIntersectionSize' name='sort'><label for="sortIntersectionSize">
+                       Intersection Size</label></div>
+
+
+
+                <div><input type='radio' id="sortRelevanceMeasure" name='sort'>
+                    <label for="sortRelevanceMeasure"> Relevance Measure</label></div>
+
             </div>
 
             <div id='options' class='configTable'>
-                <table>
-                    <tr>
-                        <th >Options</th>
-                    </tr>
-                    <tr>
-                        <td><span class="option" id="collapseAll">Collapse Groups</span></td>
+                
+                    
+                        <div class="configHeader">Options</div>
+                    
+                    
+                        <div><span class="option" id="collapseAll">Collapse Groups</span></div>
 
-                    </tr>
-                    <tr> <td><span class="option" id="expandAll">Expand Groups</span></td></tr>
-                    <tr>
+                    
+                     <div><span class="option" id="expandAll">Expand Groups</span></div>
+                    
 
-                        <td><input type='checkbox' id='hideEmpties' checked='true'><label for="hideEmpties">Hide Empty Intersections</label></td>
-                    </tr>
-                </table>
+                        <div><input type='checkbox' id='hideEmpties' checked='true'><label for="hideEmpties">Hide Empty Intersections</label></div>
+                    
+                
             </div>
 
             <div id='intersectionSize' class='configTable'>
-                <table>
-                    <tr>
-                        <th colspan='2'>Limit to</th>
-                    </tr>
-                    <tr>
-                        <td>At least <input id='minCardinality' type='number' min='0' max='12' value='0'>
-                            intersections.
-                        <td>
-                    </tr>
-                    <tr>
-                        <td>At most <input id='maxCardinality' type='number' min='0' max='12'> intersections.</td>
+                
+                    
+                        <div class="configHeader">Limit to</div>
+                    
+                    
+                        <div>At least <input id='minCardinality' type='number' min='0' max='12' value='0'>
+                            intersections.</div>
+                    
+                    
+                        <div>At most <input id='maxCardinality' type='number' min='0' max='12'> intersections.</div>
 
-                    </tr>
-                </table>
+                    
+                
             </div>
         </div>
     </div>

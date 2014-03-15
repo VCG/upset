@@ -6,38 +6,40 @@ var SET_SIZE_GROUP_PREFIX = 'SetSizeG_';
 var EMPTY_GROUP_ID = 'EmptyGroup';
 var SET_BASED_GROUPING_PREFIX = "SetG_";
 
-var handleLogicGroups= function(subsets,dataRows,level){
+var handleLogicGroups = function (subsets, dataRows, level) {
     var addGroups = [];
     var oldGroupIDs = {};
-    if (previousState!=false) previousState.logicGroups.forEach(function(d){oldGroupIDs[d.id]=1})
-    UpSetState.logicGroups.forEach(function(d){
-        if (d.id in oldGroupIDs){}
+    if (previousState != false) previousState.logicGroups.forEach(function (d) {
+        oldGroupIDs[d.id] = 1
+    })
+    UpSetState.logicGroups.forEach(function (d) {
+        if (d.id in oldGroupIDs) {
+        }
         else {
             var group = new Group(d.id, d.groupName, level);
-            var compareList= []
-            d.orClauses.forEach(function(orClause){
+            var compareList = []
+            d.orClauses.forEach(function (orClause) {
 
                 var compareObject = []
-                for (key in orClause){
+                for (key in orClause) {
                     compareObject.push(orClause[key].state);
                 }
                 compareList.push(compareObject)
             })
 
             var isAhit = true;
-            subsets.forEach(function(subset){
+            subsets.forEach(function (subset) {
 
                 isAhit = true;
                 var combinedSets = subset.combinedSets;
-                compareList.forEach(function(compare){
+                compareList.forEach(function (compare) {
                     var csLength = combinedSets.length;
-                    if (isAhit && csLength==compare.length ){
-                        for (var i =0; i<csLength;i++){
+                    if (isAhit && csLength == compare.length) {
+                        for (var i = 0; i < csLength; i++) {
                             isAhit &= (
-                                (combinedSets[i]==compare[i])
-                                || compare[i]==2 );
+                                (combinedSets[i] == compare[i])
+                                    || compare[i] == 2 );
                         }
-
 
                     }
                 })
@@ -47,21 +49,21 @@ var handleLogicGroups= function(subsets,dataRows,level){
             })
 
             addGroups.push(group)
-        };
+        }
+        ;
     })
 //    console.log(addGroups);
 
-    if (addGroups.length>0){
-        var groupElements= unwrapGroups(addGroups)
+    if (addGroups.length > 0) {
+        var groupElements = unwrapGroups(addGroups)
         console.log(groupElements
         );
 
         groupElements.reverse()
-        groupElements.forEach(function(addGroup){
+        groupElements.forEach(function (addGroup) {
             dataRows.unshift(addGroup)
         })
     }
-
 
 }
 
@@ -149,24 +151,28 @@ var collapseAggregate = function (aggregate) {
 
 // ----------------------- Sort Functions ----------------------------
 
-function getFilteredSubSets() {
+/** Filters the provided list of subsets to include only those of length >0. If no list of subsets is provided the global list is used. */
+function getFilteredSubSets(subSetsToFilter) {
+    if (!subSetsToFilter) {
+        subSetsToFilter = subSets;
+    }
     if (!UpSetState.hideEmpties) {
-        return subSets.slice(0);
+        return subSetsToFilter.slice(0);
     }
     var filteredSubSets = []
-    for (var i = 0; i < subSets.length; i++) {
-        if (subSets[i].items.length > 0) {
-            filteredSubSets.push(subSets[i]);
+    for (var i = 0; i < subSetsToFilter.length; i++) {
+        if (subSetsToFilter[i].items.length > 0) {
+            filteredSubSets.push(subSetsToFilter[i]);
         }
     }
     return filteredSubSets;
 }
 
-function sortBySetItem(subSets, set) {
+var sortBySetItem = function (subSets, set) {
     if (!set) {
         set = usedSets[0];
     }
-    var dataRows = getFilteredSubSets();
+    var dataRows = getFilteredSubSets(subSets);
     var setIndex = usedSets.indexOf(set);
     dataRows.sort(function (a, b) {
         // move all elements that contain the clicked set to the top
@@ -183,8 +189,8 @@ function sortBySetItem(subSets, set) {
     return dataRows;
 }
 
-function sortByCombinationSize(subsets) {
-    var dataRows = getFilteredSubSets();
+var sortByCombinationSize = function(subSets) {
+    var dataRows = getFilteredSubSets(subSets);
 
 // sort by number of combinations
     dataRows.sort(function (a, b) {
@@ -198,8 +204,8 @@ function sortByCombinationSize(subsets) {
 }
 
 /** sort by size of set overlap */
-function sortBySubSetSize(subsets) {
-    var dataRows = getFilteredSubSets();
+var sortBySubSetSize = function(subSets) {
+    var dataRows = getFilteredSubSets(subSets);
     dataRows.sort(function (a, b) {
         return b.setSize - a.setSize;
     });
@@ -207,8 +213,8 @@ function sortBySubSetSize(subsets) {
 }
 
 /** sort by size of set overlap */
-function sortByExpectedValue(subSets) {
-    var dataRows = getFilteredSubSets();
+var sortByExpectedValue = function(subSets) {
+    var dataRows = getFilteredSubSets(subSets);
 
     dataRows.sort(function (a, b) {
         return Math.abs(b.expectedValueDeviation) - Math.abs(a.expectedValueDeviation);
@@ -242,9 +248,10 @@ var unwrapGroups = function (groupList) {
                 dataRows = dataRows.concat(unwrapGroups(group.nestedGroups, []));
             }
             else {
-                for (var j = 0; j < group.visibleSets.length; j++) {
-                    dataRows.push(group.visibleSets[j]);
-                }
+                dataRows = dataRows.concat(StateMap[UpSetState.sorting](group.visibleSets));
+//                for (var j = 0; j < group.visibleSets.length; j++) {
+//                    dataRows.push(group.visibleSets[j]);
+//                }
                 if (group.aggregate.subSets.length > 0 && !UpSetState.hideEmpties) {
                     dataRows.push(group.aggregate);
                     if (!group.aggregate.isCollapsed) {
@@ -282,17 +289,16 @@ var StateOpt = {
     sortByCombinationSize: 'sortByCombinationSize',
     sortBySubSetSize: 'sortBySubSetSize',
     sortByExpectedValue: 'sortByExpectedValue',
-    sortBySubSetSize: 'sortBySubSetSize',
     sortBySetItem: 'sortBySetItem'
 };
 
 var UpSetState = {
     collapseAll: false,
     expandAll: false,
-   // collapseChanged: false,
+    // collapseChanged: false,
     grouping: StateOpt.groupBySet,
     levelTwoGrouping: undefined,
-    sorting: undefined,
+    sorting: StateOpt.sortByCombinationSize,
 
     /** hide empty subsets, groups and aggregates */
     hideEmpties: true,
@@ -305,8 +311,8 @@ var UpSetState = {
     forceUpdate: false,
 
     /** user defined logic groups **/
-    logicGroups:[],
-    logicGroupChanged:false
+    logicGroups: [],
+    logicGroupChanged: false
 
 };
 
@@ -315,7 +321,6 @@ var previousState = false;
 var updateState = function (parameter) {
 
     var forceUpdate = !previousState || UpSetState.forceUpdate || (UpSetState.hideEmpties != previousState.hideEmpties);
-
 
     // true if pure sorting - no grouping
     if ((UpSetState.sorting && !UpSetState.grouping) && (forceUpdate || (previousState && previousState.sorting !== UpSetState.sorting))) {
@@ -336,18 +341,12 @@ var updateState = function (parameter) {
         dataRows = unwrapGroups(levelOneGroups);
     }
 
-    if(UpSetState.logicGroupChanged ){
-        handleLogicGroups(subSets,dataRows,1);
+    if (UpSetState.logicGroupChanged) {
+        handleLogicGroups(subSets, dataRows, 1);
         UpSetState.logicGroupChanged = false;
 //        console.log("datarows:",levelOneGroups[0]);
     }
 
-
-
-
-
-
-    
     UpSetState.forceUpdate = false;
 
     renderRows.length = 0;

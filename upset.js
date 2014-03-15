@@ -47,14 +47,17 @@ $(EventManager).bind("item-selection-activated", function (event, data) {
 
 $(EventManager).bind("ui-resize", function (event, data) {
     plot(Math.floor(data.newWidth * .66), Math.floor(data.newHeight));
+    plotSetOverview();
 });
 
 $(EventManager).bind("ui-vertical-resize", function (event, data) {
     plot(undefined, Math.floor(data.newHeight));
+    plotSetOverview();
 });
 
 $(EventManager).bind("ui-horizontal-resize", function (event, data) {
     plot(Math.floor(data.newWidth * .66), undefined);
+    plotSetOverview();
 });
 
 function plot(width, height) {
@@ -115,7 +118,10 @@ function plot(width, height) {
     initRows();
 
     d3.select('#vis').select('svg').remove();
-    var svg = d3.select('#vis').append('svg').attr('width', w)
+    var svg = d3.select('#vis')
+        .style('width', w + "px")
+      .append('svg')
+        .attr('width', w)
         .attr('height', svgHeight);
 
     var vis = svg.append("g").attr({
@@ -316,6 +322,7 @@ function plot(width, height) {
         })
         .call(expectedValueAxis);
 
+/*
     // Invisible background to capture the pan interaction with the subsets
     gRows.append('rect').attr({
         x: 0,
@@ -325,7 +332,7 @@ function plot(width, height) {
         fill: 'white',
         class: 'background-subsets'
     });
-
+*/
     plotSubSets();
     setUpSortSelections();
 
@@ -352,7 +359,7 @@ function plot(width, height) {
             }
             }).style("opacity", function (d) {
                 if (d.data.type === ROW_TYPE.SUBSET)
-                    return gRows.selectAll('.row')[0].length ? 1 : 0;
+                    return gRows.selectAll('.row')[0].length == 0 ? 1 : 0;
                 else
                     return gRows.selectAll('.row')[0].length ? 0 : 1;
             })
