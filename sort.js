@@ -357,7 +357,7 @@ var updateState = function (parameter) {
         var count = 1;
         if (registry.hasOwnProperty(element.id)) {
             count = registry[element.id];
-            count += 1;
+            count = Utilities.generateUuid;
             registry[element.id] = count;
         }
         else {
