@@ -781,17 +781,6 @@ function plot(width, height) {
             }
             l2.prop('disabled', true);
         }
-//=======
-//        d3.selectAll('#sortNrSetsInIntersection').on(
-//            'click',
-//            function (d) {
-//                UpSetState.sorting = StateOpt.sortByCombinationSize;
-//                UpSetState.grouping = undefined;
-//                UpSetState.levelTwoGrouping = undefined;
-//                updateState();
-//                rowTransition();
-//            });
-//>>>>>>> 247eadd226a2d80d14f34dee64350dfa054d8fbf
 
         // ----------- grouping L1 -------------------------
 

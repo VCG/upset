@@ -376,7 +376,7 @@ var updateState = function (parameter) {
     updateQueryParameters();
 
     var status = $('#configStatus');
-    console.log(status);
-    status.append('Do you want to see status text here?');
+
+    status.text('Do you want to see status text here?');
     console.log(status.prop('text'));
 };

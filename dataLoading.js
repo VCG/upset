@@ -390,6 +390,8 @@ function parseDataSet(data, dataSetDescription) {
     var maxCardSpinner = document.getElementById('maxCardinality');
     maxCardSpinner.value = UpSetState.maxCardinality;
     maxCardSpinner.max = UpSetState.maxCardinality;
+    var minCardSpinner = document.getElementById('minCardinality');
+    minCardSpinner.max = UpSetState.maxCardinality;
 }
 
 function setUpSubSets() {
