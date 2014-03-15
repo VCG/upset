@@ -1,15 +1,22 @@
 /**
  * author: Alexander Lex - alex@seas.harvard.edu
  * author: Nils Gehlenborg - nils@hms.harvard.edu
- * author: Hendrik Srtobelt - strobelt@seas.harvard.edu.
+ * author: Hendrik Srtobelt - strobelt@seas.harvard.edu
  * author: Romain Vuillemot - romain.vuillemot@gmail.com
  */
 
-var dataSetDescriptions;
+var dataSetDescriptions, queryParameters = {};;
 
-$.when($.ajax({ url: 'datasets.json', dataType: 'json' })).then(function (data, textStatus, jqXHR) {
-    loadDataSetDescriptions(data);
-});
+retrieveQueryParameters();
+
+$.when($.ajax({ url: 'datasets.json', dataType: 'json' })).then(
+    function (data, textStatus, jqXHR) {
+        loadDataSetDescriptions(data);
+    },
+    function(data, textStatus, jqXHR) {
+        console.error( 'Error loading "' + this.url + '".' );
+    });
+
 
 function loadDataSetDescriptions(dataSetList) {
 
@@ -20,31 +27,21 @@ function loadDataSetDescriptions(dataSetList) {
     for (var i = 0; i < dataSetList.length; ++i) {
         console.log("Loading " + dataSetList[i])
 
-        descriptionDeferreds.push(
-            $.ajax({ url: dataSetList[i], dataType: 'json' })
-        );
+        var deferred = $.ajax({ url: dataSetList[i], dataType: 'json', async: false });
+
+        if ( deferred.statusText === "success" ) {
+            var description = deferred.responseJSON;
+
+            // preprend data file path (based on path to description in data set list)
+            description.file = dataSetList[i].substring(0, dataSetList[i].lastIndexOf('/')) + '/' + description.file;
+
+            descriptions.push(description);
+        }
     }
 
-    // when all requests have finished, process the responses
-    $.when.apply($, descriptionDeferreds).then(
-        function () {
-            for (var j = 0; j < arguments.length; ++j) {
-                var description = arguments[j][0];
-
-                // preprend data file path (based on path to description in data set list)
-                description.file = dataSetList[j].substring(0, dataSetList[j].lastIndexOf('/')) + '/' + description.file;
-
-                descriptions.push(description);
-            }
-
-            load(descriptions);
-        },
-        function (object, status, error) {
-            console.error('Unable to load ' + object.responseText);
-            console.error(error.message);
-        }
-    );
+    load(descriptions);
 }
+
 var setUpConfiguration = function () {
 
     var maxCardSpinner = document.getElementById('maxCardinality');
@@ -69,6 +66,7 @@ var setUpConfiguration = function () {
         updateState();
         // TODO: need to call updateTransition instead, but this needs to be exposed first
         plot();
+        plotSetOverview();
     };
     hideEmptiesCheck.addEventListener('click', hideEmptiesFu);
 
@@ -89,12 +87,9 @@ var setUpConfiguration = function () {
         });
 }
 
-function load(descriptions) {
-
-    dataSetDescriptions = descriptions;
+function retrieveQueryParameters() {
 
     // Variables from query string
-    queryParameters = {};
     var queryString = location.search.substring(1),
         re = /([^&=]+)=([^&]*)/g, m;
 
@@ -106,12 +101,28 @@ function load(descriptions) {
     queryParameters['dataset'] = parseInt(queryParameters['dataset']) || 0;
     queryParameters['duration'] = queryParameters['duration'] || 1000;
     queryParameters['orderBy'] = queryParameters['orderBy'] || "subsetSize"; // deviation, intersection, specific set
-    queryParameters['groupBy'] = queryParameters['groupBy'] || "set"; // setSize, 
+    queryParameters['grouping'] = queryParameters['grouping'] == "undefined" ? undefined : queryParameters['grouping'] || "groupBySet"; // groupByIntersectionSize, 
     queryParameters['selection'] = queryParameters['selection'] || "";
     // Missing item space query..
 
-    setUpConfiguration();
+}
 
+function updateQueryParameters() {
+    var urlQueryString = "";
+    if (Object.keys(queryParameters).length > 0) {
+        urlQueryString = "?";
+        for (var q in queryParameters)
+            urlQueryString += (q + "=" + queryParameters[q]) + "&";
+        urlQueryString = urlQueryString.substring(0, urlQueryString.length - 1);
+    }
+
+    history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + urlQueryString);
+}
+
+function load(descriptions) {
+
+    dataSetDescriptions = descriptions;
+    setUpConfiguration();
     loadDataSet(queryParameters['dataset']);
 }
 
@@ -415,18 +426,10 @@ function change() {
     previousState = undefined;
 
     loadDataSet(this.options[this.selectedIndex].value);
+
     queryParameters['dataset'] = this.options[this.selectedIndex].value;
+    updateQueryParameters();
 
-    var urlQueryString = "";
-    //  console.log("qa", queryParameters.length)
-    if (Object.keys(queryParameters).length > 0) {
-        urlQueryString = "?";
-        for (var q in queryParameters)
-            urlQueryString += (q + "=" + queryParameters[q]) + "&";
-        urlQueryString = urlQueryString.substring(0, urlQueryString.length - 1);
-    }
-
-    history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + urlQueryString);
     clearSelections();
 }
 
