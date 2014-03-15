@@ -1,11 +1,13 @@
 /**
  * author: Alexander Lex - alex@seas.harvard.edu
  * author: Nils Gehlenborg - nils@hms.harvard.edu
- * author: Hendrik Srtobelt - strobelt@seas.harvard.edu.
+ * author: Hendrik Srtobelt - strobelt@seas.harvard.edu
  * author: Romain Vuillemot - romain.vuillemot@gmail.com
  */
 
-var dataSetDescriptions;
+var dataSetDescriptions, queryParameters = {};;
+
+retrieveQueryParameters();
 
 $.when($.ajax({ url: 'datasets.json', dataType: 'json' })).then(
     function (data, textStatus, jqXHR) {
@@ -84,12 +86,9 @@ var setUpConfiguration = function () {
         });
 }
 
-function load(descriptions) {
-
-    dataSetDescriptions = descriptions;
+function retrieveQueryParameters() {
 
     // Variables from query string
-    queryParameters = {};
     var queryString = location.search.substring(1),
         re = /([^&=]+)=([^&]*)/g, m;
 
@@ -101,12 +100,28 @@ function load(descriptions) {
     queryParameters['dataset'] = parseInt(queryParameters['dataset']) || 0;
     queryParameters['duration'] = queryParameters['duration'] || 1000;
     queryParameters['orderBy'] = queryParameters['orderBy'] || "subsetSize"; // deviation, intersection, specific set
-    queryParameters['groupBy'] = queryParameters['groupBy'] || "set"; // setSize, 
+    queryParameters['grouping'] = queryParameters['grouping'] == "undefined" ? undefined : queryParameters['grouping'] || "groupBySet"; // groupByIntersectionSize, 
     queryParameters['selection'] = queryParameters['selection'] || "";
     // Missing item space query..
 
-    setUpConfiguration();
+}
 
+function updateQueryParameters() {
+    var urlQueryString = "";
+    if (Object.keys(queryParameters).length > 0) {
+        urlQueryString = "?";
+        for (var q in queryParameters)
+            urlQueryString += (q + "=" + queryParameters[q]) + "&";
+        urlQueryString = urlQueryString.substring(0, urlQueryString.length - 1);
+    }
+
+    history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + urlQueryString);
+}
+
+function load(descriptions) {
+
+    dataSetDescriptions = descriptions;
+    setUpConfiguration();
     loadDataSet(queryParameters['dataset']);
 }
 
@@ -404,18 +419,10 @@ function change() {
     previousState = undefined;
 
     loadDataSet(this.options[this.selectedIndex].value);
+
     queryParameters['dataset'] = this.options[this.selectedIndex].value;
+    updateQueryParameters();
 
-    var urlQueryString = "";
-    //  console.log("qa", queryParameters.length)
-    if (Object.keys(queryParameters).length > 0) {
-        urlQueryString = "?";
-        for (var q in queryParameters)
-            urlQueryString += (q + "=" + queryParameters[q]) + "&";
-        urlQueryString = urlQueryString.substring(0, urlQueryString.length - 1);
-    }
-
-    history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + urlQueryString);
     clearSelections();
 }
 

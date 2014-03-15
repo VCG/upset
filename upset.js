@@ -249,7 +249,6 @@ function plot(width, height) {
             },
             'text-anchor': 'end'
         })
-
         .on('mouseover', mouseoverColumn)
         .on('mouseout', mouseoutColumn)
 
@@ -830,7 +829,7 @@ function plot(width, height) {
         d3.selectAll('#groupByRelevanceMeasureL2').on(
             'click',
             function (d) {
-                              UpSetState.levelTwoGrouping = StateOpt.groupByRelevanceMeasure;
+                UpSetState.levelTwoGrouping = StateOpt.groupByRelevanceMeasure;
                 updateState();
                 rowTransition();
             });

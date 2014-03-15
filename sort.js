@@ -296,7 +296,8 @@ var UpSetState = {
     collapseAll: false,
     expandAll: false,
     // collapseChanged: false,
-    grouping: StateOpt.groupBySet,
+
+    grouping: queryParameters["grouping"] || StateOpt.groupBySet,
     levelTwoGrouping: undefined,
     sorting: StateOpt.sortByCombinationSize,
 
@@ -370,4 +371,7 @@ var updateState = function (parameter) {
 
     });
     previousState = JSON.parse(JSON.stringify(UpSetState));
+
+    queryParameters["grouping"] = UpSetState.grouping;
+    updateQueryParameters();
 };
