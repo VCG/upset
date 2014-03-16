@@ -70,8 +70,6 @@ $(EventManager).bind("loading-dataset-finished", function (event, data) {
     $("#data-loading-indicator").fadeOut(1000);
 });
 
-
-
 function plot(width, height) {
 
     var majorPadding = 5;
@@ -132,7 +130,7 @@ function plot(width, height) {
     d3.select('#vis').select('svg').remove();
     var svg = d3.select('#vis')
         .style('width', w + "px")
-      .append('svg')
+        .append('svg')
         .attr('width', w)
         .attr('height', svgHeight);
 
@@ -309,7 +307,7 @@ function plot(width, height) {
 
     vis.append('text').text('Deviation from Expected Value')
         .attr({
-        class: 'columnLabel',
+            class: 'columnLabel',
             //  id: 'sortRelevanceMeasureGlobal',
             transform: 'translate(' + (xStartExpectedValues + expectedValueWidth / 2) + ',' + ( labelTopPadding + 10) + ')'
         });
@@ -335,17 +333,17 @@ function plot(width, height) {
         })
         .call(expectedValueAxis);
 
-/*
-    // Invisible background to capture the pan interaction with the subsets
-    gRows.append('rect').attr({
-        x: 0,
-        y: textHeight,
-        width: w - 120,
-        height: h,
-        fill: 'white',
-        class: 'background-subsets'
-    });
-*/
+    /*
+     // Invisible background to capture the pan interaction with the subsets
+     gRows.append('rect').attr({
+     x: 0,
+     y: textHeight,
+     width: w - 120,
+     height: h,
+     fill: 'white',
+     class: 'background-subsets'
+     });
+     */
     plotSubSets();
     setUpSortSelections();
 
@@ -523,22 +521,17 @@ function plot(width, height) {
 
         // ------------------------ set size bars -------------------
 
-        vis.selectAll('.row').filter(function(d) {
-            if(d.data.type === ROW_TYPE.SUBSET)
+        vis.selectAll('.row').filter(function (d) {
+            if (d.data.type === ROW_TYPE.SUBSET)
                 return d;
         })
             .append('rect')
             .on('click', function (d) {
-               
-                    var selection = Selection.fromSubset(d.data);
-                    selections.addSelection(selection);
-                    selections.setActive(selection);
-               
+                intersectionClicked(d);
+
             })
             .attr("class", function (d) {
-              
-                    return ( 'subSetSize row-type-subset' );
-                
+                return ( 'subSetSize row-type-subset' );
             })
             .attr({
                 //class: 'subSetSize',
@@ -562,65 +555,81 @@ function plot(width, height) {
             .on('mouseover', mouseoverRow)
             .on('mouseout', mouseoutRow);
 
+        vis.selectAll('.row')
+            .append('text').text(function (d) {
+                return d.data.setSize;
+            }).attr({class: 'intersectionSizeText intersectionSizeLabel',
+                y: cellSize - 6,
+                x: function (d) {
+                    return xStartSetSizes + subSetSizeScale(d.data.setSize) + 2;
+                }
 
-        groupRows = vis.selectAll('.row').filter(function(d) {
-            if(d.data.type === ROW_TYPE.GROUP)
+            }).on('click', function (d) {
+                intersectionClicked(d)
+            });
+
+        var intersectionClicked = function (d) {
+            var selection = Selection.fromSubset(d.data);
+            selections.addSelection(selection);
+            selections.setActive(selection);
+        }
+
+        groupRows = vis.selectAll('.row').filter(function (d) {
+            if (d.data.type === ROW_TYPE.GROUP)
                 return [];
         }).append("g")
 
-        groupRows.each(function(e, j) {
+        groupRows.each(function (e, j) {
 
-          var g = d3.select(this);
-          var max_scale = subSetSizeScale.domain()[1]-10;
+            var g = d3.select(this);
+            var max_scale = subSetSizeScale.domain()[1] - 10;
 
-          var i = 0;
-          var nbLevels = Math.ceil(e.data.setSize/max_scale);
-          var data = d3.range(Math.ceil(e.data.setSize/max_scale)).map(function() {
-            var f = JSON.parse(JSON.stringify(e))
-            console.log(e, f, i, e.data.setSize)
-            if(i==nbLevels-1)
-              f.data.setSize = (f.data.setSize%max_scale);
-            else
-              f.data.setSize = max_scale;
-            console.log("aaa", i, nbLevels, f.data.setSize)
-            i++;
-            return f;
-          })
-         
-
-          g.selectAll(".row-type-group").data(data).enter().append('rect')
-            .on('click', function (d) {
-              var selection = Selection.fromSubset(d.data.subSets);
-              selections.addSelection(selection);
-              selections.setActive(selection);  
+            var i = 0;
+            var nbLevels = Math.ceil(e.data.setSize / max_scale);
+            var data = d3.range(Math.ceil(e.data.setSize / max_scale)).map(function () {
+                var f = JSON.parse(JSON.stringify(e))
+                console.log(e, f, i, e.data.setSize)
+                if (i == nbLevels - 1)
+                    f.data.setSize = (f.data.setSize % max_scale);
+                else
+                    f.data.setSize = max_scale;
+                console.log("aaa", i, nbLevels, f.data.setSize)
+                i++;
+                return f;
             })
-            .attr("class", function (d) {
-             return ( 'subSetSize row-type-group' );
-              
-            })
-            .attr({
-                //class: 'subSetSize',
-                transform: function (d) {
-                    var y = 0;
-                    if (d.data.type !== ROW_TYPE.SUBSET)
-                        y = 0;//cellSize / 3 * .4;
-                    return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
-                },
 
-                width: function (d) {
-                    return subSetSizeScale(d.data.setSize);
-                },
-                height: function (d, i) {
+            g.selectAll(".row-type-group").data(data).enter().append('rect')
+                .on('click', function (d) {
+                    var selection = Selection.fromSubset(d.data.subSets);
+                    selections.addSelection(selection);
+                    selections.setActive(selection);
+                })
+                .attr("class", function (d) {
+                    return ( 'subSetSize row-type-group' );
+
+                })
+                .attr({
+                    //class: 'subSetSize',
+                    transform: function (d) {
+                        var y = 0;
+                        if (d.data.type !== ROW_TYPE.SUBSET)
+                            y = 0;//cellSize / 3 * .4;
+                        return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
+                    },
+
+                    width: function (d) {
+                        return subSetSizeScale(d.data.setSize);
+                    },
+                    height: function (d, i) {
                         return cellSize;
-                }
-            })
-            .style("opacity", function(d, i) {
-              return .5 + .5 * i/nbLevels;
-            })
-            .on('mouseover', mouseoverRow)
-            .on('mouseout', mouseoutRow);
+                    }
+                })
+                .style("opacity", function (d, i) {
+                    return .5 + .5 * i / nbLevels;
+                })
+                .on('mouseover', mouseoverRow)
+                .on('mouseout', mouseoutRow);
         })
-
 
         renderOverlay();
         // Rendering the highlights for selections on top of the selected subsets
@@ -900,7 +909,6 @@ function plot(width, height) {
                 rowTransition();
             });
 
-
         // ---------------- Grouping L2 -----------
 
         d3.selectAll('#groupByIntersectionSizeL2').on(
@@ -1030,7 +1038,6 @@ function plot(width, height) {
             });
 
     }
-
 
     vis.append('text').text('SVG ' + w + "/" + svgHeight)
         .attr({

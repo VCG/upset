@@ -75,6 +75,13 @@ h1 {
     font-size: 11pt;
 }
 
+.intersectionSizeLabel {
+    /*dominant-baseline: central;*/
+    font: sans-serif;
+    text-anchor: left;
+    font-size: 8pt;
+}
+
 .columnLabel {
     dominant-baseline: central;
     font: 13px sans-serif;
