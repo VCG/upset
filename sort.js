@@ -131,6 +131,23 @@ var groupBySet = function (subSets, level) {
 /** Collapse or uncollapse group */
 var collapseGroup = function (group) {
     group.isCollapsed = !group.isCollapsed;
+    var inGroup = false;
+
+    var replacement = [];
+    for(var i = 1; i<dataRows.length; i++)
+    {
+        if (dataRows[i] === group || inGroup)
+        {
+            inGroup = true;
+
+        }
+
+        if(!inGroup)
+        {
+
+        }
+
+    }
     UpSetState.collapseChanged = true;
     updateState();
 };
