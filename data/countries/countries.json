@@ -2,7 +2,7 @@
 	"file": "countries.csv",
 	"name": "Countries Exports by Products",
 	"header": 0,
-	"separator": ";",
+	"separator": ",",
 	"skip": 0,
 	"meta": [
 		{ "type": "id", "index": 0, "name": "Name" }
