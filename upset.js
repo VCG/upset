@@ -558,9 +558,25 @@ function plot(width, height) {
 
         groupRows.each(function(e, j) {
 
-          console.log(e)
+          var g = d3.select(this);
+          var max_scale = subSetSizeScale.domain()[1]-10;
 
-          var g = d3.select(this).append('rect')
+          var i = 0;
+          var nbLevels = Math.ceil(e.data.setSize/max_scale);
+          var data = d3.range(Math.ceil(e.data.setSize/max_scale)).map(function() {
+            var f = JSON.parse(JSON.stringify(e))
+            console.log(e, f, i, e.data.setSize)
+            if(i==nbLevels-1)
+              f.data.setSize = (f.data.setSize%max_scale);
+            else
+              f.data.setSize = max_scale;
+            console.log("aaa", i, nbLevels, f.data.setSize)
+            i++;
+            return f;
+          })
+         
+
+          g.selectAll(".row-type-group").data(data).enter().append('rect')
             .on('click', function (d) {
               var selection = Selection.fromSubset(d.data.subSets);
               selections.addSelection(selection);
@@ -582,12 +598,12 @@ function plot(width, height) {
                 width: function (d) {
                     return subSetSizeScale(d.data.setSize);
                 },
-                height: function (d) {
-                    if (d.data.type === ROW_TYPE.SUBSET)
+                height: function (d, i) {
                         return cellSize;
-                    else
-                        return cellSize;// / 3;
                 }
+            })
+            .style("opacity", function(d, i) {
+              return .5 + .5 * i/nbLevels;
             })
             .on('mouseover', mouseoverRow)
             .on('mouseout', mouseoutRow);
