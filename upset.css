@@ -220,6 +220,10 @@ th.attribute-header.selected {
     color: darkblue;
 }
 
+#venn-diagram-viewer {
+    display: none;
+}
+
 .venn-zero-set-area {
     fill: #eee;
 }
@@ -237,19 +241,19 @@ th.attribute-header.selected {
 }
 
 .venn-zero-set-area-active {
-    fill: #fee;
-}
-
-.venn-one-set-area-active {
-    fill: #fcc;
-}
-
-.venn-two-set-area-active {
     fill: #faa;
 }
 
-.venn-three-set-area-active {
+.venn-one-set-area-active {
     fill: #f99;
+}
+
+.venn-two-set-area-active {
+    fill: #f66;
+}
+
+.venn-three-set-area-active {
+    fill: #f33;
 }
 
 #title {
@@ -407,10 +411,6 @@ html, body, .ui-container {
 #data-loading-indicator {
     padding-left: 5px;
     padding-right: 5px;
-}
-
-#venn-diagram-viewer {
-    display: none;
 }
 
 .ui-header {
