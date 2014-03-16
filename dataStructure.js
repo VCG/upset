@@ -73,7 +73,7 @@ var sizeGroups = [];
 var setGroups = [];
 
 /** Venn diagram for tutorial mode */
-var venn = new VennDiagram("#venn-vis", 50);
+var venn = new VennDiagram("#venn-vis", 40);
 
 /** The current primary grouping */
 // TODO this is static for testing only
