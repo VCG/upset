@@ -75,6 +75,13 @@ h1 {
     font-size: 11pt;
 }
 
+.intersectionSizeLabel {
+    /*dominant-baseline: central;*/
+    font: sans-serif;
+    text-anchor: left;
+    font-size: 8pt;
+}
+
 .columnLabel {
     dominant-baseline: central;
     font: 13px sans-serif;
@@ -213,6 +220,10 @@ th.attribute-header.selected {
     color: darkblue;
 }
 
+#venn-diagram-viewer {
+    display: none;
+}
+
 .venn-zero-set-area {
     fill: #eee;
 }
@@ -230,19 +241,19 @@ th.attribute-header.selected {
 }
 
 .venn-zero-set-area-active {
-    fill: #fee;
-}
-
-.venn-one-set-area-active {
-    fill: #fcc;
-}
-
-.venn-two-set-area-active {
     fill: #faa;
 }
 
-.venn-three-set-area-active {
+.venn-one-set-area-active {
     fill: #f99;
+}
+
+.venn-two-set-area-active {
+    fill: #f66;
+}
+
+.venn-three-set-area-active {
+    fill: #f33;
 }
 
 #title {

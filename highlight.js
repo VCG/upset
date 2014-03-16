@@ -41,11 +41,15 @@ function mouseoverRow(d, i) {
 
     // plot Venn diagram with highlighting of selected subset
     if ( d.data.type === 'SUBSET_TYPE') {
-        venn.plot( [ d.data ] );
+        if ( usedSets.length === 2 || usedSets.length === 3 ) {
+            venn.plot( [ d.data ], usedSets.length );
+        }
     }
 
     if ( d.data.type === 'GROUP_TYPE') {
-        venn.plot( d.data.subSets );
+        if ( usedSets.length === 2 || usedSets.length === 3 ) {
+            venn.plot( d.data.subSets, usedSets.length );
+        }
     }
 
     d3.selectAll(".row .backgroundRect")
