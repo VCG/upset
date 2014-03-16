@@ -257,6 +257,7 @@ function plot(width, height) {
     vis.append('rect')
         .attr({
             class: 'labelBackground subsetSizeLabel',
+            id: 'sortIntersectionSizeGlobal',
             transform: 'translate(' + xStartSetSizes + ',' + (labelTopPadding) + ')',
             height: '20',
             width: subSetSizeWidth
@@ -287,7 +288,7 @@ function plot(width, height) {
     vis.append('rect')
         .attr({
             class: 'labelBackground expectedValueLabel',
-            // id: ,
+            id: 'sortRelevanceMeasureGlobal',
             transform: 'translate(' + xStartExpectedValues + ',' + ( labelTopPadding) + ')',
             height: '20',
             width: expectedValueWidth
@@ -919,8 +920,9 @@ function plot(width, height) {
                 UpSetState.sorting = StateOpt.sortBySubSetSize;
                 UpSetState.grouping = undefined;
                 UpSetState.levelTwoGrouping = undefined;
-                $('#noGroupingL2').prop('checked', true);
+                UpSetState.forceUpdate = true;
                 $('#noGrouping').prop('checked', true);
+                toggleGroupingL2(true);
                 $('#sortIntersectionSize').prop('checked', true);
 
                 updateState();
@@ -943,9 +945,10 @@ function plot(width, height) {
                 UpSetState.sorting = StateOpt.sortByExpectedValue;
                 UpSetState.grouping = undefined;
                 UpSetState.levelTwoGrouping = undefined;
-                $('#noGroupingL2').prop('checked', true);
+                UpSetState.forceUpdate = true;
                 $('#noGrouping').prop('checked', true);
                 $('#sortRelevanceMeasure').prop('checked', true);
+                toggleGroupingL2(true);
                 updateState();
                 rowTransition();
             });
