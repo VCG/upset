@@ -6,12 +6,15 @@ var SET_SIZE_GROUP_PREFIX = 'SetSizeG_';
 var EMPTY_GROUP_ID = 'EmptyGroup';
 var SET_BASED_GROUPING_PREFIX = "SetG_";
 
-var handleLogicGroups= function(subsets,dataRows,level){
+var handleLogicGroups = function (subsets, dataRows, level) {
     var addGroups = [];
     var oldGroupIDs = {};
-    if (previousState!=false) previousState.logicGroups.forEach(function(d){oldGroupIDs[d.id]=1})
-    UpSetState.logicGroups.forEach(function(d){
-        if (d.id in oldGroupIDs){}
+    if (previousState != false) previousState.logicGroups.forEach(function (d) {
+        oldGroupIDs[d.id] = 1
+    })
+    UpSetState.logicGroups.forEach(function (d) {
+        if (d.id in oldGroupIDs) {
+        }
         else {
             var group = new Group(d.id, d.groupName, level);
             var maskList= d.getListOfValues();
@@ -21,12 +24,13 @@ var handleLogicGroups= function(subsets,dataRows,level){
             });
 
             addGroups.push(group)
-        };
+        }
+        ;
     })
 
 
 
-    // TODO: @Alex: add unwrapped group -- maybe you solve this globally if unwrapped or not
+   // TODO: @Alex: add unwrapped group -- maybe you solve this globally if unwrapped or not
     if (addGroups.length>0){
         var groupElements= unwrapGroups(addGroups);
 
@@ -36,10 +40,9 @@ var handleLogicGroups= function(subsets,dataRows,level){
         })
     }
 
-
 }
 
-var groupByDeviation = function (subSets, level) {
+var groupByRelevanceMeasure = function (subSets, level) {
     var newGroups = [];
     newGroups.push(new Group('GROUP_POS_DEV', 'Positive Expected Value', level));
     newGroups.push(new Group('GROUP_POS_NEG', 'Negative Expected Value', level));
@@ -60,7 +63,7 @@ var groupByDeviation = function (subSets, level) {
     return newGroups;
 }
 
-var groupBySetSize = function (subSets, level) {
+var groupByIntersectionSize = function (subSets, level) {
     var newGroups = [];
     newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
     var maxSetSize = Math.min(usedSets.length, UpSetState.maxCardinality);
@@ -107,14 +110,14 @@ var collapseGroup = function (group) {
     updateState();
 };
 
-var toggleCollapseAll = function () {
-    if (UpSetState.collapseAll) {
-        UpSetState.unCollapseAll = true;
-    }
-    UpSetState.collapseAll = !UpSetState.collapseAll;
-    UpSetState.collapseChanged = true;
-    updateState();
-};
+//var toggleCollapseAll = function () {
+//    if (UpSetState.collapseAll) {
+//        UpSetState.unCollapseAll = true;
+//    }
+//    UpSetState.collapseAll = !UpSetState.collapseAll;
+//    UpSetState.collapseChanged = true;
+//    updateState();
+//};
 
 var collapseAggregate = function (aggregate) {
     aggregate.isCollapsed = !aggregate.isCollapsed;
@@ -123,24 +126,28 @@ var collapseAggregate = function (aggregate) {
 
 // ----------------------- Sort Functions ----------------------------
 
-function getFilteredSubSets() {
+/** Filters the provided list of subsets to include only those of length >0. If no list of subsets is provided the global list is used. */
+function getFilteredSubSets(subSetsToFilter) {
+    if (!subSetsToFilter) {
+        subSetsToFilter = subSets;
+    }
     if (!UpSetState.hideEmpties) {
-        return subSets.slice(0);
+        return subSetsToFilter.slice(0);
     }
     var filteredSubSets = []
-    for (var i = 0; i < subSets.length; i++) {
-        if (subSets[i].items.length > 0) {
-            filteredSubSets.push(subSets[i]);
+    for (var i = 0; i < subSetsToFilter.length; i++) {
+        if (subSetsToFilter[i].items.length > 0) {
+            filteredSubSets.push(subSetsToFilter[i]);
         }
     }
     return filteredSubSets;
 }
 
-function sortBySetItem(subSets, set) {
+var sortBySetItem = function (subSets, set) {
     if (!set) {
         set = usedSets[0];
     }
-    var dataRows = getFilteredSubSets();
+    var dataRows = getFilteredSubSets(subSets);
     var setIndex = usedSets.indexOf(set);
     dataRows.sort(function (a, b) {
         // move all elements that contain the clicked set to the top
@@ -157,8 +164,8 @@ function sortBySetItem(subSets, set) {
     return dataRows;
 }
 
-function sortByCombinationSize(subsets) {
-    var dataRows = getFilteredSubSets();
+var sortByCombinationSize = function(subSets) {
+    var dataRows = getFilteredSubSets(subSets);
 
 // sort by number of combinations
     dataRows.sort(function (a, b) {
@@ -172,8 +179,8 @@ function sortByCombinationSize(subsets) {
 }
 
 /** sort by size of set overlap */
-function sortBySubSetSize(subsets) {
-    var dataRows = getFilteredSubSets();
+var sortBySubSetSize = function(subSets) {
+    var dataRows = getFilteredSubSets(subSets);
     dataRows.sort(function (a, b) {
         return b.setSize - a.setSize;
     });
@@ -181,8 +188,8 @@ function sortBySubSetSize(subsets) {
 }
 
 /** sort by size of set overlap */
-function sortByExpectedValue(subSets) {
-    var dataRows = getFilteredSubSets();
+var sortByExpectedValue = function(subSets) {
+    var dataRows = getFilteredSubSets(subSets);
 
     dataRows.sort(function (a, b) {
         return Math.abs(b.expectedValueDeviation) - Math.abs(a.expectedValueDeviation);
@@ -207,7 +214,7 @@ var unwrapGroups = function (groupList) {
         if (UpSetState.collapseAll) {
             group.isCollapsed = true;
         }
-        if (UpSetState.unCollapseAll) {
+        if (UpSetState.expandAll) {
             group.isCollapsed = false;
         }
         if (!group.isCollapsed) {
@@ -216,9 +223,10 @@ var unwrapGroups = function (groupList) {
                 dataRows = dataRows.concat(unwrapGroups(group.nestedGroups, []));
             }
             else {
-                for (var j = 0; j < group.visibleSets.length; j++) {
-                    dataRows.push(group.visibleSets[j]);
-                }
+                dataRows = dataRows.concat(StateMap[UpSetState.sorting](group.visibleSets));
+//                for (var j = 0; j < group.visibleSets.length; j++) {
+//                    dataRows.push(group.visibleSets[j]);
+//                }
                 if (group.aggregate.subSets.length > 0 && !UpSetState.hideEmpties) {
                     dataRows.push(group.aggregate);
                     if (!group.aggregate.isCollapsed) {
@@ -230,14 +238,16 @@ var unwrapGroups = function (groupList) {
             }
         }
     }
-    UpSetState.unCollapseAll = false;
+    UpSetState.expandAll = false;
+    UpSetState.collapseAll = false;
+    UpSetState.collapseChanged = false;
     return dataRows;
 };
 
 var StateMap = {
-    groupBySetSize: groupBySetSize,
+    groupByIntersectionSize: groupByIntersectionSize,
     groupBySet: groupBySet,
-    groupByDeviation: groupByDeviation,
+    groupByRelevanceMeasure: groupByRelevanceMeasure,
 
     sortByCombinationSize: sortByCombinationSize,
     sortBySubSetSize: sortBySubSetSize,
@@ -247,24 +257,24 @@ var StateMap = {
 };
 
 var StateOpt = {
-    groupBySetSize: 'groupBySetSize',
+    groupByIntersectionSize: 'groupByIntersectionSize',
     groupBySet: 'groupBySet',
-    groupByDeviation: 'groupByDeviation',
+    groupByRelevanceMeasure: 'groupByRelevanceMeasure',
 
     sortByCombinationSize: 'sortByCombinationSize',
     sortBySubSetSize: 'sortBySubSetSize',
     sortByExpectedValue: 'sortByExpectedValue',
-    sortBySubSetSize: 'sortBySubSetSize',
     sortBySetItem: 'sortBySetItem'
 };
 
 var UpSetState = {
     collapseAll: false,
-    unCollapseAll: false,
-    collapseChanged: false,
-    grouping: StateOpt.groupBySet,
-    levelTwoGrouping: StateOpt.groupBySetSize,
-    sorting: undefined,
+    expandAll: false,
+    // collapseChanged: false,
+
+    grouping: queryParameters["grouping"] || StateOpt.groupBySet,
+    levelTwoGrouping: undefined,
+    sorting: StateOpt.sortByCombinationSize,
 
     /** hide empty subsets, groups and aggregates */
     hideEmpties: true,
@@ -272,13 +282,13 @@ var UpSetState = {
     /** Sets the upper threshold of cardinality of subsets */
     maxCardinality: undefined,
     /** Sets the lower threshold of cardinality of subsets */
-    minCardinality: undefined,
+    minCardinality: 0,
 
     forceUpdate: false,
 
     /** user defined logic groups **/
-    logicGroups:[],
-    logicGroupChanged:false
+    logicGroups: [],
+    logicGroupChanged: false
 
 };
 
@@ -287,8 +297,6 @@ var previousState = false;
 var updateState = function (parameter) {
 
     var forceUpdate = !previousState || UpSetState.forceUpdate || (UpSetState.hideEmpties != previousState.hideEmpties);
-
-
 
     // true if pure sorting - no grouping
     if ((UpSetState.sorting && !UpSetState.grouping) && (forceUpdate || (previousState && previousState.sorting !== UpSetState.sorting))) {
@@ -310,20 +318,13 @@ var updateState = function (parameter) {
     }
 
     // TODO: @alex here !
-    if(UpSetState.logicGroupChanged ){
+    if (UpSetState.logicGroupChanged) {
         // adds _NEW_ unwrapped logic groups to "dataRow"
-        handleLogicGroups(subSets,dataRows,1);
+        handleLogicGroups(subSets, dataRows, 1);
         UpSetState.logicGroupChanged = false;
 
     }
 
-
-
-
-
-
-    // unwrapGroups deals with collapse, so we can reset it
-    UpSetState.collapseChanged = false;
     UpSetState.forceUpdate = false;
 
     renderRows.length = 0;
@@ -333,7 +334,7 @@ var updateState = function (parameter) {
         var count = 1;
         if (registry.hasOwnProperty(element.id)) {
             count = registry[element.id];
-            count += 1;
+            count = Utilities.generateUuid;
             registry[element.id] = count;
         }
         else {
@@ -347,4 +348,12 @@ var updateState = function (parameter) {
 
     });
     previousState = JSON.parse(JSON.stringify(UpSetState));
+
+    queryParameters["grouping"] = UpSetState.grouping;
+    updateQueryParameters();
+
+//    var status = $('#configStatus');
+//
+//    status.text('Do you want to see status text here?');
+//    console.log(status.prop('text'));
 };

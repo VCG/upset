@@ -85,6 +85,8 @@ function plotSetOverview() {
     var setCellSize = 10;
     var textHeight = 60;
 
+    d3.selectAll(".visOverview").remove();
+
     var overview = d3.select('#vis').select('svg').append("g").attr({
         class: "visOverview",
         "transform": "translate(" + 0 + "," + 0 + ")"
@@ -146,8 +148,21 @@ function plotSetOverview() {
         return b.setSize - a.setSize;
     };
 
-
-    var unusedSetsLabels = overview.append("g").attr("class", "unusedSets").selectAll('.unsedSetsLabel')
+        
+    var unusedSetsLabels =  overview.append("foreignObject")
+        .attr("width", 710)
+        .attr("height", 200)
+        .attr("x", usedSets.length*cellSize)
+      .append("xhtml:div")
+        .style("overflow-x", "scroll")
+        .append("svg")
+        .attr({
+            height: textHeight*2,
+            width: unusedSets.length*cellSize
+        })
+        .append("g")
+        .attr("class", "unusedSets")
+        .selectAll('.unsedSetsLabel')
         .data(unusedSets)
         .enter();
 
@@ -157,7 +172,7 @@ function plotSetOverview() {
             .attr({
                 class: 'unusedSetSizeBackground',
                 transform: function (d, i) {
-                    return 'translate(' + (cellDistance * (i ) + usedSets.length*cellSize) + ', 60)'
+                    return 'translate(' + (cellDistance * (i )) + ', 60)'
                 },
                 height: textHeight,
                 width: cellSize
@@ -171,7 +186,7 @@ function plotSetOverview() {
         .attr({
             class: 'unusedSetSize',
             transform: function (d, i) {
-                return 'translate(' + (cellDistance * (i ) + usedSets.length*cellSize) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 60) + ')'
+                return 'translate(' + (cellDistance * i) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 60) + ')'
             }, // ' + (textHeight - 5) + ')'
             height: function (d) {
                 return setSizeScale(d.setSize);
@@ -194,7 +209,7 @@ function plotSetOverview() {
                 return d.elementName.substring(0, truncateAfter);
             },
                 transform: function (d, i) {
-                    return 'translate(' + (cellDistance * (i + 1) + usedSets.length*cellSize + 5) + ', 115) rotate(90)'
+                    return 'translate(' + (cellDistance * (i + 1) + 5) + ', 115) rotate(90)'
                 },
             y: cellSize - 3,
             x: 3,
@@ -207,7 +222,6 @@ function plotSetOverview() {
       .on('click', setClicked)
 
     function setClicked(d) {
-        console.log(d);
         updateSetContainment(d);        
         console.log(d.elementName + ": " + d.isSelected);
     }

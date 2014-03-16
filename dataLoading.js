@@ -1,15 +1,22 @@
 /**
  * author: Alexander Lex - alex@seas.harvard.edu
  * author: Nils Gehlenborg - nils@hms.harvard.edu
- * author: Hendrik Srtobelt - strobelt@seas.harvard.edu.
+ * author: Hendrik Srtobelt - strobelt@seas.harvard.edu
  * author: Romain Vuillemot - romain.vuillemot@gmail.com
  */
 
-var dataSetDescriptions;
+var dataSetDescriptions, queryParameters = {};;
 
-$.when($.ajax({ url: 'datasets.json', dataType: 'json' })).then(function (data, textStatus, jqXHR) {
-    loadDataSetDescriptions(data);
-});
+retrieveQueryParameters();
+
+$.when($.ajax({ url: 'datasets.json', dataType: 'json' })).then(
+    function (data, textStatus, jqXHR) {
+        loadDataSetDescriptions(data);
+    },
+    function(data, textStatus, jqXHR) {
+        console.error( 'Error loading "' + this.url + '".' );
+    });
+
 
 function loadDataSetDescriptions(dataSetList) {
 
@@ -20,79 +27,26 @@ function loadDataSetDescriptions(dataSetList) {
     for (var i = 0; i < dataSetList.length; ++i) {
         console.log("Loading " + dataSetList[i])
 
-        descriptionDeferreds.push(
-            $.ajax({ url: dataSetList[i], dataType: 'json' })
-        );
-    }
-
-    // when all requests have finished, process the responses
-    $.when.apply($, descriptionDeferreds).then(
-        function () {
-            for (var j = 0; j < arguments.length; ++j) {
-                var description = arguments[j][0];
+        var deferred = $.ajax({ url: dataSetList[i], dataType: 'json', async: false })
+            .success(function(response) {
+                var description = response; //deferred.responseJSON;
 
                 // preprend data file path (based on path to description in data set list)
-                description.file = dataSetList[j].substring(0, dataSetList[j].lastIndexOf('/')) + '/' + description.file;
+                description.file = dataSetList[i].substring(0, dataSetList[i].lastIndexOf('/')) + '/' + description.file;
 
-                descriptions.push(description);
-            }
-
-            load(descriptions);
-        },
-        function (object, status, error) {
-            console.error('Unable to load ' + object.responseText);
-            console.error(error.message);
-        }
-    );
-}
-
-function load(descriptions) {
-
-    dataSetDescriptions = descriptions;
-
-    // Variables from query string
-    queryParameters = {};
-    var queryString = location.search.substring(1),
-        re = /([^&=]+)=([^&]*)/g, m;
-
-    // Creates a map with the query string parameters
-    while (m = re.exec(queryString)) {
-        queryParameters[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+                descriptions.push(description);                
+            });
     }
 
-    queryParameters['dataset'] = parseInt(queryParameters['dataset']) || 0;
-    queryParameters['duration'] = queryParameters['duration'] || 1000;
-    queryParameters['orderBy'] = queryParameters['orderBy'] || "subsetSize"; // deviation, intersection, specific set
-    queryParameters['groupBy'] = queryParameters['groupBy'] || "set"; // setSize, 
-    queryParameters['selection'] = queryParameters['selection'] || "";
-    // Missing item space query..
+    load(descriptions);
+}
 
-    var header = d3.select('#header');
-
-    header.append('div').html('&darr; # intersections.').attr({id: 'sortIntersect',
-        class: 'myButton'});
-
-    header.append('div').html('Group by set size.').attr({id: 'groupSetSize',
-        class: 'myButton'});
-
-    header.append('div').html('Group by Sets.').attr({id: 'groupSet',
-        class: 'myButton'});
-
-    header.append('div').html('Group by Deviation.').attr({id: 'groupDeviation',
-        class: 'myButton'});
-
-    header.append('div').html('Group by Sets then Set Size.').attr({id: 'groupSetThenSize',
-        class: 'myButton'});
-
-    header.append('div').html('Toggle Collapse of All Groups.').attr({id: 'collapseGroups',
-        class: 'myButton'});
-
-    header.append('span').html('Min Cardinality').append('input').attr({id: 'minCardinality', type: 'number', min: '0', max: '12'});
-
-    header.append('span').html('Max Cardinality').append('input').attr({id: 'maxCardinality', type: 'number', min: '0', max: '12'});
+var setUpConfiguration = function () {
 
     var maxCardSpinner = document.getElementById('maxCardinality');
     var minCardSpinner = document.getElementById('minCardinality');
+
+
     var updateCardinality = function (e) {
 
         UpSetState.maxCardinality = maxCardSpinner.value;
@@ -104,8 +58,6 @@ function load(descriptions) {
     maxCardSpinner.addEventListener('input', updateCardinality);
     minCardSpinner.addEventListener('input', updateCardinality);
 
-    header.append('span').html('Hide empty subsets').append('input').attr({id: 'hideEmpties', type: 'checkbox', checked: UpSetState.hideEmpties})
-
     var hideEmptiesCheck = document.getElementById('hideEmpties');
 
     var hideEmptiesFu = function (e) {
@@ -113,6 +65,7 @@ function load(descriptions) {
         updateState();
         // TODO: need to call updateTransition instead, but this needs to be exposed first
         plot();
+        plotSetOverview();
     };
     hideEmptiesCheck.addEventListener('click', hideEmptiesFu);
 
@@ -131,7 +84,46 @@ function load(descriptions) {
         .property('selected', function (d, i) {
             return (i === queryParameters['dataset'])
         });
+}
 
+function retrieveQueryParameters() {
+
+    // Variables from query string
+    var queryString = location.search.substring(1),
+        re = /([^&=]+)=([^&]*)/g, m;
+
+    // Creates a map with the query string parameters
+    while (m = re.exec(queryString)) {
+        queryParameters[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+    }
+
+    queryParameters['dataset'] = parseInt(queryParameters['dataset']) || 0;
+    queryParameters['duration'] = queryParameters['duration'] || 1000;
+    queryParameters['orderBy'] = queryParameters['orderBy'] || "subsetSize"; // deviation, intersection, specific set
+    queryParameters['grouping'] = queryParameters['grouping'] == "undefined" ? undefined : queryParameters['grouping'] || "groupBySet"; // groupByIntersectionSize, 
+    queryParameters['selection'] = queryParameters['selection'] || "";
+    // Missing item space query..
+
+}
+
+function updateQueryParameters() {
+    var urlQueryString = "";
+    if (Object.keys(queryParameters).length > 0) {
+        urlQueryString = "?";
+        for (var q in queryParameters)
+            urlQueryString += (q + "=" + queryParameters[q]) + "&";
+        urlQueryString = urlQueryString.substring(0, urlQueryString.length - 1);
+    }
+
+    history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + urlQueryString);
+}
+
+function load(descriptions) {
+
+    dataSetDescriptions = descriptions;
+    $(EventManager).trigger( "loading-dataset-started", { description: dataSetDescriptions[queryParameters['dataset']]  } );
+
+    setUpConfiguration();
     loadDataSet(queryParameters['dataset']);
 }
 
@@ -179,6 +171,8 @@ function run() {
     selections.setActive();
     //createInitialSelection();
     plotSetOverview();
+
+    $(EventManager).trigger( "loading-dataset-finished", { } );    
 }
 
 function getNumberOfSets(dataSetDescription) {
@@ -395,18 +389,26 @@ function parseDataSet(data, dataSetDescription) {
         }
         setID = setID << 1;
     }
+
+    UpSetState.maxCardinality = attributes[attributes.length - 2].max;
+    var maxCardSpinner = document.getElementById('maxCardinality');
+    maxCardSpinner.value = UpSetState.maxCardinality;
+    maxCardSpinner.max = UpSetState.maxCardinality;
+    var minCardSpinner = document.getElementById('minCardinality');
+    minCardSpinner.max = UpSetState.maxCardinality;
 }
 
 function setUpSubSets() {
 
     combinations = Math.pow(2, usedSets.length) - 1;
 
-    if (UpSetState.maxCardinality === undefined || UpSetState.minCardinality === undefined) {
-        UpSetState.maxCardinality = attributes[attributes.length - 2].max;
-        UpSetState.minCardinality = 0;
-        document.getElementById('maxCardinality').value = UpSetState.maxCardinality;
-        document.getElementById('minCardinality').value = UpSetState.minCardinality;
-    }
+
+//    if (UpSetState.maxCardinality === undefined || UpSetState.minCardinality === undefined) {
+//
+//        UpSetState.minCardinality = 0;
+//        document.getElementById('maxCardinality').value = UpSetState.maxCardinality;
+//        document.getElementById('minCardinality').value = UpSetState.minCardinality;
+//    }
 
     subSets.length = 0;
     // the max value for the cut-off
@@ -418,6 +420,9 @@ function setUpSubSets() {
 }
 
 function change() {
+
+    $(EventManager).trigger( "loading-dataset-started", { description: dataSetDescriptions[queryParameters['dataset']]  } );
+
     sets.length = 0;
     subSets.length = 0;
     usedSets.length = 0;
@@ -429,18 +434,10 @@ function change() {
     previousState = undefined;
 
     loadDataSet(this.options[this.selectedIndex].value);
+
     queryParameters['dataset'] = this.options[this.selectedIndex].value;
+    updateQueryParameters();
 
-    var urlQueryString = "";
-    //  console.log("qa", queryParameters.length)
-    if (Object.keys(queryParameters).length > 0) {
-        urlQueryString = "?";
-        for (var q in queryParameters)
-            urlQueryString += (q + "=" + queryParameters[q]) + "&";
-        urlQueryString = urlQueryString.substring(0, urlQueryString.length - 1);
-    }
-
-    history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + urlQueryString);
     clearSelections();
 }
 
