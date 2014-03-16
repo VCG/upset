@@ -13,6 +13,8 @@ function LogicPanel(params){
     var belowVis = params.belowVis;     // the vis node below the panel (to be translated)
     var buttonX = params.buttonX;       // button X coordinate
     var buttonY = params.buttonY;       // button Y coordinate
+    var subsets = params.subsets;
+
 
     var stateObject= params.stateObject
     var callAfterSubmit = params.callAfterSubmit;
@@ -27,6 +29,8 @@ function LogicPanel(params){
 //    ]
 
 
+
+    var setNames= {}
     var collapseHeight = cellSize+5;
     var uncollapseHeight = 90;
     var isCollapsed = true;
@@ -36,13 +40,54 @@ function LogicPanel(params){
 
     var actualGroupLabel = "Logic Group"
 
-    var logicExpression = {groupName:"", orClauses:[]}
+//    var getListOfValues = function(){
+//        console.log(this);
+//        var compareList= []
+//        this.orClauses.forEach(function(orClause){
+//
+//            var compareObject = []
+//            for (key in orClause){
+//                compareObject.push(orClause[key].state);
+//            }
+//            compareList.push(compareObject)
+//        })
+//
+//        return compareList;
+//    }
+
+
+    var logicExpression = {}
     var actualOrClause = 1;
     var logicState ={
         NOT:0,
         DONTCARE:2,
         MUST:1
     }
+
+
+    var initLogicExpression = function(){
+        logicExpression = {
+            groupName:"",
+            orClauses:[],
+            getListOfValues:function(){
+                console.log(this);
+                var compareList= []
+                this.orClauses.forEach(function(orClause){
+
+                    var compareObject = []
+                    for (key in orClause){
+                        compareObject.push(orClause[key].state);
+                    }
+                    compareList.push(compareObject)
+                })
+
+                return compareList;
+            }
+        }
+
+
+    }
+
 
 
     // the color for logic related stuff (highlighting & button)
@@ -75,6 +120,7 @@ function LogicPanel(params){
 
         defineDontCarePattern(panel,cellSize,grays);
 
+        initLogicExpression();
 
     }
 
@@ -83,6 +129,7 @@ function LogicPanel(params){
         var patternDef = gQuery.append("defs").append("pattern").attr({
             id:"HalfSelectPattern",
             patternUnits:"userSpaceOnUse",
+//            patternUnits:"objectBoundingBox",
             x:"0",
             y:"0",
             width:cellSize,
@@ -129,6 +176,12 @@ function LogicPanel(params){
 
         actualOrClause=0;
         isNewPanel= true;
+
+        setNames={}
+        usedSets.forEach(function(d){
+            setNames[d.id] = d.elementName
+        })
+
         renderActualPanel();
     }
 
@@ -174,18 +227,171 @@ function LogicPanel(params){
 
     }
 
+    function getTextDescription(actualOrClause){
+        var actualClause = logicExpression.orClauses[actualOrClause]
+        var collectExpressions = {}
+
+        Object.keys(actualClause).forEach(function(d){
+
+            var setList = collectExpressions[actualClause[d].state]
+            if (setList==null){
+                setList=[setNames[d]]
+            }else{
+                setList.push(setNames[d])
+            }
+            collectExpressions[actualClause[d].state] = setList
+
+        })
+
+        console.log("expression",collectExpressions);
+
+        var setNameListLength = Object.keys(setNames).length;
+        var expression = "";
+
+        Object.keys(logicState).forEach(function (dd){
+            var d = logicState[dd];
+            if (collectExpressions[d]!=null && collectExpressions[d].length ==setNameListLength){
+                switch(d){
+                    case logicState.NOT:
+                        expression=  "the subsets that is in no selected set";
+                        break;
+                    case logicState.DONTCARE:
+                        expression =  "all subsets";
+                        break;
+                    case logicState.MUST:
+                        expression = "the subset that is in all selected sets";
+                        break;
+                    default : break;
+                }
+            }
+        })
+
+        if (expression.length<1){
+            expression = "subsets that are ";
+
+            var but = "";
+            if (collectExpressions[logicState.MUST]!=null){
+                expression += "in set"+((collectExpressions[logicState.MUST].length>1)?"s ":" ")
+                expression += collectExpressions[logicState.MUST].join(" and ")
+                but=" but "
+            }
+            if (collectExpressions[logicState.NOT]!=null){
+                expression += but+"not in set ";
+                expression += collectExpressions[logicState.NOT].join(" nor in set ")
+            }
+
+
+        }
+
+
+//            console.log(collectExpressions);
+
+        return expression;
+
+
+    }
+
+
+
+    function changeStateAll(actualOrClause, state) {
+        var actualClause = logicExpression.orClauses[actualOrClause]
+        Object.keys(actualClause).forEach(function(d){
+           actualClause[d]= {state:state};
+        })
+
+        console.log("here");
+        panel.selectAll(".logicPanelRow").filter(function(d,i){return (i==actualOrClause)})
+            .each(function(d){
+                renderSelectorTable(this, true, false, actualOrClause);
+            })
+    }
+
+
+//    function createLineWrapperField(d3Node){
+//        d3Node.html(
+//                '<g requiredFeatures="http://www.w3.org/Graphics/SVG/feature/1.2/#TextFlow"> \
+//                    <textArea width="200" height="auto" class="logicPanelActualText"> \
+//                    Text goes here \
+//                    </textArea>\
+//                </g>\
+//                <foreignObject width="200" height="200" class="logicPanelActualText"\
+//                requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">\
+//                    <p xmlns="http://www.w3.org/1999/xhtml">Text goes here</p>\
+//                </foreignObject>'
+//        )
+//
+//
+//
+//
+//    }
+
+    function wrap(text, width) {
+
+        text.each(function() {
+            var text = d3.select(this),
+                words = text.text().split(/\s+/).reverse(),
+                word,
+                line = [],
+                lineNumber = 0,
+                lineHeight = 1.1, // ems
+                y = text.attr("y"),
+                dy = parseFloat(text.attr("dy")),
+                tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+
+            while (word = words.pop()) {
+                line.push(word);
+                tspan.text(line.join(" "));
+                console.log("TXTTXTTX",tspan);
+                if (tspan.node().getComputedTextLength() > width) {
+                    line.pop();
+                    tspan.text(line.join(" "));
+                    line = [word];
+                    tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+                }
+            }
+        });
+    }
+
+
     function renderSelectorTable(node, isExpanded, animated, rowIndex) {
+        console.log("textexprssion",getTextDescription(actualOrClause));
 
 //        logicPanelSelectionTable
 //        logicPanelSelectionHeader
 //
 
         var nodeSelector = d3.select(node);
-        console.log(nodeSelector);
+        var noOfSets = Object.keys(node.__data__).length
+
         var panelTableHeader = nodeSelector.select(".logicPanelSelectionHeader");
+        panelTableHeader.attr({
+            "transform":"translate("+90+","+0+")"
+        })
         panelTableHeader.on({
             click:function(d) {selectRow(rowIndex);}
         })
+        var infoBar = panelTableHeader.selectAll(".logicPanelHeaderBar").data(function(){
+            var count =0;
+            getSubsetsForMaskList(subsets,[logicExpression.getListOfValues()[rowIndex]], function(d){
+                count++;
+            })
+
+            return [count/subsets.length];
+        })
+        infoBar.enter().append("rect").attr({
+            class:"logicPanelHeaderBar",
+            x:function(d){return noOfSets*cellSize+5;},
+            y:2,
+            height:cellSize-4
+        }).style({
+                fill:logicColor
+            })
+
+        infoBar.transition().attr({
+            width:(function(d){return d*width})
+        })
+
+
         var headerCircles = panelTableHeader
             .selectAll(".logicPanelHeaderCircle")
             .data(function(d){return Object.keys(d).map(function(dd){
@@ -193,7 +399,7 @@ function LogicPanel(params){
                     })})
          headerCircles.enter().append("circle").attr({
                 class:"logicPanelHeaderCircle",
-                cx:function(d,i){return (i*cellSize)+cellSize/2+90}, // TODO: add 90 as params!!
+                cx:function(d,i){return (i*cellSize)+cellSize/2}, // TODO: add 90 as params!!
                 cy:function(d,i){return cellSize/2},
                 r: cellSize/2-1
             })
@@ -216,17 +422,37 @@ function LogicPanel(params){
 
 
     if (isExpanded){
+        var textDescriptionPanel = nodeSelector.selectAll(".logicPanelActualText").data(function(d){
+            return [getTextDescription(actualOrClause)]
+        });
+        textDescriptionPanel.enter().append("text").attr({
+            class:"logicPanelActualText addButton",
+            "transform":"translate("+(noOfSets*cellSize+5+90)+","+0+")",
+            y:cellSize,
+            dy:1
+        }).style({
+                "text-anchor":"start",
+                "dominant-baseline": "auto"
+            });
+
+        textDescriptionPanel.text(function(d){return d}).call(wrap,width-((noOfSets*cellSize+5+90+100)));
+
         var g= nodeSelector.select(".logicPanelSelectionTable");
         var nodeData = g.node().__data__
         var clausesList = Object.keys(nodeData).map(function(d){
             return {subsetID:d, state:nodeData[d].state}
         })
 
+
+
+
 //        console.log("clist:",clausesList);
-        var matrix = clausesList.map(function(dd){
+        var matrix = Object.keys(logicState).map(function(d){
             return {
 
-                selectors:Object.keys(logicState).map(function(d){
+                state:logicState[d],
+                selectors:clausesList.map(function(dd){
+
                     return{
                         state:logicState[d],
                         id:dd.subsetID,
@@ -239,34 +465,65 @@ function LogicPanel(params){
 
 
 
-        var columns = g.selectAll(".logicTableColumn").data(matrix)
+        var tableRows = g.selectAll(".logicTableRow").data(matrix)
 
-        columns.enter().append("g").attr({
-            "class":"logicTableColumn"
-        }).append("rect").attr({
-                x:0,
-                y:cellSize+1,
-                width:cellSize,
-                height:1
+        var trEnter =tableRows.enter().append("g").attr({
+            "class":"logicTableRow"
+        })
+        trEnter.append("text").text(function(d,i){
+            switch(d.state)
+            {
+                case logicState.NOT:
+                    return "not";
+                    break;
+                case logicState.MUST:
+                    return "must";
+                    break;
+                default: // logicState.DONTCARE
+                    return "maybe"
+            }}).attr({
+                x:-2,
+                y:cellSize/2,
+                class:"addButton"
+            }).style({
+                    "text-anchor":"end"
+            }).on({
+                click:function(d){changeStateAll(actualOrClause, d.state)}
 
             })
-        columns.exit().remove();
-        columns.attr({
-            "transform":function(d,i){return "translate("+((i*cellSize)+90)+","+0+")"}
+
+        trEnter.each(function(d,i){
+            if (i==0)
+                    d3.select(this).append("rect").attr({
+                        x: 0,
+                        y: -3,
+                        width: cellSize*(clausesList.length),
+                        height: 1
+
+                    })
+            })
+
+
+        tableRows.exit().remove();
+        tableRows.attr({
+            "transform":function(d,i){return "translate("+(90)+","+
+                ((animated)?(0.0*cellSize):((i+1.0)*cellSize +5))
+//                ((i+1.0)*cellSize +5)
+                +")"}
 //            ,opacity:0.0001
 
         })
 
 
 
-        var circles = columns.selectAll("circle").data(function(d){return d.selectors})
+        var circles = tableRows.selectAll("circle").data(function(d){return d.selectors})
         circles.enter()
             .append("circle").attr({
             class:"logicPanelCircle",
-            cx:function(d,i){return cellSize/2}, // TODO: add 90 as params!!
-            cy:function(d,i){
-                if (animated) return 0.5*cellSize;
-                else return (i+1.5)*cellSize +5},
+            cx:function(d,i){return (i+.5)*cellSize}, // TODO: add 90 as params!!
+            cy: .5*cellSize,
+//                if (animated) return 0.5*cellSize;
+//                else return (i+1.5)*cellSize +5},
             r: cellSize/2-2
         })
 
@@ -294,8 +551,10 @@ function LogicPanel(params){
 
 
            if (animated){
-               circles.transition().delay(50).attr({
-                   cy:function(d,i){return (i+1.5)*cellSize +5}
+               tableRows.transition().attr({
+                   "transform":function(d,i){return "translate("+(90)+","+
+                       ((i+1.0)*cellSize +5)
+                       +")"}
                })
            }
 
@@ -311,7 +570,7 @@ function LogicPanel(params){
 
 
         }else{
-            d3.select(node).select(".logicPanelSelectionTable").selectAll(".logicTableColumn").remove();
+            d3.select(node).select(".logicPanelSelectionTable").selectAll(".logicTableRow").remove();
 
         }
 
@@ -327,6 +586,8 @@ function LogicPanel(params){
                 d();
             })
 
+        console.log(logicExpression);
+        console.log(logicExpression.getListOfValues())
         destroyPanel();
     }
 
@@ -548,7 +809,7 @@ function LogicPanel(params){
         addLogicButton.attr({
             "opacity":1
         })
-        logicExpression = {orClauses:[]}
+        initLogicExpression();
     }
 
 

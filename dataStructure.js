@@ -295,3 +295,45 @@ function makeSubSet(setMask) {
     var subSet = new SubSet(originalSetMask, name, combinedSets, combinedData, expectedValue);
     subSets.push(subSet);
 }
+
+// takes  a list l of arrays a(i) which represent disjunctive normal form: a(i) OR a(i+1) OR...
+// a(i) represents a setMask: 0 - NOT, 1 - MUST, 2- DONTCARE
+// if callFucntion is null a list of matching subsets is returned
+
+var getSubsetsForMaskList = function(subsets, maskList, callFunction){
+    var res = [];
+
+    var clauseMatches = true;
+    var isAhit= false;
+    subsets.forEach(function(subset){
+
+        isAhit= false;
+        var combinedSets = subset.combinedSets;
+        maskList.forEach(function(compare){
+            if (isAhit==false){
+                var csLength = combinedSets.length
+                clauseMatches = (csLength==compare.length)
+                if (clauseMatches){
+                    for (var i =0; i<csLength;i++){
+                        clauseMatches &= (
+                            (combinedSets[i]==compare[i])
+                                || compare[i]==2 );
+                    }
+                }
+                if (clauseMatches) {isAhit = true;}
+            }
+        })
+
+        if (isAhit && callFunction!=null) {
+            callFunction(subset);
+
+        }else if (isAhit){
+            res.push(subset);
+        }
+
+    })
+
+    return res;
+
+
+}

@@ -14,47 +14,21 @@ var handleLogicGroups= function(subsets,dataRows,level){
         if (d.id in oldGroupIDs){}
         else {
             var group = new Group(d.id, d.groupName, level);
-            var compareList= []
-            d.orClauses.forEach(function(orClause){
+            var maskList= d.getListOfValues();
 
-                var compareObject = []
-                for (key in orClause){
-                    compareObject.push(orClause[key].state);
-                }
-                compareList.push(compareObject)
-            })
-
-            var isAhit = true;
-            subsets.forEach(function(subset){
-
-                isAhit = true;
-                var combinedSets = subset.combinedSets;
-                compareList.forEach(function(compare){
-                    var csLength = combinedSets.length;
-                    if (isAhit && csLength==compare.length ){
-                        for (var i =0; i<csLength;i++){
-                            isAhit &= (
-                                (combinedSets[i]==compare[i])
-                                || compare[i]==2 );
-                        }
-
-
-                    }
-                })
-
-                if (isAhit) group.addSubSet(subset);
-
-            })
+            getSubsetsForMaskList(subsets, maskList, function(d){
+                group.addSubSet(d);
+            });
 
             addGroups.push(group)
         };
     })
-//    console.log(addGroups);
 
+
+
+    // TODO: @Alex: add unwrapped group -- maybe you solve this globally if unwrapped or not
     if (addGroups.length>0){
-        var groupElements= unwrapGroups(addGroups)
-        console.log(groupElements
-        );
+        var groupElements= unwrapGroups(addGroups);
 
         groupElements.reverse()
         groupElements.forEach(function(addGroup){
@@ -335,10 +309,12 @@ var updateState = function (parameter) {
         dataRows = unwrapGroups(levelOneGroups);
     }
 
+    // TODO: @alex here !
     if(UpSetState.logicGroupChanged ){
+        // adds _NEW_ unwrapped logic groups to "dataRow"
         handleLogicGroups(subSets,dataRows,1);
         UpSetState.logicGroupChanged = false;
-//        console.log("datarows:",levelOneGroups[0]);
+
     }
 
 
