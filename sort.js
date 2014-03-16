@@ -40,7 +40,6 @@ var handleLogicGroups = function (subsets, dataRows, level) {
                                 (combinedSets[i] == compare[i])
                                     || compare[i] == 2 );
                         }
-
                     }
                 })
 
@@ -131,8 +130,34 @@ var groupBySet = function (subSets, level) {
 /** Collapse or uncollapse group */
 var collapseGroup = function (group) {
     group.isCollapsed = !group.isCollapsed;
+
+//    if (!group.isCollapsed || group.nestedGroups) {
     UpSetState.collapseChanged = true;
     updateState();
+    return;
+//    }
+//
+//    var inGroup = false;
+//    var replacement = [];
+//
+//    for (var i = 0; i < dataRows.length; i++) {
+//        if (dataRows[i] === group) {
+//            inGroup = true;
+//
+//        }
+//        else if (inGroup) {
+//            if (!group.contains(dataRows[i])) {
+//                inGroup = false;
+//            }
+//        }
+//
+//        if (!inGroup) {
+//            replacement.push(dataRows[i])
+//        }
+//
+//    }
+//    dataRows = replacement;
+
 };
 
 //var toggleCollapseAll = function () {
@@ -189,7 +214,7 @@ var sortBySetItem = function (subSets, set) {
     return dataRows;
 }
 
-var sortByCombinationSize = function(subSets) {
+var sortByCombinationSize = function (subSets) {
     var dataRows = getFilteredSubSets(subSets);
 
 // sort by number of combinations
@@ -204,7 +229,7 @@ var sortByCombinationSize = function(subSets) {
 }
 
 /** sort by size of set overlap */
-var sortBySubSetSize = function(subSets) {
+var sortBySubSetSize = function (subSets) {
     var dataRows = getFilteredSubSets(subSets);
     dataRows.sort(function (a, b) {
         return b.setSize - a.setSize;
@@ -213,7 +238,7 @@ var sortBySubSetSize = function(subSets) {
 }
 
 /** sort by size of set overlap */
-var sortByExpectedValue = function(subSets) {
+var sortByExpectedValue = function (subSets) {
     var dataRows = getFilteredSubSets(subSets);
 
     dataRows.sort(function (a, b) {
@@ -242,30 +267,27 @@ var unwrapGroups = function (groupList) {
         if (UpSetState.expandAll) {
             group.isCollapsed = false;
         }
+        if (UpSetState.levelTwoGrouping && group.nestedGroups) {
+            dataRows = dataRows.concat(unwrapGroups(group.nestedGroups, []));
+        }
         if (!group.isCollapsed) {
-
-            if (UpSetState.levelTwoGrouping && group.nestedGroups) {
-                dataRows = dataRows.concat(unwrapGroups(group.nestedGroups, []));
-            }
-            else {
-                dataRows = dataRows.concat(StateMap[UpSetState.sorting](group.visibleSets));
+//            else {
+            dataRows = dataRows.concat(StateMap[UpSetState.sorting](group.visibleSets));
 //                for (var j = 0; j < group.visibleSets.length; j++) {
 //                    dataRows.push(group.visibleSets[j]);
 //                }
-                if (group.aggregate.subSets.length > 0 && !UpSetState.hideEmpties) {
-                    dataRows.push(group.aggregate);
-                    if (!group.aggregate.isCollapsed) {
-                        for (var k = 0; k < group.aggregate.subSets.length; k++) {
-                            dataRows.push(group.aggregate.subSets[k]);
-                        }
+            if (group.aggregate.subSets.length > 0 && !UpSetState.hideEmpties) {
+                dataRows.push(group.aggregate);
+                if (!group.aggregate.isCollapsed) {
+                    for (var k = 0; k < group.aggregate.subSets.length; k++) {
+                        dataRows.push(group.aggregate.subSets[k]);
                     }
                 }
             }
+//            }
         }
     }
-    UpSetState.expandAll = false;
-    UpSetState.collapseAll = false;
-    UpSetState.collapseChanged = false;
+
     return dataRows;
 };
 
@@ -349,6 +371,9 @@ var updateState = function (parameter) {
     }
 
     UpSetState.forceUpdate = false;
+    UpSetState.expandAll = false;
+    UpSetState.collapseAll = false;
+    UpSetState.collapseChanged = false;
 
     renderRows.length = 0;
 

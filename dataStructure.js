@@ -172,6 +172,7 @@ function Group(groupID, groupName, level) {
 
     this.isCollapsed = false;
 
+
     this.nestedGroups = undefined;
 
     /** the nesting level of the group, 1 is no nesting, 2 is one level down */
@@ -206,6 +207,17 @@ function Group(groupID, groupName, level) {
         this.setSize += subSet.setSize;
         this.expectedValue += subSet.expectedValue;
         this.expectedValueDeviation += subSet.expectedValueDeviation;
+    }
+
+    this.contains = function (element) {
+        if (subSets.indexOf(element) >= 0) {
+            return true;
+        }
+        if (element === this.aggregate) {
+            return true;
+        }
+        return false;
+
     }
 }
 
