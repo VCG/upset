@@ -40,7 +40,6 @@ var handleLogicGroups = function (subsets, dataRows, level) {
                                 (combinedSets[i] == compare[i])
                                     || compare[i] == 2 );
                         }
-
                     }
                 })
 
@@ -268,30 +267,27 @@ var unwrapGroups = function (groupList) {
         if (UpSetState.expandAll) {
             group.isCollapsed = false;
         }
+        if (UpSetState.levelTwoGrouping && group.nestedGroups) {
+            dataRows = dataRows.concat(unwrapGroups(group.nestedGroups, []));
+        }
         if (!group.isCollapsed) {
-
-            if (UpSetState.levelTwoGrouping && group.nestedGroups) {
-                dataRows = dataRows.concat(unwrapGroups(group.nestedGroups, []));
-            }
-            else {
-                dataRows = dataRows.concat(StateMap[UpSetState.sorting](group.visibleSets));
+//            else {
+            dataRows = dataRows.concat(StateMap[UpSetState.sorting](group.visibleSets));
 //                for (var j = 0; j < group.visibleSets.length; j++) {
 //                    dataRows.push(group.visibleSets[j]);
 //                }
-                if (group.aggregate.subSets.length > 0 && !UpSetState.hideEmpties) {
-                    dataRows.push(group.aggregate);
-                    if (!group.aggregate.isCollapsed) {
-                        for (var k = 0; k < group.aggregate.subSets.length; k++) {
-                            dataRows.push(group.aggregate.subSets[k]);
-                        }
+            if (group.aggregate.subSets.length > 0 && !UpSetState.hideEmpties) {
+                dataRows.push(group.aggregate);
+                if (!group.aggregate.isCollapsed) {
+                    for (var k = 0; k < group.aggregate.subSets.length; k++) {
+                        dataRows.push(group.aggregate.subSets[k]);
                     }
                 }
             }
+//            }
         }
     }
-    UpSetState.expandAll = false;
-    UpSetState.collapseAll = false;
-    UpSetState.collapseChanged = false;
+
     return dataRows;
 };
 
@@ -375,6 +371,9 @@ var updateState = function (parameter) {
     }
 
     UpSetState.forceUpdate = false;
+    UpSetState.expandAll = false;
+    UpSetState.collapseAll = false;
+    UpSetState.collapseChanged = false;
 
     renderRows.length = 0;
 
