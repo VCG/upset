@@ -266,17 +266,16 @@ function plot(width, height) {
 
     vis.append('rect')
         .attr({
-            class: 'labelBackground subsetSizeLabel',
-            id: 'sortIntersectionSizeGlobal',
+            class: 'labelBackground subsetSizeLabel sortIntersectionSizeGlobal',
             transform: 'translate(' + xStartSetSizes + ',' + (labelTopPadding) + ')',
             height: '20',
             width: subSetSizeWidth
 
         });
 
-    vis.append('text').text('Subset Size')
+    vis.append('text').text('Intersection Size')
         .attr({
-            class: 'columnLabel subsetSizeLabel',
+            class: 'columnLabel subsetSizeLabel sortIntersectionSizeGlobal',
             transform: 'translate(' + (xStartSetSizes + subSetSizeWidth / 2) + ',' + (labelTopPadding + 10) + ')'
         });
 
@@ -297,18 +296,16 @@ function plot(width, height) {
 
     vis.append('rect')
         .attr({
-            class: 'labelBackground expectedValueLabel',
-            id: 'sortRelevanceMeasureGlobal',
+            class: 'labelBackground expectedValueLabel sortRelevanceMeasureGlobal',
             transform: 'translate(' + xStartExpectedValues + ',' + ( labelTopPadding) + ')',
             height: '20',
             width: expectedValueWidth
 
         });
 
-    vis.append('text').text('Deviation from Expected Value')
+    vis.append('text').text('Relevance')
         .attr({
-            class: 'columnLabel',
-            //  id: 'sortRelevanceMeasureGlobal',
+            class: 'columnLabel sortRelevanceMeasureGlobal',
             transform: 'translate(' + (xStartExpectedValues + expectedValueWidth / 2) + ',' + ( labelTopPadding + 10) + ')'
         });
 
@@ -988,7 +985,7 @@ function plot(width, height) {
                 rowTransition();
             });
 
-        d3.selectAll('#sortIntersectionSizeGlobal').on(
+        d3.selectAll('.sortIntersectionSizeGlobal').on(
             'click',
             function (d) {
                 UpSetState.sorting = StateOpt.sortBySubSetSize;
@@ -1013,7 +1010,7 @@ function plot(width, height) {
             });
 
         // Not preserving the grouping
-        d3.selectAll('#sortRelevanceMeasureGlobal').on(
+        d3.selectAll('.sortRelevanceMeasureGlobal').on(
             'click',
             function () {
                 UpSetState.sorting = StateOpt.sortByExpectedValue;
