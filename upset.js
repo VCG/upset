@@ -70,6 +70,27 @@ $(EventManager).bind("loading-dataset-finished", function (event, data) {
     $("#data-loading-indicator").fadeOut(1000);
 });
 
+$(EventManager).bind("set-added", function (event, data) {
+    if ( usedSets.length === 2 || usedSets.length === 3 ) {
+        $("#venn-diagram-viewer").fadeIn( 500 );
+        venn.plot(undefined, usedSets.length);
+    }
+
+    if ( usedSets.length !== 2 && usedSets.length !== 3 ) {
+        $("#venn-diagram-viewer").fadeOut( 500 );
+    }
+});
+
+$(EventManager).bind("set-removed", function (event, data) {
+    if ( usedSets.length === 2 || usedSets.length === 3 ) {
+        $("#venn-diagram-viewer").fadeIn( 500 );
+        venn.plot(undefined, usedSets.length);
+    }
+
+    if ( usedSets.length !== 2 && usedSets.length !== 3 ) {
+        $("#venn-diagram-viewer").fadeOut( 500 );
+    }
+});
 
 
 function plot(width, height) {

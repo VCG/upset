@@ -402,6 +402,10 @@ html, body, .ui-container {
     padding-right: 5px;
 }
 
+#venn-diagram-viewer {
+    display: none;
+}
+
 .ui-header {
     height: 30px;
 }
