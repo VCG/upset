@@ -28,12 +28,13 @@ var handleLogicGroups = function (subsets, dataRows, level) {
         ;
     })
 
-
+    console.log(addGroups);
 
    // TODO: @Alex: add unwrapped group -- maybe you solve this globally if unwrapped or not
     if (addGroups.length>0){
         var groupElements= unwrapGroups(addGroups);
 
+        console.log("groupEl", groupElements);
         groupElements.reverse()
         groupElements.forEach(function(addGroup){
             dataRows.unshift(addGroup)

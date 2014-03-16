@@ -70,7 +70,7 @@ function LogicPanel(params){
             groupName:"",
             orClauses:[],
             getListOfValues:function(){
-                console.log(this);
+
                 var compareList= []
                 this.orClauses.forEach(function(orClause){
 
@@ -181,6 +181,7 @@ function LogicPanel(params){
         usedSets.forEach(function(d){
             setNames[d.id] = d.elementName
         })
+        actualGroupLabel = "Logic Group"
 
         renderActualPanel();
     }
@@ -219,7 +220,7 @@ function LogicPanel(params){
     function changeState(orClause, id, state) {
          logicExpression.orClauses[actualOrClause][id] = {state:state};
 
-        console.log("here");
+//        console.log("here");
          panel.selectAll(".logicPanelRow").filter(function(d,i){return (i==actualOrClause)})
              .each(function(d){
                  renderSelectorTable(this, true, false, actualOrClause);
@@ -243,7 +244,7 @@ function LogicPanel(params){
 
         })
 
-        console.log("expression",collectExpressions);
+        //console.log("expression",collectExpressions);
 
         var setNameListLength = Object.keys(setNames).length;
         var expression = "";
@@ -299,7 +300,7 @@ function LogicPanel(params){
            actualClause[d]= {state:state};
         })
 
-        console.log("here");
+        //console.log("here");
         panel.selectAll(".logicPanelRow").filter(function(d,i){return (i==actualOrClause)})
             .each(function(d){
                 renderSelectorTable(this, true, false, actualOrClause);
@@ -341,7 +342,6 @@ function LogicPanel(params){
             while (word = words.pop()) {
                 line.push(word);
                 tspan.text(line.join(" "));
-                console.log("TXTTXTTX",tspan);
                 if (tspan.node().getComputedTextLength() > width) {
                     line.pop();
                     tspan.text(line.join(" "));
@@ -354,7 +354,7 @@ function LogicPanel(params){
 
 
     function renderSelectorTable(node, isExpanded, animated, rowIndex) {
-        console.log("textexprssion",getTextDescription(actualOrClause));
+        //console.log("textexprssion",getTextDescription(actualOrClause));
 
 //        logicPanelSelectionTable
 //        logicPanelSelectionHeader
@@ -587,12 +587,12 @@ function LogicPanel(params){
             })
 
         console.log(logicExpression);
-        console.log(logicExpression.getListOfValues())
+//        console.log(logicExpression.getListOfValues())
         destroyPanel();
     }
 
     function changeGroupLabel() {
-        console.log("enter");
+//        console.log("enter");
         var label = prompt("Group label:",actualGroupLabel);
         if (label !=null){
             actualGroupLabel = label
