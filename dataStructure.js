@@ -171,7 +171,7 @@ function Group(groupID, groupName, level) {
     this.type = ROW_TYPE.GROUP;
 
     this.isCollapsed = false;
-    group
+
 
     this.nestedGroups = undefined;
 
@@ -209,11 +209,11 @@ function Group(groupID, groupName, level) {
         this.expectedValueDeviation += subSet.expectedValueDeviation;
     }
 
-    this.containsElement = function (element) {
+    this.contains = function (element) {
         if (subSets.indexOf(element) >= 0) {
             return true;
         }
-        if (element === aggregate) {
+        if (element === this.aggregate) {
             return true;
         }
         return false;
