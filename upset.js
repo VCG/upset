@@ -511,28 +511,22 @@ function plot(width, height) {
 
         // ------------------------ set size bars -------------------
 
-        vis.selectAll('.row')
+        vis.selectAll('.row').filter(function(d) {
+            if(d.data.type === ROW_TYPE.SUBSET)
+                return d;
+        })
             .append('rect')
             .on('click', function (d) {
-                if (d.data.type === ROW_TYPE.SUBSET) {
+               
                     var selection = Selection.fromSubset(d.data);
                     selections.addSelection(selection);
                     selections.setActive(selection);
-                }
-                if (d.data.type === ROW_TYPE.GROUP) {
-                    // console.log( d.data );
-                    var selection = Selection.fromSubset(d.data.subSets);
-                    selections.addSelection(selection);
-                    selections.setActive(selection);
-                }
+               
             })
             .attr("class", function (d) {
-                if (d.data.type === ROW_TYPE.SUBSET) {
+              
                     return ( 'subSetSize row-type-subset' );
-                }
-                if (d.data.type === ROW_TYPE.GROUP) {
-                    return ( 'subSetSize row-type-group' );
-                }
+                
             })
             .attr({
                 //class: 'subSetSize',
@@ -555,6 +549,50 @@ function plot(width, height) {
             })
             .on('mouseover', mouseoverRow)
             .on('mouseout', mouseoutRow);
+
+
+        groupRows = vis.selectAll('.row').filter(function(d) {
+            if(d.data.type === ROW_TYPE.GROUP)
+                return [];
+        }).append("g")
+
+        groupRows.each(function(e, j) {
+
+          console.log(e)
+
+          var g = d3.select(this).append('rect')
+            .on('click', function (d) {
+              var selection = Selection.fromSubset(d.data.subSets);
+              selections.addSelection(selection);
+              selections.setActive(selection);  
+            })
+            .attr("class", function (d) {
+             return ( 'subSetSize row-type-group' );
+              
+            })
+            .attr({
+                //class: 'subSetSize',
+                transform: function (d) {
+                    var y = 0;
+                    if (d.data.type !== ROW_TYPE.SUBSET)
+                        y = 0;//cellSize / 3 * .4;
+                    return   'translate(' + xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
+                },
+
+                width: function (d) {
+                    return subSetSizeScale(d.data.setSize);
+                },
+                height: function (d) {
+                    if (d.data.type === ROW_TYPE.SUBSET)
+                        return cellSize;
+                    else
+                        return cellSize;// / 3;
+                }
+            })
+            .on('mouseover', mouseoverRow)
+            .on('mouseout', mouseoutRow);
+        })
+
 
         renderOverlay();
         // Rendering the highlights for selections on top of the selected subsets
