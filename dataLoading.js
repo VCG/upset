@@ -445,6 +445,7 @@ function updateSetContainment(set) {
     if (!set.isSelected) {
         set.isSelected = true;
         usedSets.push(set);
+        $(EventManager).trigger( "set-added", { set: set } );
     }
     else {
         set.isSelected = false;
@@ -452,6 +453,7 @@ function updateSetContainment(set) {
         var index = usedSets.indexOf(set);
         if (index > -1) {
             usedSets.splice(index, 1);
+            $(EventManager).trigger( "set-removed", { set: set } );
         }
     }
     subSets.length = 0;
