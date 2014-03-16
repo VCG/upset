@@ -121,6 +121,8 @@ function updateQueryParameters() {
 function load(descriptions) {
 
     dataSetDescriptions = descriptions;
+    $(EventManager).trigger( "loading-dataset-started", { description: dataSetDescriptions[queryParameters['dataset']]  } );
+
     setUpConfiguration();
     loadDataSet(queryParameters['dataset']);
 }
@@ -169,6 +171,8 @@ function run() {
     selections.setActive();
     //createInitialSelection();
     plotSetOverview();
+
+    $(EventManager).trigger( "loading-dataset-finished", { } );    
 }
 
 function getNumberOfSets(dataSetDescription) {
@@ -416,6 +420,9 @@ function setUpSubSets() {
 }
 
 function change() {
+
+    $(EventManager).trigger( "loading-dataset-started", { description: dataSetDescriptions[queryParameters['dataset']]  } );
+
     sets.length = 0;
     subSets.length = 0;
     usedSets.length = 0;

@@ -60,6 +60,18 @@ $(EventManager).bind("ui-horizontal-resize", function (event, data) {
     plotSetOverview();
 });
 
+$(EventManager).bind("loading-dataset-started", function (event, data) {
+    $(".ui-fader").show();
+    $("#data-loading-indicator").show();
+});
+
+$(EventManager).bind("loading-dataset-finished", function (event, data) {
+    $(".ui-fader").fadeOut(1000);
+    $("#data-loading-indicator").fadeOut(1000);
+});
+
+
+
 function plot(width, height) {
 
     var majorPadding = 5;

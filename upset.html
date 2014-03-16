@@ -17,10 +17,13 @@
 <div class="ui-header">
 	<div class="header-container">
 		<div id="title">UpSet</div>
+                <span id="data-loading-indicator">
+                    <i class="fa fa-refresh fa-spin"></i>            
+                </span>
         <div id="configStatus" class="button-panel-right"></div>
 		<div class="button-panel button-panel-right">
 			<div id="show-menu-button" class="ui-button ui-button-menu">
-			  <i class="fa fa-wrench"></i>
+                <i class="fa fa-info-circle"></i>
 			</div>
 		</div>
 
@@ -30,8 +33,18 @@
 
 <div class="ui-menu">
     <div class="menu-container">
-        <div id="header">
+        <div id="header">            
+        </div>
+    </div>
+</div>
 
+<div class="ui-fader">
+</div>
+
+
+<div class="ui-container">
+    <div class="ui-row">
+        <div class="ui-column ui-column-15">
             <div id="groupConfig" class="configTable">
                 <!--<span>First, group by</span>-->
                 <!--<span>-->
@@ -140,23 +153,16 @@
                     
                 
             </div>
+
         </div>
-    </div>
-</div>
 
-
-<div class="ui-container">
-    <div class="ui-row">
-        <!--<div class="ui-column ui-column-25">-->
-        <!--<div id="setSelect"></div>-->
-        <!--</div>-->
-        <div class="ui-column ui-column-66">
+        <div class="ui-column ui-column-60">
             <div id="set-vis-container" data-height-ratio="1" class="fixed-y-container">
                 <div id="vis"></div>
             </div>
         </div>
 
-        <div class="ui-column ui-column-33">
+        <div class="ui-column ui-column-25">
             <!-- <div id="venn-vis"></div> -->
 
             <div id="item-vis-container">
@@ -174,50 +180,21 @@
 </div>
 
 
-<div class="ui-container">
-    <div class="ui-row">
-        <!--<div class="ui-column ui-column-25">-->
-			<!--<div id="setSelect"></div>-->
-		<!--</div>-->
-        <div class="ui-column ui-column-66">
-        	<div id="set-vis-container" data-height-ratio="1" class="fixed-y-container">
-				<div id="vis"></div>
-			</div>
-        </div>
-
-        <div class="ui-column ui-column-33">
-			<!-- <div id="venn-vis"></div> -->
-
-			<div id="item-vis-container">
-				<div id="item-vis"></div>
-			</div>
-
-			<div id="selection-vis-container">
-				<div id="selection-tabs"></div>
-			</div>
-			<div id="item-table-container" data-height-ratio="1" class="fixed-y-container">
-				<div id="item-table"></div>
-			</div>
-        </div>
-    </div>
-</div>
-
-
-<script type="text/javascript" src="venn.js" /></script>
-<script type="text/javascript" src="utilities.js" /></script>
-<script type="text/javascript" src="dataLoading.js" /></script>
-<script type="text/javascript" src="filter.js" /></script>
-<script type="text/javascript" src="selection.js" /></script>
-<script type="text/javascript" src="dataStructure.js" /></script>
-<script type="text/javascript" src="ui.js" /></script>
-<script type="text/javascript" src="setSelection.js" /></script>
-<script type="text/javascript" src="sort.js" /></script>
-<script type="text/javascript" src="highlight.js" /></script>
-<script type="text/javascript" src="scrollbar.js" /></script>
-<script type="text/javascript" src="items.js" /></script>
+<script type="text/javascript" src="venn.js"></script>
+<script type="text/javascript" src="utilities.js"></script>
+<script type="text/javascript" src="dataLoading.js"></script>
+<script type="text/javascript" src="filter.js"></script>
+<script type="text/javascript" src="selection.js"></script>
+<script type="text/javascript" src="dataStructure.js"></script>
+<script type="text/javascript" src="ui.js"></script>
+<script type="text/javascript" src="setSelection.js"></script>
+<script type="text/javascript" src="sort.js"></script>
+<script type="text/javascript" src="highlight.js"></script>
+<script type="text/javascript" src="scrollbar.js"></script>
+<script type="text/javascript" src="items.js"></script>
 <script type="text/javascript" src="setGrouping.js"></script>
 <script type="text/javascript" src="logicPanel.js"></script>
-<script type="text/javascript" src="upset.js" /></script>
+<script type="text/javascript" src="upset.js"></script>
 <script>
 		$(document).ready( function(){
 			ui = new Ui();

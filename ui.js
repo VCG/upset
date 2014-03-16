@@ -69,7 +69,7 @@ Ui.prototype.initialize = function() {
 
 Ui.prototype.createHeader = function() {
     var self = this;
-    
+
     $( "#show-menu-button").on( "click", function( event ){
         self.toggleMenu();
     });    
@@ -91,5 +91,5 @@ Ui.prototype.toggleMenu = function() {
     var self = this;
 
     $(".ui-menu").slideToggle( { step: self.updateFixedHeightContainers } );
-    $( "#show-menu-button").toggleClass( "fa-rotate-90");
+    //$( "#show-menu-button").toggleClass( "fa-spin");
 }
