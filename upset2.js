@@ -592,9 +592,7 @@ function UpSet(){
                 .attr("class",  'subSetSize row-type-subset')
                 .attr({
                     transform: function (d) {
-                        var y = 0;
-                        if (d.data.type !== ROW_TYPE.SUBSET)
-                            y = 0;//cellSize / 3 * .4;
+                        var y = 1;
                         return   'translate(' + ctx.xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
                     },
 
@@ -602,10 +600,7 @@ function UpSet(){
                         return ctx.subSetSizeScale(d.data.setSize);
                     },
                     height: function (d) {
-                        if (d.data.type === ROW_TYPE.SUBSET)
-                            return ctx.cellSize;
-                        else
-                            return ctx.cellSize;// / 3;
+                       return ctx.cellSize-2
                     }
                 })
                 .on('click', function (d) {
@@ -618,9 +613,7 @@ function UpSet(){
             sizeBars.transition().attr({
                 //class: 'subSetSize',
                 transform: function (d) {
-                    var y = 0;
-                    if (d.data.type !== ROW_TYPE.SUBSET)
-                        y = 0;//cellSize / 3 * .4;
+                    var y = 1;
                     return   'translate(' + ctx.xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
                 },
 
@@ -628,10 +621,7 @@ function UpSet(){
                     return ctx.subSetSizeScale(d.data.setSize);
                 },
                 height: function (d) {
-                    if (d.data.type === ROW_TYPE.SUBSET)
-                        return ctx.cellSize;
-                    else
-                        return ctx.cellSize;// / 3;
+                   return ctx.cellSize-2
                 }
             })
 
@@ -706,13 +696,13 @@ function UpSet(){
                     start += ctx.xStartExpectedValues;
                     var y = 0;
                     if (d.data.type !== ROW_TYPE.SUBSET)
-                        y = 0;//cellSize / 3 * 1.7;
+                        y = 1;//cellSize / 3 * 1.7;
                     return 'translate(' + start + ', ' + y + ')';
                 },
                 width:1,
                 height: function (d) {
                     if (d.data.type === ROW_TYPE.SUBSET)
-                        return ctx.cellSize;
+                        return ctx.cellSize-2;
                     else
                         return ctx.cellSize;// / 3;
                 }
@@ -742,8 +732,8 @@ function UpSet(){
                     var start = ctx.expectedValueScale(d3.min([0, d.data.expectedValueDeviation]));
                     start += ctx.xStartExpectedValues;
                     var y = 0;
-                    if (d.data.type !== ROW_TYPE.SUBSET)
-                        y = 0;//cellSize / 3 * 1.7;
+                    if (d.data.type == ROW_TYPE.SUBSET)
+                        y = 1;//cellSize / 3 * 1.7;
                     return 'translate(' + start + ', ' + y + ')';
                 },
                 width: function (d) {
@@ -752,7 +742,7 @@ function UpSet(){
                 },
                 height: function (d) {
                     if (d.data.type === ROW_TYPE.SUBSET)
-                        return ctx.cellSize;
+                        return ctx.cellSize-2;
                     else
                         return ctx.cellSize;// / 3;
                 }

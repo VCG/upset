@@ -127,10 +127,10 @@ h1 {
     fill: #f0f0f0;
 }
 
-.cell, .what, .setSize, .expectedValueDeviation, .subSetSize, .groupBackGround {
-    stroke: #fff;
-    stroke-width: .5;
-}
+/*.cell, .what, .setSize, .expectedValueDeviation, .subSetSize, .groupBackGround {*/
+    /*stroke: #fff;*/
+    /*stroke-width: .5;*/
+/*}*/
 
 /* ---------------- The set selector --------------- */
 
