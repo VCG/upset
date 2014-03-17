@@ -388,7 +388,7 @@ function LogicPanel(params){
             })
 
         infoBar.transition().attr({
-            width:(function(d){return d*width})
+            width:(function(d){return d*ctx.subSetSizeScale.range()[1]})
         })
 
 

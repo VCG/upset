@@ -4,7 +4,7 @@
 
 
 var ctx = {
-    majorPadding : 5,
+    majorPadding : 17,
     minorPadding : 2,
     cellDistance : 20,
     textHeight : 90,
@@ -120,21 +120,21 @@ function UpSet(){
         })
 
         // TODO: give only context
-//        ctx.logicPanel = new LogicPanel(
-////            {width: setVisWidth + leftOffset,
-////                visElement: vis,
-////                panelElement: logicPanelNode,
-////                cellSize: cellSize,
-////                usedSets: usedSets,
-////                grays: grays,
-////                belowVis: gRows,
-////                buttonX: -leftOffset,
-////                buttonY: textHeight - 20,
-////                stateObject: UpSetState,
-////                subsets:subSets,
-////                callAfterSubmit: [updateState, rowTransition]
-////
-////            }
+        ctx.logicPanel = new LogicPanel(
+            {width: ctx.setVisWidth + ctx.leftOffset,
+                visElement: ctx.vis,
+                panelElement: ctx.logicPanelNode,
+                cellSize: ctx.cellSize,
+                usedSets: usedSets,
+                grays: ctx.grays,
+                belowVis: ctx.gRows,
+                buttonX: -ctx.leftOffset,
+                buttonY: ctx.textHeight - 20,
+                stateObject: UpSetState,
+                subsets:subSets,
+                callAfterSubmit: [updateState,rowTransition]
+
+            });
 //            {
 //                ctx:ctx
 //            }
@@ -175,6 +175,56 @@ function UpSet(){
 
     //####################### SETS ##################################################
     function updateSetsLabels(tableHeaderNode) {
+
+
+        var setRowScale = d3.scale.ordinal().rangeRoundBands([0, usedSets.length * (ctx.cellDistance)],0);
+        setRowScale.domain(usedSets.map(function(d){return d.id}))
+
+        var setRows = tableHeaderNode.selectAll('.setRow')
+            .data(usedSets)
+
+        var setRowsEnter = setRows.enter()
+            .append('g')
+
+        setRows.exit().remove();
+
+        setRows.attr({transform: function (d, i) {
+                console.log(d.id);
+                return 'translate(' + setRowScale(d.id) + ', 0)';
+                //  return 'translate(0, ' + ( cellDistance * (i)) + ')';
+            },
+                class: 'setRow'});
+
+
+
+        setRowsEnter.selectAll("rect").data(function(d){return [d]}).enter().append("rect").attr({
+            class:"connection vertical",
+            transform: function (d, i) {
+                return 'skewX(45) translate(' + (ctx.cellDistance * i - ctx.leftOffset) + ', 0)';
+            },
+            width: ctx.cellSize,
+            height: ctx.textHeight - 2
+        })
+            .on('mouseover', mouseoverColumn)
+            .on('mouseout', mouseoutColumn)
+
+        setRowsEnter.selectAll("text").data(function(d){return [d]}).enter().append("text").text(
+            function (d) {
+                return d.elementName.substring(0, ctx.truncateAfter);
+            }).attr({
+                class: 'setLabel',
+                id: function (d) {
+                    return d.elementName.substring(0, ctx.truncateAfter);
+                },
+                transform: function (d, i) {
+                    return 'translate(' + (ctx.cellDistance * i + 5) + ',' + (ctx.textHeight - ctx.textSpacing - 2) + ')rotate(45)';
+                },
+                'text-anchor': 'end'
+            })
+            .on('mouseover', mouseoverColumn)
+            .on('mouseout', mouseoutColumn)
+
+
 
 
 //        var setRowScale = d3.scale.ordinal().rangeRoundBands([0, usedSets.length * (ctx.cellSize + 2)], 0);
@@ -350,6 +400,8 @@ function UpSet(){
         }).call(expectedValueAxis);
 
 
+        updateSetsLabels(tableHeaderGroup)
+
     }
 
 
@@ -405,6 +457,9 @@ function UpSet(){
                 return 'row ' + d.data.type;
             }}).transition().duration(100).style("opacity", 1);
 
+
+
+
         /*
          // add transparent background to make each row it sensitive for interaction
          combinationRows.selectAll('.backgroundRect').data(function (d) {
@@ -431,6 +486,24 @@ function UpSet(){
     }
 
     function updateSubsetRows(subsetRows, setScale) {
+
+        subsetRows.selectAll(".backgroundRect").data(function(d){return [d]}).enter()
+            .append("rect").attr({
+                class: "backgroundRect",
+                x: 0,
+                y: 0,
+                width: ctx.setVisWidth,
+                height: ctx.cellSize
+            })
+            .style({
+                "fill-opacity": 0,
+                fill: "grey" // for debugging
+            })
+            .on({
+                'mouseover': mouseoverRow,
+                'mouseout': mouseoutRow
+            })
+
         var combinationGroups = subsetRows.selectAll('g').data(function (d) {
                 // binding in an array of size one
                 return [d.data.combinedSets];
@@ -445,17 +518,19 @@ function UpSet(){
 
 
         var cells = combinationGroups.selectAll('.cell').data(function (d) {
-            return d;
+            return d.map(function(dd,i){return {data: usedSets[i], value:dd}});
         })
         // ** init
         cells.enter()
             .append('circle')
             .on({
                 'click': function (d) {
-                    return
+
                     /* click event for cells*/
                 },
-                'mouseover': mouseoverCell,
+                'mouseover': function(d,i){
+                    mouseoverCell(d3.select(this).node().parentNode.parentNode.__data__,i)
+                },
                 'mouseout': mouseoutCell
             })
         cells.exit().remove()
@@ -470,7 +545,7 @@ function UpSet(){
                 class: 'cell'
             })
             .style('fill', function (d) {
-                return setScale(d);
+                return setScale(d.value);
 
             })
 
@@ -487,6 +562,7 @@ function UpSet(){
                             return dd >= 0;
                         })
                 )
+
 
                 // dont do anything if there is only one (or none) cell
                 if (extent[0] == extent[1]) return [];
@@ -555,7 +631,7 @@ function UpSet(){
     }
 
     function updateGroupRows(groupRows) {
-        var groupsRect = groupRows.selectAll("rect").data(function (d) {
+        var groupsRect = groupRows.selectAll(".groupBackGround").data(function (d) {
             return [d];
         });
         //**init
@@ -795,10 +871,33 @@ function UpSet(){
             });
     }
 
+
+    function updateColumnBackgrounds() {
+        var columnBackgrounds = ctx.gRows.selectAll(".columnBackground").data(usedSets);
+        columnBackgrounds.enter().append("rect").attr({
+            class: "columnBackground"
+        }).style({
+                "stroke": "none",
+                fill: ctx.grays[0],
+                opacity:0
+            })
+        columnBackgrounds.exit().remove();
+        columnBackgrounds.attr({
+            'x': function (d, i) {
+                return (ctx.cellDistance) * i + 1;
+            },
+            y: ctx.textHeight,
+            height: ctx.h, //TODO: better value there
+            width: ctx.cellDistance - 2
+        })
+    }
+
     function plotSubSets() {
 
         setDynamicVisVariables();
         initRows();
+
+        updateColumnBackgrounds();
 
         // generate <g> elements for all rows
         var allRows= updateSubSetGroups()
