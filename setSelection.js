@@ -92,6 +92,8 @@ function plotSetOverview() {
         "transform": "translate(" + 0 + "," + 0 + ")"
     })
 
+//    var overview = tableHeaderNode;
+
     var usedSetsLabels = overview.append("g").attr("class", "usedSets").selectAll('.setLabel')
         .data(usedSets)
         .enter();

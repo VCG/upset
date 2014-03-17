@@ -93,6 +93,9 @@ $(EventManager).bind("set-removed", function (event, data) {
 });
 
 
+
+
+
 function plot(width, height) {
 
     var majorPadding = 5;
@@ -152,7 +155,7 @@ function plot(width, height) {
 
     d3.select('#vis').select('svg').remove();
     var svg = d3.select('#vis')
-        .style('width', w + "px")
+//        .style('width', w + "px")
         .append('svg')
         .attr('width', w)
         .attr('height', svgHeight);

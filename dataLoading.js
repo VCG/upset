@@ -5,18 +5,23 @@
  * author: Romain Vuillemot - romain.vuillemot@gmail.com
  */
 
-var dataSetDescriptions, queryParameters = {};;
+var dataSetDescriptions, queryParameters = {};
+var initCallback; // function to call when dataset is loaded
+var globalCtx;
 
-retrieveQueryParameters();
+function initData(ctx, callback){
+    retrieveQueryParameters();
 
-$.when($.ajax({ url: 'datasets.json', dataType: 'json' })).then(
-    function (data, textStatus, jqXHR) {
-        loadDataSetDescriptions(data);
-    },
-    function(data, textStatus, jqXHR) {
-        console.error( 'Error loading "' + this.url + '".' );
-    });
-
+    initCallback = callback;
+    globalCtx =ctx;
+    $.when($.ajax({ url: 'datasets.json', dataType: 'json' })).then(
+        function (data, textStatus, jqXHR) {
+            loadDataSetDescriptions(data);
+        },
+        function(data, textStatus, jqXHR) {
+            console.error( 'Error loading "' + this.url + '".' );
+        });
+}
 
 function loadDataSetDescriptions(dataSetList) {
 
@@ -165,9 +170,12 @@ function run() {
     setUpSubSets();
     // setUpGroupings();
     updateState();
-    plot();
+    initCallback.forEach(function(callback){
+        callback();
+    })
+//    plot();
 
-    plotSetSelection();
+//    plotSetSelection();
     selections.setActive();
     //createInitialSelection();
     plotSetOverview();
@@ -462,6 +470,7 @@ function updateSetContainment(set) {
     //  setUpGroupings();
     previousState = undefined;
     updateState();
+    ctx.updateHeaders();
     plot();
     plotSetSelection();
     plotSetOverview();
