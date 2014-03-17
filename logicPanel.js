@@ -32,7 +32,7 @@ function LogicPanel(params){
 
     var setNames= {}
     var collapseHeight = cellSize+5;
-    var uncollapseHeight = 90;
+    var uncollapseHeight = 95;
     var isCollapsed = true;
     var toggleState = {}
     var isNewPanel = true;
@@ -254,13 +254,13 @@ function LogicPanel(params){
             if (collectExpressions[d]!=null && collectExpressions[d].length ==setNameListLength){
                 switch(d){
                     case logicState.NOT:
-                        expression=  "the subsets that is in no selected set";
+                        expression=  "the subset that does not overlap with any selected set";
                         break;
                     case logicState.DONTCARE:
-                        expression =  "all subsets";
+                        expression =  "all subsets that intersect with the selected sets";
                         break;
                     case logicState.MUST:
-                        expression = "the subset that is in all selected sets";
+                        expression = "the subset that intersects all selected sets";
                         break;
                     default : break;
                 }
@@ -268,17 +268,17 @@ function LogicPanel(params){
         })
 
         if (expression.length<1){
-            expression = "subsets that are ";
+            expression = "subsets that intersect  ";
 
             var but = "";
             if (collectExpressions[logicState.MUST]!=null){
-                expression += "in set"+((collectExpressions[logicState.MUST].length>1)?"s ":" ")
+                expression += "with set"+((collectExpressions[logicState.MUST].length>1)?"s ":" ")
                 expression += collectExpressions[logicState.MUST].join(" and ")
                 but=" but "
             }
             if (collectExpressions[logicState.NOT]!=null){
-                expression += but+"not in set ";
-                expression += collectExpressions[logicState.NOT].join(" nor in set ")
+                expression += but+"not with set ";
+                expression += collectExpressions[logicState.NOT].join(" nor with set ")
             }
 
 
@@ -571,7 +571,7 @@ function LogicPanel(params){
 
         }else{
             d3.select(node).select(".logicPanelSelectionTable").selectAll(".logicTableRow").remove();
-
+            d3.select(node).select(".logicPanelActualText").remove();
         }
 
     }

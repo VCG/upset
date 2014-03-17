@@ -208,6 +208,8 @@ function UpSet(){
            })
            .on('mouseover', mouseoverColumn)
            .on('mouseout', mouseoutColumn)
+
+
           setRects.exit().remove();
 
            setRects.attr({
