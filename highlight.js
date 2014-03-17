@@ -1,5 +1,5 @@
+
 function mouseoverColumn(d,i){
-    console.log(d);
     var combinedSets = usedSets.map(function(dd,ii){
         return (dd.id== d.id)?1:0
     })

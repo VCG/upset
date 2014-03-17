@@ -261,12 +261,27 @@ function UpSet(){
             .attr({
                 id:"subSetSizeLabelRect",
                 class: 'labelBackground subsetSizeLabel sortIntersectionSizeGlobal'
-            });
+            }).on(
+                'click',
+                function (d) {
+                    UpSetState.sorting = StateOpt.sortBySubSetSize;
+                    UpSetState.grouping = undefined;
+                    UpSetState.levelTwoGrouping = undefined;
+                    UpSetState.forceUpdate = true;
+                    $('#noGrouping').prop('checked', true);
+                    toggleGroupingL2(true);
+                    $('#sortIntersectionSize').prop('checked', true);
+
+                    updateState();
+                    rowTransition();
+            })
+        ;
 
         tableHeader.append('text').text('Intersection Size')
             .attr({
                 id:"subSetSizeLabelText",
-                class: 'columnLabel subsetSizeLabel sortIntersectionSizeGlobal'
+                class: 'columnLabel subsetSizeLabel sortIntersectionSizeGlobal',
+                "pointer-events": "none"
             });
 
         tableHeader.append('g').attr()
@@ -310,12 +325,25 @@ function UpSet(){
             .attr({
                 id:"expectedValueLabelRect",
                 class: 'labelBackground expectedValueLabel sortRelevanceMeasureGlobal'
+            }).on(
+            'click',
+            function () {
+                UpSetState.sorting = StateOpt.sortByExpectedValue;
+                UpSetState.grouping = undefined;
+                UpSetState.levelTwoGrouping = undefined;
+                UpSetState.forceUpdate = true;
+                $('#noGrouping').prop('checked', true);
+                $('#sortRelevanceMeasure').prop('checked', true);
+                toggleGroupingL2(true);
+                updateState();
+                rowTransition();
             });
 
         tableHeader.append('text').text('Relevance')
             .attr({
                 id:"expectedValueLabelText",
-                class: 'columnLabel sortRelevanceMeasureGlobal'
+                class: 'columnLabel sortRelevanceMeasureGlobal',
+                "pointer-events": "none"
             });
 
         tableHeader.append('g').attr()
@@ -1138,29 +1166,30 @@ function UpSet(){
         });
     }
 
+    /** Passing true will disable the group */
+    function toggleGroupingL2(disable) {
+        var noGroupingL2 = $('#noGroupingL2');
+
+        if (disable) {
+            noGroupingL2.prop('checked', true);
+        }
+        noGroupingL2.prop('disabled', disable);
+
+        $('#groupByIntersectionSizeL2').prop('disabled', disable);
+        $('#groupBySetL2').prop('disabled', disable);
+        $('#groupByRelevanceMeasureL2').prop('disabled', disable);
+    }
+
+    function disableL2Equivalent(id) {
+        var l2 = $(id);
+        if (l2.prop('checked')) {
+            $('#noGroupingL2').prop('checked', true);
+        }
+        l2.prop('disabled', true);
+    }
+
     function setUpSortSelections() {
 
-        /** Passing true will disable the group */
-        function toggleGroupingL2(disable) {
-            var noGroupingL2 = $('#noGroupingL2');
-
-            if (disable) {
-                noGroupingL2.prop('checked', true);
-            }
-            noGroupingL2.prop('disabled', disable);
-
-            $('#groupByIntersectionSizeL2').prop('disabled', disable);
-            $('#groupBySetL2').prop('disabled', disable);
-            $('#groupByRelevanceMeasureL2').prop('disabled', disable);
-        }
-
-        function disableL2Equivalent(id) {
-            var l2 = $(id);
-            if (l2.prop('checked')) {
-                $('#noGroupingL2').prop('checked', true);
-            }
-            l2.prop('disabled', true);
-        }
 
         // ----------- grouping L1 -------------------------
 
@@ -1344,7 +1373,6 @@ function UpSet(){
     }
 
     var rowTransition = function(animateRows) {
-        console.log("rowTransition:"+animateRows);
         if (animateRows !=null) ctx.rowTransitions= animateRows;
         else ctx.rowTransitions= true;
         updateHeaders();
