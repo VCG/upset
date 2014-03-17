@@ -41,7 +41,9 @@ var ctx = {
 
     svgHeight: 10000, //height || 600;
 
-    grays : [ '#f0f0f0', '#636363']
+    grays : [ '#f0f0f0', '#636363'],
+
+    backHighlightColor:'#fed9a6'//'#fdbf6f'
 
 };
 
@@ -102,6 +104,11 @@ function UpSet(){
             "transform": "translate(" + ctx.leftOffset + "," + ctx.topOffset + ")"
         });
 
+        ctx.columnBackgroundNode = ctx.vis.append("g").attr({
+            class:"columnBackgroundsGroup"
+
+        })
+
         // Rows container for vertical panning
         ctx.gRows = ctx.vis.append('g')
             .attr(
@@ -144,6 +151,8 @@ function UpSet(){
             class:"tableHeader"
         })
 
+
+
         initRows();
 
         updateSetsLabels(ctx.tableHeaderNode);
@@ -181,32 +190,32 @@ function UpSet(){
         setRowScale.domain(usedSets.map(function(d){return d.id}))
 
         var setRows = tableHeaderNode.selectAll('.setRow')
-            .data(usedSets)
+            .data(usedSets, function(d){return d.elementName})
+
+        console.log("usedSets",usedSets);
 
         var setRowsEnter = setRows.enter()
-            .append('g')
+            .append('g').attr({
+                class:"setRow"
+            })
 
         setRows.exit().remove();
 
-        setRows.attr({transform: function (d, i) {
-                console.log(d.id);
-                return 'translate(' + setRowScale(d.id) + ', 0)';
-                //  return 'translate(0, ' + ( cellDistance * (i)) + ')';
-            },
-                class: 'setRow'});
+        var setRects = setRowsEnter.selectAll("rect").data(function(d){return [d]})
+           setRects.enter().append("rect").attr({
+            class:"connection vertical"
+           })
+           .on('mouseover', mouseoverColumn)
+           .on('mouseout', mouseoutColumn)
+          setRects.exit().remove();
 
-
-
-        setRowsEnter.selectAll("rect").data(function(d){return [d]}).enter().append("rect").attr({
-            class:"connection vertical",
+           setRects.attr({
             transform: function (d, i) {
                 return 'skewX(45) translate(' + (ctx.cellDistance * i - ctx.leftOffset) + ', 0)';
             },
             width: ctx.cellSize,
             height: ctx.textHeight - 2
         })
-            .on('mouseover', mouseoverColumn)
-            .on('mouseout', mouseoutColumn)
 
         setRowsEnter.selectAll("text").data(function(d){return [d]}).enter().append("text").text(
             function (d) {
@@ -224,68 +233,15 @@ function UpSet(){
             .on('mouseover', mouseoverColumn)
             .on('mouseout', mouseoutColumn)
 
+        setRows.attr({transform: function (d, i) {
+            console.log(d.id);
+            return 'translate(' + setRowScale(d.id) + ', 0)';
+            //  return 'translate(0, ' + ( cellDistance * (i)) + ')';
+        },
+            class: 'setRow'});
 
 
 
-//        var setRowScale = d3.scale.ordinal().rangeRoundBands([0, usedSets.length * (ctx.cellSize + 2)], 0);
-//        setRowScale.domain(usedSets.map(function (d) {
-//            return d.id;
-//        }));
-//
-//        var setGrp = tableHeaderNode.selectAll('.setRow')
-//            .data(usedSets)
-//
-//        setGrp.enter()
-//            .append('g')
-//
-//        setGrp.exit().remove();
-//
-//        setGrp.attr({transform: function (d, i) {
-//                return 'translate(' + setRowScale(d.id) + ', 0)';
-//                //  return 'translate(0, ' + ( cellDistance * (i)) + ')';
-//            },
-//                class: 'setRow'});
-//
-//
-//        // ------------ the set labels -------------------
-//
-//        var setLabels = tableHeaderNode.selectAll('.setLabel')
-//            .data(usedSets);
-//
-//        setLabels.exit().remove();
-//
-//        var setLabelsEnter = setLabels.enter().append('rect').attr({
-//            class: 'connection vertical'
-//        })
-//            .on('mouseover', mouseoverColumn)
-//            .on('mouseout', mouseoutColumn)
-//
-//        setLabelsEnter.append('text').text(
-//            function (d) {
-//                console.log(d);
-//                return d.elementName.substring(0, ctx.truncateAfter);
-//            }).attr({
-//                class: 'setLabel',
-//                id: function (d) {
-//                    return d.elementName.substring(0, ctx.truncateAfter);
-//                },
-//                transform: function (d, i) {
-//                    return 'translate(' + (ctx.cellDistance * i + 5) + ',' + (ctx.textHeight - ctx.textSpacing - 2) + ')rotate(45)';
-//                },
-//                'text-anchor': 'end'
-//            })
-//            .on('mouseover', mouseoverColumn)
-//            .on('mouseout', mouseoutColumn)
-//
-//
-//
-//        setLabels.attr({
-//            transform: function (d, i) {
-//                return 'skewX(45) translate(' + (ctx.cellDistance * i - ctx.leftOffset) + ', 0)';
-//            },
-//            width: ctx.cellSize,
-//            height: ctx.textHeight - 2
-//        })
 
     }
 
@@ -400,7 +356,7 @@ function UpSet(){
         }).call(expectedValueAxis);
 
 
-        updateSetsLabels(tableHeaderGroup)
+        updateSetsLabels(ctx.tableHeaderNode)
 
     }
 
@@ -496,8 +452,8 @@ function UpSet(){
                 height: ctx.cellSize
             })
             .style({
-                "fill-opacity": 0,
-                fill: "grey" // for debugging
+                "fill-opacity": 0.0001,
+                fill:ctx.backHighlightColor // for debugging
             })
             .on({
                 'mouseover': mouseoverRow,
@@ -873,22 +829,22 @@ function UpSet(){
 
 
     function updateColumnBackgrounds() {
-        var columnBackgrounds = ctx.gRows.selectAll(".columnBackground").data(usedSets);
+        var columnBackgrounds = ctx.columnBackgroundNode.selectAll(".columnBackground").data(usedSets);
         columnBackgrounds.enter().append("rect").attr({
             class: "columnBackground"
         }).style({
                 "stroke": "none",
-                fill: ctx.grays[0],
+                fill: ctx.backHighlightColor,
                 opacity:0
             })
         columnBackgrounds.exit().remove();
         columnBackgrounds.attr({
             'x': function (d, i) {
-                return (ctx.cellDistance) * i + 1;
+                return (ctx.cellDistance) * i ;
             },
             y: ctx.textHeight,
             height: ctx.h, //TODO: better value there
-            width: ctx.cellDistance - 2
+            width: ctx.cellDistance
         })
     }
 
