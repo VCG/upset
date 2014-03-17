@@ -318,7 +318,6 @@ var UpSetState = {
 var previousState = false;
 
 var updateState = function (parameter) {
-
     var forceUpdate = !previousState || UpSetState.forceUpdate || (UpSetState.hideEmpties != previousState.hideEmpties);
 
     // true if pure sorting - no grouping

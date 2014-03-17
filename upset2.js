@@ -43,7 +43,8 @@ var ctx = {
 
     grays : [ '#f0f0f0', '#636363'],
 
-    backHighlightColor:'#fed9a6'//'#fdbf6f'
+    backHighlightColor:'#fed9a6',//'#fdbf6f'
+    rowTransitions:true
 
 };
 
@@ -53,7 +54,7 @@ var ctx = {
 function plot(){
 
     ctx.plot();
-    console.log("plot");
+//    console.log("plot");
 }
 
 function UpSet(){
@@ -192,7 +193,7 @@ function UpSet(){
         var setRows = tableHeaderNode.selectAll('.setRow')
             .data(usedSets, function(d){return d.elementName})
 
-        console.log("usedSets",usedSets);
+//        console.log("usedSets",usedSets);
 
         var setRowsEnter = setRows.enter()
             .append('g').attr({
@@ -234,7 +235,7 @@ function UpSet(){
             .on('mouseout', mouseoutColumn)
 
         setRows.attr({transform: function (d, i) {
-            console.log(d.id);
+//            console.log(d.id);
             return 'translate(' + setRowScale(d.id) + ', 0)';
             //  return 'translate(0, ' + ( cellDistance * (i)) + ')';
         },
@@ -401,13 +402,17 @@ function UpSet(){
 
         subSets.exit().remove();
 
-        subSets
+
+        var subSetTransition = subSets;
+        if (ctx.rowTransitions)
+            subSetTransition= subSets
             .transition().duration(function (d, i) {
                 if (d.data.type === ROW_TYPE.SUBSET)
                     return queryParameters['duration'];
                 else
                     return queryParameters['duration'];
-            }).attr({transform: function (d) {
+            })
+        subSetTransition.attr({transform: function (d) {
                 return 'translate(0, ' + ctx.rowScale(d.id) + ')';
             }, class: function (d) {
                 return 'row ' + d.data.type;
@@ -554,6 +559,24 @@ function UpSet(){
             sizeBars.enter()
                 .append('rect')
                 .attr("class",  'subSetSize row-type-subset')
+                .attr({
+                    transform: function (d) {
+                        var y = 0;
+                        if (d.data.type !== ROW_TYPE.SUBSET)
+                            y = 0;//cellSize / 3 * .4;
+                        return   'translate(' + ctx.xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
+                    },
+
+                    width: function (d) {
+                        return ctx.subSetSizeScale(d.data.setSize);
+                    },
+                    height: function (d) {
+                        if (d.data.type === ROW_TYPE.SUBSET)
+                            return ctx.cellSize;
+                        else
+                            return ctx.cellSize;// / 3;
+                    }
+                })
                 .on('click', function (d) {
                     ctx.intersectionClicked(d);
                 })
@@ -599,7 +622,7 @@ function UpSet(){
             y: 0
         }).on('click', function (d) {
                 collapseGroup(d.data);
-                //rowTransition(); // TODO!!!
+                rowTransition(false);
             });
 
         groupsRect.exit().remove();
@@ -633,7 +656,10 @@ function UpSet(){
                 y: ctx.cellSize - 3,
                 x: -ctx.leftOffset,
                 'font-size': ctx.cellSize - 6
-            })
+            }).on('click', function (d) {
+                collapseGroup(d.data);
+                rowTransition(false);
+            });
     }
 
     function updateRelevanceBars(allRows) {
@@ -1316,9 +1342,13 @@ function UpSet(){
 
     }
 
-    var rowTransition = function() {
+    var rowTransition = function(animateRows) {
+        console.log("rowTransition:"+animateRows);
+        if (animateRows !=null) ctx.rowTransitions= animateRows;
+        else ctx.rowTransitions= true;
         updateHeaders();
         plotSubSets();
+        ctx.rowTransitions=true
     }
 
 

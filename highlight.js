@@ -108,9 +108,6 @@ function mouseoutRow() {
 }
 
 function mouseoverCell(rowData, columnIndex) {
-    console.log("this:",d3.select(this).node());
-//    console.log("cell:",d, d3.select(this).node().parentNode.parentNode.__data__.data);
-//    mouseoverColumn(d, i);
 
     var combinedSets = rowData.data.combinedSets.map(function(d,i){
         if (i==columnIndex) return 1;
