@@ -39,7 +39,7 @@ var ctx = {
 //         h;
 //         rowScale;
 
-    svgHeight: 10000, //height || 600;
+    svgHeight: 600, //height || 600;
 
     grays : [ '#f0f0f0', '#636363'],
 
@@ -111,26 +111,21 @@ function UpSet(){
 
         // Rows container for vertical panning
         ctx.gRows = ctx.vis.append("foreignObject")
-        .attr("width", 750)
-        .attr("height", 200)
-        .attr("x", 90)//*cellSize)
+        .attr("width", ctx.w)
+        .attr("height", ctx.svgHeight)
+        .attr("x", 0)//*cellSize)
         .attr("y", 210)//*cellSize)
       .append("xhtml:div")
         .style("position", "relative")
         .style("overflow-y", "scroll")
-        .style("height", "500px")
+        .style("height", "600px")
         .append("svg")
         .attr({
-            height: 10000, //textHeight*2,
+            height: subSets.length*ctx.cellSize,
             width: 700, //unusedSets.length*cellSize
         })
         .append('g')
-            .attr(
-            {'class': 'gRows', "transform": "translate(0,0)"}
-        )
-            .data([
-                {'x': 0, 'y': 0, 'dx': 0, 'dy': 0}
-            ]);
+            .attr({'class': 'gRows', "transform": "translate(90,0)"})
 
 
         //####################### LogicPanel ##################################################
