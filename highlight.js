@@ -1,4 +1,14 @@
-function mouseoverColumn(combinedSets) {
+function mouseoverColumn(d,i){
+    console.log(d);
+    var combinedSets = usedSets.map(function(dd,ii){
+        return (dd.id== d.id)?1:0
+    })
+    mouseoverColumnImpl(combinedSets);
+
+
+}
+
+function mouseoverColumnImpl(combinedSets) {
 
 //    console.log(d,i);
 
@@ -13,6 +23,7 @@ function mouseoverColumn(combinedSets) {
         .style("opacity", 1)
         .style("stroke", "black")
 
+
     d3.selectAll(".combination").selectAll("rect").filter(function (dd, ii) {
         return combinedSets[ii];
 //        return dd.id== d.id;
@@ -25,7 +36,8 @@ function mouseoverColumn(combinedSets) {
 //        return dd.id== d.id;
     })
         .style("opacity", 1)
-        .style("stroke", "black")
+//        .style("stroke", "black")
+        .style("fill",ctx.backHighlightColor)
 
     d3.selectAll(".setSize").filter(function (dd, ii) {
         return combinedSets[ii];
@@ -33,6 +45,11 @@ function mouseoverColumn(combinedSets) {
     })
         .style("opacity", 1)
         .style("stroke", "black")
+
+    ctx.columnBackgroundNode.selectAll(".columnBackground").style({
+        opacity:function(dd,i){return combinedSets[i]}
+    })
+
 }
 
 function mouseoutColumn() {
@@ -40,6 +57,14 @@ function mouseoutColumn() {
     d3.selectAll(".connection, .combination rect, .setSize")
         .style("opacity", 1)
         .style("stroke", "none")
+
+    ctx.tableHeaderNode.selectAll(".connection")
+        .style("fill", ctx.grays[0])
+
+    ctx.columnBackgroundNode.selectAll(".columnBackground").style({
+        opacity:0,
+        stroke:"none"
+    })
 
 }
 
@@ -78,15 +103,10 @@ function mouseoverRowImpl(d, combinedSets) {
 
 
 
-    // highlight all columns
-
-    ctx.columnBackgroundNode.selectAll(".columnBackground").style({
-        opacity:function(dd,i){return combinedSets[i]}
-    })
 
 
 //    mouseoverColumn(d.data.combinedSets)
-    mouseoverColumn(combinedSets)
+    mouseoverColumnImpl(combinedSets)
 
 }
 
@@ -99,11 +119,6 @@ function mouseoutRow() {
         .style({"stroke":null,
             "fill-opacity":0
         })
-
-    ctx.columnBackgroundNode.selectAll(".columnBackground").style({
-        opacity:0,
-        stroke:"none"
-    })
     mouseoutColumn();
 }
 
@@ -115,11 +130,20 @@ function mouseoverCell(rowData, columnIndex) {
     })
 
 
+
     mouseoverRowImpl(rowData, combinedSets)
 
     var columnBackgrounds = ctx.columnBackgroundNode.selectAll(".columnBackground").style({
         stroke:function(dd,i){if (i==columnIndex) return 1; else return "none"}
     })
+
+    d3.selectAll(".connection.vertical")
+        .style("stroke",function(d,i){
+            return (i==columnIndex)?"black":"none";
+        })
+
+
+
 //    columnBackgrounds.filter(function(d,i){return i==columnIndex})
 //        .style({
 //            opacity:1

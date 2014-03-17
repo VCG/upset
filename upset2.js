@@ -202,7 +202,7 @@ function UpSet(){
 
         setRows.exit().remove();
 
-        var setRects = setRowsEnter.selectAll("rect").data(function(d){return [d]})
+        var setRects = setRowsEnter.selectAll("rect").data(function(d,i){return [d]})
            setRects.enter().append("rect").attr({
             class:"connection vertical"
            })
@@ -532,7 +532,8 @@ function UpSet(){
         )
         //**init
         cellConnectors.enter().append("line").attr({
-            class: "cellConnector"
+            class: "cellConnector",
+            "pointer-events": "none"
         })
             .style({
                 "stroke": setScale(1),
