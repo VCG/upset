@@ -322,7 +322,7 @@ select {
 }
 
 .fixed-y-container {
-    overflow-y: scroll;
+/*    overflow-y: scroll; */
     border-bottom: 2px solid pink;
 }
 

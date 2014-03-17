@@ -99,7 +99,6 @@ function UpSet(){
             .attr('width', ctx.w)
             .attr('height', ctx.svgHeight);
 
-
         ctx.vis = ctx.svg.append("g").attr({
             class: "visContainer",
             "transform": "translate(" + ctx.leftOffset + "," + ctx.topOffset + ")"
@@ -111,7 +110,21 @@ function UpSet(){
         })
 
         // Rows container for vertical panning
-        ctx.gRows = ctx.vis.append('g')
+        ctx.gRows = ctx.vis.append("foreignObject")
+        .attr("width", 750)
+        .attr("height", 200)
+        .attr("x", 90)//*cellSize)
+        .attr("y", 210)//*cellSize)
+      .append("xhtml:div")
+        .style("position", "relative")
+        .style("overflow-y", "scroll")
+        .style("height", "500px")
+        .append("svg")
+        .attr({
+            height: 10000, //textHeight*2,
+            width: 700, //unusedSets.length*cellSize
+        })
+        .append('g')
             .attr(
             {'class': 'gRows', "transform": "translate(0,0)"}
         )
