@@ -119,13 +119,16 @@ function UpSet(){
         .style("position", "relative")
         .style("overflow-y", "scroll")
         .style("height", "600px")
+        .on("mousemove", function() { 
+            // Prevent global scrolling here?
+        })
         .append("svg")
         .attr({
             height: subSets.length*ctx.cellSize,
             width: 700, //unusedSets.length*cellSize
         })
         .append('g')
-            .attr({'class': 'gRows', "transform": "translate(90,0)"})
+            .attr({'class': 'gRows', "transform": "translate(90,-90)"})
 
 
         //####################### LogicPanel ##################################################
