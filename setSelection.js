@@ -94,6 +94,8 @@ function plotSetOverview() {
 
 //    var overview = tableHeaderNode;
 
+    var formLabels = overview.append("g").attr("class", "usedSets");
+
     var usedSetsLabels = overview.append("g").attr("class", "usedSets").selectAll('.setLabel')
         .data(usedSets)
         .enter();
@@ -116,7 +118,60 @@ function plotSetOverview() {
             width: cellSize//setRowScale.rangeBand()
         })
         .on('click', setClicked)
+        .on('mouseover', function(d, i) {
+            mouseoverColumn(d, i);
 
+        })
+        .on('mouseout', function(d, i) {
+            mouseoutColumn(d, i);
+        })
+
+        overview.on('mouseover', function(d, i) {
+            
+            d3.selectAll(".bulkCheck").remove();
+
+            usedSetsLabels.append("foreignObject")
+                .attr("width", 20)
+                .attr("height", 20)
+                .attr("y", 40)
+                .attr("class", "bulkCheck")
+                .attr("x", function(d, i) {
+                   return cellDistance * (i);
+                })
+                .append("xhtml:body")
+                .html("<form><input type='checkbox' id='check' checked/></form>")
+                .on("click", function(d, i){
+//                    d3.select(this).node().checked;
+
+                });
+   
+            unusedSetsLabels.append("foreignObject")
+                .attr("width", 20)
+                .attr("height", 20)
+                .attr("y", 40)
+                .attr("class", "bulkCheck")
+                .attr("x", function(d, i) {
+                    console.log("tatata", d, i)
+                    return cellDistance * (i);
+                })
+                .append("xhtml:body")
+                .html("<form><input type='checkbox' id='check'/></form>")
+                .on("click", function(d, i){
+                   
+                });
+
+            d3.select(this).append("xhtml:body")
+                .html("<form><input type='button' id='check' value='toto/></form>")
+                .on("click", function(d, i){
+                    d3.select(this).select("#check").node().checked;
+
+                });
+
+            })
+        .on('mouseout', function(d, i) {
+            mouseoutColumn(d, i);
+            d3.selectAll(".bulkCheck").transition().duration(500).remove();
+        })
 
     // background bar
     usedSetsLabels
