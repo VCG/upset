@@ -440,10 +440,15 @@ function UpSet(){
             .enter()
             .append('g')
             .attr({transform: function (d) {
-                if (d.data.type === ROW_TYPE.SUBSET)
+
+                if (d.data.type === ROW_TYPE.SUBSET) 
                     return 'translate(0, ' + ctx.rowScale(d.id) + ')';
-                else
-                    return 'translate(0, ' + ctx.textHeight + ')';
+                else {
+                    var offset_y = ctx.textHeight;
+                    if(d.data.level == 2)
+                        offset_y += 10 
+                    return 'translate(0, ' + offset_y + ')';
+                }
             }, class: function (d) {
                 return 'row ' + d.data.type;
             }
