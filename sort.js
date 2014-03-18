@@ -17,9 +17,9 @@ var handleLogicGroups = function (subsets, dataRows, level) {
         }
         else {
             var group = new Group(d.id, d.groupName, level);
-            var maskList= d.getListOfValues();
+            var maskList = d.getListOfValues();
 
-            getSubsetsForMaskList(subsets, maskList, function(d){
+            getSubsetsForMaskList(subsets, maskList, function (d) {
                 group.addSubSet(d);
             });
 
@@ -28,14 +28,13 @@ var handleLogicGroups = function (subsets, dataRows, level) {
         ;
     })
 
-
-   // TODO: @Alex: add unwrapped group -- maybe you solve this globally if unwrapped or not
-    if (addGroups.length>0){
-        var groupElements= unwrapGroups(addGroups);
+    // TODO: @Alex: add unwrapped group -- maybe you solve this globally if unwrapped or not
+    if (addGroups.length > 0) {
+        var groupElements = unwrapGroups(addGroups);
 
         console.log("groupEl", groupElements);
         groupElements.reverse()
-        groupElements.forEach(function(addGroup){
+        groupElements.forEach(function (addGroup) {
             dataRows.unshift(addGroup)
         })
     }
@@ -355,18 +354,33 @@ var updateState = function (parameter) {
     renderRows.length = 0;
 
     var registry = {};
+    var prefix = "";
     dataRows.forEach(function (element) {
-        var count = 1;
-        if (registry.hasOwnProperty(element.id)) {
-            count = registry[element.id];
-            count = Utilities.generateUuid;
-            registry[element.id] = count;
+        var wrapper = {};
+
+        if (UpSetState.grouping === StateOpt.groupBySet || UpSetState.levelTwoGrouping === StateOpt.groupBySet) {
+            if (element.type === ROW_TYPE.SUBSET) {
+                wrapper.id = prefix + element.id;
+            }
+            else {
+                prefix = element.id + "_";
+                wrapper.id = element.id;
+            }
+
         }
         else {
-            registry[element.id] = 1;
+            var count = 1;
+            if (registry.hasOwnProperty(element.id)) {
+                count = registry[element.id];
+                count += 1;
+                registry[element.id] = count;
+            }
+            else {
+                registry[element.id] = 1;
+            }
+
+            wrapper.id = element.id + '_' + count;
         }
-        var wrapper = {};
-        wrapper.id = element.id + '_' + count;
         wrapper.data = element;
 
         renderRows.push(wrapper);
