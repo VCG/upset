@@ -36,7 +36,7 @@ function LogicPanel(params){
     var isCollapsed = true;
     var toggleState = {}
     var isNewPanel = true;
-    var belowVisRestoreTranslate = "translate(0,0)"
+    var belowVisRestoreTranslate = "translate(0, 90)"
 
     var actualGroupLabel = "Logic Group"
 
@@ -787,7 +787,7 @@ function LogicPanel(params){
 //            })
 //
         belowVis.transition().attr({
-            "transform":"translate(0,"+(endOfPanel+15)+")"
+            "transform":"translate(90,"+(endOfPanel+15)+")"
         })
 
 
