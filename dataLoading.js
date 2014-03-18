@@ -474,6 +474,9 @@ function updateSetContainment(set) {
     plot();
     plotSetSelection();
     plotSetOverview();
+    ctx.svg.attr("width", ctx.w)
+    d3.selectAll(".svgGRows, .foreignGRows").attr("width", ctx.w)
+    d3.selectAll(".backgroundRect").attr("width", ctx.w-ctx.leftOffset)
 }
 
 function addSet(set) {
