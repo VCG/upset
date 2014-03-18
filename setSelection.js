@@ -107,7 +107,7 @@ function plotSetOverview() {
 
             usedSets.filter(function(d, ii) {
 
-              d3.select('svg')
+              d3.select('#vis').select('svg')
                 .append("foreignObject")
                 .attr("width", 100)
                 .attr("height", 100)
@@ -125,7 +125,7 @@ function plotSetOverview() {
 
              unusedSets.filter(function(d, ii) {
 
-              d3.select('svg')
+              d3.select('#vis').select('svg')
                 .append("foreignObject")
                 .attr("width", 100)
                 .attr("height", 100)
