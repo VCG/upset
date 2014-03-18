@@ -1,0 +1,21 @@
+{
+    "file": "CpdsVsProteinTable.txt",
+    "name": "Compound - Protein Interaction",
+    "header": 0,
+    "separator": "\t",
+    "skip": 0,
+    "meta": [
+        {
+            "type": "id",
+            "index": 0,
+            "name": "Name"
+        }
+    ],
+    "sets": [
+        {
+            "format": "binary",
+            "start": 1,
+            "end": 100
+        }
+    ]
+}
