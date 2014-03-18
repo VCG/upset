@@ -113,7 +113,7 @@ function mouseoverRowImpl(d, combinedSets) {
 function mouseoutRow() {
 
     // plot Venn diagram without highlighting
-    venn.plot();
+    venn.plot(null, usedSets.length );
 
     d3.selectAll(".row .backgroundRect")
         .style({"stroke":null,
