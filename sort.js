@@ -67,7 +67,7 @@ var groupByIntersectionSize = function (subSets, level, parentID) {
     newGroups.push(new Group(EMPTY_GROUP_ID + parentID, 'Empty Subset', level));
     var maxSetSize = Math.min(usedSets.length, UpSetState.maxCardinality);
     for (var i = UpSetState.minCardinality; i < maxSetSize; i++) {
-        newGroups.push(new Group(SET_SIZE_GROUP_PREFIX + (i + 1) + parentID, (i + 1) + '-Set Subsets'));
+        newGroups.push(new Group(SET_SIZE_GROUP_PREFIX + (i + 1) + '_' + parentID, (i + 1) + '-Set Subsets', level));
     }
     subSets.forEach(function (subSet) {
         var group = newGroups[subSet.nrCombinedSets];
@@ -89,7 +89,7 @@ var groupBySet = function (subSets, level, parentID) {
     var newGroups = [];
     newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
     for (var i = 0; i < usedSets.length; i++) {
-        var group = new Group(SET_BASED_GROUPING_PREFIX + (i + 1) + parentID, usedSets[i].elementName);
+        var group = new Group(SET_BASED_GROUPING_PREFIX + (i + 1) + parentID, usedSets[i].elementName, level);
 
         newGroups.push(group);
 
@@ -244,6 +244,7 @@ var unwrapGroups = function (groupList) {
         }
         if (UpSetState.levelTwoGrouping && group.nestedGroups) {
             dataRows = dataRows.concat(unwrapGroups(group.nestedGroups, []));
+            continue;
         }
         if (!group.isCollapsed) {
 //            else {
@@ -383,7 +384,8 @@ var updateState = function (parameter) {
             wrapper.id = element.id + '_' + count;
         }
         wrapper.data = element;
-        console.log(wrapper.id);
+    //    console.log(wrapper.id);
+        console.log('Level: ' + wrapper.data.level);
         renderRows.push(wrapper);
 
     });
