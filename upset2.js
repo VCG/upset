@@ -809,8 +809,8 @@ function UpSet(){
             .attr({
                 transform: function (d) {
                     var y = 0;
-                    if (d.data.type !== ROW_TYPE.SUBSET)
-                        y = 0; //cellSize / 3 * .4;
+                    if (d.data.type == ROW_TYPE.SUBSET)
+                        y = 1; //cellSize / 3 * .4;
                     return   'translate(' + ctx.xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
                 },
 
@@ -836,10 +836,7 @@ function UpSet(){
                     return   ctx.subSetSizeScale(s[usedID].length);
                 },
                 height: function (d) {
-                    if (d.data.type === ROW_TYPE.SUBSET)
-                        return ctx.cellSize;
-                    else
-                        return ctx.cellSize// / 3;
+                    return ctx.cellSize-2// / 3;
 
                 }
             })
