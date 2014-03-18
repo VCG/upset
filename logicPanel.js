@@ -14,7 +14,7 @@ function LogicPanel(params){
     var buttonX = params.buttonX;       // button X coordinate
     var buttonY = params.buttonY;       // button Y coordinate
     var subsets = params.subsets;
-
+    var ctx = params.ctx
 
     var stateObject= params.stateObject
     var callAfterSubmit = params.callAfterSubmit;
@@ -126,7 +126,13 @@ function LogicPanel(params){
 
 
     var defineDontCarePattern = function(gQuery, cellSize, grays){
-        var patternDef = gQuery.append("defs").append("pattern").attr({
+        var patternDefAll = gQuery.selectAll("defs").data([cellSize], function(d){return d;})
+        patternDefAll.exit().remove();
+
+
+//        if (removed.length<1){
+        var patternDef = patternDefAll.enter().
+        append("defs").append("pattern").attr({
             id:"HalfSelectPattern",
             patternUnits:"userSpaceOnUse",
 //            patternUnits:"objectBoundingBox",
@@ -153,7 +159,7 @@ function LogicPanel(params){
         }).style({
                 fill: grays[0]
             })
-
+//        }
     }
 
 
@@ -162,7 +168,7 @@ function LogicPanel(params){
         addLogicButton.attr({
             "opacity":0
         })
-        belowVisRestoreTranslate= belowVis.attr("transform");
+        belowVisRestoreTranslate= +belowVis.attr("y");
 
 
         // define first orClause as dontcare ANDs
@@ -602,6 +608,9 @@ function LogicPanel(params){
     }
 
     var renderActualPanel= function(){
+        cellSize = ctx.cellDistance
+
+        defineDontCarePattern(panel,cellSize,grays);
 
         if (isNewPanel){
             var fakeGroup = panel.append("g").attr({id:"fakeGroup"})
@@ -786,8 +795,12 @@ function LogicPanel(params){
 //                stroke: grays[1]
 //            })
 //
+//        belowVis.transition().attr({
+//            "transform":"translate(0,"+(endOfPanel+15)+")"
+//        })
+
         belowVis.transition().attr({
-            "transform":"translate(0,"+(endOfPanel+15)+")"
+            "y":+(endOfPanel+belowVisRestoreTranslate+15)
         })
 
 
@@ -804,7 +817,7 @@ function LogicPanel(params){
 
 
         belowVis.transition().attr({
-            "transform":belowVisRestoreTranslate
+            "y":belowVisRestoreTranslate
         })
         addLogicButton.attr({
             "opacity":1

@@ -75,6 +75,9 @@ function UpSet(){
         ctx.xStartExpectedValues = ctx.xStartSetSizes + ctx.subSetSizeWidth + 20;
         ctx.setVisWidth = ctx.expectedValueWidth + ctx.subSetSizeWidth
             + ctx.majorPadding + ctx.cellDistance + ctx.xStartSetSizes;
+
+        console.log("viswidth",ctx);
+
         ctx.w =ctx.cellDistance * usedSets.length + ctx.majorPadding + ctx.leftOffset
             + ctx.subSetSizeWidth + ctx.expectedValueWidth + 50;
         ctx.setMatrixHeight = ctx.setCellDistance + ctx.majorPadding;
@@ -109,12 +112,13 @@ function UpSet(){
 
         })
 
+        var foreignObject =ctx.vis.append("foreignObject")
+            .attr("width", ctx.w)
+            .attr("height", ctx.svgHeight)
+            .attr("x", 0)//*cellSize)
+            .attr("y", 210)//*cellSize)
         // Rows container for vertical panning
-        ctx.gRows = ctx.vis.append("foreignObject")
-        .attr("width", ctx.w)
-        .attr("height", ctx.svgHeight)
-        .attr("x", 0)//*cellSize)
-        .attr("y", 210)//*cellSize)
+        ctx.gRows = foreignObject
       .append("xhtml:div")
         .style("position", "relative")
         .style("overflow-y", "scroll")
@@ -125,7 +129,7 @@ function UpSet(){
         .append("svg")
         .attr({
             height: subSets.length*ctx.cellSize,
-            width: 700, //unusedSets.length*cellSize
+            width: ctx.w //unusedSets.length*cellSize
         })
         .append('g')
             .attr({'class': 'gRows', "transform": "translate(90,-90)"})
@@ -146,12 +150,13 @@ function UpSet(){
                 cellSize: ctx.cellSize,
                 usedSets: usedSets,
                 grays: ctx.grays,
-                belowVis: ctx.gRows,
+                belowVis: foreignObject,
                 buttonX: -ctx.leftOffset,
                 buttonY: ctx.textHeight - 20,
                 stateObject: UpSetState,
                 subsets:subSets,
-                callAfterSubmit: [updateState,rowTransition]
+                callAfterSubmit: [updateState,rowTransition],
+                ctx:ctx
 
             });
 //            {
@@ -196,7 +201,7 @@ function UpSet(){
 
     //####################### SETS ##################################################
     function updateSetsLabels(tableHeaderNode) {
-
+        console.log("updatSetLabels");
 
         var setRowScale = d3.scale.ordinal().rangeRoundBands([0, usedSets.length * (ctx.cellDistance)],0);
         setRowScale.domain(usedSets.map(function(d){return d.id}))
@@ -213,7 +218,7 @@ function UpSet(){
 
         setRows.exit().remove();
 
-        var setRects = setRowsEnter.selectAll("rect").data(function(d,i){return [d]})
+        var setRects = setRows.selectAll("rect").data(function(d,i){return [d]})
            setRects.enter().append("rect").attr({
             class:"connection vertical"
            })
@@ -229,9 +234,10 @@ function UpSet(){
             },
             width: ctx.cellSize,
             height: ctx.textHeight - 2
-        })
+            })
 
-        setRowsEnter.selectAll("text").data(function(d){return [d]}).enter().append("text").text(
+        var setRowsText = setRows.selectAll("text").data(function(d){return [d]})
+        setRowsText.enter().append("text").text(
             function (d) {
                 return d.elementName.substring(0, ctx.truncateAfter);
             }).attr({
@@ -240,12 +246,19 @@ function UpSet(){
                     return d.elementName.substring(0, ctx.truncateAfter);
                 },
                 transform: function (d, i) {
-                    return 'translate(' + (ctx.cellDistance * i + 5) + ',' + (ctx.textHeight - ctx.textSpacing - 2) + ')rotate(45)';
+                    return 'translate(' + (ctx.cellDistance * (i )) + ',' + (ctx.textHeight - ctx.textSpacing - 2) + ')rotate(45)';
                 },
                 'text-anchor': 'end'
             })
             .on('mouseover', mouseoverColumn)
             .on('mouseout', mouseoutColumn)
+
+        setRowsText.attr({
+            class: function(){if (ctx.cellSize>16) return 'setLabel'; else return 'setLabel small'}
+
+        })
+
+
 
         setRows.attr({transform: function (d, i) {
 //            console.log(d.id);
@@ -408,7 +421,7 @@ function UpSet(){
         ctx.subSetMatrixHeight = renderRows.length * ctx.cellDistance;
         ctx.h = ctx.subSetMatrixHeight + ctx.textHeight;
 
-        ctx.rowScale = d3.scale.ordinal().rangeRoundBands([ ctx.textHeight, ctx.h ], 0);
+        ctx.rowScale = d3.scale.ordinal().rangeRoundBands([ ctx.textHeight, ctx.h ], 0,0);
 
         ctx.rowScale.domain(renderRows.map(function (d) {
             return d.id;
@@ -489,7 +502,8 @@ function UpSet(){
 
     function updateSubsetRows(subsetRows, setScale) {
 
-        subsetRows.selectAll(".backgroundRect").data(function(d){return [d]}).enter()
+        var backgrounds = subsetRows.selectAll(".backgroundRect").data(function(d){return [d]})
+        backgrounds.enter()
             .append("rect").attr({
                 class: "backgroundRect",
                 x: 0,
@@ -505,6 +519,13 @@ function UpSet(){
                 'mouseover': mouseoverRow,
                 'mouseout': mouseoutRow
             })
+        backgrounds.exit().remove();
+        backgrounds.attr({
+            width: ctx.setVisWidth,
+            height: ctx.cellSize
+        })
+
+
 
         var combinationGroups = subsetRows.selectAll('g').data(function (d) {
                 // binding in an array of size one
@@ -660,7 +681,7 @@ function UpSet(){
         groupsRect.exit().remove();
         //**update
         groupsRect.attr({
-            width: ctx.setVisWidth + ctx.leftOffset,
+            width: function(){return ctx.setVisWidth + ctx.leftOffset},
             height: ctx.cellSize,
             x: -ctx.leftOffset
         });
@@ -685,6 +706,7 @@ function UpSet(){
             else if (d.data.type === ROW_TYPE.AGGREGATE)
                 return String.fromCharCode(8709) + '-subsets (' + d.data.subSets.length + ') ';
         }).attr({
+                class: function(){if (ctx.cellDistance<14) return 'groupLabel small'; else return 'groupLabel'},
                 y: ctx.cellSize - 3,
                 x: -ctx.leftOffset,
                 'font-size': ctx.cellSize - 6
@@ -877,7 +899,7 @@ function UpSet(){
         barLabels.text(function (d) {
             return d.data.setSize;
         }).transition().attr({class: 'intersectionSizeText intersectionSizeLabel',
-                y: ctx.cellSize - 6,
+                y: ctx.cellSize /2,
                 x: function (d) {
                     return ctx.xStartSetSizes + ctx.subSetSizeScale(d.data.setSize) + 2;
                 }
@@ -1374,6 +1396,15 @@ function UpSet(){
             });
 
     }
+
+
+
+
+    document.getElementById('rowSizeValue').addEventListener('input', function(){
+        ctx.cellDistance= +(document.getElementById('rowSizeValue').value);
+        console.log(ctx.cellSize);
+        rowTransition();
+    });
 
     var rowTransition = function(animateRows) {
         if (animateRows !=null) ctx.rowTransitions= animateRows;

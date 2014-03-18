@@ -54,11 +54,22 @@ h1 {
 
 /** The labels for the vertical set names */
 .setLabel {
-    dominant-baseline: middle;
+    /*dominant-baseline: middle;*/
     font: 12px sans-serif;
+    cursor: s-resize
+    /*alignment-baseline:middle;*/
+    /*alignment-baseline:middle;*/
+    /* writing-mode: bt-lr;*/
+}
+
+.setLabel.small{
+    dominant-baseline: middle;
+    font: 9px sans-serif;
     cursor: s-resize
     /* writing-mode: bt-lr;*/
 }
+
+
 
 .setLabel:hover {
 }
@@ -75,11 +86,22 @@ h1 {
     font-size: 11pt;
 }
 
+.groupLabel.small {
+    /*dominant-baseline: central;*/
+    font: sans-serif;
+    /*font-weight:bold;*/
+    text-anchor: left;
+    cursor: s-resize;
+    font-size: 9pt;
+}
+
+
 .intersectionSizeLabel {
     /*dominant-baseline: central;*/
     font: sans-serif;
     text-anchor: left;
     font-size: 8pt;
+    dominant-baseline:middle;
 }
 
 .columnLabel {
