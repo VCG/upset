@@ -11,5 +11,6 @@
     "UpSet-Data/data/variants/allvcf_10x.json",
     "UpSet-Data/data/variants/allvcf_20x.json",
     "UpSet-Data/data/variants/allvcf_30x.json",
-    "https://dl.dropboxusercontent.com/u/1041348/countries-upset-test/countries.json"
+    "https://dl.dropboxusercontent.com/u/1041348/countries-upset-test/countries.json",
+    "data/socialgraph/socialgraph.json"
 ]
