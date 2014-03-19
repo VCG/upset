@@ -16,24 +16,22 @@ var handleLogicGroups = function (subsets, dataRows, level, parentID) {
 //        if (d.id in oldGroupIDs) {
 //        }
 //        else {
-            var group = new QueryGroup(d.id + parentID, d.groupName, d.orClauses);
-            var maskList = d.getListOfValues();
+        var group = new QueryGroup(d.id + parentID, d.groupName, d.orClauses);
+        var maskList = d.getListOfValues();
 
+        getSubsetsForMaskList(subsets, maskList, function (d) {
+            group.addSubSet(d);
+        });
 
-            getSubsetsForMaskList(subsets, maskList, function (d) {
-                group.addSubSet(d);
-            });
-
-            addGroups.push(group)
+        addGroups.push(group)
 //        }
     })
 
-
-    var separator = new Separator("FILTER_SEPARATOR", 'Natural Intersections')
-
-    dataRows.unshift(separator);
-
     if (addGroups.length > 0) {
+        var separator = new Separator("FILTER_SEPARATOR", 'Natural Intersections')
+
+        dataRows.unshift(separator);
+
         var groupElements = unwrapGroups(addGroups);
 
         console.log("groupEl", groupElements);
@@ -389,7 +387,7 @@ var updateState = function (parameter) {
             wrapper.id = element.id + '_' + count;
         }
         wrapper.data = element;
-    //    console.log(wrapper.id);
+        //    console.log(wrapper.id);
         console.log('Level: ' + wrapper.data.level);
         renderRows.push(wrapper);
 
