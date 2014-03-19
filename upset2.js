@@ -233,7 +233,8 @@ function UpSet(){
                 stateObject: UpSetState,
                 subsets:subSets,
                 callAfterSubmit: [updateState,rowTransition],
-                ctx:ctx
+                ctx:ctx,
+                cellWidth:ctx.cellWidth
 
             });
 //            {

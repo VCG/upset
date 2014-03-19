@@ -14,6 +14,7 @@ function LogicPanel(params){
     var buttonX = params.buttonX;       // button X coordinate
     var buttonY = params.buttonY;       // button Y coordinate
     var subsets = params.subsets;
+    var cellWidth = params.cellWidth; // width of cells
     var ctx = params.ctx
 
     var stateObject= params.stateObject
@@ -133,33 +134,28 @@ function LogicPanel(params){
 //        if (removed.length<1){
         var patternDef = patternDefAll.enter().
         append("defs").append("pattern").attr({
-            id:"HalfSelectPattern",
-            patternUnits:"userSpaceOnUse",
-//            patternUnits:"objectBoundingBox",
-            x:"0",
-            y:"0",
-            width:cellSize,
-            height:cellSize
+                id:"DontCarePattern",
+//            patternUnits:"userSpaceOnUse",
+                patternContentUnits:"objectBoundingBox",
+                x:"0",
+                y:"0",
+                width:1,
+                height:1
+            })
+        patternDef.append("rect").attr({
+            x:.5,
+            y:0,
+            width:.5,
+            height:1,
+            fill: grays[1]
         })
         patternDef.append("rect").attr({
-            x:cellSize/2,
-            y:"0",
-            width:cellSize/2,
-            height:cellSize
-
-        }).style({
-                fill: grays[1]
-            })
-        patternDef.append("rect").attr({
             x:0,
-            y:"0",
-            width:cellSize/2,
-            height:cellSize
-
-        }).style({
-                fill: grays[0]
-            })
-//        }
+            y:0,
+            width:.5,
+            height:1,
+            fill: grays[0]
+        })
     }
 
 
@@ -405,7 +401,7 @@ function LogicPanel(params){
                     })})
          headerCircles.enter().append("circle").attr({
                 class:"logicPanelHeaderCircle",
-                cx:function(d,i){return (i*cellSize)+cellSize/2}, // TODO: add 90 as params!!
+                cx:function(d,i){return (i*cellWidth)+cellWidth/2}, // TODO: add 90 as params!!
                 cy:function(d,i){return cellSize/2},
                 r: cellSize/2-1
             })
@@ -421,7 +417,7 @@ function LogicPanel(params){
                             return grays[1]
                             break;
                         default: // logicState.DONTCARE
-                            return "url(#HalfSelectPattern)"
+                            return "url(#DontCarePattern)"
                     }},
                 stroke:function(){if (isExpanded) return logicColor; else return null;}
             })
@@ -526,7 +522,7 @@ function LogicPanel(params){
         circles.enter()
             .append("circle").attr({
             class:"logicPanelCircle",
-            cx:function(d,i){return (i+.5)*cellSize}, // TODO: add 90 as params!!
+            cx:function(d,i){return (i+.5)*cellWidth}, // TODO: add 90 as params!!
             cy: .5*cellSize,
 //                if (animated) return 0.5*cellSize;
 //                else return (i+1.5)*cellSize +5},
@@ -544,7 +540,7 @@ function LogicPanel(params){
                             return grays[1]
                             break;
                         default: // logicState.DONTCARE
-                            return "url(#HalfSelectPattern)"
+                            return "url(#DontCarePattern)"
                     }},
                 stroke:function(d){
                     if (d.isSelected()) return logicColor;
