@@ -7,7 +7,7 @@ Attribute = function() {
 	// nothing here
 };
 
-Attribute.matches = function( sourceType, targetType ) {
+Attribute.matchesType = function( sourceType, targetType ) {
 	if ( sourceType === targetType ) {
 		return true;
 	}
