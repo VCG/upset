@@ -193,7 +193,7 @@ function UpSet(){
             })
             .append("svg")
             .attr({
-                height: subSets.length*ctx.cellSize,
+                height: renderRows.length * ctx.cellDistance,
                 width: ctx.w,
                 class: "svgGRows"
             })
@@ -823,6 +823,68 @@ function UpSet(){
                 collapseGroup(d.data);
                 rowTransition(false);
             });
+
+
+        groupRows.each(function (e, j) {
+
+            var g = d3.select(this);
+            var max_scale = ctx.subSetSizeScale.domain()[1];
+            var cellSizeShrink = 2;
+
+            var i = 0;
+            var nbLevels = Math.ceil(e.data.setSize / max_scale);
+            console.log("NB levels ", nbLevels)
+            var data = d3.range(Math.ceil(e.data.setSize / max_scale)).map(function () {
+
+                // Yes, this is for cloning object
+                var f = JSON.parse(JSON.stringify(e))
+
+                if (i == nbLevels - 1)
+                    f.data.setSize = (f.data.setSize % max_scale);
+                else
+                    f.data.setSize = max_scale;
+
+                i++;
+                return f;
+            })
+
+            g.selectAll(".row-type-group").data(data).enter().append('rect')
+                .attr("class", function (d) {
+                    return ( 'subSetSize row-type-group' );
+
+                }).on('click', function (d) {
+                    var selection = Selection.fromSubset(d.data.subSets);
+                    selections.addSelection(selection);
+                    selections.setActive(selection);
+                })
+
+            g.selectAll(".row-type-group").data(data).exit().remove()
+
+            g.selectAll(".row-type-group")
+                .attr({
+                    //class: 'subSetSize',
+                    transform: function (d, i) {
+                        var y = 0;
+                        if (d.data.type !== ROW_TYPE.SUBSET)
+                            y = 0;//cellSize / 3 * .4;
+                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (y + cellSizeShrink * i) + ')'; // ' + (textHeight - 5) + ')'
+                    },
+
+                    width: function (d, i) {
+                        return ctx.subSetSizeScale(d.data.setSize) - i*cellSizeShrink;
+                    },
+                    height: function (d, i) {
+                        return ctx.cellSize - cellSizeShrink * i;
+                    }
+                })
+                .style("opacity", function (d, i) {
+                    return (i+1) / (nbLevels);
+                })
+                .on('mouseover', mouseoverRow)
+                .on('mouseout', mouseoutRow);
+
+        })
+
     }
 
     function updateRelevanceBars(allRows) {
@@ -1068,63 +1130,6 @@ function UpSet(){
         // add BarLabels to all bars
         updateBarLabels(allRows);
 
-
-        // TODO: @Romain -- experiments??
-        groupRows.each(function (e, j) {
-
-            var g = d3.select(this);
-            var max_scale = ctx.subSetSizeScale.domain()[1];
-
-            var i = 0;
-            var nbLevels = Math.ceil(e.data.setSize / max_scale);
-            var data = d3.range(Math.ceil(e.data.setSize / max_scale)).map(function () {
-                var f = JSON.parse(JSON.stringify(e))
-//                console.log(e, f, i, e.data.setSize)
-                if (i == nbLevels - 1)
-                    f.data.setSize = (f.data.setSize % max_scale);
-                else
-                    f.data.setSize = max_scale;
-//                console.log("aaa", i, nbLevels, f.data.setSize)
-                i++;
-                return f;
-            })
-
-            g.selectAll(".row-type-group").data(data).enter().append('rect')
-                .on('click', function (d) {
-                    var selection = Selection.fromSubset(d.data.subSets);
-                    selections.addSelection(selection);
-                    selections.setActive(selection);
-                })
-                .attr("class", function (d) {
-                    return ( 'subSetSize row-type-group' );
-
-                })
-                .attr({
-                    //class: 'subSetSize',
-                    transform: function (d) {
-                        var y = 0;
-                        if (d.data.type !== ROW_TYPE.SUBSET)
-                            y = 0;//cellSize / 3 * .4;
-                        return   'translate(' + ctx.xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
-                    },
-
-                    width: function (d) {
-                        return ctx.subSetSizeScale(d.data.setSize);
-                    },
-                    height: function (d, i) {
-                        return ctx.cellSize;
-                    }
-                })
-                .style("opacity", function (d, i) {
-                    return .5 + .5 * i / nbLevels;
-                })
-                .on('mouseover', mouseoverRow)
-                .on('mouseout', mouseoutRow);
-
-
-
-
-        })
 //
         // Rendering the highlights and ticks for selections on top of the selected subsets
         updateOverlays(allRows);
@@ -1133,6 +1138,8 @@ function UpSet(){
 
         updateRelevanceBars(allRows);
 
+        // Adjust the row height
+        d3.select(".divForeign").select("svg").attr("height",  renderRows.length * ctx.cellDistance);
     }
 
 

@@ -282,7 +282,7 @@ function plotSetOverview() {
           tmpText.remove();
 
           if(str.length<d.elementName.length)
-            str += "..";
+            str = str.trim() + "...";
 
             return str;
           })
@@ -293,11 +293,11 @@ function plotSetOverview() {
                 return d.elementName.substring(0, truncateAfter);
             },
                 transform: function (d, i) {
-                    return 'translate(' + (cellDistance * (i + 1) + 5) + ', 115) rotate(90)'
+                    return 'translate(' + (cellDistance * (i + 1) + 5) + ', 60) rotate(90)'
                 },
             y: cellSize - 3,
             x: 3,
-            'text-anchor': 'end'
+            'text-anchor': 'start'
 
 //            transform: function (d, i) {
 //                return 'translate(' + (cellDistance * (i ) + cellDistance / 2) + ',' + (setMatrixHeight + textHeight - textSpacing) + ')rotate(270)';
