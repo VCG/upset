@@ -344,7 +344,7 @@ select {
 }
 
 .fixed-y-container {
-/*    overflow-y: scroll; */
+    overflow-y: scroll;
     border-bottom: 2px solid pink;
 }
 
@@ -353,7 +353,8 @@ select {
 }
 
 #set-vis-container {
-    min-height: 600px;
+    min-height: 300px;
+    padding-bottom: 10px;
 }
 
 #item-vis-container {
@@ -368,6 +369,7 @@ select {
 
 #item-table-container {
     min-height: 400px;
+    padding-bottom: 10px;
 }
 
 .button-panel {

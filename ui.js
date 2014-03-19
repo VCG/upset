@@ -45,10 +45,12 @@ Ui.prototype.resize = function( event ) {
 Ui.prototype.updateFixedHeightContainers = function() {
     var fixedYContainers = $('.fixed-y-container');
     fixedYContainers.map( function(index) {
-        var targetHeight = ( $(window).height() - $(this).offset().top - 20 ) * parseFloat( $(fixedYContainers[index]).attr("data-height-ratio") );
-        
+        var paddingBottom = parseInt( $(fixedYContainers[index]).css( 'padding-bottom' ) ) || 0;
+        console.log( paddingBottom );
+        var targetHeight = ( $(window).height() - $(this).offset().top - paddingBottom ) * parseFloat( $(fixedYContainers[index]).attr("data-height-ratio") );
         var minHeight = parseInt( $('.fixed-y-container').css( "min-height" ) );
         var maxHeight = parseInt( $('.fixed-y-container').css( "max-height" ) ) || targetHeight;
+        
 
         var newHeight = Math.min( Math.max( targetHeight, minHeight ), maxHeight );
         $(this).css('height', newHeight + 'px');  
