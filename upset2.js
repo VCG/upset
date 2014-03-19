@@ -823,14 +823,16 @@ function UpSet(){
 
             var g = d3.select(this);
             var max_scale = ctx.subSetSizeScale.domain()[1];
+            var cellSizeShrink = 2;
 
             var i = 0;
             var nbLevels = Math.ceil(e.data.setSize / max_scale);
+            console.log("NB levels ", nbLevels)
             var data = d3.range(Math.ceil(e.data.setSize / max_scale)).map(function () {
 
                 // Yes, this is for cloning object
                 var f = JSON.parse(JSON.stringify(e))
-//                console.log(e, f, i, e.data.setSize)
+
                 if (i == nbLevels - 1)
                     f.data.setSize = (f.data.setSize % max_scale);
                 else
@@ -850,25 +852,27 @@ function UpSet(){
                     selections.setActive(selection);
                 })
 
+            g.selectAll(".row-type-group").data(data).exit().remove()
+
             g.selectAll(".row-type-group")
                 .attr({
                     //class: 'subSetSize',
-                    transform: function (d) {
+                    transform: function (d, i) {
                         var y = 0;
                         if (d.data.type !== ROW_TYPE.SUBSET)
                             y = 0;//cellSize / 3 * .4;
-                        return   'translate(' + ctx.xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
+                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (y + cellSizeShrink * i) + ')'; // ' + (textHeight - 5) + ')'
                     },
 
-                    width: function (d) {
-                        return ctx.subSetSizeScale(d.data.setSize);
+                    width: function (d, i) {
+                        return ctx.subSetSizeScale(d.data.setSize) - i*cellSizeShrink;
                     },
                     height: function (d, i) {
-                        return ctx.cellSize;
+                        return ctx.cellSize - cellSizeShrink * i;
                     }
                 })
                 .style("opacity", function (d, i) {
-                    return .5 + .5 * i / nbLevels;
+                    return (i+1) / (nbLevels);
                 })
                 .on('mouseover', mouseoverRow)
                 .on('mouseout', mouseoutRow);
