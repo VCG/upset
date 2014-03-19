@@ -176,10 +176,7 @@ function UpSet(){
             "transform": "translate(" + ctx.leftOffset + "," + ctx.topOffset + ")"
         });
 
-        ctx.columnBackgroundNode = ctx.vis.append("g").attr({
-            class:"columnBackgroundsGroup"
 
-        })
 
         var foreignObject =ctx.vis.append("foreignObject")
             .attr("width", ctx.w)
@@ -187,23 +184,32 @@ function UpSet(){
             .attr("x", 0)//*cellSize)
             .attr("y", 210)//*cellSize)
             .attr("class", "foreignGRows")
+        var foreignSVG =   foreignObject.append("xhtml:div")
+            .style("position", "relative")
+            .style("overflow-y", "scroll")
+            .style("height", "600px")
+            .on("mousemove", function() {
+                // Prevent global scrolling here?
+            })
+            .append("svg")
+            .attr({
+                height: subSets.length*ctx.cellSize,
+                width: ctx.w,
+                class: "svgGRows"
+            })
+
+        // -- the background highlights
+        ctx.columnBackgroundNode = foreignSVG.append("g").attr({
+            class:"columnBackgroundsGroup"
+
+        }) .attr({"transform": "translate(90,-90)"})
+
+
         // Rows container for vertical panning
-        ctx.gRows = foreignObject
-      .append("xhtml:div")
-        .style("position", "relative")
-        .style("overflow-y", "scroll")
-        .style("height", "600px")
-        .on("mousemove", function() { 
-            // Prevent global scrolling here?
-        })
-        .append("svg")
-        .attr({
-            height: subSets.length*ctx.cellSize,
-            width: ctx.w,
-            class: "svgGRows"
-        })
+        ctx.gRows = foreignSVG
         .append('g')
             .attr({'class': 'gRows', "transform": "translate(90,-90)"})
+
 
 
         //####################### LogicPanel ##################################################
@@ -1126,72 +1132,6 @@ function UpSet(){
         // ----------------------- expected value bars -------------------
 
         updateRelevanceBars(allRows);
-
-
-//        // -------------------- panning -------------------
-//
-//        function panning(d) {
-//
-//            //    console.log("pann", d, d.y)
-//            d3.event.scale = 1
-//            var dy = d3.event.translate[0] - prev_y;
-//            prev_y = d3.event.translate[0];
-//
-//            //    console.log("pann", d, d.y, dy, d3.event.translate, d3.event.translate*d3.event.scale)
-//
-//            d.y += dy;
-//            d.y = Math.max(0, d.y);
-//
-//            // d.y = Math.min(Math.min(0, d.y), params.viewportHeight - params.rowsHeight);
-//
-//            var offset = params.viewportHeight - params.rowsHeight;
-//            var offsetRemain = Math.min(params.viewportHeight - params.rowsHeight, 0);
-//            //d.y = Math.min(0, d.y+offsetRemain);
-//            //    console.log("ssss", d, d.y, d.y+offsetRemain, offsetRemain , d3.event.scale)
-//
-//            // console.log("trans", trans, Math.min(0, d3.event.translate[0]), Math.max(0, params.rowsHeight - params.viewportHeight))
-//
-//            // d3.event.translate[0] = Math.min(0, d3.event.translate[0]);
-//            //if(params.rowsHeight>params.viewportHeight) {
-//
-//            // Moving rows containing the subsets
-//            d3.select(this).attr('transform', 'translate(0, ' + -d.y + ')');
-//
-//            // Rows background should stick to his place
-//            d3.select(".background-subsets").attr('transform', function (d, i) {
-//                return 'translate(' + [ 0, d.y] + ')'
-//            })
-//
-//            // Update the scrollbar
-//            //scrollbar.setValue(d3.event.translate[0]);
-//
-//            //  console.log(params.rowsHeight, params.viewportHeight, subSets.length, setGroups.length, d3.transform(d3.select(this).attr("transform")).translate[1], trans)
-//
-//        }
-//
-//        /*
-//         var pan = d3.behavior.zoom()
-//         //  .scaleExtent([0, 10])
-//         .on('zoom', panning);
-//
-//         var prev_y = 0;
-//         d3.select('.gRows').call(pan);
-//         */
-//
-//        // -------------------- scrollbar -------------------
-//
-//        /*
-//         params = {
-//         x: w - 20 - leftOffset,
-//         y: 85,
-//         height: svgHeight - 205,
-//         viewportHeight: svgHeight - 210,
-//         rowsHeight: subSetMatrixHeight,
-//         parentEl: d3.select('.gScroll')
-//         }
-//
-//         var scrollbar = new Scrollbar(params);
-//         */
 
     }
 
