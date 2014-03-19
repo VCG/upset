@@ -7,15 +7,8 @@ var EMPTY_GROUP_ID = 'EmptyGroup';
 var SET_BASED_GROUPING_PREFIX = "SetG_";
 
 var handleLogicGroups = function (subsets, dataRows, level, parentID) {
-    var addGroups = [];
-//    var oldGroupIDs = {};
-//    if (previousState != false) previousState.logicGroups.forEach(function (queryExpression) {
-//        oldGroupIDs[queryExpression.id] = 1
-//    })
+    filterGroups = [];
     UpSetState.logicGroups.forEach(function (d) {
-//        if (d.id in oldGroupIDs) {
-//        }
-//        else {
         var group = new QueryGroup(d.id + parentID, d.groupName, d.orClauses);
         var maskList = d.getListOfValues();
 
@@ -23,24 +16,9 @@ var handleLogicGroups = function (subsets, dataRows, level, parentID) {
             group.addSubSet(d);
         });
 
-        addGroups.push(group)
-//        }
+        filterGroups.push(group)
+
     })
-
-    if (addGroups.length > 0) {
-        var separator = new Separator("FILTER_SEPARATOR", 'Natural Intersections')
-
-        dataRows.unshift(separator);
-
-        var groupElements = unwrapGroups(addGroups);
-
-        console.log("groupEl", groupElements);
-        groupElements.reverse()
-        groupElements.forEach(function (addGroup) {
-            dataRows.unshift(addGroup)
-        })
-
-    }
 
 }
 
@@ -109,43 +87,12 @@ var groupBySet = function (subSets, level, parentID) {
 var collapseGroup = function (group) {
     group.isCollapsed = !group.isCollapsed;
 
-//    if (!group.isCollapsed || group.nestedGroups) {
     UpSetState.collapseChanged = true;
     updateState();
     return;
-//    }
-//
-//    var inGroup = false;
-//    var replacement = [];
-//
-//    for (var i = 0; i < dataRows.length; i++) {
-//        if (dataRows[i] === group) {
-//            inGroup = true;
-//
-//        }
-//        else if (inGroup) {
-//            if (!group.contains(dataRows[i])) {
-//                inGroup = false;
-//            }
-//        }
-//
-//        if (!inGroup) {
-//            replacement.push(dataRows[i])
-//        }
-//
-//    }
-//    dataRows = replacement;
 
 };
 
-//var toggleCollapseAll = function () {
-//    if (UpSetState.collapseAll) {
-//        UpSetState.unCollapseAll = true;
-//    }
-//    UpSetState.collapseAll = !UpSetState.collapseAll;
-//    UpSetState.collapseChanged = true;
-//    updateState();
-//};
 
 var collapseAggregate = function (aggregate) {
     aggregate.isCollapsed = !aggregate.isCollapsed;
@@ -250,11 +197,8 @@ var unwrapGroups = function (groupList) {
             continue;
         }
         if (!group.isCollapsed) {
-//            else {
             dataRows = dataRows.concat(StateMap[UpSetState.sorting](group.visibleSets));
-//                for (var j = 0; j < group.visibleSets.length; j++) {
-//                    dataRows.push(group.visibleSets[j]);
-//                }
+
             if (group.aggregate.subSets.length > 0 && !UpSetState.hideEmpties) {
                 dataRows.push(group.aggregate);
                 if (!group.aggregate.isCollapsed) {
@@ -263,7 +207,6 @@ var unwrapGroups = function (groupList) {
                     }
                 }
             }
-//            }
         }
     }
 
@@ -342,12 +285,17 @@ var updateState = function (parameter) {
         dataRows = unwrapGroups(levelOneGroups);
     }
 
-    // TODO: @alex here !
-    if (UpSetState.logicGroups) {
-        // adds _NEW_ unwrapped logic groups to "dataRow"
+    if (UpSetState.logicGroupChanged) {
         handleLogicGroups(subSets, dataRows, 1);
         UpSetState.logicGroupChanged = false;
 
+    }
+
+    if (filterGroups && filterGroups.length > 0) {
+        var filteredRows = unwrapGroups(filterGroups);
+        var separator = new Separator("FILTER_SEPARATOR", 'Natural Intersections');
+        filteredRows.push(separator);
+        dataRows = filteredRows.concat(dataRows);
     }
 
     UpSetState.forceUpdate = false;
@@ -387,8 +335,6 @@ var updateState = function (parameter) {
             wrapper.id = element.id + '_' + count;
         }
         wrapper.data = element;
-        //    console.log(wrapper.id);
-        console.log('Level: ' + wrapper.data.level);
         renderRows.push(wrapper);
 
     });
@@ -397,8 +343,4 @@ var updateState = function (parameter) {
     queryParameters["grouping"] = UpSetState.grouping;
     updateQueryParameters();
 
-//    var status = $('#configStatus');
-//
-//    status.text('Do you want to see status text here?');
-//    console.log(status.prop('text'));
 };

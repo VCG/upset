@@ -69,22 +69,21 @@ var selections = new SelectionList(); //an array of selection
 var dataSets;
 
 /** Groups of subsets driven by group size */
-var sizeGroups = [];
+//var sizeGroups = [];
 
 /** Groups of subsets driven by set containment */
-var setGroups = [];
+//var setGroups = [];
 
 /** Venn diagram for tutorial mode */
 var venn = new VennDiagram("#venn-vis", 40);
 
 /** The current primary grouping */
-// TODO this is static for testing only
-var levelOneGroups = setGroups;
+var levelOneGroups;
+/** The smart filter groups */
+var filterGroups;
 
 /** How many sets do we want to see by default */
 var nrDefaultSets = 6;
-
-
 
 /**
  * The base element for all rows (sets, groups, subsets, aggregates)
@@ -109,7 +108,6 @@ function Separator(id, elementName) {
     this.type = ROW_TYPE.SEPARATOR;
 
 }
-
 
 Separator.prototype = Element;
 Separator.prototype.constructor = Element;
@@ -330,10 +328,10 @@ function makeSubSet(setMask) {
     subSets.push(subSet);
 }
 
-// takes  a list l of arrays a(i) which represent disjunctive normal form: a(i) OR a(i+1) OR...
-// a(i) represents a setMask: 0 - NOT, 1 - MUST, 2- DONTCARE
-// if callFucntion is null a list of matching subsets is returned
-
+/** takes  a list l of arrays a(i) which represent disjunctive normal form: a(i) OR a(i+1) OR...
+ a(i) represents a setMask: 0 - NOT, 1 - MUST, 2- DONTCARE
+ if callFunction is null a list of matching subsets is returned
+ */
 var getSubsetsForMaskList = function (subsets, maskList, callFunction) {
     var res = [];
 
@@ -366,9 +364,6 @@ var getSubsetsForMaskList = function (subsets, maskList, callFunction) {
         } else if (isAhit) {
             res.push(subset);
         }
-
     })
-
     return res;
-
 }
