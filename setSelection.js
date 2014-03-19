@@ -231,7 +231,7 @@ function plotSetOverview() {
         .attr("height", 200)
         .attr("x", usedSets.length*cellSize)
       .append("xhtml:div")
-        .style("overflow-x", "scroll")
+        .style("overflow-x", "auto")
         .append("svg")
         .attr({
             height: textHeight*2,

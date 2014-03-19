@@ -514,3 +514,29 @@ html, body, .ui-container {
 .configHeader {
     font-weight: bold;
 }
+
+/** ==== for range slider == **/
+
+.drawBrush, path.connectionArea{
+    fill:gray;
+    opacity: 0.2;
+    stroke:none;
+
+}
+
+.sliderLabel rect{
+    opacity:.5;
+    fill:#a6bddb;
+}
+
+.sliderLabel line{
+    opacity:.5;
+    stroke:#a6bddb;
+    stroke-width:2;
+}
+.sliderLabel text{
+    opacity:1;
+    font: 10px sans-serif;
+    fill:black;
+    text-anchor:middle;
+}

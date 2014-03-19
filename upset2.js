@@ -33,7 +33,7 @@ var ctx = {
 
     setCellDistance : 12,
     setCellSize : 10,
-
+    cellWidth :20,
 
 //         subSetMatrixHeight;
 //         h;
@@ -44,7 +44,16 @@ var ctx = {
     grays : [ '#f0f0f0', '#636363'],
 
     backHighlightColor:'#fed9a6',//'#fdbf6f'
-    rowTransitions:true
+    rowTransitions:true,
+    barTransitions:true,
+
+    globalStatistics:[
+        {name: "largest intersection",id:"I", value:100 },
+        {name: "largest group",id:"G", value:200 },
+        {name: "largest set",id:"S", value:300 },
+        {name: "all items",id:"A", value:400 }
+    ]
+
 
 };
 
@@ -70,13 +79,13 @@ function UpSet(){
     function setDynamicVisVariables(){
         // dynamic context variables
         ctx.cellSize = ctx.cellDistance; // - minorPadding,
-        ctx.xStartSetSizes = ctx.cellDistance * usedSets.length + ctx.majorPadding;
+        ctx.xStartSetSizes = ctx.cellWidth * usedSets.length + ctx.majorPadding;
 
         ctx.xStartExpectedValues = ctx.xStartSetSizes + ctx.subSetSizeWidth + 20;
         ctx.setVisWidth = ctx.expectedValueWidth + ctx.subSetSizeWidth
             + ctx.majorPadding + ctx.cellDistance + ctx.xStartSetSizes;
 
-        ctx.w =ctx.cellDistance * usedSets.length + ctx.majorPadding + ctx.leftOffset
+        ctx.w =ctx.cellWidth * usedSets.length + ctx.majorPadding + ctx.leftOffset
             + ctx.subSetSizeWidth + ctx.expectedValueWidth + 50;
         ctx.setMatrixHeight = ctx.setCellDistance + ctx.majorPadding;
 
@@ -85,6 +94,68 @@ function UpSet(){
             selections.addSelection(selection);
             selections.setActive(selection);
         }
+    }
+
+    function calculateGlobalStatistics(){
+        var collector ={allItems:1};
+        dataRows.forEach(function(d){
+//            console.log(d);
+            var setSize = d.setSize;
+            var type = d.type;
+
+            var maxValue = collector[ type];
+            if (maxValue== null) {
+                collector[type] = setSize;
+            }
+            else if (maxValue< setSize) {
+                collector[type] = setSize;
+            }
+//            console.log(d.type);
+//            if (d.type === ROW_TYPE.SUBSET) {
+//                console.log("iS Before", collector.allItems);
+//                collector.allItems += setSize;
+//                console.log("iS", collector.allItems);
+//            }
+
+
+        })
+
+
+//        d3.max(usedSets, function(d){})
+
+//    console.log(usedSets);
+
+        console.log("stats", collector);
+
+
+//        {name: "largest intersection",id:"I", value:100 },
+//        {name: "largest group",id:"G", value:200 },
+//        {name: "largest set",id:"S", value:300 },
+//        {name: "all items",id:"A", value:400 }
+
+        ctx.globalStatistics.forEach(function(d){
+            switch (d.id){
+                case "I":
+                    d.value = collector[ROW_TYPE.SUBSET];
+                    break;
+                case "G":
+                    d.value = collector[ROW_TYPE.GROUP];
+                    break;
+                case "A":
+                    d.value = allItems.length;
+                    break;
+                case "S":
+                    d.value = d3.max(usedSets,function(d){return d.items.length})
+                    break;
+                default: break;
+            }
+
+        })
+
+        console.log(ctx.globalStatistics);
+
+
+
     }
 
     // All global variables and SVG elements
@@ -164,10 +235,17 @@ function UpSet(){
 //            }
 //        );
 
+
+
         ctx.tableHeaderNode = ctx.vis.append("g").attr({
             class:"tableHeader"
         })
 
+        ctx.tableHeaderNode.append("g")
+
+
+//        ctx.vis.append
+//        ctx.brushedScale = new BrushableScale(ctx,)
 
 
         initRows();
@@ -203,7 +281,7 @@ function UpSet(){
     function updateSetsLabels(tableHeaderNode) {
         console.log("updatSetLabels");
 
-        var setRowScale = d3.scale.ordinal().rangeRoundBands([0, usedSets.length * (ctx.cellDistance)],0);
+        var setRowScale = d3.scale.ordinal().rangeRoundBands([0, usedSets.length * (ctx.cellWidth)],0);
         setRowScale.domain(usedSets.map(function(d){return d.id}))
 
         var setRows = tableHeaderNode.selectAll('.setRow')
@@ -228,9 +306,9 @@ function UpSet(){
 
            setRects.attr({
             transform: function (d, i) {
-                return 'skewX(45) translate(' + (ctx.cellDistance * i - ctx.leftOffset) + ', 0)';
+                return 'skewX(45) translate(' + (ctx.cellWidth * i - ctx.leftOffset) + ', 0)';
             },
-            width: ctx.cellSize,
+            width: ctx.cellWidth,
             height: ctx.textHeight - 2
             })
 
@@ -244,7 +322,7 @@ function UpSet(){
                     return d.elementName.substring(0, ctx.truncateAfter);
                 },
                 transform: function (d, i) {
-                    return 'translate(' + (ctx.cellDistance * (i )) + ',' + (ctx.textHeight - ctx.textSpacing - 2) + ')rotate(45)';
+                    return 'translate(' + (ctx.cellWidth * (i )) + ',' + (ctx.textHeight - ctx.textSpacing - 2) + ')rotate(45)';
                 },
                 'text-anchor': 'end'
             })
@@ -252,7 +330,7 @@ function UpSet(){
             .on('mouseout', mouseoutColumn)
 
         setRowsText.attr({
-            class: function(){if (ctx.cellSize>16) return 'setLabel'; else return 'setLabel small'}
+            class: function(){if (ctx.cellWidth>16) return 'setLabel'; else return 'setLabel small'}
 
         })
 
@@ -273,45 +351,52 @@ function UpSet(){
 
     function updateHeaders(){
         setDynamicVisVariables()
-
-
+        console.log("UPDATE HEADER -----------");
+        calculateGlobalStatistics();
         var tableHeaderGroup = ctx.tableHeaderNode.selectAll(".tableHeaderGroup").data([1]);
         var tableHeader = tableHeaderGroup.enter().append("g").attr({class:"tableHeaderGroup"});
 
         // ------------------- set size bars header --------------------
 
         // *** init Part
-        tableHeader.append('rect')
-            .attr({
-                id:"subSetSizeLabelRect",
-                class: 'labelBackground subsetSizeLabel sortIntersectionSizeGlobal'
-            }).on(
-                'click',
-                function (d) {
-                    UpSetState.sorting = StateOpt.sortBySubSetSize;
-                    UpSetState.grouping = undefined;
-                    UpSetState.levelTwoGrouping = undefined;
-                    UpSetState.forceUpdate = true;
-                    $('#noGrouping').prop('checked', true);
-                    toggleGroupingL2(true);
-                    $('#sortIntersectionSize').prop('checked', true);
+//        tableHeader.append('rect')
+//            .attr({
+//                id:"subSetSizeLabelRect",
+//                class: 'labelBackground subsetSizeLabel sortIntersectionSizeGlobal'
+//            }).on(
+//                'click',
+//                function (d) {
+//                    UpSetState.sorting = StateOpt.sortBySubSetSize;
+//                    UpSetState.grouping = undefined;
+//                    UpSetState.levelTwoGrouping = undefined;
+//                    UpSetState.forceUpdate = true;
+//                    $('#noGrouping').prop('checked', true);
+//                    toggleGroupingL2(true);
+//                    $('#sortIntersectionSize').prop('checked', true);
+//
+//                    updateState();
+//                    rowTransition();
+//            })
+//        ;
 
-                    updateState();
-                    rowTransition();
-            })
-        ;
-
-        tableHeader.append('text').text('Intersection Size')
-            .attr({
-                id:"subSetSizeLabelText",
-                class: 'columnLabel subsetSizeLabel sortIntersectionSizeGlobal',
-                "pointer-events": "none"
-            });
+//        tableHeader.append('text').text('Intersection Size')
+//            .attr({
+//                id:"subSetSizeLabelText",
+//                class: 'columnLabel subsetSizeLabel sortIntersectionSizeGlobal',
+//                "pointer-events": "none"
+//            });
 
         tableHeader.append('g').attr()
             .attr({
                 id:"subSetSizeAxis",
                 class: 'axis'
+            }).each(function(){
+                ctx.brushableScaleSubsetUpdate = function(){console.log("ARGH");};
+                ctx.brushableScaleSubset = new BrushableScale(
+                    ctx,
+                    d3.select(this),
+                    ctx.subSetSizeWidth,
+                    "brushableScaleSubsetUpdate","plotTable","subSetSizeScale",{})
             });
 
 
@@ -328,16 +413,27 @@ function UpSet(){
                 + (ctx.labelTopPadding + 10) + ')'
         });
 
-        // scale for the size of the plottingSets TODO --> make own function
-        ctx.subSetSizeScale = d3.scale.linear().domain([0, d3.max(dataRows, function (d) {
-            return d.setSize;
-        })]).nice().range([0, ctx.subSetSizeWidth]);
+//        // scale for the size of the plottingSets TODO --> make own function
+//        ctx.subSetSizeScale = d3.scale.linear().domain([0, d3.max(dataRows, function (d) {
+//            return d.setSize;
+//        })]).nice().range([0, ctx.subSetSizeWidth]);
 
         var subSetSizeAxis = d3.svg.axis().scale(ctx.subSetSizeScale).orient('top').ticks(4);
 
+        var maxValue = d3.max(ctx.globalStatistics,function(d){return d.value});
+
         tableHeaderGroup.selectAll("#subSetSizeAxis").transition().attr({
-            transform: 'translate(' + ctx.xStartSetSizes + ',' + (ctx.textHeight - 5) + ')'
-        }).call(subSetSizeAxis);
+            transform: 'translate(' + ctx.xStartSetSizes + ',' + (ctx.textHeight - 70) + ')'
+        }).call(ctx.brushableScaleSubsetUpdate,
+            {
+                maxValue:maxValue,
+                labels:ctx.globalStatistics
+
+            })
+//            .call(ctx.brushableScaleSubsetUpdate({
+//                maxValue:1000
+//            }))
+//            .call(subSetSizeAxis);
 
 
 
@@ -563,10 +659,10 @@ function UpSet(){
 
         //** update
         cells.attr('cx', function (d, i) {
-            return (ctx.cellDistance) * i + ctx.cellSize / 2;
+            return (ctx.cellWidth) * i + ctx.cellWidth/ 2;
         })
             .attr({
-                r: ctx.cellSize / 2 - 1,
+                r: ctx.cellSize/ 2 - 1,
                 cy: ctx.cellSize / 2,
                 class: 'cell'
             })
@@ -609,10 +705,10 @@ function UpSet(){
         //**update
         cellConnectors.attr({
             x1: function (d) {
-                return (ctx.cellDistance) * d[0] + ctx.cellSize / 2;
+                return (ctx.cellWidth) * d[0] + ctx.cellWidth/ 2;
             },
             x2: function (d) {
-                return (ctx.cellDistance) * d[1] + ctx.cellSize / 2;
+                return (ctx.cellWidth) * d[1] + ctx.cellWidth/ 2;
             },
             y1: ctx.cellSize / 2,
             y2: ctx.cellSize / 2
@@ -645,7 +741,9 @@ function UpSet(){
                 .on('mouseout', mouseoutRow)
             sizeBars.exit().remove();
 
-            sizeBars.transition().attr({
+            var sizeBarsChanges = sizeBars
+            if (ctx.barTransitions) sizeBarsChanges.transition()
+            sizeBarsChanges.attr({
                 //class: 'subSetSize',
                 transform: function (d) {
                     var y = 1;
@@ -896,9 +994,11 @@ function UpSet(){
             });
         barLabels.exit().remove();
 
-        barLabels.text(function (d) {
+        var barLabelChanges = barLabels.text(function (d) {
             return d.data.setSize;
-        }).transition().attr({class: 'intersectionSizeText intersectionSizeLabel',
+        })
+        if (ctx.barTransitions) barLabelChanges.transition()
+         barLabelChanges.attr({class: 'intersectionSizeText intersectionSizeLabel',
                 y: ctx.cellSize /2,
                 x: function (d) {
                     return ctx.xStartSetSizes + ctx.subSetSizeScale(d.data.setSize) + 2;
@@ -920,11 +1020,11 @@ function UpSet(){
         columnBackgrounds.exit().remove();
         columnBackgrounds.attr({
             'x': function (d, i) {
-                return (ctx.cellDistance) * i ;
+                return (ctx.cellWidth) * i ;
             },
             y: ctx.textHeight,
             height: ctx.h, //TODO: better value there
-            width: ctx.cellDistance
+            width: ctx.cellWidth
         })
     }
 
@@ -965,7 +1065,7 @@ function UpSet(){
         groupRows.each(function (e, j) {
 
             var g = d3.select(this);
-            var max_scale = ctx.subSetSizeScale.domain()[1] - 10;
+            var max_scale = ctx.subSetSizeScale.domain()[1];
 
             var i = 0;
             var nbLevels = Math.ceil(e.data.setSize / max_scale);
@@ -1424,6 +1524,11 @@ function UpSet(){
     initData(ctx, [init]);
     ctx.updateHeaders = updateHeaders;
     ctx.plot = rowTransition
+    ctx.plotTable = function(){
+        ctx.barTransitions=false;
+        plotSubSets();
+        ctx.barTransitions=true;
+    }
 //    init();
 
 }
