@@ -193,12 +193,13 @@ function UpSet(){
         .style("position", "relative")
         .style("overflow-y", "scroll")
         .style("height", "600px")
+        .attr("class", "divForeign")
         .on("mousemove", function() { 
             // Prevent global scrolling here?
         })
         .append("svg")
         .attr({
-            height: subSets.length*ctx.cellSize,
+            height: renderRows.length * ctx.cellDistance,
             width: ctx.w,
             class: "svgGRows"
         })
@@ -1132,6 +1133,8 @@ function UpSet(){
 
         updateRelevanceBars(allRows);
 
+        // Adjust the row height
+        d3.select(".divForeign").select("svg").attr("height",  renderRows.length * ctx.cellDistance);
 
 //        // -------------------- panning -------------------
 //
