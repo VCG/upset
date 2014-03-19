@@ -102,12 +102,14 @@ function plotSetOverview() {
 */
     overview.on('mouseover', function(d, i) {
 
+      // TODO: cancel transitions to remove
+
           if(d3.selectAll(".bulkCheck")[0].length>0)
             return;
 
             usedSets.filter(function(d, ii) {
 
-              d3.select('#vis').select('svg')
+              d3.select(".usedSets")
                 .append("foreignObject")
                 .attr("width", 100)
                 .attr("height", 100)
@@ -123,16 +125,16 @@ function plotSetOverview() {
 
             })
 
-             unusedSets.filter(function(d, ii) {
+            unusedSets.filter(function(d, ii) {
 
-              d3.select('#vis').select('svg')
+              d3.select(".unusedSets")
                 .append("foreignObject")
                 .attr("width", 100)
                 .attr("height", 100)
                 .attr("class", "bulkCheck")
                 .attr("y", 40)
                 .attr("x", function(d, i) {
-                  return cellDistance * (ii) + usedSets.length * cellDistance;
+                  return cellDistance * (ii);
                 })
                 .html("<form><input type=checkbox id=check/></form>")
                 .on("click", function(d, i){
@@ -141,19 +143,23 @@ function plotSetOverview() {
 
             })
 
-             d3.select('svg')
+             d3.select(".usedSets")
                 .append("foreignObject")
                 .attr("width", 100)
                 .attr("height", 100)
+                
                 .attr("class", "bulkCheck")
-                .attr("y", 40)
+                .attr("y", 20)
                 .attr("x", function(d, i) {
-                  return (unusedSets.length + usedSets.length) * cellDistance;
+                  return 0;//ctx.w- usedSets.length*cellDistance-100;
                 })
                 .html("<form><input type=button value=update /></form>")
                 .on("click", function(d, i){
+                  alert("toto")
                     console.log(svg.select("#check").node().checked);
                 });
+
+
         })
         .on('mouseout', function(d, i) {
             mouseoutColumn(d, i);
@@ -277,14 +283,14 @@ function plotSetOverview() {
     unusedSetsLabels
         .append('text').text(function (d) {
           
-          var tmpText = d3.select("svg").append("text").attr("id", "tmpText").text(d.elementName.substring(0, truncateAfter))
-          var str = Utilities.truncate(tmpText, 70)
-          tmpText.remove();
+          //var tmpText = d3.select("svg").append("text").attr("id", "tmpText").text(d.elementName.substring(0, truncateAfter))
+          //var str = Utilities.truncate(tmpText, 70)
+          //tmpText.remove();
 
-          if(str.length<d.elementName.length)
-            str = str.trim() + "...";
+          //if(str.length<d.elementName.length)
+          //  str = str.trim() + "...";
 
-            return str;
+            return d.elementName.substring(0, truncateAfter);
           })
         .sort(sortSets)
         .attr({
