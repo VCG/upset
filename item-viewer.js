@@ -15,15 +15,56 @@ ItemViewerConfigurations = {
                 }],
             parameters: [{
                     name: "Small Multiples?",
-                    type: "boolean"
+                    type: "boolean",
+                    variable: "smallMultiples"
                 }],
             render: function( element, selections, attributeMap, parameterMap ) {
                 // D3 code to render items
             }   
-        }
-    }
-];
-
+        },
+        testplot: {
+            name: "Testplot",
+            attributes: [{
+                    name: "x-axis",
+                    type: "numeric",
+                    variable: "xAxis"
+                },
+                {
+                    name: "y-axis",
+                    type: "numeric"
+                    variable: "yAxis"
+                }],
+            parameters: [
+                {
+                    name: "String",
+                    type: "string",
+                    variable: "stringVar",
+                    default: "emptystring"
+                },
+                {
+                    name: "Integer",
+                    type: "integer",
+                    variable: "integerVar",
+                    default: 0
+                },
+                {
+                    name: "Float",
+                    type: "float",
+                    variable: "floatVar",
+                    default: 1.5
+                },
+                {
+                    name: "Boolean",
+                    type: "boolean",
+                    variable: "booleanVar",
+                    default: true
+                }
+                ],
+            render: function( element, selections, attributeMap, parameterMap ) {
+                // D3 code to render items
+            }   
+        }        
+    };
 
 ItemViewer = function( configuration ) {
     var self = this;
@@ -32,15 +73,29 @@ ItemViewer = function( configuration ) {
     self.uuid = Utilities.generateUuid();
     self.attributeMap = {};
     self.parameterMap = {};
+
+    self.initializeParameterMap();
 };
+
+ItemViewer.prototype.initializeParameterMap = function() {
+    var self = this;
+
+    for ( var i = 0; i < self.configuration.parameters.length; ++i ) {
+        var parameter = self.configuration.parameters[i];
+
+        self.parameterMap[parameter.variable] = parameter.default;
+    }    
+}
 
 
 ItemViewer.prototype.renderViewer = function( element, selections ) {
+    var self = this;
+
     self.configuration.render( element, selections, self.attributeMap, self.parameterMap )
 };
 
 
-ItemViewer.prototype.renderEditor = function( element ) {
+ItemViewer.prototype.renderEditor = function( element, attributes ) {
     var self = this;
 
     var editor = element.select('#item-viewer-editor-' + self.uuid );
@@ -64,28 +119,21 @@ ItemViewer.prototype.renderEditor = function( element ) {
     d3.selectAll( '.item-viewer-editor-cancel' ).on( 'click', function(event){
     });
 
-    var parameters = self.configuration.parameters;
-    var parameterType = undefined;    
-    var parameterName = undefined;
-    for ( var parameterVariable in parameters ) {
-        if ( parameters.hasOwnProperty(parameterVariable) ) {
-            var parameterEditor = editor.append( 'div' ).style( "margin-left", "10px");
+    for ( var i = 0; i < self.configuration.attributes.length; ++i ) {
+        var attribute = self.configuration.attributes[i];
+        var attributeEditor = editor.append( 'div' ).style( "margin-left", "10px");
+        self.renderAttributeEditor( attributeEditor, attributes, attribute, self.attributeMap[attribute.variable] );
+    }
 
-            // look up parameter type in configuration
-            for ( var p = 0; p < parameters.length; ++p ) {
-                if ( parameters[p].variable === parameterVariable ) {
-                    parameterType = parameters[p].type;
-                    parameterName = parameters[p].name;
-                }
-            }
-
-            self.renderParameterEditor( editor, parameterName, parameterType, parameters[parameterVariable], parameterVariable );
-        }
+    for ( var i = 0; i < self.configuration.parameters.length; ++i ) {
+        var parameter = self.configuration.parameters[i];
+        var parameterEditor = editor.append( 'div' ).style( "margin-left", "10px");
+        self.renderParameterEditor( parameterEditor, parameter, self.parameterMap[parameter.variable] );
     }
 };
 
 
-Filter.prototype.parseParameterValues = function() {
+ItemViewer.prototype.parseParameterValues = function() {
     var self = this;
     var parameters = self.configuration.parameters;
 
@@ -99,7 +147,7 @@ Filter.prototype.parseParameterValues = function() {
     }
 }
 
-Filter.prototype.parseParameterValue = function( parameterVariable, parameterType ) {
+ItemViewer.prototype.parseParameterValue = function( parameterVariable, parameterType ) {
     var editor = d3.select('#item-viewer-editor-' + self.uuid );
     if ( editor.empty() ) {
         return undefined;
@@ -131,28 +179,52 @@ Filter.prototype.parseParameterValue = function( parameterVariable, parameterTyp
     return ( value );
 }
 
-Filter.prototype.renderParameterEditor = function( element, parameterName, parameterType, parameterValue, parameterVariable ) {
+ItemViewer.prototype.renderParameterEditor = function( element, name, type, parameter, value ) {
     var self = this;
     var s = "";
     
-    s += '<div data-item-viewer-parameter-type="' + parameterType + '">';
+    s += '<div data-item-viewer-parameter-type="' + parameter.type + '">';
     
-    switch ( parameterType ) {
+    switch ( parameter.type ) {
         case 'float':
-            s += parameterName + ' ' + '<input data-item-viewer-parameter-variable="' + parameterVariable + '" type="number" step="0.1" value="' + d3.format('f')(parameterValue) + '"></input>';
+            s += parameter.name + ' ' + '<input data-item-viewer-parameter-variable="' + parameter.variable + '" type="number" step="0.1" value="' + d3.format('f')(value) + '"></input>';
             break;
         case 'integer':
-            s +=  parameterName + ' ' + '<input data-item-viewer-parameter-variable="' + parameterVariable + '" type="number" step="1" value="' + d3.format('d')(parameterValue) + '"></input>';
+            s +=  parameter.name + ' ' + '<input data-item-viewer-parameter-variable="' + parameter.variable + '" type="number" step="1" value="' + d3.format('d')(value) + '"></input>';
             break;
         case 'boolean':
-            s +=  parameterName + ' ' + '<input data-item-viewer-parameter-variable="' + parameterVariable + '" type="checkbox" ' + ( parameterValue ? "checked" : "" ) + '></input>';
+            s +=  parameter.name + ' ' + '<input data-item-viewer-parameter-variable="' + parameter.variable + '" type="checkbox" ' + ( value ? "checked" : "" ) + '></input>';
             break;
         case 'string':
             // fall-through
         default:
-            s += parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="text" value="' + parameterValue + '"></input>';
+            s += parameter.name + ' ' + '<input data-filter-parameter-variable="' + parameter.variable + '" type="text" value="' + value + '"></input>';
             break;
     }
+
+    s += '</div>'; 
+
+    // add to DOM
+    element.html(s);
+
+    // attach events ...
+    // none right now
+};
+
+
+ItemViewer.prototype.renderAttributeEditor = function( element, attributes, attribute, value ) {
+    var self = this;
+    var s = "";
+    
+    s += '<div data-item-viewer-attribute-type="' + attribute.type + '">';
+    
+    s += '<b>' + attribute.name + '</b>' + '<select>';
+    for ( var i = 0; i < attributes.length; ++i ) {
+        if ( Attribute.matchesType( attributes[i].type, attribute.type ) ) {
+            s += '<option value="' + i + '" >' + attributes[i].name + '</option>';
+        }
+    }
+    s += "</select>";
 
     s += '</div>'; 
 

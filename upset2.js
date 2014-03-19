@@ -1101,6 +1101,9 @@ function UpSet(){
 
             data.selection.mapToSubsets(subSets);
 
+            var itemViewer = new ItemViewer( ItemViewerConfigurations.testplot );
+            itemViewer.renderEditor( d3.select( "#item-vis" ) );  
+
             plotSelectionTabs("#selection-tabs", selections, data.selection);
             plotSelectedItems("#item-table", data.selection);
         });
