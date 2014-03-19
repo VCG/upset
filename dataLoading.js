@@ -449,7 +449,7 @@ function change() {
     clearSelections();
 }
 
-function updateSetContainment(set) {
+function updateSetContainment(set, refresh) {
     if (!set.isSelected) {
         set.isSelected = true;
         usedSets.push(set);
@@ -464,19 +464,22 @@ function updateSetContainment(set) {
             $(EventManager).trigger( "set-removed", { set: set } );
         }
     }
-    subSets.length = 0;
-    dataRows.length = 0;
-    setUpSubSets();
-    //  setUpGroupings();
-    previousState = undefined;
-    updateState();
-    ctx.updateHeaders();
-    plot();
-    plotSetSelection();
-    plotSetOverview();
-    ctx.svg.attr("width", ctx.w)
-    d3.selectAll(".svgGRows, .foreignGRows").attr("width", ctx.w)
-    d3.selectAll(".backgroundRect").attr("width", ctx.w-ctx.leftOffset)
+
+    if(refresh) {
+        subSets.length = 0;
+        dataRows.length = 0;
+        setUpSubSets();
+        //  setUpGroupings();
+        previousState = undefined;
+        updateState();
+        ctx.updateHeaders();
+        plot();
+        plotSetSelection();
+        plotSetOverview();
+        ctx.svg.attr("width", ctx.w)
+        d3.selectAll(".svgGRows, .foreignGRows").attr("width", ctx.w)
+        d3.selectAll(".backgroundRect").attr("width", ctx.w-ctx.leftOffset)
+    }
 }
 
 function addSet(set) {
