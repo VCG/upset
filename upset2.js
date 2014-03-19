@@ -1201,6 +1201,10 @@ function UpSet(){
 
             data.selection.mapToSubsets(subSets);
 
+            var itemViewer = new ItemViewer( attributes, selections, ItemViewerConfigurations.histogram, "#item-vis-editor", "#item-vis-viewer" );
+            itemViewer.renderEditor();  
+            itemViewer.renderViewer();  
+
             plotSelectionTabs("#selection-tabs", selections, data.selection);
             plotSelectedItems("#item-table", data.selection);
         });
