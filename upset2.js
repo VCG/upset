@@ -110,7 +110,12 @@ function UpSet(){
             else if (maxValue< setSize) {
                 collector[type] = setSize;
             }
-            collector.allItems += setSize;
+//            console.log(d.type);
+//            if (d.type === ROW_TYPE.SUBSET) {
+//                console.log("iS Before", collector.allItems);
+//                collector.allItems += setSize;
+//                console.log("iS", collector.allItems);
+//            }
 
 
         })
@@ -137,7 +142,7 @@ function UpSet(){
                     d.value = collector[ROW_TYPE.GROUP];
                     break;
                 case "A":
-                    d.value = collector.allItems;
+                    d.value = allItems.length;
                     break;
                 case "S":
                     d.value = d3.max(usedSets,function(d){return d.items.length})
