@@ -33,7 +33,7 @@ var ctx = {
 
     setCellDistance : 12,
     setCellSize : 10,
-
+    cellWidth :20,
 
 //         subSetMatrixHeight;
 //         h;
@@ -79,13 +79,13 @@ function UpSet(){
     function setDynamicVisVariables(){
         // dynamic context variables
         ctx.cellSize = ctx.cellDistance; // - minorPadding,
-        ctx.xStartSetSizes = ctx.cellDistance * usedSets.length + ctx.majorPadding;
+        ctx.xStartSetSizes = ctx.cellWidth * usedSets.length + ctx.majorPadding;
 
         ctx.xStartExpectedValues = ctx.xStartSetSizes + ctx.subSetSizeWidth + 20;
         ctx.setVisWidth = ctx.expectedValueWidth + ctx.subSetSizeWidth
             + ctx.majorPadding + ctx.cellDistance + ctx.xStartSetSizes;
 
-        ctx.w =ctx.cellDistance * usedSets.length + ctx.majorPadding + ctx.leftOffset
+        ctx.w =ctx.cellWidth * usedSets.length + ctx.majorPadding + ctx.leftOffset
             + ctx.subSetSizeWidth + ctx.expectedValueWidth + 50;
         ctx.setMatrixHeight = ctx.setCellDistance + ctx.majorPadding;
 
@@ -281,7 +281,7 @@ function UpSet(){
     function updateSetsLabels(tableHeaderNode) {
         console.log("updatSetLabels");
 
-        var setRowScale = d3.scale.ordinal().rangeRoundBands([0, usedSets.length * (ctx.cellDistance)],0);
+        var setRowScale = d3.scale.ordinal().rangeRoundBands([0, usedSets.length * (ctx.cellWidth)],0);
         setRowScale.domain(usedSets.map(function(d){return d.id}))
 
         var setRows = tableHeaderNode.selectAll('.setRow')
@@ -306,9 +306,9 @@ function UpSet(){
 
            setRects.attr({
             transform: function (d, i) {
-                return 'skewX(45) translate(' + (ctx.cellDistance * i - ctx.leftOffset) + ', 0)';
+                return 'skewX(45) translate(' + (ctx.cellWidth * i - ctx.leftOffset) + ', 0)';
             },
-            width: ctx.cellSize,
+            width: ctx.cellWidth,
             height: ctx.textHeight - 2
             })
 
@@ -322,7 +322,7 @@ function UpSet(){
                     return d.elementName.substring(0, ctx.truncateAfter);
                 },
                 transform: function (d, i) {
-                    return 'translate(' + (ctx.cellDistance * (i )) + ',' + (ctx.textHeight - ctx.textSpacing - 2) + ')rotate(45)';
+                    return 'translate(' + (ctx.cellWidth * (i )) + ',' + (ctx.textHeight - ctx.textSpacing - 2) + ')rotate(45)';
                 },
                 'text-anchor': 'end'
             })
@@ -330,7 +330,7 @@ function UpSet(){
             .on('mouseout', mouseoutColumn)
 
         setRowsText.attr({
-            class: function(){if (ctx.cellSize>16) return 'setLabel'; else return 'setLabel small'}
+            class: function(){if (ctx.cellWidth>16) return 'setLabel'; else return 'setLabel small'}
 
         })
 
@@ -659,10 +659,10 @@ function UpSet(){
 
         //** update
         cells.attr('cx', function (d, i) {
-            return (ctx.cellDistance) * i + ctx.cellSize / 2;
+            return (ctx.cellWidth) * i + ctx.cellWidth/ 2;
         })
             .attr({
-                r: ctx.cellSize / 2 - 1,
+                r: ctx.cellSize/ 2 - 1,
                 cy: ctx.cellSize / 2,
                 class: 'cell'
             })
@@ -705,10 +705,10 @@ function UpSet(){
         //**update
         cellConnectors.attr({
             x1: function (d) {
-                return (ctx.cellDistance) * d[0] + ctx.cellSize / 2;
+                return (ctx.cellWidth) * d[0] + ctx.cellWidth/ 2;
             },
             x2: function (d) {
-                return (ctx.cellDistance) * d[1] + ctx.cellSize / 2;
+                return (ctx.cellWidth) * d[1] + ctx.cellWidth/ 2;
             },
             y1: ctx.cellSize / 2,
             y2: ctx.cellSize / 2
@@ -1020,11 +1020,11 @@ function UpSet(){
         columnBackgrounds.exit().remove();
         columnBackgrounds.attr({
             'x': function (d, i) {
-                return (ctx.cellDistance) * i ;
+                return (ctx.cellWidth) * i ;
             },
             y: ctx.textHeight,
             height: ctx.h, //TODO: better value there
-            width: ctx.cellDistance
+            width: ctx.cellWidth
         })
     }
 
@@ -1065,7 +1065,7 @@ function UpSet(){
         groupRows.each(function (e, j) {
 
             var g = d3.select(this);
-            var max_scale = ctx.subSetSizeScale.domain()[1] - 10;
+            var max_scale = ctx.subSetSizeScale.domain()[1];
 
             var i = 0;
             var nbLevels = Math.ceil(e.data.setSize / max_scale);
