@@ -205,7 +205,12 @@ ItemViewer.prototype.initializeParameterMap = function() {
 ItemViewer.prototype.renderViewer = function( ) {
     var self = this;
 
-    self.configuration.render( $( self.viewerElementId ), self.selections, self.attributes, self.attributeMap, self.parameterMap )
+    try {
+        self.configuration.render( $( self.viewerElementId ), self.selections, self.attributes, self.attributeMap, self.parameterMap )
+    }
+    catch ( error ) {
+        console.error( error );
+    }
 };
 
 
