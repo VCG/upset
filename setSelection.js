@@ -215,7 +215,7 @@ function plotSetOverview() {
         return usedSets.indexOf(n) == -1
     });
 
-    var truncateAfter = 8;
+    var truncateAfter = 15;
 
     var xScale = d3.scale.ordinal()
         .domain(d3.range(unusedSets.length))
@@ -275,9 +275,16 @@ function plotSetOverview() {
         .on('click', setClicked)
 
     unusedSetsLabels
-        .append('text').text(
-          function (d) {
-              return d.elementName.substring(0, truncateAfter);
+        .append('text').text(function (d) {
+          
+          var tmpText = d3.select("svg").append("text").attr("id", "tmpText").text(d.elementName.substring(0, truncateAfter))
+          var str = Utilities.truncate(tmpText, 70)
+          tmpText.remove();
+
+          if(str.length<d.elementName.length)
+            str += "..";
+
+            return str;
           })
         .sort(sortSets)
         .attr({
@@ -300,6 +307,9 @@ function plotSetOverview() {
       .append("svg:title")
       .text(function(d, i) { return d.elementName; });
 
+
+
+
     function setClicked(d, i) {
         updateSetContainment(d);        
         console.log(d.elementName + ": " + d.isSelected);
@@ -308,6 +318,5 @@ function plotSetOverview() {
             return d;
         }).attr('checked', d.isSelected);
     }
-
 
 }

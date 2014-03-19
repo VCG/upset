@@ -14,3 +14,26 @@ Utilities.generateUuid = function() {
         return v.toString(16) ;
     }) );
 };
+
+Utilities.truncate = function(textElement, w) {
+
+  var too_large = true;
+
+  if(textElement[0][0].getBBox().width<w)
+    too_large = false;
+
+  while(too_large) {
+
+    var bbox = textElement[0][0].getBBox();
+    var width = bbox.width;
+    var height = bbox.height;
+
+    textElement.text(textElement.text().substring(0, textElement.text().length-1));
+
+    if(textElement[0][0].getBBox().width<w)
+      too_large = false;
+
+  }
+
+  return textElement.text();
+}
