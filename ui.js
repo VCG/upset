@@ -8,6 +8,7 @@ Ui = function() {
     self.lastWindowWidth = 0;
     self.lastWindowHeight = 0;
 
+    // needs to be called
     self.initialize();
 };
 
@@ -50,11 +51,11 @@ Ui.prototype.updateFixedHeightContainers = function() {
         var targetHeight = ( $(window).height() - $(this).offset().top - paddingBottom ) * parseFloat( $(fixedYContainers[index]).attr("data-height-ratio") );
         var minHeight = parseInt( $('.fixed-y-container').css( "min-height" ) );
         var maxHeight = parseInt( $('.fixed-y-container').css( "max-height" ) ) || targetHeight;
-        
+
 
         var newHeight = Math.min( Math.max( targetHeight, minHeight ), maxHeight );
-        $(this).css('height', newHeight + 'px');  
-    });        
+        $(this).css('height', newHeight + 'px');
+    });
 }
 
 
@@ -66,7 +67,7 @@ Ui.prototype.initialize = function() {
 
     self.createHeader();
     self.hideMenu();
-    self.updateFixedHeightContainers();   
+    self.updateFixedHeightContainers();
 }
 
 Ui.prototype.createHeader = function() {
@@ -74,7 +75,7 @@ Ui.prototype.createHeader = function() {
 
     $( "#show-menu-button").on( "click", function( event ){
         self.toggleMenu();
-    });    
+    });
 }
 
 Ui.prototype.showMenu = function() {
