@@ -8,27 +8,31 @@ var SET_BASED_GROUPING_PREFIX = "SetG_";
 
 var handleLogicGroups = function (subsets, dataRows, level, parentID) {
     var addGroups = [];
-    var oldGroupIDs = {};
-    if (previousState != false) previousState.logicGroups.forEach(function (d) {
-        oldGroupIDs[d.id] = 1
-    })
+//    var oldGroupIDs = {};
+//    if (previousState != false) previousState.logicGroups.forEach(function (queryExpression) {
+//        oldGroupIDs[queryExpression.id] = 1
+//    })
     UpSetState.logicGroups.forEach(function (d) {
-        if (d.id in oldGroupIDs) {
-        }
-        else {
-            var group = new Group(d.id + parentID, d.groupName, level);
+//        if (d.id in oldGroupIDs) {
+//        }
+//        else {
+            var group = new QueryGroup(d.id + parentID, d.groupName, d.orClauses);
             var maskList = d.getListOfValues();
+
 
             getSubsetsForMaskList(subsets, maskList, function (d) {
                 group.addSubSet(d);
             });
 
             addGroups.push(group)
-        }
-        ;
+//        }
     })
 
-    // TODO: @Alex: add unwrapped group -- maybe you solve this globally if unwrapped or not
+
+    var separator = new Separator("FILTER_SEPARATOR", 'Natural Intersections')
+
+    dataRows.unshift(separator);
+
     if (addGroups.length > 0) {
         var groupElements = unwrapGroups(addGroups);
 
@@ -37,6 +41,7 @@ var handleLogicGroups = function (subsets, dataRows, level, parentID) {
         groupElements.forEach(function (addGroup) {
             dataRows.unshift(addGroup)
         })
+
     }
 
 }
@@ -340,7 +345,7 @@ var updateState = function (parameter) {
     }
 
     // TODO: @alex here !
-    if (UpSetState.logicGroupChanged) {
+    if (UpSetState.logicGroups) {
         // adds _NEW_ unwrapped logic groups to "dataRow"
         handleLogicGroups(subSets, dataRows, 1);
         UpSetState.logicGroupChanged = false;

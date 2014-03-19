@@ -46,7 +46,7 @@ VennDiagram.prototype.plot = function( highlightSubsets, setCount ) {
 		self.plot3Set( highlightSubsets );
 	}
 	else {
-		console.error( "Venn diagram is only implemented for 2 or 3 sets." );
+	//	console.error( "Venn diagram is only implemented for 2 or 3 sets." );
 	}
 }
 

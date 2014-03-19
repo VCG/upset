@@ -9,6 +9,8 @@ ROW_TYPE =
     SUBSET: 'SUBSET_TYPE',
     GROUP: 'GROUP_TYPE',
     AGGREGATE: 'AGGREGATE_TYPE',
+    QUERY_GROUP: 'QUERY_GROUP_TYPE',
+    SEPARATOR: 'SEPARATOR',
     UNDEFINED: 'UNDEFINED'}
 
 /** basic event bus (http://stackoverflow.com/questions/2967332/jquery-plugin-for-event-driven-architecture) */
@@ -82,6 +84,8 @@ var levelOneGroups = setGroups;
 /** How many sets do we want to see by default */
 var nrDefaultSets = 6;
 
+
+
 /**
  * The base element for all rows (sets, groups, subsets, aggregates)
  * @param id
@@ -99,6 +103,16 @@ function Element(id, elementName) {
     this.dataRatio = 0.0;
 }
 
+function Separator(id, elementName) {
+    Element.call(this, id, elementName);
+
+    this.type = ROW_TYPE.SEPARATOR;
+
+}
+
+
+Separator.prototype = Element;
+Separator.prototype.constructor = Element;
 /**
  * Base class for Sets, subsets, groups.
  *
@@ -172,7 +186,6 @@ function Group(groupID, groupName, level) {
 
     this.isCollapsed = false;
 
-
     this.nestedGroups = undefined;
 
     /** the nesting level of the group, 1 is no nesting, 2 is one level down */
@@ -223,6 +236,15 @@ function Group(groupID, groupName, level) {
 
 Group.prototype = Element;
 Group.prototype.constructor = Element;
+
+function QueryGroup(groupID, groupName, orClauses) {
+    this.type = ROW_TYPE.QUERY_GROUP;
+    Group.call(this, groupID, groupName, 1);
+    this.orClauses = orClauses;
+}
+
+QueryGroup.prototype = Group;
+QueryGroup.prototype.constructor = Group;
 
 function Aggregate(aggregateID, aggregateName) {
     Element.call(this, aggregateID, aggregateName);
@@ -312,40 +334,41 @@ function makeSubSet(setMask) {
 // a(i) represents a setMask: 0 - NOT, 1 - MUST, 2- DONTCARE
 // if callFucntion is null a list of matching subsets is returned
 
-var getSubsetsForMaskList = function(subsets, maskList, callFunction){
+var getSubsetsForMaskList = function (subsets, maskList, callFunction) {
     var res = [];
 
     var clauseMatches = true;
-    var isAhit= false;
-    subsets.forEach(function(subset){
+    var isAhit = false;
+    subsets.forEach(function (subset) {
 
-        isAhit= false;
+        isAhit = false;
         var combinedSets = subset.combinedSets;
-        maskList.forEach(function(compare){
-            if (isAhit==false){
+        maskList.forEach(function (compare) {
+            if (isAhit == false) {
                 var csLength = combinedSets.length
-                clauseMatches = (csLength==compare.length)
-                if (clauseMatches){
-                    for (var i =0; i<csLength;i++){
+                clauseMatches = (csLength == compare.length)
+                if (clauseMatches) {
+                    for (var i = 0; i < csLength; i++) {
                         clauseMatches &= (
-                            (combinedSets[i]==compare[i])
-                                || compare[i]==2 );
+                            (combinedSets[i] == compare[i])
+                                || compare[i] == 2 );
                     }
                 }
-                if (clauseMatches) {isAhit = true;}
+                if (clauseMatches) {
+                    isAhit = true;
+                }
             }
         })
 
-        if (isAhit && callFunction!=null) {
+        if (isAhit && callFunction != null) {
             callFunction(subset);
 
-        }else if (isAhit){
+        } else if (isAhit) {
             res.push(subset);
         }
 
     })
 
     return res;
-
 
 }

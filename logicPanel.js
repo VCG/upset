@@ -38,7 +38,7 @@ function LogicPanel(params){
     var isNewPanel = true;
     var belowVisRestoreTranslate = "translate(0, 90)"
 
-    var actualGroupLabel = "Logic Group"
+    var actualGroupLabel = "Filter"
 
 //    var getListOfValues = function(){
 //        console.log(this);
@@ -187,7 +187,7 @@ function LogicPanel(params){
         usedSets.forEach(function(d){
             setNames[d.id] = d.elementName
         })
-        actualGroupLabel = "Logic Group"
+        actualGroupLabel = "Filter"
 
         renderActualPanel();
     }
