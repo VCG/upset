@@ -215,7 +215,7 @@ function plotSetOverview() {
         return usedSets.indexOf(n) == -1
     });
 
-    var truncateAfter = 15;
+    var truncateAfter = 8;
 
     var xScale = d3.scale.ordinal()
         .domain(d3.range(unusedSets.length))
@@ -297,6 +297,8 @@ function plotSetOverview() {
 //            }
       })
       .on('click', setClicked)
+      .append("svg:title")
+      .text(function(d, i) { return d.elementName; });
 
     function setClicked(d, i) {
         updateSetContainment(d);        

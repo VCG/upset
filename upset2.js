@@ -328,6 +328,8 @@ function UpSet(){
             })
             .on('mouseover', mouseoverColumn)
             .on('mouseout', mouseoutColumn)
+            .append("svg:title")
+            .text(function(d, i) { return d.elementName; });
 
         setRowsText.attr({
             class: function(){if (ctx.cellWidth>16) return 'setLabel'; else return 'setLabel small'}
