@@ -6,7 +6,7 @@ var SET_SIZE_GROUP_PREFIX = 'SetSizeG_';
 var EMPTY_GROUP_ID = 'EmptyGroup';
 var SET_BASED_GROUPING_PREFIX = "SetG_";
 
-var handleLogicGroups = function (subsets, dataRows, level) {
+var handleLogicGroups = function (subsets, dataRows, level, parentID) {
     var addGroups = [];
     var oldGroupIDs = {};
     if (previousState != false) previousState.logicGroups.forEach(function (d) {
@@ -16,7 +16,7 @@ var handleLogicGroups = function (subsets, dataRows, level) {
         if (d.id in oldGroupIDs) {
         }
         else {
-            var group = new Group(d.id, d.groupName, level);
+            var group = new Group(d.id + parentID, d.groupName, level);
             var maskList = d.getListOfValues();
 
             getSubsetsForMaskList(subsets, maskList, function (d) {
@@ -41,11 +41,11 @@ var handleLogicGroups = function (subsets, dataRows, level) {
 
 }
 
-var groupByRelevanceMeasure = function (subSets, level) {
+var groupByRelevanceMeasure = function (subSets, level, parentID) {
     var newGroups = [];
-    newGroups.push(new Group('GROUP_POS_DEV', 'Positive Expected Value', level));
-    newGroups.push(new Group('GROUP_POS_NEG', 'Negative Expected Value', level));
-    newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
+    newGroups.push(new Group('GROUP_POS_DEV' + parentID, 'Positive Expected Value', level));
+    newGroups.push(new Group('GROUP_NEG_DEV' + parentID, 'Negative Expected Value', level));
+    newGroups.push(new Group(EMPTY_GROUP_ID + parentID, 'Empty Subset', level));
     for (var i = 0; i < subSets.length; i++) {
         var index = 0
         if (subSets[i].expectedValueDeviation > 0) {
@@ -62,12 +62,12 @@ var groupByRelevanceMeasure = function (subSets, level) {
     return newGroups;
 }
 
-var groupByIntersectionSize = function (subSets, level) {
+var groupByIntersectionSize = function (subSets, level, parentID) {
     var newGroups = [];
-    newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
+    newGroups.push(new Group(EMPTY_GROUP_ID + parentID, 'Empty Subset', level));
     var maxSetSize = Math.min(usedSets.length, UpSetState.maxCardinality);
     for (var i = UpSetState.minCardinality; i < maxSetSize; i++) {
-        newGroups.push(new Group(SET_SIZE_GROUP_PREFIX + (i + 1), (i + 1) + '-Set Subsets'));
+        newGroups.push(new Group(SET_SIZE_GROUP_PREFIX + (i + 1) + '_' + parentID, (i + 1) + '-Set Subsets', level));
     }
     subSets.forEach(function (subSet) {
         var group = newGroups[subSet.nrCombinedSets];
@@ -82,14 +82,14 @@ var groupByIntersectionSize = function (subSets, level) {
 /**
  * Creates groups for all sets containing all subsets of this set
  */
-var groupBySet = function (subSets, level) {
+var groupBySet = function (subSets, level, parentID) {
 
     // TODO add empty subset
 
     var newGroups = [];
     newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
     for (var i = 0; i < usedSets.length; i++) {
-        var group = new Group(SET_BASED_GROUPING_PREFIX + (i + 1), usedSets[i].elementName);
+        var group = new Group(SET_BASED_GROUPING_PREFIX + (i + 1) + parentID, usedSets[i].elementName, level);
 
         newGroups.push(group);
 
@@ -244,6 +244,7 @@ var unwrapGroups = function (groupList) {
         }
         if (UpSetState.levelTwoGrouping && group.nestedGroups) {
             dataRows = dataRows.concat(unwrapGroups(group.nestedGroups, []));
+            continue;
         }
         if (!group.isCollapsed) {
 //            else {
@@ -324,11 +325,11 @@ var updateState = function (parameter) {
         dataRows = StateMap[StateOpt[UpSetState.sorting]](subSets, parameter);
     }
     else if (UpSetState.grouping && (forceUpdate || (previousState && previousState.grouping !== UpSetState.grouping || previousState.levelTwoGrouping !== UpSetState.levelTwoGrouping))) {
-        levelOneGroups = StateMap[StateOpt[UpSetState.grouping]](subSets);
+        levelOneGroups = StateMap[StateOpt[UpSetState.grouping]](subSets, 1, "");
 
         if (UpSetState.levelTwoGrouping) {
             levelOneGroups.forEach(function (group) {
-                group.nestedGroups = StateMap[StateOpt[UpSetState.levelTwoGrouping]](group.subSets, 2);
+                group.nestedGroups = StateMap[StateOpt[UpSetState.levelTwoGrouping]](group.subSets, 2, group.id);
             });
         }
         dataRows = unwrapGroups(levelOneGroups);
@@ -355,6 +356,8 @@ var updateState = function (parameter) {
 
     var registry = {};
     var prefix = "";
+
+    var count = 1;
     dataRows.forEach(function (element) {
         var wrapper = {};
 
@@ -366,10 +369,9 @@ var updateState = function (parameter) {
                 prefix = element.id + "_";
                 wrapper.id = element.id;
             }
-
         }
         else {
-            var count = 1;
+
             if (registry.hasOwnProperty(element.id)) {
                 count = registry[element.id];
                 count += 1;
@@ -382,7 +384,8 @@ var updateState = function (parameter) {
             wrapper.id = element.id + '_' + count;
         }
         wrapper.data = element;
-
+    //    console.log(wrapper.id);
+        console.log('Level: ' + wrapper.data.level);
         renderRows.push(wrapper);
 
     });

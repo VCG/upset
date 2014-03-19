@@ -181,6 +181,7 @@ function UpSet(){
             .attr("height", ctx.svgHeight)
             .attr("x", 0)//*cellSize)
             .attr("y", 210)//*cellSize)
+            .attr("class", "foreignGRows")
         // Rows container for vertical panning
         ctx.gRows = foreignObject
       .append("xhtml:div")
@@ -193,7 +194,8 @@ function UpSet(){
         .append("svg")
         .attr({
             height: subSets.length*ctx.cellSize,
-            width: ctx.w //unusedSets.length*cellSize
+            width: ctx.w,
+            class: "svgGRows"
         })
         .append('g')
             .attr({'class': 'gRows', "transform": "translate(90,-90)"})
@@ -279,8 +281,6 @@ function UpSet(){
 
         var setRows = tableHeaderNode.selectAll('.setRow')
             .data(usedSets, function(d){return d.elementName})
-
-//        console.log("usedSets",usedSets);
 
         var setRowsEnter = setRows.enter()
             .append('g').attr({
@@ -529,10 +529,15 @@ function UpSet(){
             .enter()
             .append('g')
             .attr({transform: function (d) {
-                if (d.data.type === ROW_TYPE.SUBSET)
+
+                if (d.data.type === ROW_TYPE.SUBSET) 
                     return 'translate(0, ' + ctx.rowScale(d.id) + ')';
-                else
-                    return 'translate(0, ' + ctx.textHeight + ')';
+                else {
+                    var offset_y = ctx.textHeight;
+                    if(d.data.level == 2)
+                        offset_y += 10 
+                    return 'translate(0, ' + offset_y + ')';
+                }
             }, class: function (d) {
                 return 'row ' + d.data.type;
             }
