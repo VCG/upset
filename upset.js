@@ -338,13 +338,13 @@ function plot(width, height) {
 
     // scale for the size of the plottingSets
     var minDeviation = d3.min(dataRows, function (d) {
-        return d.expectedValueDeviation;
+        return d.disproportionality;
     });
     if (minDeviation > 0) {
         minDeviation = 0;
     }
     var maxDeviation = d3.max(dataRows, function (d) {
-        return d.expectedValueDeviation;
+        return d.disproportionality;
     });
 
     var expectedValueScale = d3.scale.linear().domain([minDeviation, maxDeviation]).nice().range([0, expectedValueWidth]);
@@ -758,10 +758,10 @@ function plot(width, height) {
             .append('rect')
             .attr({
                 class: function (d) {
-                    return d.data.expectedValueDeviation < 0 ? 'expectedValueDeviation negative' : 'expectedValueDeviation positive';
+                    return d.data.disproportionality < 0 ? 'disproportionality negative' : 'disproportionality positive';
                 },
                 transform: function (d) {
-                    var start = expectedValueScale(d3.min([0, d.data.expectedValueDeviation]));
+                    var start = expectedValueScale(d3.min([0, d.data.disproportionality]));
                     start += xStartExpectedValues;
                     var y = 0;
                     if (d.data.type !== ROW_TYPE.SUBSET)
@@ -769,8 +769,8 @@ function plot(width, height) {
                     return 'translate(' + start + ', ' + y + ')';
                 },
                 width: function (d) {
-                    //  console.log(d.data.expectedValueDeviation)
-                    return Math.abs(expectedValueScale(d.data.expectedValueDeviation) - expectedValueScale(0));
+                    //  console.log(d.data.disproportionality)
+                    return Math.abs(expectedValueScale(d.data.disproportionality) - expectedValueScale(0));
                 },
                 height: function (d) {
                     if (d.data.type === ROW_TYPE.SUBSET)
