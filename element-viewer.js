@@ -38,10 +38,7 @@ ElementViewerConfigurations = {
                 }],
             render: function( element, selections, attributes, attributeMap, parameterMap ) {
 
-
                 var attribute = attributes[attributeMap.variable];
-
-                console.log( attribute );
 
                 // A formatter for counts.
                 var format = d3.format(".00r");
@@ -67,8 +64,6 @@ ElementViewerConfigurations = {
 
                 // clear
                 element.html("");
-
-                console.log( element );
 
                 var svg = d3.select("#element-vis-viewer").append("svg")
                     .attr("width", width + margin.left + margin.right)
@@ -232,7 +227,6 @@ ElementViewer.prototype.renderEditor = function() {
         self.parseParameterValues();
         self.parseAttributeValues();
 
-        console.log (self.attributeMap)
         self.renderViewer();
     });
 
@@ -261,7 +255,7 @@ ElementViewer.prototype.parseParameterValues = function() {
         var value = self.parseParameterValue( parameters[i].variable, parameters[i].type );
 
         if ( value !== undefined ) {
-            console.log( 'Replacing ' + parameters[i].variable + ' (' + parameters[i].type + ') = "' + self.parameterMap[parameters[i].variable] + '" with "' + value + '"' );
+            //console.log( 'Replacing ' + parameters[i].variable + ' (' + parameters[i].type + ') = "' + self.parameterMap[parameters[i].variable] + '" with "' + value + '"' );
             self.parameterMap[parameters[i].variable] = value;
         }
     }
@@ -275,7 +269,7 @@ ElementViewer.prototype.parseAttributeValues = function() {
         var value = self.parseAttributeValue( attributes[i].variable );
 
         if ( value !== undefined ) {
-            console.log( 'Replacing ' + attributes[i].variable + ' = "' + self.attributeMap[attributes[i].variable] + '" with "' + value + '"' );
+            //console.log( 'Replacing ' + attributes[i].variable + ' = "' + self.attributeMap[attributes[i].variable] + '" with "' + value + '"' );
             self.attributeMap[attributes[i].variable] = value;
         }
     }
