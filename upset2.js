@@ -517,6 +517,7 @@ function UpSet() {
     }
 
     function updateSubSetGroups() {
+        console.log("datRows",renderRows);
         // ------------------- the rows -----------------------
         var subSets = ctx.gRows.selectAll('.row')
             .data(renderRows, function (d, i) {
@@ -866,17 +867,20 @@ function UpSet() {
             .on({
                 "click":
                     function(d){
-                        console.log(d);
+
                         var index = -1;
                         UpSetState.logicGroups.forEach(function(dd,i){
+
                             if (dd.id == d.id) index=i;
                         })
+
+
 
                         UpSetState.logicGroups.splice(index,1);
 
 
                         UpSetState.logicGroupChanged= true;
-
+                        UpSetState.forceUpdate= true;
 
                         updateState();
                         rowTransition();

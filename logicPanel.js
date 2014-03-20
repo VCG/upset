@@ -583,6 +583,7 @@ function LogicPanel(params){
 
         stateObject.logicGroups.push(logicExpression);
         stateObject.logicGroupChanged=true;
+        stateObject.forceUpdate= true;
         if (callAfterSubmit!=null)
             callAfterSubmit.forEach(function(d){
                 d();
