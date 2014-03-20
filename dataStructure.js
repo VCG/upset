@@ -240,7 +240,7 @@ function Aggregate(aggregateID, aggregateName, level) {
     this.isCollapsed = true;
 
     /** the nesting level of the group, 1 is no nesting, 2 is one level down */
-    this.level = 1;
+    this.level = level;
 
     //this.setSize = 0;
     this.expectedProb = 0;
