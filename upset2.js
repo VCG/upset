@@ -178,7 +178,7 @@ function UpSet() {
             .attr("class", "foreignGRows")
         ctx.foreignDiv = ctx.foreignObject.append("xhtml:div")
             .style("position", "relative")
-            .style("overflow-y", "scroll")
+            .style("overflow-y", "auto")
             .style("height", "600px")
             .on("mousemove", function () {
                 // Prevent global scrolling here?
