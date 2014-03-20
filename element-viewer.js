@@ -171,6 +171,124 @@ ElementViewerConfigurations = {
         }        
     };
 
+
+ElementViewerCollection = function( editorElementId, viewerElementId ) {
+    var self = this;
+
+    self.list = [];
+    self.activeIndex = undefined;
+};
+
+ElementViewerCollection.prototype.add = function( elementViewer, isActive ) {
+    var self = this;
+
+    isActive = isActive | false;
+
+    self.list.push( elementViewer );
+
+    $(EventManager).trigger("element-viewer-added", { viewer: elementViewer });
+
+    if ( isActive ) {
+        self.setActiveIndex( self.list.length - 1 );
+    }
+}
+
+
+ElementViewerCollection.prototype.remove = function( elementViewer ) {
+    var self = this;
+
+    for ( var i = 0; i < self.list.length; ++i ) {
+        if ( self.list[i].uuid === elementViewer.uuid ) {
+            self.list.splice(i, 1);
+
+            $(EventManager).trigger("element-viewer-removed", { viewer: elementViewer });
+
+            if ( i === self.activeIndex ) {
+                if (self.list.length > 0) {
+                    self.setActiveIndex(( i > 0 ? i - 1 : 0 ));
+                }
+                else {
+                    self.setActiveIndex(undefined);
+                }
+            }
+        }
+    }
+}
+
+
+ElementViewerCollection.prototype.getIndex = function( elementViewer ) {
+    var self = this;
+
+    for ( var i = 0; i < self.list.length; ++i ) {
+        if ( this.list[i].uuid === elementViewer.uuid ) {
+            return ( i );
+        }
+    }
+
+    return ( undefined );
+}
+
+
+ElementViewerCollection.prototype.setActiveIndex = function( index ) {
+    var self = this;
+
+    if ( index < self.list.length && index > 0 && self.activeIndex !== index ) {
+        self.activeIndex === index;
+
+        $(EventManager).trigger("element-viewer-activated", { viewer: self.list[self.activeIndex], index: index });
+    }
+}
+
+
+ElementViewerCollection.prototype.setActive = function( elementViewer ) {
+    var self = this;
+
+    var index = self.getIndex( elementViewer );
+
+    if ( index ) {
+        self.setActiveIndex( index );
+    }
+
+    return ( index );
+}
+
+
+ElementViewerCollection.prototype.getActive = function() {
+    var self = this;
+
+    if ( !selft.activeIndex ) {
+        return undefined;
+    }
+
+    return ( self.list[self.activeIndex] );
+}
+
+
+ElementViewerCollection.prototype.renderViewer = function() {
+    var self = this;
+
+    var viewerElement = d3.select( self.viewerElementId );
+
+    // clear element
+    viewerElement.html("");
+    viewerElement.append( "div" ).attr( "class", "element-viewer-active" );
+
+    // check if there is a viewer
+    if ( self.list.length === 0 ) {
+        viewerElement.append( "div" ).attr( "class", "element-viewer-message" ).text( "No viewer available!" );
+
+        return self;
+    }
+
+    // render active viewer
+    if ( !self.activeIndex ) {
+        var id = "element-viewer-" + self.getActive().uuid;
+
+        viewerElement.append( "div" ).attr( "id", id );
+    }
+}
+
+
 ElementViewer = function( attributes, selections, configuration, editorElementId, viewerElementId  ) {
     var self = this;
 
