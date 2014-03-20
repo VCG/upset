@@ -482,6 +482,10 @@ html, body, .ui-container {
     min-width: 75%;
 }
 
+.ui-column.ui-column-100 {
+    width: 100%;
+}
+
 .ui-column.ui-column-33 {
     background: pink;
     width: 33%;
