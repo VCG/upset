@@ -29,10 +29,10 @@ var groupByRelevanceMeasure = function (subSets, level, parentID) {
     newGroups.push(new Group(EMPTY_GROUP_ID + parentID, 'Empty Subset', level));
     for (var i = 0; i < subSets.length; i++) {
         var index = 0
-        if (subSets[i].expectedValueDeviation > 0) {
+        if (subSets[i].disproportionality > 0) {
             index = 0;
         }
-        else if (subSets[i].expectedValueDeviation < 0) {
+        else if (subSets[i].disproportionality < 0) {
             index = 1;
         }
         else {
@@ -167,7 +167,7 @@ var sortByExpectedValue = function (subSets) {
     var dataRows = getFilteredSubSets(subSets);
 
     dataRows.sort(function (a, b) {
-        return Math.abs(b.expectedValueDeviation) - Math.abs(a.expectedValueDeviation);
+        return Math.abs(b.disproportionality) - Math.abs(a.disproportionality);
     });
     return dataRows;
 }

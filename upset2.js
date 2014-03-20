@@ -4,36 +4,34 @@
 
 
 var ctx = {
-    majorPadding : 17,
-    minorPadding : 2,
-    cellDistance : 20,
-    textHeight : 90,
-    textSpacing : 3,
+    majorPadding: 17,
+    minorPadding: 2,
+    cellDistance: 20,
+    textHeight: 90,
+    textSpacing: 3,
 
-    setSizeWidth : 700,
-    subSetSizeWidth : 300,
+    setSizeWidth: 700,
+    subSetSizeWidth: 300,
 
-    leftOffset : 90,
-    topOffset : 120,
+    leftOffset: 90,
+    topOffset: 120,
 
     /** The width from the start of the set vis to the right edge */
 
 
 
-    expectedValueWidth : 300,
+    expectedValueWidth: 300,
 
+    labelTopPadding: 15,
 
+    paddingTop: 30,
+    paddingSide: 20,
 
-    labelTopPadding : 15,
+    truncateAfter: 25,
 
-    paddingTop : 30,
-    paddingSide : 20,
-
-    truncateAfter : 25,
-
-    setCellDistance : 12,
-    setCellSize : 10,
-    cellWidth :20,
+    setCellDistance: 12,
+    setCellSize: 10,
+    cellWidth: 20,
 
 //         subSetMatrixHeight;
 //         h;
@@ -41,42 +39,38 @@ var ctx = {
 
     svgHeight: 600, //height || 600;
 
-    grays : [ '#f0f0f0', '#636363'],
+    grays: [ '#f0f0f0', '#636363'],
 
-    backHighlightColor:'#fed9a6',//'#fdbf6f'
-    rowTransitions:true,
-    barTransitions:true,
+    backHighlightColor: '#fed9a6',//'#fdbf6f'
+    rowTransitions: true,
+    barTransitions: true,
 
-    globalStatistics:[
-        {name: "largest intersection",id:"I", value:100 },
-        {name: "largest group",id:"G", value:200 },
-        {name: "largest set",id:"S", value:300 },
-        {name: "all items",id:"A", value:400 }
+    globalStatistics: [
+        {name: "largest intersection", id: "I", value: 100 },
+        {name: "largest group", id: "G", value: 200 },
+        {name: "largest set", id: "S", value: 300 },
+        {name: "all items", id: "A", value: 400 }
     ]
 
 
 };
 
-
 //bindEvents();
 
-function plot(){
+function plot() {
 
     ctx.plot();
 //    console.log("plot");
 }
 
-function UpSet(){
+function UpSet() {
 
     // FAKE:
 //    var usedSets = ["xx","zzz"];
 
     bindEvents();
 
-
-
-
-    function setDynamicVisVariables(){
+    function setDynamicVisVariables() {
         // dynamic context variables
         ctx.cellSize = ctx.cellDistance; // - minorPadding,
         ctx.xStartSetSizes = ctx.cellWidth * usedSets.length + ctx.majorPadding;
@@ -85,7 +79,7 @@ function UpSet(){
         ctx.setVisWidth = ctx.expectedValueWidth + ctx.subSetSizeWidth
             + ctx.majorPadding + ctx.cellDistance + ctx.xStartSetSizes;
 
-        ctx.w =ctx.cellWidth * usedSets.length + ctx.majorPadding + ctx.leftOffset
+        ctx.w = ctx.cellWidth * usedSets.length + ctx.majorPadding + ctx.leftOffset
             + ctx.subSetSizeWidth + ctx.expectedValueWidth + 50;
         ctx.setMatrixHeight = ctx.setCellDistance + ctx.majorPadding;
 
@@ -96,18 +90,18 @@ function UpSet(){
         }
     }
 
-    function calculateGlobalStatistics(){
-        var collector ={allItems:1};
-        dataRows.forEach(function(d){
+    function calculateGlobalStatistics() {
+        var collector = {allItems: 1};
+        dataRows.forEach(function (d) {
 //            console.log(d);
             var setSize = d.setSize;
             var type = d.type;
 
             var maxValue = collector[ type];
-            if (maxValue== null) {
+            if (maxValue == null) {
                 collector[type] = setSize;
             }
-            else if (maxValue< setSize) {
+            else if (maxValue < setSize) {
                 collector[type] = setSize;
             }
 //            console.log(d.type);
@@ -117,9 +111,7 @@ function UpSet(){
 //                console.log("iS", collector.allItems);
 //            }
 
-
         })
-
 
 //        d3.max(usedSets, function(d){})
 
@@ -127,14 +119,13 @@ function UpSet(){
 
         console.log("stats", collector);
 
-
 //        {name: "largest intersection",id:"I", value:100 },
 //        {name: "largest group",id:"G", value:200 },
 //        {name: "largest set",id:"S", value:300 },
 //        {name: "all items",id:"A", value:400 }
 
-        ctx.globalStatistics.forEach(function(d){
-            switch (d.id){
+        ctx.globalStatistics.forEach(function (d) {
+            switch (d.id) {
                 case "I":
                     d.value = collector[ROW_TYPE.SUBSET];
                     break;
@@ -145,21 +136,22 @@ function UpSet(){
                     d.value = allItems.length;
                     break;
                 case "S":
-                    d.value = d3.max(usedSets,function(d){return d.items.length})
+                    d.value = d3.max(usedSets, function (d) {
+                        return d.items.length
+                    })
                     break;
-                default: break;
+                default:
+                    break;
             }
 
         })
 
         console.log(ctx.globalStatistics);
 
-
-
     }
 
     // All global variables and SVG elements
-    function init(){
+    function init() {
 
         setDynamicVisVariables();
 
@@ -176,19 +168,17 @@ function UpSet(){
             "transform": "translate(" + ctx.leftOffset + "," + ctx.topOffset + ")"
         });
 
-
-
-        var foreignObject =ctx.vis.append("foreignObject")
+        var foreignObject = ctx.vis.append("foreignObject")
             .attr("width", ctx.w)
             .attr("height", ctx.svgHeight)
             .attr("x", 0)//*cellSize)
             .attr("y", 210)//*cellSize)
             .attr("class", "foreignGRows")
-        var foreignSVG =   foreignObject.append("xhtml:div")
+        var foreignSVG = foreignObject.append("xhtml:div")
             .style("position", "relative")
             .style("overflow-y", "scroll")
             .style("height", "600px")
-            .on("mousemove", function() {
+            .on("mousemove", function () {
                 // Prevent global scrolling here?
             })
             .append("svg")
@@ -200,17 +190,14 @@ function UpSet(){
 
         // -- the background highlights
         ctx.columnBackgroundNode = foreignSVG.append("g").attr({
-            class:"columnBackgroundsGroup"
+            class: "columnBackgroundsGroup"
 
-        }) .attr({"transform": "translate(90,-90)"})
-
+        }).attr({"transform": "translate(90,-90)"})
 
         // Rows container for vertical panning
         ctx.gRows = foreignSVG
-        .append('g')
+            .append('g')
             .attr({'class': 'gRows', "transform": "translate(90,-90)"})
-
-
 
         //####################### LogicPanel ##################################################
 
@@ -231,10 +218,10 @@ function UpSet(){
                 buttonX: -ctx.leftOffset,
                 buttonY: ctx.textHeight - 20,
                 stateObject: UpSetState,
-                subsets:subSets,
-                callAfterSubmit: [updateState,rowTransition],
-                ctx:ctx,
-                cellWidth:ctx.cellWidth
+                subsets: subSets,
+                callAfterSubmit: [updateState, rowTransition],
+                ctx: ctx,
+                cellWidth: ctx.cellWidth
 
             });
 //            {
@@ -242,18 +229,14 @@ function UpSet(){
 //            }
 //        );
 
-
-
         ctx.tableHeaderNode = ctx.vis.append("g").attr({
-            class:"tableHeader"
+            class: "tableHeader"
         })
 
         ctx.tableHeaderNode.append("g")
 
-
 //        ctx.vis.append
 //        ctx.brushedScale = new BrushableScale(ctx,)
-
 
         initRows();
 
@@ -261,14 +244,13 @@ function UpSet(){
 
         updateHeaders();
 
-
         plotSubSets();
 
-        initCallback = [updateHeaders,plotSubSets] //TODO: bad hack !!!
+        initCallback = [updateHeaders, plotSubSets] //TODO: bad hack !!!
     }
 
     // update svg size
-    var updateSVG = function(width, height){
+    var updateSVG = function (width, height) {
         ctx.w = width;
         ctx.svgHeight = height;
 
@@ -278,48 +260,49 @@ function UpSet(){
 
     }
 
-
-
-
-
-
-
     //####################### SETS ##################################################
     function updateSetsLabels(tableHeaderNode) {
         console.log("updatSetLabels");
 
-        var setRowScale = d3.scale.ordinal().rangeRoundBands([0, usedSets.length * (ctx.cellWidth)],0);
-        setRowScale.domain(usedSets.map(function(d){return d.id}))
+        var setRowScale = d3.scale.ordinal().rangeRoundBands([0, usedSets.length * (ctx.cellWidth)], 0);
+        setRowScale.domain(usedSets.map(function (d) {
+            return d.id
+        }))
 
         var setRows = tableHeaderNode.selectAll('.setRow')
-            .data(usedSets, function(d){return d.elementName})
+            .data(usedSets, function (d) {
+                return d.elementName
+            })
 
         var setRowsEnter = setRows.enter()
             .append('g').attr({
-                class:"setRow"
+                class: "setRow"
             })
 
         setRows.exit().remove();
 
-        var setRects = setRows.selectAll("rect").data(function(d,i){return [d]})
-           setRects.enter().append("rect").attr({
-            class:"connection vertical"
-           })
-           .on('mouseover', mouseoverColumn)
-           .on('mouseout', mouseoutColumn)
+        var setRects = setRows.selectAll("rect").data(function (d, i) {
+            return [d]
+        })
+        setRects.enter().append("rect").attr({
+            class: "connection vertical"
+        })
+            .on('mouseover', mouseoverColumn)
+            .on('mouseout', mouseoutColumn)
 
+        setRects.exit().remove();
 
-          setRects.exit().remove();
-
-           setRects.attr({
+        setRects.attr({
             transform: function (d, i) {
                 return 'skewX(45) translate(' + (ctx.cellWidth * i - ctx.leftOffset) + ', 0)';
             },
             width: ctx.cellWidth,
             height: ctx.textHeight - 2
-            })
+        })
 
-        var setRowsText = setRows.selectAll("text").data(function(d){return [d]})
+        var setRowsText = setRows.selectAll("text").data(function (d) {
+            return [d]
+        })
         setRowsText.enter().append("text").text(
             function (d) {
                 return d.elementName.substring(0, ctx.truncateAfter);
@@ -336,14 +319,16 @@ function UpSet(){
             .on('mouseover', mouseoverColumn)
             .on('mouseout', mouseoutColumn)
             .append("svg:title")
-            .text(function(d, i) { return d.elementName; });
+            .text(function (d, i) {
+                return d.elementName;
+            });
 
         setRowsText.attr({
-            class: function(){if (ctx.cellWidth>16) return 'setLabel'; else return 'setLabel small'}
+            class: function () {
+                if (ctx.cellWidth > 16) return 'setLabel'; else return 'setLabel small'
+            }
 
         })
-
-
 
         setRows.attr({transform: function (d, i) {
 //            console.log(d.id);
@@ -352,18 +337,14 @@ function UpSet(){
         },
             class: 'setRow'});
 
-
-
-
     }
 
-
-    function updateHeaders(){
+    function updateHeaders() {
         setDynamicVisVariables()
         console.log("UPDATE HEADER -----------");
         calculateGlobalStatistics();
         var tableHeaderGroup = ctx.tableHeaderNode.selectAll(".tableHeaderGroup").data([1]);
-        var tableHeader = tableHeaderGroup.enter().append("g").attr({class:"tableHeaderGroup"});
+        var tableHeader = tableHeaderGroup.enter().append("g").attr({class: "tableHeaderGroup"});
 
         // ------------------- set size bars header --------------------
 
@@ -397,17 +378,18 @@ function UpSet(){
 
         tableHeader.append('g').attr()
             .attr({
-                id:"subSetSizeAxis",
+                id: "subSetSizeAxis",
                 class: 'axis'
-            }).each(function(){
-                ctx.brushableScaleSubsetUpdate = function(){console.log("ARGH");};
+            }).each(function () {
+                ctx.brushableScaleSubsetUpdate = function () {
+                    console.log("ARGH");
+                };
                 ctx.brushableScaleSubset = new BrushableScale(
                     ctx,
                     d3.select(this),
                     ctx.subSetSizeWidth,
-                    "brushableScaleSubsetUpdate","plotTable","subSetSizeScale",{})
+                    "brushableScaleSubsetUpdate", "plotTable", "subSetSizeScale", {})
             });
-
 
         // *** update Part
 
@@ -429,14 +411,16 @@ function UpSet(){
 
         var subSetSizeAxis = d3.svg.axis().scale(ctx.subSetSizeScale).orient('top').ticks(4);
 
-        var maxValue = d3.max(ctx.globalStatistics,function(d){return d.value});
+        var maxValue = d3.max(ctx.globalStatistics, function (d) {
+            return d.value
+        });
 
         tableHeaderGroup.selectAll("#subSetSizeAxis").transition().attr({
             transform: 'translate(' + ctx.xStartSetSizes + ',' + (ctx.textHeight - 70) + ')'
         }).call(ctx.brushableScaleSubsetUpdate,
             {
-                maxValue:maxValue,
-                labels:ctx.globalStatistics
+                maxValue: maxValue,
+                labels: ctx.globalStatistics
 
             })
 //            .call(ctx.brushableScaleSubsetUpdate({
@@ -444,15 +428,12 @@ function UpSet(){
 //            }))
 //            .call(subSetSizeAxis);
 
-
-
         // ------------ expected value header -----------------------
-
 
         // *** init Part
         tableHeader.append('rect')
             .attr({
-                id:"expectedValueLabelRect",
+                id: "expectedValueLabelRect",
                 class: 'labelBackground expectedValueLabel sortRelevanceMeasureGlobal'
             }).on(
             'click',
@@ -468,19 +449,18 @@ function UpSet(){
                 rowTransition();
             });
 
-        tableHeader.append('text').text('Relevance')
+        tableHeader.append('text').text('Disproportionality')
             .attr({
-                id:"expectedValueLabelText",
+                id: "expectedValueLabelText",
                 class: 'columnLabel sortRelevanceMeasureGlobal',
                 "pointer-events": "none"
             });
 
         tableHeader.append('g').attr()
             .attr({
-                id:"expectedValueAxis",
+                id: "expectedValueAxis",
                 class: 'axis'
             });
-
 
         // *** update Part
         tableHeaderGroup.selectAll("#expectedValueLabelRect").attr({
@@ -496,43 +476,47 @@ function UpSet(){
 
         // scale for the size of the plottingSets
         var minDeviation = d3.min(dataRows, function (d) {
-            return d.expectedValueDeviation;
+            return d.disproportionality;
         });
         if (minDeviation > 0) {
             minDeviation = 0;
         }
         var maxDeviation = d3.max(dataRows, function (d) {
-            return d.expectedValueDeviation;
+            return d.disproportionality;
         });
 
-        ctx.expectedValueScale = d3.scale.linear().domain([minDeviation, maxDeviation]).nice().range([0, ctx.expectedValueWidth]);
+        var bound = d3.max([Math.abs(minDeviation), Math.abs(maxDeviation)]);
+        if (bound < 0.1) {
+            bound = 0.1;
+        }
 
-        var expectedValueAxis = d3.svg.axis().scale(ctx.expectedValueScale).orient('top').ticks(4);
+        ctx.expectedValueScale = d3.scale.linear().domain([-bound, bound]).nice().range([0, ctx.expectedValueWidth]);
+
+        var formatPercent = d3.format(".0%");
+
+        var expectedValueAxis = d3.svg.axis().scale(ctx.expectedValueScale).orient('top').ticks(4).tickFormat(formatPercent);
 
         tableHeaderGroup.select("#expectedValueAxis").transition().attr({
             transform: 'translate(' + ctx.xStartExpectedValues + ',' + (ctx.textHeight - 5) + ')'
         }).call(expectedValueAxis);
 
-
         updateSetsLabels(ctx.tableHeaderNode)
 
     }
-
 
     function initRows() {
 
         ctx.subSetMatrixHeight = renderRows.length * ctx.cellDistance;
         ctx.h = ctx.subSetMatrixHeight + ctx.textHeight;
 
-        ctx.rowScale = d3.scale.ordinal().rangeRoundBands([ ctx.textHeight, ctx.h ], 0,0);
+        ctx.rowScale = d3.scale.ordinal().rangeRoundBands([ ctx.textHeight, ctx.h ], 0, 0);
 
         ctx.rowScale.domain(renderRows.map(function (d) {
             return d.id;
         }));
     }
 
-
-    function updateSubSetGroups(){
+    function updateSubSetGroups() {
         // ------------------- the rows -----------------------
         var subSets = ctx.gRows.selectAll('.row')
             .data(renderRows, function (d, i) {
@@ -544,12 +528,12 @@ function UpSet(){
             .append('g')
             .attr({transform: function (d) {
 
-                if (d.data.type === ROW_TYPE.SUBSET) 
+                if (d.data.type === ROW_TYPE.SUBSET)
                     return 'translate(0, ' + ctx.rowScale(d.id) + ')';
                 else {
                     var offset_y = ctx.textHeight;
-                    if(d.data.level == 2)
-                        offset_y += 10 
+                    if (d.data.level == 2)
+                        offset_y += 10
                     return 'translate(0, ' + offset_y + ')';
                 }
             }, class: function (d) {
@@ -564,24 +548,20 @@ function UpSet(){
 
         subSets.exit().remove();
 
-
         var subSetTransition = subSets;
         if (ctx.rowTransitions)
-            subSetTransition= subSets
-            .transition().duration(function (d, i) {
-                if (d.data.type === ROW_TYPE.SUBSET)
-                    return queryParameters['duration'];
-                else
-                    return queryParameters['duration'];
-            })
+            subSetTransition = subSets
+                .transition().duration(function (d, i) {
+                    if (d.data.type === ROW_TYPE.SUBSET)
+                        return queryParameters['duration'];
+                    else
+                        return queryParameters['duration'];
+                })
         subSetTransition.attr({transform: function (d) {
-                return 'translate(0, ' + ctx.rowScale(d.id) + ')';
-            }, class: function (d) {
-                return 'row ' + d.data.type;
-            }}).transition().duration(100).style("opacity", 1);
-
-
-
+            return 'translate(0, ' + ctx.rowScale(d.id) + ')';
+        }, class: function (d) {
+            return 'row ' + d.data.type;
+        }}).transition().duration(100).style("opacity", 1);
 
         /*
          // add transparent background to make each row it sensitive for interaction
@@ -610,7 +590,9 @@ function UpSet(){
 
     function updateSubsetRows(subsetRows, setScale) {
 
-        var backgrounds = subsetRows.selectAll(".backgroundRect").data(function(d){return [d]})
+        var backgrounds = subsetRows.selectAll(".backgroundRect").data(function (d) {
+            return [d]
+        })
         backgrounds.enter()
             .append("rect").attr({
                 class: "backgroundRect",
@@ -621,7 +603,7 @@ function UpSet(){
             })
             .style({
                 "fill-opacity": 0.0001,
-                fill:ctx.backHighlightColor // for debugging
+                fill: ctx.backHighlightColor // for debugging
             })
             .on({
                 'mouseover': mouseoverRow,
@@ -632,8 +614,6 @@ function UpSet(){
             width: ctx.setVisWidth,
             height: ctx.cellSize
         })
-
-
 
         var combinationGroups = subsetRows.selectAll('g').data(function (d) {
                 // binding in an array of size one
@@ -647,9 +627,10 @@ function UpSet(){
             })
         combinationGroups.exit().remove();
 
-
         var cells = combinationGroups.selectAll('.cell').data(function (d) {
-            return d.map(function(dd,i){return {data: usedSets[i], value:dd}});
+            return d.map(function (dd, i) {
+                return {data: usedSets[i], value: dd}
+            });
         })
         // ** init
         cells.enter()
@@ -659,8 +640,8 @@ function UpSet(){
 
                     /* click event for cells*/
                 },
-                'mouseover': function(d,i){
-                    mouseoverCell(d3.select(this).node().parentNode.parentNode.__data__,i)
+                'mouseover': function (d, i) {
+                    mouseoverCell(d3.select(this).node().parentNode.parentNode.__data__, i)
                 },
                 'mouseout': mouseoutCell
             })
@@ -668,10 +649,10 @@ function UpSet(){
 
         //** update
         cells.attr('cx', function (d, i) {
-            return (ctx.cellWidth) * i + ctx.cellWidth/ 2;
+            return (ctx.cellWidth) * i + ctx.cellWidth / 2;
         })
             .attr({
-                r: ctx.cellSize/ 2 - 1,
+                r: ctx.cellSize / 2 - 1,
                 cy: ctx.cellSize / 2,
                 class: 'cell'
             })
@@ -679,7 +660,6 @@ function UpSet(){
                 return setScale(d.value);
 
             })
-
 
         // add the connecting line for cells
         var cellConnectors = combinationGroups.selectAll('.cellConnector').data(
@@ -693,7 +673,6 @@ function UpSet(){
                             return dd >= 0;
                         })
                 )
-
 
                 // dont do anything if there is only one (or none) cell
                 if (extent[0] == extent[1]) return [];
@@ -714,10 +693,10 @@ function UpSet(){
         //**update
         cellConnectors.attr({
             x1: function (d) {
-                return (ctx.cellWidth) * d[0] + ctx.cellWidth/ 2;
+                return (ctx.cellWidth) * d[0] + ctx.cellWidth / 2;
             },
             x2: function (d) {
-                return (ctx.cellWidth) * d[1] + ctx.cellWidth/ 2;
+                return (ctx.cellWidth) * d[1] + ctx.cellWidth / 2;
             },
             y1: ctx.cellSize / 2,
             y2: ctx.cellSize / 2
@@ -725,35 +704,13 @@ function UpSet(){
 
         /// --- the sizeBar
 
-
-        var sizeBars = subsetRows.selectAll(".row-type-subset").data(function(d){return [d]})
-            sizeBars.enter()
-                .append('rect')
-                .attr("class",  'subSetSize row-type-subset')
-                .attr({
-                    transform: function (d) {
-                        var y = 1;
-                        return   'translate(' + ctx.xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
-                    },
-
-                    width: function (d) {
-                        return ctx.subSetSizeScale(d.data.setSize);
-                    },
-                    height: function (d) {
-                       return ctx.cellSize-2
-                    }
-                })
-                .on('click', function (d) {
-                    ctx.intersectionClicked(d);
-                })
-                .on('mouseover', mouseoverRow)
-                .on('mouseout', mouseoutRow)
-            sizeBars.exit().remove();
-
-            var sizeBarsChanges = sizeBars
-            if (ctx.barTransitions) sizeBarsChanges.transition()
-            sizeBarsChanges.attr({
-                //class: 'subSetSize',
+        var sizeBars = subsetRows.selectAll(".row-type-subset").data(function (d) {
+            return [d]
+        })
+        sizeBars.enter()
+            .append('rect')
+            .attr("class", 'subSetSize row-type-subset')
+            .attr({
                 transform: function (d) {
                     var y = 1;
                     return   'translate(' + ctx.xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
@@ -763,12 +720,32 @@ function UpSet(){
                     return ctx.subSetSizeScale(d.data.setSize);
                 },
                 height: function (d) {
-                   return ctx.cellSize-2
+                    return ctx.cellSize - 2
                 }
             })
+            .on('click', function (d) {
+                ctx.intersectionClicked(d);
+            })
+            .on('mouseover', mouseoverRow)
+            .on('mouseout', mouseoutRow)
+        sizeBars.exit().remove();
 
+        var sizeBarsChanges = sizeBars
+        if (ctx.barTransitions) sizeBarsChanges.transition()
+        sizeBarsChanges.attr({
+            //class: 'subSetSize',
+            transform: function (d) {
+                var y = 1;
+                return   'translate(' + ctx.xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
+            },
 
-
+            width: function (d) {
+                return ctx.subSetSizeScale(d.data.setSize);
+            },
+            height: function (d) {
+                return ctx.cellSize - 2
+            }
+        })
 
     }
 
@@ -791,7 +768,9 @@ function UpSet(){
         groupsRect.exit().remove();
         //**update
         groupsRect.attr({
-            width: function(){return ctx.setVisWidth + ctx.leftOffset},
+            width: function () {
+                return ctx.setVisWidth + ctx.leftOffset
+            },
             height: ctx.cellSize,
             x: -ctx.leftOffset
         });
@@ -816,7 +795,9 @@ function UpSet(){
             else if (d.data.type === ROW_TYPE.AGGREGATE)
                 return String.fromCharCode(8709) + '-subsets (' + d.data.subSets.length + ') ';
         }).attr({
-                class: function(){if (ctx.cellDistance<14) return 'groupLabel small'; else return 'groupLabel'},
+                class: function () {
+                    if (ctx.cellDistance < 14) return 'groupLabel small'; else return 'groupLabel'
+                },
                 y: ctx.cellSize - 3,
                 x: -ctx.leftOffset,
                 'font-size': ctx.cellSize - 6
@@ -824,7 +805,6 @@ function UpSet(){
                 collapseGroup(d.data);
                 rowTransition(false);
             });
-
 
         groupRows.each(function (e, j) {
 
@@ -850,7 +830,7 @@ function UpSet(){
             })
 
             g.selectAll(".row-type-group").data(data).enter().append('rect')
-                .attr("class", function (d) {
+                .attr("class",function (d) {
                     return ( 'subSetSize row-type-group' );
 
                 }).on('click', function (d) {
@@ -872,14 +852,14 @@ function UpSet(){
                     },
 
                     width: function (d, i) {
-                        return ctx.subSetSizeScale(d.data.setSize) - i*cellSizeShrink;
+                        return ctx.subSetSizeScale(d.data.setSize) - i * cellSizeShrink;
                     },
                     height: function (d, i) {
                         return ctx.cellSize - cellSizeShrink * i;
                     }
                 })
                 .style("opacity", function (d, i) {
-                    return (i+1) / (nbLevels);
+                    return (i + 1) / (nbLevels);
                 })
                 .on('mouseover', mouseoverRow)
                 .on('mouseout', mouseoutRow);
@@ -889,7 +869,7 @@ function UpSet(){
     }
 
     function updateRelevanceBars(allRows) {
-        var expectedValueBars = allRows.selectAll(".expectedValueDeviation").data(function (d) {
+        var expectedValueBars = allRows.selectAll(".disproportionality").data(function (d) {
             return [d]
         })
 
@@ -897,17 +877,17 @@ function UpSet(){
             .append('rect')
             .attr({
                 transform: function (d) {
-                    var start = ctx.expectedValueScale(d3.min([0, d.data.expectedValueDeviation]));
+                    var start = ctx.expectedValueScale(d3.min([0, d.data.disproportionality]));
                     start += ctx.xStartExpectedValues;
                     var y = 0;
                     if (d.data.type !== ROW_TYPE.SUBSET)
                         y = 1;//cellSize / 3 * 1.7;
                     return 'translate(' + start + ', ' + y + ')';
                 },
-                width:1,
+                width: 1,
                 height: function (d) {
                     if (d.data.type === ROW_TYPE.SUBSET)
-                        return ctx.cellSize-2;
+                        return ctx.cellSize - 2;
                     else
                         return ctx.cellSize;// / 3;
                 }
@@ -918,23 +898,23 @@ function UpSet(){
         expectedValueBars.exit().remove()
 
         // transition for subsets
-        changeTheValues(expectedValueBars.filter(function(d){
+        changeTheValues(expectedValueBars.filter(function (d) {
             return (d.data.type === ROW_TYPE.SUBSET)
         }).transition())
 
         // no transition for groups
-        changeTheValues(expectedValueBars.filter(function(d){
+        changeTheValues(expectedValueBars.filter(function (d) {
             return (d.data.type !== ROW_TYPE.SUBSET)
         }))
 //        expectedValueBars.transition()
 
-        function changeTheValues(node){
+        function changeTheValues(node) {
             node.attr({
                 class: function (d) {
-                    return d.data.expectedValueDeviation < 0 ? 'expectedValueDeviation negative' : 'expectedValueDeviation positive';
+                    return d.data.disproportionality < 0 ? 'disproportionality negative' : 'disproportionality positive';
                 },
                 transform: function (d) {
-                    var start = ctx.expectedValueScale(d3.min([0, d.data.expectedValueDeviation]));
+                    var start = ctx.expectedValueScale(d3.min([0, d.data.disproportionality]));
                     start += ctx.xStartExpectedValues;
                     var y = 0;
                     if (d.data.type == ROW_TYPE.SUBSET)
@@ -942,12 +922,12 @@ function UpSet(){
                     return 'translate(' + start + ', ' + y + ')';
                 },
                 width: function (d) {
-                    //  console.log(d.data.expectedValueDeviation)
-                    return Math.abs(ctx.expectedValueScale(d.data.expectedValueDeviation) - ctx.expectedValueScale(0));
+                    //  console.log(d.data.disproportionality)
+                    return Math.abs(ctx.expectedValueScale(d.data.disproportionality) - ctx.expectedValueScale(0));
                 },
                 height: function (d) {
                     if (d.data.type === ROW_TYPE.SUBSET)
-                        return ctx.cellSize-2;
+                        return ctx.cellSize - 2;
                     else
                         return ctx.cellSize;// / 3;
                 }
@@ -1008,11 +988,10 @@ function UpSet(){
                     return   ctx.subSetSizeScale(s[usedID].length);
                 },
                 height: function (d) {
-                    return ctx.cellSize-2// / 3;
+                    return ctx.cellSize - 2// / 3;
 
                 }
             })
-
 
         // the triangles for the multiple selections
 
@@ -1069,15 +1048,14 @@ function UpSet(){
             return d.data.setSize;
         })
         if (ctx.barTransitions) barLabelChanges.transition()
-         barLabelChanges.attr({class: 'intersectionSizeText intersectionSizeLabel',
-                y: ctx.cellSize /2,
-                x: function (d) {
-                    return ctx.xStartSetSizes + ctx.subSetSizeScale(d.data.setSize) + 2;
-                }
+        barLabelChanges.attr({class: 'intersectionSizeText intersectionSizeLabel',
+            y: ctx.cellSize / 2,
+            x: function (d) {
+                return ctx.xStartSetSizes + ctx.subSetSizeScale(d.data.setSize) + 2;
+            }
 
-            });
+        });
     }
-
 
     function updateColumnBackgrounds() {
         var columnBackgrounds = ctx.columnBackgroundNode.selectAll(".columnBackground").data(usedSets);
@@ -1086,12 +1064,12 @@ function UpSet(){
         }).style({
                 "stroke": "none",
                 fill: ctx.backHighlightColor,
-                opacity:0
+                opacity: 0
             })
         columnBackgrounds.exit().remove();
         columnBackgrounds.attr({
             'x': function (d, i) {
-                return (ctx.cellWidth) * i ;
+                return (ctx.cellWidth) * i;
             },
             y: ctx.textHeight,
             height: ctx.h, //TODO: better value there
@@ -1107,10 +1085,9 @@ function UpSet(){
         updateColumnBackgrounds();
 
         // generate <g> elements for all rows
-        var allRows= updateSubSetGroups()
+        var allRows = updateSubSetGroups()
 
         var setScale = d3.scale.ordinal().domain([0, 1]).range(ctx.grays);
-
 
         var subSetRows = allRows.filter(function (d) {
             return d.data.type === ROW_TYPE.SUBSET;
@@ -1140,10 +1117,8 @@ function UpSet(){
         updateRelevanceBars(allRows);
 
         // Adjust the row height
-        d3.select(".divForeign").select("svg").attr("height",  renderRows.length * ctx.cellDistance);
+        d3.select(".divForeign").select("svg").attr("height", renderRows.length * ctx.cellDistance);
     }
-
-
 
     function bindEvents() {
         $(EventManager).bind("item-selection-added", function (event, data) {
@@ -1151,9 +1126,9 @@ function UpSet(){
 
             data.selection.mapToSubsets(subSets);
 
-            var itemViewer = new ItemViewer( attributes, selections, ItemViewerConfigurations.histogram, "#item-vis-editor", "#item-vis-viewer" );
-            itemViewer.renderEditor();  
-            itemViewer.renderViewer();  
+            var itemViewer = new ItemViewer(attributes, selections, ItemViewerConfigurations.histogram, "#item-vis-editor", "#item-vis-viewer");
+            itemViewer.renderEditor();
+            itemViewer.renderViewer();
 
             plotSelectionTabs("#selection-tabs", selections, data.selection);
             plotSelectedItems("#item-table", data.selection);
@@ -1223,24 +1198,24 @@ function UpSet(){
         });
 
         $(EventManager).bind("set-added", function (event, data) {
-            if ( usedSets.length === 2 || usedSets.length === 3 ) {
-                $("#venn-diagram-viewer").fadeIn( 500 );
+            if (usedSets.length === 2 || usedSets.length === 3) {
+                $("#venn-diagram-viewer").fadeIn(500);
                 venn.plot(undefined, usedSets.length);
             }
 
-            if ( usedSets.length !== 2 && usedSets.length !== 3 ) {
-                $("#venn-diagram-viewer").fadeOut( 500 );
+            if (usedSets.length !== 2 && usedSets.length !== 3) {
+                $("#venn-diagram-viewer").fadeOut(500);
             }
         });
 
         $(EventManager).bind("set-removed", function (event, data) {
-            if ( usedSets.length === 2 || usedSets.length === 3 ) {
-                $("#venn-diagram-viewer").fadeIn( 500 );
+            if (usedSets.length === 2 || usedSets.length === 3) {
+                $("#venn-diagram-viewer").fadeIn(500);
                 venn.plot(undefined, usedSets.length);
             }
 
-            if ( usedSets.length !== 2 && usedSets.length !== 3 ) {
-                $("#venn-diagram-viewer").fadeOut( 500 );
+            if (usedSets.length !== 2 && usedSets.length !== 3) {
+                $("#venn-diagram-viewer").fadeOut(500);
             }
         });
     }
@@ -1451,33 +1426,29 @@ function UpSet(){
 
     }
 
-
-
-
-    document.getElementById('rowSizeValue').addEventListener('input', function(){
-        ctx.cellDistance= +(document.getElementById('rowSizeValue').value);
+    document.getElementById('rowSizeValue').addEventListener('input', function () {
+        ctx.cellDistance = +(document.getElementById('rowSizeValue').value);
         console.log(ctx.cellSize);
         rowTransition();
     });
 
-    var rowTransition = function(animateRows) {
-        if (animateRows !=null) ctx.rowTransitions= animateRows;
-        else ctx.rowTransitions= true;
+    var rowTransition = function (animateRows) {
+        if (animateRows != null) ctx.rowTransitions = animateRows;
+        else ctx.rowTransitions = true;
         updateHeaders();
         plotSubSets();
-        ctx.rowTransitions=true
+        ctx.rowTransitions = true
     }
-
 
     bindEvents()
     setUpSortSelections()
     initData(ctx, [init]);
     ctx.updateHeaders = updateHeaders;
     ctx.plot = rowTransition
-    ctx.plotTable = function(){
-        ctx.barTransitions=false;
+    ctx.plotTable = function () {
+        ctx.barTransitions = false;
         plotSubSets();
-        ctx.barTransitions=true;
+        ctx.barTransitions = true;
     }
 //    init();
 
