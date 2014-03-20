@@ -1269,12 +1269,9 @@ function UpSet() {
 
             data.selection.mapToSubsets(subSets);
 
-            var elementViewer = new ElementViewer( attributes, selections, ElementViewerConfigurations.histogram, "#element-vis-editor", "#element-vis-viewer" );
-            elementViewer.renderEditor();  
-            elementViewer.renderViewer();  
-
             plotSelectionTabs("#selection-tabs", selections, data.selection);
             plotSelectedItems("#item-table", data.selection);
+            elementViewers.renderViewer();            
         });
 
         $(EventManager).bind("item-selection-updated", function (event, data) {
@@ -1284,17 +1281,19 @@ function UpSet() {
             plot();
             plotSelectionTabs("#selection-tabs", selections, data.selection);
             plotSelectedItems("#item-table", data.selection);
+            elementViewers.renderViewer();
+
             plotSetOverview();
         });
 
         $(EventManager).bind("item-selection-removed", function (event, data) {
 //    console.log("Selection was removed from selection list.");
-
             data.selection.unmapFromSubsets(subSets);
 
             plot();
             plotSelectionTabs("#selection-tabs", selections, selections.getActive());
             plotSelectedItems("#item-table", selections.getActive());
+            elementViewers.renderViewer();            
             plotSetOverview();
         });
 
@@ -1338,6 +1337,9 @@ function UpSet() {
         $(EventManager).bind("loading-dataset-finished", function (event, data) {
             $(".ui-fader").fadeOut(1000);
             $("#data-loading-indicator").fadeOut(1000);
+
+            elementViewers.renderController();
+            elementViewers.renderViewer();
         });
 
         $(EventManager).bind("set-added", function (event, data) {
