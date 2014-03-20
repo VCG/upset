@@ -172,10 +172,8 @@ function plotSetOverview() {
               d3.selectAll("input[value=setcheck]").property("checked", false);
             });
 
-
-                  // Remove current transitions
-          d3.selectAll(".bulkCheck").on("mouseenter", function() {
-            console.log("toto")
+           d3.selectAll(".bulkCheck").on("mouseenter", function() {
+            // Remove current transitions
             d3.selectAll(".bulkCheck").transition();
           })
 
@@ -184,7 +182,6 @@ function plotSetOverview() {
             mouseoutColumn(d, i);
             d3.selectAll(".bulkCheck").transition().duration(1500).remove();
         })
-
 
     var formLabels = overview.append("g").attr("class", "usedSets");
 

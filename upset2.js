@@ -974,17 +974,17 @@ function UpSet() {
               return f;
           })
 
-          var g_lines = g.append("g").selectAll(".cutlines").data([e.id]).enter()
+          var g_lines = g.selectAll(".cutlines").data([e.id]).enter().append("g").attr("class", "cutlines")
 
-          g_lines.append("line").attr("class", "cutlines")
+          g_lines.append("line")
             .attr({x1:ctx.xStartSetSizes + 270, x2:ctx.xStartSetSizes + 280, y1:0, y2:20})
             .style({'stroke':'black', 'stroke-width':1})
           
-          g_lines.append("line").attr("class", "cutlines")
+          g_lines.append("line")
             .attr({x1:ctx.xStartSetSizes + 280, x2:ctx.xStartSetSizes + 290, y1:0, y2:20})
             .style({'stroke':'black', 'stroke-width':1})
           
-          g.append("g").selectAll(".cutlines").data([e.id]).exit().remove();
+          //g.selectAll(".cutlines").data([e.id]).exit().remove();
 
           // Add new layers
           var layers_enter = g.selectAll(".row-type-group").data(data).enter()
