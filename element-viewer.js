@@ -15,11 +15,18 @@ ElementViewerConfigurations = {
                     type: "numeric",
                     variable: "y"
                 }],
-            parameters: [/*{
-                    name: "Small Multiples?",
+            parameters: [{
+                    name: "Log Scale X",
                     type: "boolean",
-                    variable: "smallMultiples"
-                }*/],
+                    variable: "logScaleX",
+                    default: false
+                },
+                {
+                    name: "Log Scale Y",
+                    type: "boolean",
+                    variable: "logScaleY",
+                    default: false
+                }],
             render: function( elementId, selections, attributes, attributeMap, parameterMap ) {
                 // based on http://bl.ocks.org/bunkat/2595950
 
@@ -47,13 +54,33 @@ ElementViewerConfigurations = {
                     width = 300 - margin.left - margin.right,
                     height = 200 - margin.top - margin.bottom;
                     
-                var x = d3.scale.linear()
-                    .domain([attributeX.min, attributeX.max])
-                    .range([0, width]);
-                
-                var y = d3.scale.linear()
-                    .domain([attributeY.min, attributeY.max])
-                    .range([ height, 0 ]);
+                console.log( parameterMap );
+
+                var x;
+
+                if ( parameterMap.logScaleX ) {
+                    x = d3.scale.log()
+                        .domain([attributeX.min, attributeX.max])
+                        .range([0, width]);                    
+                } 
+                else {
+                    x = d3.scale.linear()
+                        .domain([attributeX.min, attributeX.max])
+                        .range([0, width]);                    
+                }
+
+                var y;
+
+                if ( parameterMap.logScaleY ) {            
+                    y = d3.scale.log()
+                        .domain([attributeY.min, attributeY.max])
+                        .range([ height, 0 ]);
+                }
+                else {            
+                    y = d3.scale.linear()
+                        .domain([attributeY.min, attributeY.max])
+                        .range([ height, 0 ]);
+                }
              
                 d3.select( elementId ).html("");
 
