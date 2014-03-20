@@ -105,17 +105,17 @@ function LogicPanel(params){
         })
 
         addLogicButton.append("rect").attr({
-            width:70,
-            height:20
+            width:60,
+            height:18
         }).style({fill: logicColor })
             .on("click", addLogic)
 
         addLogicButton.append("text").attr({
             class:"addButton",
-            x:35,
-            y:10
+            x:30,
+            y:9
         }).style({ fill:"white" })
-            .text("+ logic")
+            .text("+ filter")
             .on("click", addLogic)
 
 
@@ -275,7 +275,7 @@ function LogicPanel(params){
             var but = "";
             if (collectExpressions[logicState.MUST]!=null){
                 expression += "with set"+((collectExpressions[logicState.MUST].length>1)?"s ":" ")
-                expression += collectExpressions[logicState.MUST].join(" and ")
+                expression += collectExpressions[logicState.MUST].map(function(d){return "["+d+"]"}).join(" and ")
                 but=" but "
             }
             if (collectExpressions[logicState.NOT]!=null){
@@ -382,7 +382,7 @@ function LogicPanel(params){
         })
         infoBar.enter().append("rect").attr({
             class:"logicPanelHeaderBar",
-            x:function(d){return noOfSets*cellSize+5;},
+            x:function(d){return noOfSets*cellWidth+5;},
             y:2,
             height:cellSize-4
         }).style({
@@ -429,7 +429,7 @@ function LogicPanel(params){
         });
         textDescriptionPanel.enter().append("text").attr({
             class:"logicPanelActualText addButton",
-            "transform":"translate("+(noOfSets*cellSize+5+90)+","+0+")",
+            "transform":"translate("+(noOfSets*cellWidth+5+90)+","+0+")",
             y:cellSize,
             dy:1
         }).style({
@@ -583,6 +583,7 @@ function LogicPanel(params){
 
         stateObject.logicGroups.push(logicExpression);
         stateObject.logicGroupChanged=true;
+        stateObject.forceUpdate= true;
         if (callAfterSubmit!=null)
             callAfterSubmit.forEach(function(d){
                 d();

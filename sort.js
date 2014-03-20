@@ -9,7 +9,7 @@ var SET_BASED_GROUPING_PREFIX = "SetG_";
 var handleLogicGroups = function (subsets, dataRows, level, parentID) {
     filterGroups = [];
     UpSetState.logicGroups.forEach(function (d) {
-        var group = new QueryGroup(d.id + parentID, d.groupName, d.orClauses);
+        var group = new QueryGroup(d.id, d.groupName, d.orClauses);
         var maskList = d.getListOfValues();
 
         getSubsetsForMaskList(subsets, maskList, function (d) {
@@ -19,6 +19,7 @@ var handleLogicGroups = function (subsets, dataRows, level, parentID) {
         filterGroups.push(group)
 
     })
+
 
 }
 
@@ -291,12 +292,14 @@ var updateState = function (parameter) {
 
     }
 
+
     if (filterGroups && filterGroups.length > 0) {
         var filteredRows = unwrapGroups(filterGroups);
         var separator = new Separator("FILTER_SEPARATOR", 'Natural Intersections');
         filteredRows.push(separator);
         dataRows = filteredRows.concat(dataRows);
     }
+    console.log("DTATROWS",dataRows);
 
     UpSetState.forceUpdate = false;
     UpSetState.expandAll = false;

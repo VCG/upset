@@ -517,6 +517,7 @@ function UpSet() {
     }
 
     function updateSubSetGroups() {
+        console.log("datRows",renderRows);
         // ------------------- the rows -----------------------
         var subSets = ctx.gRows.selectAll('.row')
             .data(renderRows, function (d, i) {
@@ -755,7 +756,11 @@ function UpSet() {
         });
         //**init
         groupsRect.enter().append('rect').attr({
-            class: 'groupBackGround',
+            class: function(d){if (d.data instanceof QueryGroup){
+                return 'groupBackGround filterGroup';
+            } else{
+                return 'groupBackGround'
+            }},
             width: ctx.setVisWidth + ctx.leftOffset,
             height: ctx.cellSize,
             x: -ctx.leftOffset,
@@ -776,35 +781,173 @@ function UpSet() {
         });
 
         //  console.log('g2: ' + groups);
-        var groupsText = groupRows.selectAll("text").data(function (d) {
+        var groupsText = groupRows.selectAll(".groupLabel.groupLabelText").data(function (d) {
             return [d];
         });
         groupsText.enter().append('text')
-            .attr({class: 'groupLabel',
+            .attr({class: 'groupLabel groupLabelText',
                 y: ctx.cellSize - 3,
-                x: -ctx.leftOffset,
+                x: (-ctx.leftOffset+12),
                 'font-size': ctx.cellSize - 6
 
             });
         groupsText.exit().remove();
 
+        var queryGroupDecoItems=[
+//            {id:"I", action:1, color:"#a1d99b"},
+            {id:"X", action:2, color:"#f46d43"}
+        ];
+
         //** update
         groupsText.text(function (d) {
-            if (d.data.type === ROW_TYPE.GROUP)
-                return d.data.elementName;
-            else if (d.data.type === ROW_TYPE.AGGREGATE)
+
+//            if (d.data instanceof QueryGroup){
+//                return "@ "+d.data.elementName;
+//            }
+//            if (d.data.type === ROW_TYPE.GROUP)
+//                return d.data.elementName;
+            if (d.data.type === ROW_TYPE.AGGREGATE)
                 return String.fromCharCode(8709) + '-subsets (' + d.data.subSets.length + ') ';
+            else return d.data.elementName;
         }).attr({
                 class: function () {
-                    if (ctx.cellDistance < 14) return 'groupLabel small'; else return 'groupLabel'
+                     if (ctx.cellDistance<14) return 'groupLabel groupLabelText small'; else return 'groupLabel groupLabelText'
                 },
                 y: ctx.cellSize - 3,
-                x: -ctx.leftOffset,
-                'font-size': ctx.cellSize - 6
+                x: (-ctx.leftOffset+15)
+
             }).on('click', function (d) {
                 collapseGroup(d.data);
                 rowTransition(false);
             });
+
+
+
+        var collapseIcon = groupRows.selectAll(".collapseIcon").data(function(d){console.log(d);return [d];})
+        collapseIcon.enter()
+            .append("text")
+            .attr({
+                class:"collapseIcon"
+            }).on('click', function (d) {
+                collapseGroup(d.data);
+                rowTransition(false);
+            });
+
+        collapseIcon
+            .text(function(d){
+                if (d.data.isCollapsed==0) return "\uf147";
+                else return "\uf196"
+            })
+            .attr({
+                "transform":"translate("+(-ctx.leftOffset+2+5)+","+(ctx.cellSize/2+5)+")"
+
+            }).style({
+                "font-size":"10px"
+            })
+
+
+
+
+
+        // -- Decoration for Filter Groups
+        var allQueryGroups = groupRows.filter(function(d){return (d.data instanceof QueryGroup)})
+        var groupDeleteIcon = allQueryGroups.selectAll(".groupDeleteIcon").data(function(d){return [d]})
+        var groupDeleteIconEnter = groupDeleteIcon.enter().append("g") .attr({
+            class:"groupDeleteIcon"
+        })
+//        groupDeleteIconEnter.append("rect").attr({
+//            x:-5,
+//            y:-10,
+//            width:10,
+//            height:10,
+//            fill:"#f46d43"
+//        })
+        groupDeleteIconEnter.append("text")
+            .text("\uf05e")
+            .on({
+                "click":
+                    function(d){
+
+                        var index = -1;
+                        UpSetState.logicGroups.forEach(function(dd,i){
+
+                            if (dd.id == d.id) index=i;
+                        })
+
+
+
+                        UpSetState.logicGroups.splice(index,1);
+
+
+                        UpSetState.logicGroupChanged= true;
+                        UpSetState.forceUpdate= true;
+
+                        updateState();
+                        rowTransition();
+                    }
+            }).style({ "fill":"#f46d43"})
+
+
+
+        groupDeleteIcon.attr({
+            "transform":"translate("+(ctx.xStartSetSizes-12)+","+(ctx.cellSize/2+4)+")"
+        })
+
+
+
+
+//        allQueryGroups.each(function(queryGroup){
+//
+//            var groupData = queryGroupDecoItems.map(function(pE){
+//                    return {pElement:pE,dataSource: queryGroup}
+//                })
+//
+//            var panelElementItems = d3.select(this).selectAll(".decoQuery")
+//                .data(groupData);
+//            var panelElementsEnter = panelElementItems.enter()
+//                .append("g").attr("class","decoQuery")
+//
+//            panelElementsEnter.append("rect").attr({
+//                fill:function(d){return d.pElement.color},
+//                opacity:.5
+//            })
+//            panelElementsEnter.append("text").text(function(d){return d.pElement.id});
+//
+//            panelElementItems.select("rect").attr({
+//                x:function(d,i){return ctx.xStartSetSizes-((i+1) *ctx.cellDistance/2)-1},
+//                y:1,
+//                width:+(ctx.cellDistance/2-1),
+//                height:ctx.cellSize-2
+//            })
+//
+//            panelElementItems.select("text")
+//                .attr({
+//                    class: function(){if (ctx.cellDistance<14) return 'groupLabel small'; else return 'groupLabel'},
+//                    y: ctx.cellSize-3,
+//                    x: function(d,i){return ctx.xStartSetSizes-(i +.5)*ctx.cellDistance/2-1.5}
+////                    'font-size': ctx.cellSize - 6
+//                }).style({
+//                    "text-anchor":"middle",
+//                    "font-weight":"bold"
+//                }).on('click', function (d) {
+//                   console.log(d.dataSource);
+//                })
+//            })
+
+
+
+
+
+//        })
+
+
+
+
+
+
+
+
+        // --- Horizon Bars for size.
 
         groupRows.each(function (e, j) {
 
@@ -861,8 +1004,8 @@ function UpSet() {
                 .style("opacity", function (d, i) {
                     return (i + 1) / (nbLevels);
                 })
-                .on('mouseover', mouseoverRow)
-                .on('mouseout', mouseoutRow);
+//                .on('mouseover', mouseoverRow)
+//                .on('mouseout', mouseoutRow);
 
         })
 
