@@ -172,7 +172,7 @@ ElementViewerConfigurations = {
     };
 
 
-ElementViewerCollection = function( editorElementId, viewerElementId ) {
+ElementViewerCollection = function( controllerElementId, viewerElementId ) {
     var self = this;
 
     self.list = [];
@@ -264,6 +264,7 @@ ElementViewerCollection.prototype.getActive = function() {
 }
 
 
+// render the active viewer
 ElementViewerCollection.prototype.renderViewer = function() {
     var self = this;
 
@@ -284,9 +285,9 @@ ElementViewerCollection.prototype.renderViewer = function() {
     if ( !self.activeIndex ) {
         var id = "element-viewer-" + self.getActive().uuid;
 
+        // create element and render viewer
         viewerElement.append( "div" ).attr( "id", id );
-
-        self.getActive().
+        self.getActive().renderViewer( id );
     }
 }
 
