@@ -4,7 +4,7 @@
 
 ElementViewerConfigurations = {
         variantFrequency: {
-            name: "Variant Frequency",
+            name: "Transition/Transversion Ratio",
             attributes: [{
                     name: "Reference Allele",
                     type: "string",
@@ -15,12 +15,7 @@ ElementViewerConfigurations = {
                     type: "string",
                     variable: "alternative"
                 }],
-            parameters: [{
-                    name: "Relative to Mean",
-                    type: "boolean",
-                    variable: "meanNormalized",
-                    default: false
-                }],
+            parameters: [],
             render: function( elementId, selections, attributes, attributeMap, parameterMap ) {
                 var data = [];
 
