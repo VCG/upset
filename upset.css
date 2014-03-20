@@ -544,3 +544,21 @@ html, body, .ui-container {
     fill:black;
     text-anchor:middle;
 }
+
+.groupLabelText{
+    cursor:pointer;
+}
+.collapseIcon, .groupDeleteIcon{
+    font-family: FontAwesome;
+    font-size: 10px;
+    cursor:pointer;
+    text-anchor: middle;
+    /*dominant-baseline: ;*/
+
+}
+
+/*.groupBackGround .filterGroup{*/
+     /*fill: #d3d3d3;;  */
+    /*logic Color*/
+    /**/
+/*}*/
