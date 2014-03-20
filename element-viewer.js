@@ -220,7 +220,6 @@ ElementViewerCollection.prototype.remove = function( elementViewer ) {
 
             $(EventManager).trigger("element-viewer-removed", { viewer: elementViewer });
 
-            console.log( "changing active") ;
             if ( i === self.activeIndex ) {
                 if (self.list.length > 0) {
                     self.setActiveIndex( i - 1 );
@@ -365,7 +364,6 @@ ElementViewerCollection.prototype.renderController = function() {
             .on( "click", function() {
                 var selector = document.getElementById( 'element-viewer-selector' );
                 var elementViewerConfiguration = selector.options[selector.selectedIndex].__data__;
-                console.log( elementViewerConfiguration );
                 var elementViewer = new ElementViewer( attributes, selections, elementViewerConfiguration );
                 self.add( elementViewer );
                 var index = self.getIndex( elementViewer );
@@ -388,10 +386,8 @@ ElementViewerCollection.prototype.renderController = function() {
             .attr( "class", "element-viewer-editor-button" )
             .attr( "id", "element-viewer-remove" )
             .on( "click", function() {
-                console.log( "Closing!" );
                 self.remove( self.getActive() );
                 self.renderViewer();
-                console.log( self );
             })
         .append( "i" ).
             attr( "class", "fa fw fa-times-circle" );
@@ -420,8 +416,6 @@ ElementViewerCollection.prototype.renderViewer = function( showEditor ) {
         self.activeIndex = 0;
     }
 
-    console.log( self );
-
     // === render active viewer ===
 
     // create viewer
@@ -431,11 +425,9 @@ ElementViewerCollection.prototype.renderViewer = function( showEditor ) {
     viewerElement.append( "div" ).attr( "id", id );
 
     if ( !showEditor ) {
-        console.log( "Rendering viewer" );
         self.getActive().renderViewer( '#' + id );
     }
     else {
-        console.log( "Rendering editor" );
         self.getActive().renderEditor( '#' + id );        
     }
 
@@ -471,8 +463,6 @@ ElementViewer.prototype.initializeParameterMap = function() {
 
 ElementViewer.prototype.renderViewer = function( viewerElementId ) {
     var self = this;
-
-    console.log( "Rendering viewer into " + viewerElementId );
 
     viewerElementId = viewerElementId || self.viewerElementId;
 
