@@ -285,6 +285,8 @@ ElementViewerCollection.prototype.renderViewer = function() {
         var id = "element-viewer-" + self.getActive().uuid;
 
         viewerElement.append( "div" ).attr( "id", id );
+
+        self.getActive().
     }
 }
 
@@ -315,11 +317,13 @@ ElementViewer.prototype.initializeParameterMap = function() {
 }
 
 
-ElementViewer.prototype.renderViewer = function( ) {
+ElementViewer.prototype.renderViewer = function( viewerElementId ) {
     var self = this;
 
+    viewerElementId = viewerElementId | self.viewerElementId;
+
     try {
-        self.configuration.render( $( self.viewerElementId ), self.selections, self.attributes, self.attributeMap, self.parameterMap )
+        self.configuration.render( $( viewerElementId ), self.selections, self.attributes, self.attributeMap, self.parameterMap )
     }
     catch ( error ) {
         console.error( error );
@@ -327,10 +331,12 @@ ElementViewer.prototype.renderViewer = function( ) {
 };
 
 
-ElementViewer.prototype.renderEditor = function() {
+ElementViewer.prototype.renderEditor = function( editorElementId ) {
     var self = this;
 
-    var element = d3.select( self.editorElementId );
+    editorElementId = editorElementId | self.editorElementId;
+
+    var element = d3.select( editorElementId );
     element.html( "" );
 
     var editor = element.append('div').attr( 'id', 'element-viewer-editor-' + self.uuid );
