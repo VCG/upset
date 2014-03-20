@@ -204,7 +204,7 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
     }
 
     function updateSliderLabels(){
-        console.log("updateSlider",labels);
+
 
         // slider labels
         var sliderLabels = sliders.select(".labels").selectAll(".sliderLabel").data(labels, function(d){return d.id})
@@ -236,7 +236,7 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
         sliderLabels.attr({
             "transform":function(d){return "translate("+xScale(d.value)+","+(-20)+")"}
         }).on({
-                "click":function(d){console.log(d); setBrush(d.value);}
+                "click":function(d){setBrush(d.value);}
             })
 
     }
@@ -247,8 +247,8 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
         cAreaNode.enter().append("path")
             .attr({
                 class:"connectionArea",
-                "transform":"translate("+offsetX+","+(offsetY+distanceBetweenUpperAndLower+distanceBetweenAxis)+")",
-                color:function(d){console.log(d);}
+                "transform":"translate("+offsetX+","+(offsetY+distanceBetweenUpperAndLower+distanceBetweenAxis)+")"
+
             })
         cAreaNode.attr({
             d:d3.svg.area()

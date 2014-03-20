@@ -299,7 +299,6 @@ var updateState = function (parameter) {
         filteredRows.push(separator);
         dataRows = filteredRows.concat(dataRows);
     }
-    console.log("DTATROWS",dataRows);
 
     UpSetState.forceUpdate = false;
     UpSetState.expandAll = false;

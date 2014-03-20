@@ -117,7 +117,7 @@ function UpSet() {
 
 //    console.log(usedSets);
 
-        console.log("stats", collector);
+
 
 //        {name: "largest intersection",id:"I", value:100 },
 //        {name: "largest group",id:"G", value:200 },
@@ -146,7 +146,6 @@ function UpSet() {
 
         })
 
-        console.log(ctx.globalStatistics);
 
     }
 
@@ -168,20 +167,20 @@ function UpSet() {
             "transform": "translate(" + ctx.leftOffset + "," + ctx.topOffset + ")"
         });
 
-        var foreignObject = ctx.vis.append("foreignObject")
+        ctx.foreignObject = ctx.vis.append("foreignObject")
             .attr("width", ctx.w)
             .attr("height", ctx.svgHeight)
             .attr("x", 0)//*cellSize)
             .attr("y", 210)//*cellSize)
             .attr("class", "foreignGRows")
-        var foreignSVG = foreignObject.append("xhtml:div")
+        ctx.foreignDiv = ctx.foreignObject.append("xhtml:div")
             .style("position", "relative")
             .style("overflow-y", "scroll")
             .style("height", "600px")
             .on("mousemove", function () {
                 // Prevent global scrolling here?
             })
-            .append("svg")
+        ctx.foreignSVG = ctx.foreignDiv.append("svg")
             .attr({
                 height: renderRows.length * ctx.cellDistance,
                 width: ctx.w,
@@ -189,13 +188,13 @@ function UpSet() {
             })
 
         // -- the background highlights
-        ctx.columnBackgroundNode = foreignSVG.append("g").attr({
+        ctx.columnBackgroundNode = ctx.foreignSVG.append("g").attr({
             class: "columnBackgroundsGroup"
 
         }).attr({"transform": "translate(90,-90)"})
 
         // Rows container for vertical panning
-        ctx.gRows = foreignSVG
+        ctx.gRows = ctx.foreignSVG
             .append('g')
             .attr({'class': 'gRows', "transform": "translate(90,-90)"})
 
@@ -214,7 +213,7 @@ function UpSet() {
                 cellSize: ctx.cellSize,
                 usedSets: usedSets,
                 grays: ctx.grays,
-                belowVis: foreignObject,
+                belowVis: ctx.foreignObject,
                 buttonX: -ctx.leftOffset,
                 buttonY: ctx.textHeight - 20,
                 stateObject: UpSetState,
@@ -262,7 +261,7 @@ function UpSet() {
 
     //####################### SETS ##################################################
     function updateSetsLabels(tableHeaderNode) {
-        console.log("updatSetLabels");
+
 
         var setRowScale = d3.scale.ordinal().rangeRoundBands([0, usedSets.length * (ctx.cellWidth)], 0);
         setRowScale.domain(usedSets.map(function (d) {
@@ -331,7 +330,7 @@ function UpSet() {
         })
 
         setRows.attr({transform: function (d, i) {
-//            console.log(d.id);
+
             return 'translate(' + setRowScale(d.id) + ', 0)';
             //  return 'translate(0, ' + ( cellDistance * (i)) + ')';
         },
@@ -341,7 +340,6 @@ function UpSet() {
 
     function updateHeaders() {
         setDynamicVisVariables()
-        console.log("UPDATE HEADER -----------");
         calculateGlobalStatistics();
         var tableHeaderGroup = ctx.tableHeaderNode.selectAll(".tableHeaderGroup").data([1]);
         var tableHeader = tableHeaderGroup.enter().append("g").attr({class: "tableHeaderGroup"});
@@ -382,7 +380,7 @@ function UpSet() {
                 class: 'axis'
             }).each(function () {
                 ctx.brushableScaleSubsetUpdate = function () {
-                    console.log("ARGH");
+
                 };
                 ctx.brushableScaleSubset = new BrushableScale(
                     ctx,
@@ -517,7 +515,7 @@ function UpSet() {
     }
 
     function updateSubSetGroups() {
-        console.log("datRows",renderRows);
+
         // ------------------- the rows -----------------------
         var subSets = ctx.gRows.selectAll('.row')
             .data(renderRows, function (d, i) {
@@ -823,7 +821,7 @@ function UpSet() {
 
 
 
-        var collapseIcon = groupRows.selectAll(".collapseIcon").data(function(d){console.log(d);return [d];})
+        var collapseIcon = groupRows.selectAll(".collapseIcon").data(function(d){return [d];})
         collapseIcon.enter()
             .append("text")
             .attr({
@@ -957,7 +955,7 @@ function UpSet() {
 
             var i = 0;
             var nbLevels = Math.ceil(e.data.setSize / max_scale);
-            console.log("NB levels ", nbLevels)
+//            console.log("NB levels ", nbLevels)
             var data = d3.range(Math.ceil(e.data.setSize / max_scale)).map(function () {
 
                 // Yes, this is for cloning object
@@ -1321,7 +1319,9 @@ function UpSet() {
         });
 
         $(EventManager).bind("ui-vertical-resize", function (event, data) {
-            plot(undefined, Math.floor(data.newHeight));
+
+            ctx.resizeSetView(data.newHeight, null)
+//            plot(undefined, Math.floor(data.newHeight));
             plotSetOverview();
         });
 
@@ -1571,7 +1571,7 @@ function UpSet() {
 
     document.getElementById('rowSizeValue').addEventListener('input', function () {
         ctx.cellDistance = +(document.getElementById('rowSizeValue').value);
-        console.log(ctx.cellSize);
+        //console.log(ctx.cellSize);
         rowTransition();
     });
 
@@ -1583,6 +1583,7 @@ function UpSet() {
         ctx.rowTransitions = true
     }
 
+
     bindEvents()
     setUpSortSelections()
     initData(ctx, [init]);
@@ -1593,6 +1594,26 @@ function UpSet() {
         plotSubSets();
         ctx.barTransitions = true;
     }
+
+    ctx.resizeSetView =  function(windowHeight, windowWidth){
+       if (windowWidth == null){
+           ctx.svg.attr({
+               height:(windowHeight-70)
+           })
+
+
+           var visHeight = windowHeight-ctx.textHeight-70
+
+           ctx.foreignObject.attr({
+               height:visHeight
+           })
+
+           ctx.foreignDiv.style("height", +(visHeight-ctx.textHeight)+"px")
+
+       }
+        rowTransition(false);
+    }
+
 //    init();
 
 }
