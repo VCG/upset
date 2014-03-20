@@ -946,6 +946,7 @@ function UpSet() {
 
 
         // --- Horizon Bars for size.
+        d3.selectAll(".cutlines").remove();
 
         groupRows.each(function (e, j) {
 
@@ -973,14 +974,17 @@ function UpSet() {
               return f;
           })
 
-          var g_lines = g.append("g").selectAll(".cutlines").data(["cutlines"]).enter()
+          var g_lines = g.append("g").selectAll(".cutlines").data([e.id]).enter()
 
           g_lines.append("line").attr("class", "cutlines")
-            .attr({x1:400, x2:410, y1:0, y2:20}).style({'stroke':'black', 'stroke-width':1})
+            .attr({x1:ctx.xStartSetSizes + 270, x2:ctx.xStartSetSizes + 280, y1:0, y2:20})
+            .style({'stroke':'black', 'stroke-width':1})
           
           g_lines.append("line").attr("class", "cutlines")
-            .attr({x1:410, x2:420, y1:0, y2:20}).style({'stroke':'black', 'stroke-width':1})
+            .attr({x1:ctx.xStartSetSizes + 280, x2:ctx.xStartSetSizes + 290, y1:0, y2:20})
+            .style({'stroke':'black', 'stroke-width':1})
           
+          g.append("g").selectAll(".cutlines").data([e.id]).exit().remove();
 
           // Add new layers
           var layers_enter = g.selectAll(".row-type-group").data(data).enter()
