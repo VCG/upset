@@ -103,7 +103,7 @@ function plotSetOverview() {
     overview.on('mouseover', function(d, i) {
 
       // TODO: cancel transitions to remove
-
+      console.log("nnnn", d3.selectAll(".bulkCheck")[0].length)
           if(d3.selectAll(".bulkCheck")[0].length>0)
             return;
 
@@ -123,7 +123,7 @@ function plotSetOverview() {
 
             })
 
-            unusedSets.filter(function(d, ii) {
+            unusedSets.sort(sortSets).filter(function(d, ii) {
 
               d3.select(".unusedSets")
                 .append("foreignObject")
@@ -139,7 +139,7 @@ function plotSetOverview() {
 
             })
 
-             d3.select(".usedSets")
+             d3.select("#vis").select("svg")
                 .append("foreignObject")
                 .attr("width", 100)
                 .attr("height", 100)
@@ -151,7 +151,7 @@ function plotSetOverview() {
                 .html("<form><input type=button value=update /></form>")
                 .on("click", setClickedByBulk);
 
-             d3.select(".usedSets")
+             d3.select("#vis").select("svg")
                 .append("foreignObject")
                 .attr("width", 100)
                 .attr("height", 100)
@@ -165,7 +165,7 @@ function plotSetOverview() {
                   d3.selectAll("input[value=setcheck]").property("checked", true);
                 });
 
-             d3.select(".usedSets")
+             d3.select("#vis").select("svg")
                 .append("foreignObject")
                 .attr("width", 100)
                 .attr("height", 100)
@@ -185,6 +185,7 @@ function plotSetOverview() {
             mouseoutColumn(d, i);
             d3.selectAll(".bulkCheck").transition().duration(1500).remove();
         })
+
 
     var formLabels = overview.append("g").attr("class", "usedSets");
 
@@ -258,6 +259,7 @@ function plotSetOverview() {
         .attr("x", usedSets.length*cellSize)
       .append("xhtml:div")
         .style("overflow-x", "auto")
+        .style("margin-top", "50px")
         .append("svg")
         .attr({
             height: textHeight*2,
@@ -277,7 +279,7 @@ function plotSetOverview() {
                 transform: function (d, i) {
                     return 'translate(' + (cellDistance * (i )) + ', 60)'
                 },
-                height: textHeight,
+                height: textHeight+20,
                 width: cellSize
             })
             .on('click', setClicked)
@@ -336,42 +338,29 @@ function plotSetOverview() {
 
     function setClicked(d, i) {
         updateSetContainment(d, true);        
-        console.log(d.elementName + ": " + d.isSelected);
-        d3.selectAll(".bulkCheck").filter(function(dd, ii) {
-          if(ii==i)
-            return d;
-        }).attr('checked', d.isSelected);
+               d3.selectAll(".bulkCheck").transition().remove();
     }
 
     function setClickedByBulk() {
 
-      var nb_selected = 0;
-
-      // There should be a CSS selected for that
-      d3.selectAll("input[value=setcheck]").filter(function() {
-        if(d3.select(this).property("checked"))
-          nb_selected++;
-      })
-
-      console.log("nb selected", nb_selected)
 
       var nb_update = 0;
+      var list_update = [];
 
       // Browse all the checkboxes
       d3.selectAll("input[value=setcheck]").filter(function() {
         var d = d3.select(d3.select(this)[0][0].parentNode.parentNode).datum();
-       // console.log("dd", d)
-        if(d3.select(this).property("checked") != d[0].isSelected) {
-          nb_update++;
-          updateSetContainment(d[0], nb_update==nb_selected);
-
-        }
-
-        console.log(nb_update, nb_selected, nb_update==nb_selected, d3.select(this).property("checked"), d[0].isSelected)
-
+        if(d3.select(this).property("checked") != d[0].isSelected)
+          list_update.push(d[0])
       })
 
-       d3.selectAll(".bulkCheck").transition().duration(0).remove();
+
+       d3.selectAll(".bulkCheck").transition().remove();
+
+      list_update.map(function(d, i) { updateSetContainment(d, i==list_update.length-1); });
+
+
+
     }
 
 }

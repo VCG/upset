@@ -69,22 +69,21 @@ var selections = new SelectionList(); //an array of selection
 var dataSets;
 
 /** Groups of subsets driven by group size */
-var sizeGroups = [];
+//var sizeGroups = [];
 
 /** Groups of subsets driven by set containment */
-var setGroups = [];
+//var setGroups = [];
 
 /** Venn diagram for tutorial mode */
 var venn = new VennDiagram("#venn-vis", 40);
 
 /** The current primary grouping */
-// TODO this is static for testing only
-var levelOneGroups = setGroups;
+var levelOneGroups;
+/** The smart filter groups */
+var filterGroups;
 
 /** How many sets do we want to see by default */
 var nrDefaultSets = 6;
-
-
 
 /**
  * The base element for all rows (sets, groups, subsets, aggregates)
@@ -109,7 +108,6 @@ function Separator(id, elementName) {
     this.type = ROW_TYPE.SEPARATOR;
 
 }
-
 
 Separator.prototype = Element;
 Separator.prototype.constructor = Element;
@@ -162,14 +160,15 @@ function Set(setID, setName, combinedSets, itemList) {
 Set.prototype = BaseSet;
 Set.prototype.constructor = BaseSet;
 
-function SubSet(setID, setName, combinedSets, itemList, expectedValue) {
+function SubSet(setID, setName, combinedSets, itemList, expectedProb) {
     BaseSet.call(this, setID, setName, combinedSets, itemList);
     this.type = ROW_TYPE.SUBSET;
-    this.expectedValue = expectedValue;
+    this.expectedProb = expectedProb;
     this.selections = {};
 
-    // this.expectedValueDeviation = this.setSize - this.expectedValue;
-    this.expectedValueDeviation = (this.dataRatio - this.expectedValue) * depth;
+    var observedProb = this.setSize / depth;
+
+    this.disproportionality =  observedProb - expectedProb;
 }
 
 SubSet.prototype.toString = function () {
@@ -203,8 +202,8 @@ function Group(groupID, groupName, level) {
     this.hiddenSets = [];
 
     //this.setSize = 0;
-    this.expectedValue = 0;
-    this.expectedValueDeviation = 0;
+    this.expectedProb = 0;
+    this.disproportionality = 0;
 
     this.addSubSet = function (subSet) {
         this.subSets.push(subSet);
@@ -218,8 +217,8 @@ function Group(groupID, groupName, level) {
         }
         this.items = this.items.concat(subSet.items);
         this.setSize += subSet.setSize;
-        this.expectedValue += subSet.expectedValue;
-        this.expectedValueDeviation += subSet.expectedValueDeviation;
+        this.expectedProb += subSet.expectedProb;
+        this.disproportionality += subSet.disproportionality;
     }
 
     this.contains = function (element) {
@@ -254,15 +253,15 @@ function Aggregate(aggregateID, aggregateName) {
     this.isCollapsed = true;
 
     //this.setSize = 0;
-    this.expectedValue = 0;
-    this.expectedValueDeviation = 0;
+    this.expectedProb = 0;
+    this.disproportionality = 0;
 
     this.addSubSet = function (subSet) {
         this.subSets.push(subSet);
         this.items = this.items.concat(subSet.items);
         this.setSize += subSet.setSize;
-        this.expectedValue += subSet.expectedValue;
-        this.expectedValueDeviation += subSet.expectedValueDeviation;
+        this.expectedProb += subSet.expectedProb;
+        this.disproportionality += subSet.disproportionality;
     }
 }
 
@@ -301,11 +300,11 @@ function makeSubSet(setMask) {
         var data = usedSets[setIndex].itemList;
         if ((setMask & bitMask) === 1) {
             combinedSets[setIndex] = 1;
-            expectedValue *= usedSets[setIndex].dataRatio;
+            expectedValue  = expectedValue *  usedSets[setIndex].dataRatio;
             name += usedSets[setIndex].elementName + ' ';
         }
         else {
-            notExpectedValue *= (1 - usedSets[setIndex].dataRatio);
+            notExpectedValue = notExpectedValue * (1- usedSets[setIndex].dataRatio);
         }
         for (i = 0; i < data.length; i++) {
             if ((setMask & bitMask) === 1) {
@@ -325,15 +324,17 @@ function makeSubSet(setMask) {
         setMask = setMask >> 1;
     }
 
+
+
     expectedValue *= notExpectedValue;
     var subSet = new SubSet(originalSetMask, name, combinedSets, combinedData, expectedValue);
     subSets.push(subSet);
 }
 
-// takes  a list l of arrays a(i) which represent disjunctive normal form: a(i) OR a(i+1) OR...
-// a(i) represents a setMask: 0 - NOT, 1 - MUST, 2- DONTCARE
-// if callFucntion is null a list of matching subsets is returned
-
+/** takes  a list l of arrays a(i) which represent disjunctive normal form: a(i) OR a(i+1) OR...
+ a(i) represents a setMask: 0 - NOT, 1 - MUST, 2- DONTCARE
+ if callFunction is null a list of matching subsets is returned
+ */
 var getSubsetsForMaskList = function (subsets, maskList, callFunction) {
     var res = [];
 
@@ -366,9 +367,6 @@ var getSubsetsForMaskList = function (subsets, maskList, callFunction) {
         } else if (isAhit) {
             res.push(subset);
         }
-
     })
-
     return res;
-
 }
