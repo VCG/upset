@@ -83,6 +83,9 @@ function UpSet() {
             + ctx.subSetSizeWidth + ctx.expectedValueWidth + 50;
         ctx.setMatrixHeight = ctx.setCellDistance + ctx.majorPadding;
 
+
+        ctx.svgHeight = renderRows.length*ctx.cellSize+ctx.textHeight;
+
         ctx.intersectionClicked = function (d) {
             var selection = Selection.fromSubset(d.data);
             selections.addSelection(selection);
@@ -248,16 +251,16 @@ function UpSet() {
         initCallback = [updateHeaders, plotSubSets] //TODO: bad hack !!!
     }
 
-    // update svg size
-    var updateSVG = function (width, height) {
-        ctx.w = width;
-        ctx.svgHeight = height;
-
-        ctx.svg
-            .attr('width', ctx.w)
-            .attr('height', ctx.svgHeight)
-
-    }
+//    // update svg size
+//    var updateSVG = function (width, height) {
+//        ctx.w = width;
+//        ctx.svgHeight = height;
+//
+//        ctx.svg
+//            .attr('width', ctx.w)
+//            .attr('height', ctx.svgHeight)
+//
+//    }
 
     //####################### SETS ##################################################
     function updateSetsLabels(tableHeaderNode) {
@@ -340,6 +343,9 @@ function UpSet() {
 
     function updateHeaders() {
         setDynamicVisVariables()
+
+
+
         calculateGlobalStatistics();
         var tableHeaderGroup = ctx.tableHeaderNode.selectAll(".tableHeaderGroup").data([1]);
         var tableHeader = tableHeaderGroup.enter().append("g").attr({class: "tableHeaderGroup"});
@@ -1223,6 +1229,14 @@ function UpSet() {
         setDynamicVisVariables();
         initRows();
 
+        // make the scroallable SVG adapt:
+        ctx.foreignSVG.attr({
+            height:ctx.svgHeight
+        })
+        // to limit the foraignobject again
+        updateFrames($(window).height(),null);
+
+
         updateColumnBackgrounds();
 
         // generate <g> elements for all rows
@@ -1313,7 +1327,8 @@ function UpSet() {
         });
 
         $(EventManager).bind("ui-resize", function (event, data) {
-            plot(Math.floor(data.newWidth * .66), Math.floor(data.newHeight));
+            ctx.resizeSetView(data.newHeight, null)
+//            plot(Math.floor(data.newWidth * .66), Math.floor(data.newHeight));
             plotSetOverview();
         });
 
@@ -1586,9 +1601,6 @@ function UpSet() {
     }
 
 
-    bindEvents()
-    setUpSortSelections()
-    initData(ctx, [init]);
     ctx.updateHeaders = updateHeaders;
     ctx.plot = rowTransition
     ctx.plotTable = function () {
@@ -1597,24 +1609,36 @@ function UpSet() {
         ctx.barTransitions = true;
     }
 
-    ctx.resizeSetView =  function(windowHeight, windowWidth){
+    ctx.resizeSetView = rowTransition
+//    function(windowHeight, windowWidth){
+//        updateFrames(windowHeight, windowWidth);
+//        rowTransition(false);
+//    }
+
+
+    function updateFrames(windowHeight, windowWidth){
        if (windowWidth == null){
            ctx.svg.attr({
                height:(windowHeight-70)
            })
 
 
-           var visHeight = windowHeight-ctx.textHeight-70
+           var visHeight = windowHeight-ctx.textHeight-70;
 
            ctx.foreignObject.attr({
                height:visHeight
            })
 
            ctx.foreignDiv.style("height", +(visHeight-ctx.textHeight)+"px")
-
        }
-        rowTransition(false);
+
     }
+
+
+    bindEvents()
+    setUpSortSelections()
+    initData(ctx, [init]);
+
 
 //    init();
 
