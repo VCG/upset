@@ -65,6 +65,8 @@ var selectedItems = [];
 
 var selections = new SelectionList(); //an array of selection
 
+var elementViewers = new ElementViewerCollection( "#element-viewers-controls", "#element-viewers-visualization" );
+
 /** The list of available datasets */
 var dataSets;
 
