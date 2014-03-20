@@ -16,12 +16,122 @@ ElementViewerConfigurations = {
                     variable: "y"
                 }],
             parameters: [{
-                    name: "Small Multiples?",
+                    name: "Log Scale X",
                     type: "boolean",
-                    variable: "smallMultiples"
+                    variable: "logScaleX",
+                    default: false
+                },
+                {
+                    name: "Log Scale Y",
+                    type: "boolean",
+                    variable: "logScaleY",
+                    default: false
                 }],
-            render: function( element, selections, attributeMap, parameterMap ) {
-                // D3 code to render elements
+            render: function( elementId, selections, attributes, attributeMap, parameterMap ) {
+                // based on http://bl.ocks.org/bunkat/2595950
+
+                var data = [];
+
+                var attributeX = attributes[attributeMap.x];
+                var attributeY = attributes[attributeMap.y];
+
+                // create data structure: array of pair arrays for each selection
+                for ( var s = 0; s < selections.getSize(); ++s ) {
+
+                    var values = [];
+                    var selection = selections.getSelection(s);
+
+                    for ( var i = 0; i < selection.items.length; ++i ) {
+                        values.push( [ attributeX.values[selection.items[i]], attributeY.values[selection.items[i]]] );
+                    }
+
+                    values.color = selections.getColor( selection );
+
+                    data.push( values );
+                }
+                   
+                var margin = {top: 10, right: 10, bottom: 20, left: 50},
+                    width = 300 - margin.left - margin.right,
+                    height = 200 - margin.top - margin.bottom;
+                    
+                console.log( parameterMap );
+
+                var x;
+
+                if ( parameterMap.logScaleX ) {
+                    x = d3.scale.log()
+                        .domain([attributeX.min, attributeX.max])
+                        .range([0, width]);                    
+                } 
+                else {
+                    x = d3.scale.linear()
+                        .domain([attributeX.min, attributeX.max])
+                        .range([0, width]);                    
+                }
+
+                var y;
+
+                if ( parameterMap.logScaleY ) {            
+                    y = d3.scale.log()
+                        .domain([attributeY.min, attributeY.max])
+                        .range([ height, 0 ]);
+                }
+                else {            
+                    y = d3.scale.linear()
+                        .domain([attributeY.min, attributeY.max])
+                        .range([ height, 0 ]);
+                }
+             
+                d3.select( elementId ).html("");
+
+                var chart = d3.select( elementId )
+                .append('svg:svg')
+                .attr('width', width + margin.right + margin.left)
+                .attr('height', height + margin.top + margin.bottom)
+                .attr('class', 'chart')
+
+                var main = chart.append('g')
+                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('class', 'main')   
+                    
+                // draw the x axis
+                var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient('bottom');
+
+                main.append('g')
+                .attr('transform', 'translate(0,' + height + ')')
+                .attr('class', 'main axis date')
+                .call(xAxis);
+
+                // draw the y axis
+                var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient('left');
+
+                main.append('g')
+                .attr('transform', 'translate(0,0)')
+                .attr('class', 'main axis date')
+                .call(yAxis);
+
+                var g = main.append("svg:g"); 
+                
+                var selectionGroup = g.selectAll( '.selection-group' )
+                    .data(data)
+                  .enter()
+                    .append( 'g' )
+                    .attr( 'class', '.selection-group' )
+                    .attr("fill", function(d) {  return ( d.color ); } );
+
+                var marks = selectionGroup.selectAll( '.element-mark' )
+                        .data( function( d ) { return ( d ); } )
+                    .enter()
+                        .append("svg:circle")
+                            .attr("cx", function (d,i) { return x(d[0]); } )
+                            .attr("cy", function (d,i) { return y(d[1]); } )
+                            .attr("r", 2);                
             }   
         },
         histogram: {
@@ -31,17 +141,14 @@ ElementViewerConfigurations = {
                     type: "numeric",
                     variable: "variable"                    
                 }],
-            parameters: [{
+            parameters: [/*{
                     name: "Small Multiples?",
                     type: "boolean",
                     variable: "smallMultiples"
-                }],
-            render: function( element, selections, attributes, attributeMap, parameterMap ) {
-
+                }*/],
+            render: function( elementId, selections, attributes, attributeMap, parameterMap ) {
 
                 var attribute = attributes[attributeMap.variable];
-
-                console.log( attribute );
 
                 // A formatter for counts.
                 var format = d3.format(".00r");
@@ -66,11 +173,9 @@ ElementViewerConfigurations = {
                     .orient("bottom");
 
                 // clear
-                element.html("");
+                d3.select( elementId ).html("");
 
-                console.log( element );
-
-                var svg = d3.select("#element-vis-viewer").append("svg")
+                var svg = d3.select( elementId ).append("svg")
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
                   .append("g")
@@ -132,7 +237,7 @@ ElementViewerConfigurations = {
                     .call(xAxis);
             }
         },
-        testplot: {
+        /*testplot: {
             name: "Testplot",
             attributes: [{
                     name: "x-axis",
@@ -173,8 +278,272 @@ ElementViewerConfigurations = {
             render: function( element, selections, attributeMap, parameterMap ) {
                 // D3 code to render elements
             }   
-        }        
+        }*/        
     };
+
+
+$(EventManager).bind("element-viewer-removed", function (event, data) {
+});
+
+
+$(EventManager).bind("element-viewer-added", function (event, data) {
+});
+
+
+$(EventManager).bind("element-viewer-activated", function (event, data) {
+    elementViewers.renderViewer();
+});
+
+
+ElementViewerCollection = function( controllerElementId, viewerElementId ) {
+    var self = this;
+
+    self.list = [];
+    self.activeIndex = undefined;
+
+    self.controllerElementId = controllerElementId;
+    self.viewerElementId = viewerElementId;
+};
+
+
+ElementViewerCollection.prototype.add = function( elementViewer, isActive ) {
+    var self = this;
+
+    isActive = isActive | false;
+
+    self.list.push( elementViewer );
+
+    $(EventManager).trigger("element-viewer-added", { viewer: elementViewer });
+
+    if ( isActive ) {
+        self.setActiveIndex( self.list.length - 1 );
+    }
+};
+
+
+ElementViewerCollection.prototype.remove = function( elementViewer ) {
+    var self = this;
+
+    for ( var i = 0; i < self.list.length; ++i ) {
+        if ( self.list[i].uuid === elementViewer.uuid ) {
+            self.list.splice(i, 1);
+
+            $(EventManager).trigger("element-viewer-removed", { viewer: elementViewer });
+
+            if ( i === self.activeIndex ) {
+                if (self.list.length > 0) {
+                    self.setActiveIndex( i - 1 );
+                }
+                else {
+                    self.setActiveIndex(undefined);
+                }
+            }
+        }
+    }
+};
+
+
+ElementViewerCollection.prototype.activateNext = function() {
+    var self = this;
+
+    if ( self.activeIndex < self.list.length - 1 ) {
+        self.setActiveIndex( self.activeIndex + 1 );
+    }
+    else if ( self.activeIndex === self.list.length -1 ) {
+        self.setActiveIndex( 0 );
+    }
+    else {
+        self.setActiveIndex( undefined );        
+    }
+};
+
+ElementViewerCollection.prototype.activatePrevious = function() {
+    var self = this;
+
+    if ( self.activeIndex > 0 ) {
+        self.setActiveIndex( self.activeIndex - 1 );
+    }
+    else if ( self.activeIndex === 0 ) {
+        self.setActiveIndex( self.list.length - 1 );
+    }
+    else {
+        self.setActiveIndex( undefined );        
+    }
+};
+
+
+ElementViewerCollection.prototype.getIndex = function( elementViewer ) {
+    var self = this;
+
+    for ( var i = 0; i < self.list.length; ++i ) {
+        if ( this.list[i].uuid === elementViewer.uuid ) {
+            return ( i );
+        }
+    }
+
+    return ( undefined );
+};
+
+
+ElementViewerCollection.prototype.setActiveIndex = function( index ) {
+    var self = this;
+
+    if ( index < self.list.length && index >= 0 && self.activeIndex !== index ) {
+        self.activeIndex = index;
+
+        $(EventManager).trigger("element-viewer-activated", { viewer: self.list[self.activeIndex], index: index });
+    }
+};
+
+
+ElementViewerCollection.prototype.setActive = function( elementViewer ) {
+    var self = this;
+
+    var index = self.getIndex( elementViewer );
+
+    if ( index ) {
+        self.setActiveIndex( index );
+    }
+
+    return ( index );
+};
+
+
+ElementViewerCollection.prototype.getActive = function() {
+    var self = this;
+
+    if ( self.activeIndex === undefined ) {
+        return undefined;
+    }
+
+    return ( self.list[self.activeIndex] );
+};
+
+// render the controller (i.e. list of viewers that can be added and a "new" button)
+ElementViewerCollection.prototype.renderController = function() {
+    var self = this;
+    var controllerElement = d3.select( self.controllerElementId );
+
+    controllerElement.html("");    
+
+    //var dataSelect = d3.select("#dataset-selector").append('div').text('Choose Dataset');
+
+    var select = controllerElement.append('select');
+
+    // convert ElementViewerConfiguration into array
+    var viewerConfigurationList = $.map(ElementViewerConfigurations, function(value, index) {
+        return [value];
+    });
+    
+    select.attr('id', 'element-viewer-selector')
+        .selectAll('option')
+            .data( viewerConfigurationList )
+        .enter()
+            .append('option')
+            .attr('value', function (d, i) {
+                return i;
+            })
+        .text(function (d) {
+            return d.name;
+        });
+
+    // create header and controls
+    var viewerElementHeader = controllerElement.append( "div" ).attr( "class", "element-viewer-header" );
+
+    viewerElementHeader.append( "div" )
+            .attr( "class", "element-viewer-editor-button" )
+            .attr( "id", "element-viewer-previous" )
+            .on( "click", function() {
+                self.activatePrevious();
+            })
+        .append( "i" ).
+            attr( "class", "fa fw fa-arrow-left" );
+
+    viewerElementHeader.append( "div" )
+            .attr( "class", "element-viewer-editor-button" )
+            .attr( "id", "element-viewer-next" )
+            .on( "click", function() {
+                self.activateNext();
+            })
+        .append( "i" ).
+            attr( "class", "fa fw fa-arrow-right" );
+
+    viewerElementHeader.append( "div" )
+            .attr( "class", "element-viewer-editor-button" )
+            .attr( "id", "element-viewer-add" )
+            .on( "click", function() {
+                var selector = document.getElementById( 'element-viewer-selector' );
+                var elementViewerConfiguration = selector.options[selector.selectedIndex].__data__;
+                var elementViewer = new ElementViewer( attributes, selections, elementViewerConfiguration );
+                self.add( elementViewer );
+                var index = self.getIndex( elementViewer );
+                self.activeIndex = index;
+                self.renderViewer( true );
+            })
+        .append( "i" ).
+            attr( "class", "fa fw fa-plus" );
+
+    viewerElementHeader.append( "div" )
+            .attr( "class", "element-viewer-editor-button" )
+            .attr( "id", "element-viewer-edit" )
+            .on( "click", function() {
+                self.renderViewer( true );
+            })
+        .append( "i" ).
+            attr( "class", "fa fw fa-pencil" );
+
+    viewerElementHeader.append( "div" )
+            .attr( "class", "element-viewer-editor-button" )
+            .attr( "id", "element-viewer-remove" )
+            .on( "click", function() {
+                self.remove( self.getActive() );
+                self.renderViewer();
+            })
+        .append( "i" ).
+            attr( "class", "fa fw fa-times-circle" );
+
+};
+
+// render the active viewer
+ElementViewerCollection.prototype.renderViewer = function( showEditor ) {
+    var self = this;
+
+    var viewerElement = d3.select( self.viewerElementId );
+
+    // clear element
+    viewerElement.html("");
+    viewerElement = viewerElement.append( "div" ).attr( "class", "element-viewer-active" );
+
+    // check if there is a viewer
+    if ( self.list.length === 0 ) {
+        viewerElement.append( "div" ).attr( "class", "element-viewer-message" ).text( "No viewer available!" );
+
+        return self;
+    }
+
+    // if no active viewer is set, use the first one in the list
+    if ( self.activeIndex === undefined ) {
+        self.activeIndex = 0;
+    }
+
+    // === render active viewer ===
+
+    // create viewer
+    var id = "element-viewer-" + self.getActive().uuid;
+
+    // create element and render viewer
+    viewerElement.append( "div" ).attr( "id", id );
+
+    if ( !showEditor ) {
+        self.getActive().renderViewer( '#' + id );
+    }
+    else {
+        self.getActive().renderEditor( '#' + id );        
+    }
+
+    return self;
+};
+
 
 ElementViewer = function( attributes, selections, configuration, editorElementId, viewerElementId  ) {
     var self = this;
@@ -202,11 +571,13 @@ ElementViewer.prototype.initializeParameterMap = function() {
 }
 
 
-ElementViewer.prototype.renderViewer = function( ) {
+ElementViewer.prototype.renderViewer = function( viewerElementId ) {
     var self = this;
 
+    viewerElementId = viewerElementId || self.viewerElementId;
+
     try {
-        self.configuration.render( $( self.viewerElementId ), self.selections, self.attributes, self.attributeMap, self.parameterMap )
+        self.configuration.render( viewerElementId, self.selections, self.attributes, self.attributeMap, self.parameterMap )
     }
     catch ( error ) {
         console.error( error );
@@ -214,29 +585,34 @@ ElementViewer.prototype.renderViewer = function( ) {
 };
 
 
-ElementViewer.prototype.renderEditor = function() {
+ElementViewer.prototype.renderEditor = function( editorElementId ) {
     var self = this;
 
-    var element = d3.select( self.editorElementId );
+    editorElementId = editorElementId || self.editorElementId;
+
+    var element = d3.select( editorElementId );
+
     element.html( "" );
 
     var editor = element.append('div').attr( 'id', 'element-viewer-editor-' + self.uuid );
 
     editor.html( '<div>' + 
-        '<b>' + self.configuration.name +'</b>' + 
+        '<div class="element-viewer-title">' + self.configuration.name +'</div>' + 
         '&nbsp;<span class="element-viewer-editor-button element-viewer-editor-save" data-viewer-uuid="' + self.uuid + '""><i class="fa fw fa-check"></i></span>' +
         '&nbsp;<span class="element-viewer-editor-button element-viewer-editor-cancel" data-viewer-uuid="' + self.uuid + '""><i class="fa fw fa-times"></i></span>' +
         '</div>');
 
     d3.selectAll( '.element-viewer-editor-save' ).on( 'click', function(event){
+        // parse changes, then render the viewer
         self.parseParameterValues();
         self.parseAttributeValues();
 
-        console.log (self.attributeMap)
-        self.renderViewer();
+        self.renderViewer( editorElementId );
     });
 
     d3.selectAll( '.element-viewer-editor-cancel' ).on( 'click', function(event){
+        // ignore changes, just render the viewer
+        self.renderViewer( editorElementId );        
     });
 
     for ( var i = 0; i < self.configuration.attributes.length; ++i ) {
@@ -261,7 +637,7 @@ ElementViewer.prototype.parseParameterValues = function() {
         var value = self.parseParameterValue( parameters[i].variable, parameters[i].type );
 
         if ( value !== undefined ) {
-            console.log( 'Replacing ' + parameters[i].variable + ' (' + parameters[i].type + ') = "' + self.parameterMap[parameters[i].variable] + '" with "' + value + '"' );
+            //console.log( 'Replacing ' + parameters[i].variable + ' (' + parameters[i].type + ') = "' + self.parameterMap[parameters[i].variable] + '" with "' + value + '"' );
             self.parameterMap[parameters[i].variable] = value;
         }
     }
@@ -275,7 +651,7 @@ ElementViewer.prototype.parseAttributeValues = function() {
         var value = self.parseAttributeValue( attributes[i].variable );
 
         if ( value !== undefined ) {
-            console.log( 'Replacing ' + attributes[i].variable + ' = "' + self.attributeMap[attributes[i].variable] + '" with "' + value + '"' );
+            //console.log( 'Replacing ' + attributes[i].variable + ' = "' + self.attributeMap[attributes[i].variable] + '" with "' + value + '"' );
             self.attributeMap[attributes[i].variable] = value;
         }
     }

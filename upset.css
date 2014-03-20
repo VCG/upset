@@ -482,6 +482,10 @@ html, body, .ui-container {
     min-width: 75%;
 }
 
+.ui-column.ui-column-100 {
+    width: 100%;
+}
+
 .ui-column.ui-column-33 {
     background: pink;
     width: 33%;
@@ -491,6 +495,39 @@ html, body, .ui-container {
     background: lightpurple;
     width: 66%;
     min-width: 66%;
+}
+
+.element-viewer-header {
+    display: inline;
+}
+
+.element-viewer-title {
+    display: inline;
+}
+
+.element-viewer-editor-button {
+    display: inline;
+    margin-left: 5px;
+    color: #000;
+}
+
+.element-viewer-editor-button:hover {
+    color: #136382;
+    text-shadow: 0 0 10px #3fa0c7
+}
+
+
+.element-viewer-active {
+    background-color: white;
+    border: 1px dashed lightgray;
+    padding: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#element-viewer-selector {
+    display: inline;
+    float: none;
 }
 
 /** ============ Configuration ============== */

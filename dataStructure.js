@@ -13,21 +13,6 @@ ROW_TYPE =
     SEPARATOR: 'SEPARATOR',
     UNDEFINED: 'UNDEFINED'}
 
-/** basic event bus (http://stackoverflow.com/questions/2967332/jquery-plugin-for-event-driven-architecture) */
-var EventManager = {};
-
-/** how to use:
-
- $(EventManager).bind("tabClicked", function() {
-    // do something
-});
-
- $(EventManager).trigger("tabClicked");
-
- $(EventManager).unbind("tabClicked");
-
- */
-
 /** the user interface */
 var ui; // initialized on document ready event
 
@@ -64,6 +49,8 @@ var filter = new Filter();
 var selectedItems = [];
 
 var selections = new SelectionList(); //an array of selection
+
+var elementViewers = new ElementViewerCollection( "#element-viewers-controls", "#element-viewers-visualization" );
 
 /** The list of available datasets */
 var dataSets;

@@ -16,20 +16,21 @@
 
 
 <div class="ui-header">
-	<div class="header-container">
-		<div id="title">UpSet</div>
+    <div class="header-container">
+        <div id="title">UpSet</div>
                 <span id="data-loading-indicator">
                     <i class="fa fa-refresh fa-spin"></i>
                 </span>
-        <div id="configStatus" class="button-panel-right"></div>
-		<div class="button-panel button-panel-right">
-			<div id="show-menu-button" class="ui-button ui-button-menu">
-                <i class="fa fa-info-circle"></i>
-			</div>
-		</div>
 
-		<div id="dataset-selector"></div>
-	</div>
+        <div id="configStatus" class="button-panel-right"></div>
+        <div class="button-panel button-panel-right">
+            <div id="show-menu-button" class="ui-button ui-button-menu">
+                <i class="fa fa-info-circle"></i>
+            </div>
+        </div>
+
+        <div id="dataset-selector"></div>
+    </div>
 </div>
 
 <div class="ui-menu">
@@ -45,127 +46,83 @@
 
 <div class="ui-container">
     <div class="ui-row">
-        <div class="ui-column ui-column-15">
+        <div class="ui-column">
             <div id="groupConfig" class="configTable">
                 <!--<span>First, group by</span>-->
                 <!--<span>-->
-                    <!--<select>-->
-                        <!--<option id='groupBySet' value="groupBySet">Sets</option>-->
-                        <!--<option id='groupByIntersectionSize' value="groupByIntersectionSize">Intersection Size</option>-->
-                        <!--<option id='groupByRelevanceMeasure' value="groupByRelevanceMeasure">Relevance Measure</option>-->
-                        <!--<option id='noGrouping' value="noGrouping">No Grouping</option>-->
-                    <!--</select>-->
-            <!--</span>-->
+                <!--<select>-->
+                <!--<option id='groupBySet' value="groupBySet">Sets</option>-->
+                <!--<option id='groupByIntersectionSize' value="groupByIntersectionSize">Intersection Size</option>-->
+                <!--<option id='groupByRelevanceMeasure' value="groupByRelevanceMeasure">Relevance Measure</option>-->
+                <!--<option id='noGrouping' value="noGrouping">No Grouping</option>-->
+                <!--</select>-->
+                <!--</span>-->
 
                 <div class="configHeader">First, group by
-                     </div>
+                </div>
 
-
-                        <div><input type='radio' id='groupBySet' name="group" checked="true"><label for="groupBySet">Sets</label></div>
-
-
-                <div><input type='radio' id='groupByIntersectionSize' name="group"><label for="groupByIntersectionSize">Intersection Size</label></div>
-
-
-                <div><input type='radio' id='groupByRelevanceMeasure' name="group"><label for="groupByRelevanceMeasure">Disproportionality</label></div>
-
-
+                <div><input type='radio' id='groupBySet' name="group" checked="true"><label
+                        for="groupBySet">Sets</label></div>
+                <div><input type='radio' id='groupByIntersectionSize' name="group"><label for="groupByIntersectionSize">Intersection
+                    Size</label></div>
+                <div><input type='radio' id='groupByRelevanceMeasure' name="group"><label for="groupByRelevanceMeasure">Disproportionality</label>
+                </div>
                 <div><input type='radio' id='noGrouping' name="group"><label for="noGrouping">Don't Group</label></div>
-
-
             </div>
 
             <!--<div id="groupL2Config" class="configTable">-->
-                <!--<span>Then, group by</span>-->
-                <!--<span>-->
-                    <!--<select>-->
-                        <!--<option id='groupBySetL2' value="groupBySet">Sets</option>-->
-                        <!--<option id='groupByIntersectionSizeL2' value="groupByIntersectionSize">Intersection Size</option>-->
-                        <!--<option id='groupByRelevanceMeasureL2' value="groupByRelevanceMeasure">Relevance Measure</option>-->
-                        <!--<option id='noGroupingL2' value="noGrouping">No Grouping</option>-->
-                    <!--</select>-->
+            <!--<span>Then, group by</span>-->
+            <!--<span>-->
+            <!--<select>-->
+            <!--<option id='groupBySetL2' value="groupBySet">Sets</option>-->
+            <!--<option id='groupByIntersectionSizeL2' value="groupByIntersectionSize">Intersection Size</option>-->
+            <!--<option id='groupByRelevanceMeasureL2' value="groupByRelevanceMeasure">Relevance Measure</option>-->
+            <!--<option id='noGroupingL2' value="noGrouping">No Grouping</option>-->
+            <!--</select>-->
             <!--</span>-->
-
             <!--</div>-->
 
             <div id="groupL2Config" class="configTable">
                 <div class="configHeader">Then, group by</div>
-                     <div><input type='radio' id='groupBySetL2' name="groupL2"><label for="groupBySetL2">Sets</label></div>
-
-
-                        <div><input type='radio' id='groupByIntersectionSizeL2' name="groupL2"><label for="groupByIntersectionSizeL2">Intersection Size</label></div>
-
-
-                        <div><input type='radio' id='groupByRelevanceMeasureL2' name="groupL2"><label for="groupByRelevanceMeasureL2">Disproportionality</label></div>
-
-
-                        <div><input type='radio' id='noGroupingL2' name="groupL2" checked="true"><label for="noGroupingL2">Don't Group</label></div>
-
-
+                <div><input type='radio' id='groupBySetL2' name="groupL2"><label for="groupBySetL2">Sets</label></div>
+                <div><input type='radio' id='groupByIntersectionSizeL2' name="groupL2"><label
+                        for="groupByIntersectionSizeL2">Intersection Size</label></div>
+                <div><input type='radio' id='groupByRelevanceMeasureL2' name="groupL2"><label
+                        for="groupByRelevanceMeasureL2">Disproportionality</label></div>
+                <div><input type='radio' id='noGroupingL2' name="groupL2" checked="true"><label for="noGroupingL2">Don't
+                    Group</label></div>
             </div>
 
             <div id="sortConfig" class="configTable">
-               <div class="configHeader">
-                   Sort by
-               </div>
-
+                <div class="configHeader"> Sort by</div>
                 <div><input type='radio' id='sortNrSetsInIntersection' name='sort' checked="true">
                     <label for="sortNrSetsInIntersection"># Sets in Intersection</label></div>
-
-                      <div><input type='radio' id='sortIntersectionSize' name='sort'><label for="sortIntersectionSize">
-                       Intersection Size</label></div>
-
-
-
+                <div><input type='radio' id='sortIntersectionSize' name='sort'><label for="sortIntersectionSize">
+                    Intersection Size</label></div>
                 <div><input type='radio' id="sortRelevanceMeasure" name='sort'>
                     <label for="sortRelevanceMeasure"> Relevance Measure</label></div>
-
             </div>
 
             <div id='options' class='configTable'>
-
-
-                        <div class="configHeader">Options</div>
-
-
-                        <div><span class="option" id="collapseAll">Collapse Groups</span></div>
-
-
-                     <div><span class="option" id="expandAll">Expand Groups</span></div>
-
-
-                        <div><input type='checkbox' id='hideEmpties' checked='true'><label for="hideEmpties">Hide Empty Intersections</label></div>
-
-
+                <div class="configHeader">Options</div>
+                <div><span class="option" id="collapseAll">Collapse Groups</span></div>
+                <div><span class="option" id="expandAll">Expand Groups</span></div>
+                <div><input type='checkbox' id='hideEmpties' checked='true'><label for="hideEmpties">Hide Empty
+                    Intersections</label></div>
             </div>
 
             <div id='intersectionSize' class='configTable'>
-
-
-                        <div class="configHeader">Limit to</div>
-
-
-                        <div>At least <input id='minCardinality' type='number' min='0' max='12' value='0'>
-                            intersections.</div>
-
-
-                        <div>At most <input id='maxCardinality' type='number' min='0' max='12'> intersections.</div>
-
-
-
+                <div class="configHeader">Limit to</div>
+                <div>At least <input id='minCardinality' type='number' min='0' max='12' value='0'>
+                    intersections.
+                </div>
+                <div>At most <input id='maxCardinality' type='number' min='0' max='12'> intersections.</div>
             </div>
 
             <div id='rowSize' class='configTable'>
-
-
                 <div class="configHeader">Row size</div>
-
-
                 <div>RowSize: <input id='rowSizeValue' type='number' min='10' max='20' value='20'>
-                    </div>
-
-
-
+                </div>
             </div>
 
 
@@ -177,17 +134,17 @@
 
         </div>
 
-        <div class="ui-column ui-column-60">
+        <div class="ui-column">
             <div id="set-vis-container" data-height-ratio="1" class="fixed-y-container">
                 <div id="vis"></div>
             </div>
         </div>
 
-        <div class="ui-column ui-column-25">
+        <div class="ui-column ">
 
-            <div id="item-vis-container">
-                <div id="element-vis-editor"></div>
-                <div id="element-vis-viewer"></div>
+            <div id="element-viewers-container">
+                <div id="element-viewers-controls"></div>
+                <div id="element-viewers-visualization"></div>
             </div>
 
             <div id="selection-vis-container">
@@ -201,6 +158,7 @@
 </div>
 
 
+<script type="text/javascript" src="event-manager.js"></script>
 <script type="text/javascript" src="venn.js"></script>
 <script type="text/javascript" src="utilities.js"></script>
 <script type="text/javascript" src="attribute.js"></script>
@@ -220,23 +178,23 @@
 <script type="text/javascript" src="brushableScale.js"></script>
 <script type="text/javascript" src="upset2.js"></script>
 <script>
-		$(document).ready( function(){
-			ui = new Ui();
+    $(document).ready(function () {
+        ui = new Ui();
 
-			$(window).resize(ui.resize);
+        $(window).resize(ui.resize);
 
-			$(EventManager).bind("ui-resize", function (event, data) {
-			    ui.updateFixedHeightContainers();
-			});
+        $(EventManager).bind("ui-resize", function (event, data) {
+            ui.updateFixedHeightContainers();
+        });
 
-			$(EventManager).bind("ui-vertical-resize", function (event, data) {
-			    ui.updateFixedHeightContainers();
-			});
+        $(EventManager).bind("ui-vertical-resize", function (event, data) {
+            ui.updateFixedHeightContainers();
+        });
 
-			$(EventManager).bind("ui-horizontal-resize", function (event, data) {
-				// nothing so far
-			});
-		});
+        $(EventManager).bind("ui-horizontal-resize", function (event, data) {
+            // nothing so far
+        });
+    });
 </script>
 
 </body>
