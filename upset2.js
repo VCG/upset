@@ -14,6 +14,7 @@ var ctx = {
     subSetSizeWidth: 300,
 
     leftOffset: 90,
+    leftIndent: 10,
     topOffset: 120,
 
     /** The width from the start of the set vis to the right edge */
@@ -563,7 +564,16 @@ function UpSet() {
                         return queryParameters['duration'];
                 })
         subSetTransition.attr({transform: function (d) {
-            return 'translate(0, ' + ctx.rowScale(d.id) + ')';
+
+                if (d.data.type === ROW_TYPE.SUBSET)
+                    return 'translate(0, ' + ctx.rowScale(d.id) + ')';
+                else {
+                    offset_x = 0;
+                    //if (d.data.level == 2)
+                    //    offset_x += 10
+                    return 'translate('+offset_x+', ' + ctx.rowScale(d.id) + ')';
+                }
+
         }, class: function (d) {
             return 'row ' + d.data.type;
         }}).transition().duration(100).style("opacity", 1);
@@ -777,11 +787,11 @@ function UpSet() {
         groupsRect.exit().remove();
         //**update
         groupsRect.attr({
-            width: function () {
-                return ctx.setVisWidth + ctx.leftOffset
+            width: function (d) {
+                return ctx.setVisWidth + ctx.leftOffset - (d.data.level-1)*ctx.leftIndent;
             },
             height: ctx.cellSize,
-            x: -ctx.leftOffset
+            x: function(d) { return (d.data.level-1)*ctx.leftIndent-ctx.leftOffset}
         });
 
         //  console.log('g2: ' + groups);
@@ -791,7 +801,7 @@ function UpSet() {
         groupsText.enter().append('text')
             .attr({class: 'groupLabel groupLabelText',
                 y: ctx.cellSize - 3,
-                x: (-ctx.leftOffset+12),
+                x: function(d) { return (-ctx.leftOffset+12)+(d.data.level-1)*ctx.leftIndent;},
                 'font-size': ctx.cellSize - 6
 
             });
@@ -812,13 +822,14 @@ function UpSet() {
 //                return d.data.elementName;
             if (d.data.type === ROW_TYPE.AGGREGATE)
                 return String.fromCharCode(8709) + '-subsets (' + d.data.subSets.length + ') ';
-            else return d.data.elementName;
+            else 
+                return d.data.elementName;
         }).attr({
                 class: function () {
                      if (ctx.cellDistance<14) return 'groupLabel groupLabelText small'; else return 'groupLabel groupLabelText'
                 },
                 y: ctx.cellSize - 3,
-                x: (-ctx.leftOffset+15)
+                x: function(d) { return (-ctx.leftOffset+15) + (d.data.level-1)*ctx.leftIndent; }
 
             }).on('click', function (d) {
                 collapseGroup(d.data);
@@ -842,9 +853,9 @@ function UpSet() {
                 if (d.data.isCollapsed==0) return "\uf147";
                 else return "\uf196"
             })
-            .attr({
-                "transform":"translate("+(-ctx.leftOffset+2+5)+","+(ctx.cellSize/2+5)+")"
-
+            .attr({"transform": function(d) {
+                return "translate("+(-ctx.leftOffset+2+5+(d.data.level-1)*ctx.leftIndent)+","+(ctx.cellSize/2+5)+")"
+              }
             }).style({
                 "font-size":"10px"
             })
