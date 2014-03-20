@@ -92,93 +92,92 @@ function plotSetOverview() {
         "transform": "translate(" + 0 + "," + 0 + ")"
     })
 
-/*
-    overview.append('rect')
-        .attr({
-            class: 'overviewBackground',
-            width:700,
-            height:200
-          });
-*/
     overview.on('mouseover', function(d, i) {
 
-      // TODO: cancel transitions to remove
-      console.log("nnnn", d3.selectAll(".bulkCheck")[0].length)
-          if(d3.selectAll(".bulkCheck")[0].length>0)
-            return;
+      // Remove current transitions
+      d3.selectAll(".bulkCheck").transition();
 
-            usedSets.filter(function(d, ii) {
+      if(d3.selectAll(".bulkCheck")[0].length>3)
+        return;
 
-              d3.select(".usedSets")
-                .append("foreignObject")
-                .datum([d])
-                .attr("width", 100)
-                .attr("height", 100)
-                .attr("class", "bulkCheck")
-                .attr("y", 40)
-                .attr("x", function(d, i) {
-                  return cellDistance * (ii);
-                })
-                .html("<form><input type=checkbox value=setcheck id=setcheck_"+ii+" checked/></form>")
+        usedSets.filter(function(d, ii) {
 
+          d3.select(".usedSets")
+            .append("foreignObject")
+            .datum([d])
+            .attr("width", 100)
+            .attr("height", 100)
+            .attr("class", "bulkCheck")
+            .attr("y", 40)
+            .attr("x", function(d, i) {
+              return cellDistance * (ii);
             })
+            .html("<form><input type=checkbox value=setcheck id=setcheck_"+ii+" checked/></form>")
 
-            unusedSets.sort(sortSets).filter(function(d, ii) {
+        })
 
-              d3.select(".unusedSets")
-                .append("foreignObject")
-                .datum([d])
-                .attr("width", 100)
-                .attr("height", 100)
-                .attr("class", "bulkCheck")
-                .attr("y", 40)
-                .attr("x", function(d, i) {
-                  return cellDistance * (ii);
-                })
-                .html("<form><input type=checkbox value=setcheck id="+ii+" /></form>")
+        unusedSets.sort(sortSets).filter(function(d, ii) {
 
+          d3.select(".unusedSets")
+            .append("foreignObject")
+            .datum([d])
+            .attr("width", 100)
+            .attr("height", 100)
+            .attr("class", "bulkCheck")
+            .attr("y", 40)
+            .attr("x", function(d, i) {
+              return cellDistance * (ii);
             })
+            .html("<form><input type=checkbox value=setcheck id="+ii+" /></form>")
 
-             d3.select("#vis").select("svg")
-                .append("foreignObject")
-                .attr("width", 100)
-                .attr("height", 100)
-                .attr("class", "bulkCheck")
-                .attr("y", 20)
-                .attr("x", function(d, i) {
-                  return 0;//ctx.w- usedSets.length*cellDistance-100;
-                })
-                .html("<form><input type=button value=update /></form>")
-                .on("click", setClickedByBulk);
+        })
 
-             d3.select("#vis").select("svg")
-                .append("foreignObject")
-                .attr("width", 100)
-                .attr("height", 100)
-                .attr("class", "bulkCheck")
-                .attr("y", 20)
-                .attr("x", function(d, i) {
-                  return 60;//ctx.w- usedSets.length*cellDistance-100;
-                })
-                .html("<form><input type=button value='all' /></form>")
-                .on("click", function() {
-                  d3.selectAll("input[value=setcheck]").property("checked", true);
-                });
+         d3.select("#vis").select("svg")
+            .append("foreignObject")
+            .attr("width", 100)
+            .attr("height", 100)
+            .attr("class", "bulkCheck")
+            .attr("y", 20)
+            .attr("x", function(d, i) {
+              return 0;//ctx.w- usedSets.length*cellDistance-100;
+            })
+            .html("<form><input type=button value=update /></form>")
+            .on("click", setClickedByBulk);
 
-             d3.select("#vis").select("svg")
-                .append("foreignObject")
-                .attr("width", 100)
-                .attr("height", 100)
-                .attr("class", "bulkCheck")
-                .attr("y", 20)
-                .attr("x", function(d, i) {
-                  return 95;//ctx.w- usedSets.length*cellDistance-100;
-                })
-                .html("<form><input type=button value='none' /></form>")
-                .on("click", function() {
-                  d3.selectAll("input[value=setcheck]").property("checked", false);
-                });
+         d3.select("#vis").select("svg")
+            .append("foreignObject")
+            .attr("width", 100)
+            .attr("height", 100)
+            .attr("class", "bulkCheck")
+            .attr("y", 20)
+            .attr("x", function(d, i) {
+              return 60;//ctx.w- usedSets.length*cellDistance-100;
+            })
+            .html("<form><input type=button value='all' /></form>")
+            .on("click", function() {
+              d3.selectAll("input[value=setcheck]").property("checked", true);
+            });
 
+         d3.select("#vis").select("svg")
+            .append("foreignObject")
+            .attr("width", 100)
+            .attr("height", 100)
+            .attr("class", "bulkCheck")
+            .attr("y", 20)
+            .attr("x", function(d, i) {
+              return 95;//ctx.w- usedSets.length*cellDistance-100;
+            })
+            .html("<form><input type=button value='none' /></form>")
+            .on("click", function() {
+              d3.selectAll("input[value=setcheck]").property("checked", false);
+            });
+
+
+                  // Remove current transitions
+          d3.selectAll(".bulkCheck").on("mouseenter", function() {
+            console.log("toto")
+            d3.selectAll(".bulkCheck").transition();
+          })
 
         })
         .on('mouseout', function(d, i) {
