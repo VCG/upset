@@ -429,7 +429,7 @@ html, body, .ui-container {
     top: 50%; /* positions the div half way vertically */
     padding: 25px; 
     z-index: 100; /* makes the div the top layer, so it’ll lay on top of the other content */    
-    color: red;
+    color: white;
 }
 
 #data-loading-indicator {

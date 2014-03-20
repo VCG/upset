@@ -2,7 +2,7 @@
  * author: Nils Gehlenborg - nils@hms.harvard.edu
 */
 
-ItemViewerConfigurations = {
+ElementViewerConfigurations = {
         scatterplot: {
             name: "Scatterplot",
             attributes: [{
@@ -21,7 +21,7 @@ ItemViewerConfigurations = {
                     variable: "smallMultiples"
                 }],
             render: function( element, selections, attributeMap, parameterMap ) {
-                // D3 code to render items
+                // D3 code to render elements
             }   
         },
         histogram: {
@@ -70,7 +70,7 @@ ItemViewerConfigurations = {
 
                 console.log( element );
 
-                var svg = d3.select("#item-vis-viewer").append("svg")
+                var svg = d3.select("#element-vis-viewer").append("svg")
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
                   .append("g")
@@ -171,12 +171,12 @@ ItemViewerConfigurations = {
                 }
                 ],
             render: function( element, selections, attributeMap, parameterMap ) {
-                // D3 code to render items
+                // D3 code to render elements
             }   
         }        
     };
 
-ItemViewer = function( attributes, selections, configuration, editorElementId, viewerElementId  ) {
+ElementViewer = function( attributes, selections, configuration, editorElementId, viewerElementId  ) {
     var self = this;
 
     self.attributes = attributes;
@@ -191,7 +191,7 @@ ItemViewer = function( attributes, selections, configuration, editorElementId, v
     self.initializeParameterMap();
 };
 
-ItemViewer.prototype.initializeParameterMap = function() {
+ElementViewer.prototype.initializeParameterMap = function() {
     var self = this;
 
     for ( var i = 0; i < self.configuration.parameters.length; ++i ) {
@@ -202,7 +202,7 @@ ItemViewer.prototype.initializeParameterMap = function() {
 }
 
 
-ItemViewer.prototype.renderViewer = function( ) {
+ElementViewer.prototype.renderViewer = function( ) {
     var self = this;
 
     try {
@@ -214,21 +214,21 @@ ItemViewer.prototype.renderViewer = function( ) {
 };
 
 
-ItemViewer.prototype.renderEditor = function() {
+ElementViewer.prototype.renderEditor = function() {
     var self = this;
 
     var element = d3.select( self.editorElementId );
     element.html( "" );
 
-    var editor = element.append('div').attr( 'id', 'item-viewer-editor-' + self.uuid );
+    var editor = element.append('div').attr( 'id', 'element-viewer-editor-' + self.uuid );
 
     editor.html( '<div>' + 
         '<b>' + self.configuration.name +'</b>' + 
-        '&nbsp;<span class="item-viewer-editor-button item-viewer-editor-save" data-viewer-uuid="' + self.uuid + '""><i class="fa fw fa-check"></i></span>' +
-        '&nbsp;<span class="item-viewer-editor-button item-viewer-editor-cancel" data-viewer-uuid="' + self.uuid + '""><i class="fa fw fa-times"></i></span>' +
+        '&nbsp;<span class="element-viewer-editor-button element-viewer-editor-save" data-viewer-uuid="' + self.uuid + '""><i class="fa fw fa-check"></i></span>' +
+        '&nbsp;<span class="element-viewer-editor-button element-viewer-editor-cancel" data-viewer-uuid="' + self.uuid + '""><i class="fa fw fa-times"></i></span>' +
         '</div>');
 
-    d3.selectAll( '.item-viewer-editor-save' ).on( 'click', function(event){
+    d3.selectAll( '.element-viewer-editor-save' ).on( 'click', function(event){
         self.parseParameterValues();
         self.parseAttributeValues();
 
@@ -236,7 +236,7 @@ ItemViewer.prototype.renderEditor = function() {
         self.renderViewer();
     });
 
-    d3.selectAll( '.item-viewer-editor-cancel' ).on( 'click', function(event){
+    d3.selectAll( '.element-viewer-editor-cancel' ).on( 'click', function(event){
     });
 
     for ( var i = 0; i < self.configuration.attributes.length; ++i ) {
@@ -253,7 +253,7 @@ ItemViewer.prototype.renderEditor = function() {
 };
 
 
-ItemViewer.prototype.parseParameterValues = function() {
+ElementViewer.prototype.parseParameterValues = function() {
     var self = this;
     var parameters = self.configuration.parameters;
 
@@ -267,7 +267,7 @@ ItemViewer.prototype.parseParameterValues = function() {
     }
 }
 
-ItemViewer.prototype.parseAttributeValues = function() {
+ElementViewer.prototype.parseAttributeValues = function() {
     var self = this;
     var attributes = self.configuration.attributes;
 
@@ -281,8 +281,8 @@ ItemViewer.prototype.parseAttributeValues = function() {
     }
 }
 
-ItemViewer.prototype.parseParameterValue = function( parameterVariable, parameterType ) {
-    var editor = d3.select('#item-viewer-editor-' + self.uuid );
+ElementViewer.prototype.parseParameterValue = function( parameterVariable, parameterType ) {
+    var editor = d3.select('#element-viewer-editor-' + self.uuid );
     if ( editor.length === 0 ) {
         return undefined;
     }
@@ -291,21 +291,21 @@ ItemViewer.prototype.parseParameterValue = function( parameterVariable, paramete
 
     switch ( parameterType ) {
         case 'float':
-            var editor = $('[data-item-viewer-parameter-variable="' + parameterVariable + '"]' );
+            var editor = $('[data-element-viewer-parameter-variable="' + parameterVariable + '"]' );
             value = parseFloat( $( editor ).val() );
             break;
         case 'integer':
-            var editor = $('[data-item-viewer-parameter-variable="' + parameterVariable + '"]' );
+            var editor = $('[data-element-viewer-parameter-variable="' + parameterVariable + '"]' );
             value = parseInt( $( editor ).val(), 10 );
             break;
         case 'boolean':
-            var editor = $('[data-item-viewer-parameter-variable="' + parameterVariable + '"]' );
+            var editor = $('[data-element-viewer-parameter-variable="' + parameterVariable + '"]' );
             value = Boolean( $( editor ).is( ':checked' ) );
             break;
         case 'string':
             // fall-through
         default:
-            var editor = $('[data-item-viewer-parameter-variable="' + parameterVariable + '"]' );
+            var editor = $('[data-element-viewer-parameter-variable="' + parameterVariable + '"]' );
             value = $( editor ).val();
             break;
     }
@@ -314,15 +314,15 @@ ItemViewer.prototype.parseParameterValue = function( parameterVariable, paramete
 }
 
 
-ItemViewer.prototype.parseAttributeValue = function( attributeVariable ) {
-    var editor = d3.select('#item-viewer-editor-' + self.uuid );
+ElementViewer.prototype.parseAttributeValue = function( attributeVariable ) {
+    var editor = d3.select('#element-viewer-editor-' + self.uuid );
     if ( editor.length === 0 ) {
         return undefined;
     }
 
     var value = undefined;
 
-    editor = $('[data-item-viewer-attribute-variable="' + attributeVariable + '"]' );    
+    editor = $('[data-element-viewer-attribute-variable="' + attributeVariable + '"]' );    
 
     value = parseInt( $( editor ).val(), 10 );
 
@@ -330,26 +330,26 @@ ItemViewer.prototype.parseAttributeValue = function( attributeVariable ) {
 }
 
 
-ItemViewer.prototype.renderParameterEditor = function( element, parameter, value ) {
+ElementViewer.prototype.renderParameterEditor = function( element, parameter, value ) {
     var self = this;
     var s = "";
     
-    s += '<div data-item-viewer-parameter-type="' + parameter.type + '">';
+    s += '<div data-element-viewer-parameter-type="' + parameter.type + '">';
     
     switch ( parameter.type ) {
         case 'float':
-            s += parameter.name + ' ' + '<input data-item-viewer-parameter-variable="' + parameter.variable + '" type="number" step="0.1" value="' + d3.format('f')(value) + '"></input>';
+            s += parameter.name + ' ' + '<input data-element-viewer-parameter-variable="' + parameter.variable + '" type="number" step="0.1" value="' + d3.format('f')(value) + '"></input>';
             break;
         case 'integer':
-            s +=  parameter.name + ' ' + '<input data-item-viewer-parameter-variable="' + parameter.variable + '" type="number" step="1" value="' + d3.format('d')(value) + '"></input>';
+            s +=  parameter.name + ' ' + '<input data-element-viewer-parameter-variable="' + parameter.variable + '" type="number" step="1" value="' + d3.format('d')(value) + '"></input>';
             break;
         case 'boolean':
-            s +=  parameter.name + ' ' + '<input data-item-viewer-parameter-variable="' + parameter.variable + '" type="checkbox" checked="' + ( value ? 'checked' : '' ) + '"></input>';
+            s +=  parameter.name + ' ' + '<input data-element-viewer-parameter-variable="' + parameter.variable + '" type="checkbox" checked="' + ( value ? 'checked' : '' ) + '"></input>';
             break;
         case 'string':
             // fall-through
         default:
-            s += parameter.name + ' ' + '<input data-item-viewer-parameter-variable="' + parameter.variable + '" type="text" value="' + value + '"></input>';
+            s += parameter.name + ' ' + '<input data-element-viewer-parameter-variable="' + parameter.variable + '" type="text" value="' + value + '"></input>';
             break;
     }
 
@@ -363,13 +363,13 @@ ItemViewer.prototype.renderParameterEditor = function( element, parameter, value
 };
 
 
-ItemViewer.prototype.renderAttributeEditor = function( element, attributes, attribute, value ) {
+ElementViewer.prototype.renderAttributeEditor = function( element, attributes, attribute, value ) {
     var self = this;
     var s = "";
     
-    s += '<div data-item-viewer-attribute-type="' + attribute.type + '">';
+    s += '<div data-element-viewer-attribute-type="' + attribute.type + '">';
     
-    s += '<b>' + attribute.name + '</b>' + '<select data-item-viewer-attribute-variable="' + attribute.variable +'">';
+    s += '<b>' + attribute.name + '</b>' + '<select data-element-viewer-attribute-variable="' + attribute.variable +'">';
     for ( var i = 0; i < attributes.length; ++i ) {
         if ( Attribute.matchesType( attributes[i].type, attribute.type ) ) {
             s += '<option value="' + i + '" >' + attributes[i].name + '</option>';
