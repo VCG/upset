@@ -60,8 +60,6 @@ ElementViewerConfigurations = {
                     values.transitions = transitions;
                     values.transversions = transversions;
 
-                    console.log( values );
-
                     data.push( values );
                 }      
                 
