@@ -15,13 +15,96 @@ ElementViewerConfigurations = {
                     type: "numeric",
                     variable: "y"
                 }],
-            parameters: [{
+            parameters: [/*{
                     name: "Small Multiples?",
                     type: "boolean",
                     variable: "smallMultiples"
-                }],
-            render: function( element, selections, attributeMap, parameterMap ) {
-                // D3 code to render elements
+                }*/],
+            render: function( elementId, selections, attributes, attributeMap, parameterMap ) {
+                // based on http://bl.ocks.org/bunkat/2595950
+
+                var data = [];
+
+                var attributeX = attributes[attributeMap.x];
+                var attributeY = attributes[attributeMap.y];
+
+                // create data structure: array of pair arrays for each selection
+                for ( var s = 0; s < selections.getSize(); ++s ) {
+
+                    var values = [];
+                    var selection = selections.getSelection(s);
+
+                    for ( var i = 0; i < selection.items.length; ++i ) {
+                        values.push( [ attributeX.values[selection.items[i]], attributeY.values[selection.items[i]]] );
+                    }
+
+                    values.color = selections.getColor( selection );
+
+                    data.push( values );
+                }
+                   
+                var margin = {top: 10, right: 10, bottom: 20, left: 50},
+                    width = 300 - margin.left - margin.right,
+                    height = 200 - margin.top - margin.bottom;
+                    
+                var x = d3.scale.linear()
+                    .domain([attributeX.min, attributeX.max])
+                    .range([0, width]);
+                
+                var y = d3.scale.linear()
+                    .domain([attributeY.min, attributeY.max])
+                    .range([ height, 0 ]);
+             
+                d3.select( elementId ).html("");
+
+                var chart = d3.select( elementId )
+                .append('svg:svg')
+                .attr('width', width + margin.right + margin.left)
+                .attr('height', height + margin.top + margin.bottom)
+                .attr('class', 'chart')
+
+                var main = chart.append('g')
+                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('class', 'main')   
+                    
+                // draw the x axis
+                var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient('bottom');
+
+                main.append('g')
+                .attr('transform', 'translate(0,' + height + ')')
+                .attr('class', 'main axis date')
+                .call(xAxis);
+
+                // draw the y axis
+                var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient('left');
+
+                main.append('g')
+                .attr('transform', 'translate(0,0)')
+                .attr('class', 'main axis date')
+                .call(yAxis);
+
+                var g = main.append("svg:g"); 
+                
+                var selectionGroup = g.selectAll( '.selection-group' )
+                    .data(data)
+                  .enter()
+                    .append( 'g' )
+                    .attr( 'class', '.selection-group' )
+                    .attr("fill", function(d) {  return ( d.color ); } );
+
+                var marks = selectionGroup.selectAll( '.element-mark' )
+                        .data( function( d ) { return ( d ); } )
+                    .enter()
+                        .append("svg:circle")
+                            .attr("cx", function (d,i) { return x(d[0]); } )
+                            .attr("cy", function (d,i) { return y(d[1]); } )
+                            .attr("r", 2);                
             }   
         },
         histogram: {
@@ -31,11 +114,11 @@ ElementViewerConfigurations = {
                     type: "numeric",
                     variable: "variable"                    
                 }],
-            parameters: [{
+            parameters: [/*{
                     name: "Small Multiples?",
                     type: "boolean",
                     variable: "smallMultiples"
-                }],
+                }*/],
             render: function( elementId, selections, attributes, attributeMap, parameterMap ) {
 
                 var attribute = attributes[attributeMap.variable];
@@ -127,7 +210,7 @@ ElementViewerConfigurations = {
                     .call(xAxis);
             }
         },
-        testplot: {
+        /*testplot: {
             name: "Testplot",
             attributes: [{
                     name: "x-axis",
@@ -168,7 +251,7 @@ ElementViewerConfigurations = {
             render: function( element, selections, attributeMap, parameterMap ) {
                 // D3 code to render elements
             }   
-        }        
+        }*/        
     };
 
 
