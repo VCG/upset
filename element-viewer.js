@@ -36,7 +36,7 @@ ElementViewerConfigurations = {
                     type: "boolean",
                     variable: "smallMultiples"
                 }],
-            render: function( element, selections, attributes, attributeMap, parameterMap ) {
+            render: function( elementId, selections, attributes, attributeMap, parameterMap ) {
 
                 var attribute = attributes[attributeMap.variable];
 
@@ -63,9 +63,9 @@ ElementViewerConfigurations = {
                     .orient("bottom");
 
                 // clear
-                element.html("");
+                d3.select( elementId ).html("");
 
-                var svg = d3.select("#element-vis-viewer").append("svg")
+                var svg = d3.select( elementId ).append("svg")
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
                   .append("g")
@@ -172,12 +172,29 @@ ElementViewerConfigurations = {
     };
 
 
+$(EventManager).bind("element-viewer-removed", function (event, data) {
+});
+
+
+$(EventManager).bind("element-viewer-added", function (event, data) {
+});
+
+
+$(EventManager).bind("element-viewer-activated", function (event, data) {
+    elementViewers.renderViewer();
+});
+
+
 ElementViewerCollection = function( controllerElementId, viewerElementId ) {
     var self = this;
 
     self.list = [];
     self.activeIndex = undefined;
+
+    self.controllerElementId = controllerElementId;
+    self.viewerElementId = viewerElementId;
 };
+
 
 ElementViewerCollection.prototype.add = function( elementViewer, isActive ) {
     var self = this;
@@ -191,7 +208,7 @@ ElementViewerCollection.prototype.add = function( elementViewer, isActive ) {
     if ( isActive ) {
         self.setActiveIndex( self.list.length - 1 );
     }
-}
+};
 
 
 ElementViewerCollection.prototype.remove = function( elementViewer ) {
@@ -203,9 +220,10 @@ ElementViewerCollection.prototype.remove = function( elementViewer ) {
 
             $(EventManager).trigger("element-viewer-removed", { viewer: elementViewer });
 
+            console.log( "changing active") ;
             if ( i === self.activeIndex ) {
                 if (self.list.length > 0) {
-                    self.setActiveIndex(( i > 0 ? i - 1 : 0 ));
+                    self.setActiveIndex( i - 1 );
                 }
                 else {
                     self.setActiveIndex(undefined);
@@ -213,7 +231,36 @@ ElementViewerCollection.prototype.remove = function( elementViewer ) {
             }
         }
     }
-}
+};
+
+
+ElementViewerCollection.prototype.activateNext = function() {
+    var self = this;
+
+    if ( self.activeIndex < self.list.length - 1 ) {
+        self.setActiveIndex( self.activeIndex + 1 );
+    }
+    else if ( self.activeIndex === self.list.length -1 ) {
+        self.setActiveIndex( 0 );
+    }
+    else {
+        self.setActiveIndex( undefined );        
+    }
+};
+
+ElementViewerCollection.prototype.activatePrevious = function() {
+    var self = this;
+
+    if ( self.activeIndex > 0 ) {
+        self.setActiveIndex( self.activeIndex - 1 );
+    }
+    else if ( self.activeIndex === 0 ) {
+        self.setActiveIndex( self.list.length - 1 );
+    }
+    else {
+        self.setActiveIndex( undefined );        
+    }
+};
 
 
 ElementViewerCollection.prototype.getIndex = function( elementViewer ) {
@@ -226,18 +273,18 @@ ElementViewerCollection.prototype.getIndex = function( elementViewer ) {
     }
 
     return ( undefined );
-}
+};
 
 
 ElementViewerCollection.prototype.setActiveIndex = function( index ) {
     var self = this;
 
-    if ( index < self.list.length && index > 0 && self.activeIndex !== index ) {
-        self.activeIndex === index;
+    if ( index < self.list.length && index >= 0 && self.activeIndex !== index ) {
+        self.activeIndex = index;
 
         $(EventManager).trigger("element-viewer-activated", { viewer: self.list[self.activeIndex], index: index });
     }
-}
+};
 
 
 ElementViewerCollection.prototype.setActive = function( elementViewer ) {
@@ -250,29 +297,116 @@ ElementViewerCollection.prototype.setActive = function( elementViewer ) {
     }
 
     return ( index );
-}
+};
 
 
 ElementViewerCollection.prototype.getActive = function() {
     var self = this;
 
-    if ( !selft.activeIndex ) {
+    if ( self.activeIndex === undefined ) {
         return undefined;
     }
 
     return ( self.list[self.activeIndex] );
-}
+};
 
+// render the controller (i.e. list of viewers that can be added and a "new" button)
+ElementViewerCollection.prototype.renderController = function() {
+    var self = this;
+    var controllerElement = d3.select( self.controllerElementId );
+
+    controllerElement.html("");    
+
+    //var dataSelect = d3.select("#dataset-selector").append('div').text('Choose Dataset');
+
+    var select = controllerElement.append('select');
+
+    // convert ElementViewerConfiguration into array
+    var viewerConfigurationList = $.map(ElementViewerConfigurations, function(value, index) {
+        return [value];
+    });
+    
+    select.attr('id', 'element-viewer-selector')
+        .selectAll('option')
+            .data( viewerConfigurationList )
+        .enter()
+            .append('option')
+            .attr('value', function (d, i) {
+                return i;
+            })
+        .text(function (d) {
+            return d.name;
+        });
+
+    // create header and controls
+    var viewerElementHeader = controllerElement.append( "div" ).attr( "class", "element-viewer-header" );
+
+    viewerElementHeader.append( "div" )
+            .attr( "class", "element-viewer-editor-button" )
+            .attr( "id", "element-viewer-previous" )
+            .on( "click", function() {
+                self.activatePrevious();
+            })
+        .append( "i" ).
+            attr( "class", "fa fw fa-arrow-left" );
+
+    viewerElementHeader.append( "div" )
+            .attr( "class", "element-viewer-editor-button" )
+            .attr( "id", "element-viewer-next" )
+            .on( "click", function() {
+                self.activateNext();
+            })
+        .append( "i" ).
+            attr( "class", "fa fw fa-arrow-right" );
+
+    viewerElementHeader.append( "div" )
+            .attr( "class", "element-viewer-editor-button" )
+            .attr( "id", "element-viewer-add" )
+            .on( "click", function() {
+                var selector = document.getElementById( 'element-viewer-selector' );
+                var elementViewerConfiguration = selector.options[selector.selectedIndex].__data__;
+                console.log( elementViewerConfiguration );
+                var elementViewer = new ElementViewer( attributes, selections, elementViewerConfiguration );
+                self.add( elementViewer );
+                var index = self.getIndex( elementViewer );
+                self.activeIndex = index;
+                self.renderViewer( true );
+            })
+        .append( "i" ).
+            attr( "class", "fa fw fa-plus" );
+
+    viewerElementHeader.append( "div" )
+            .attr( "class", "element-viewer-editor-button" )
+            .attr( "id", "element-viewer-edit" )
+            .on( "click", function() {
+                self.renderViewer( true );
+            })
+        .append( "i" ).
+            attr( "class", "fa fw fa-pencil" );
+
+    viewerElementHeader.append( "div" )
+            .attr( "class", "element-viewer-editor-button" )
+            .attr( "id", "element-viewer-remove" )
+            .on( "click", function() {
+                console.log( "Closing!" );
+                self.remove( self.getActive() );
+                self.renderViewer();
+                console.log( self );
+            })
+        .append( "i" ).
+            attr( "class", "fa fw fa-times-circle" );
+
+};
 
 // render the active viewer
-ElementViewerCollection.prototype.renderViewer = function() {
+ElementViewerCollection.prototype.renderViewer = function( showEditor ) {
     var self = this;
 
     var viewerElement = d3.select( self.viewerElementId );
 
     // clear element
     viewerElement.html("");
-    viewerElement.append( "div" ).attr( "class", "element-viewer-active" );
+    viewerElement = viewerElement.append( "div" ).attr( "class", "element-viewer-active" );
 
     // check if there is a viewer
     if ( self.list.length === 0 ) {
@@ -281,15 +415,32 @@ ElementViewerCollection.prototype.renderViewer = function() {
         return self;
     }
 
-    // render active viewer
-    if ( !self.activeIndex ) {
-        var id = "element-viewer-" + self.getActive().uuid;
-
-        // create element and render viewer
-        viewerElement.append( "div" ).attr( "id", id );
-        self.getActive().renderViewer( id );
+    // if no active viewer is set, use the first one in the list
+    if ( self.activeIndex === undefined ) {
+        self.activeIndex = 0;
     }
-}
+
+    console.log( self );
+
+    // === render active viewer ===
+
+    // create viewer
+    var id = "element-viewer-" + self.getActive().uuid;
+
+    // create element and render viewer
+    viewerElement.append( "div" ).attr( "id", id );
+
+    if ( !showEditor ) {
+        console.log( "Rendering viewer" );
+        self.getActive().renderViewer( '#' + id );
+    }
+    else {
+        console.log( "Rendering editor" );
+        self.getActive().renderEditor( '#' + id );        
+    }
+
+    return self;
+};
 
 
 ElementViewer = function( attributes, selections, configuration, editorElementId, viewerElementId  ) {
@@ -321,10 +472,12 @@ ElementViewer.prototype.initializeParameterMap = function() {
 ElementViewer.prototype.renderViewer = function( viewerElementId ) {
     var self = this;
 
-    viewerElementId = viewerElementId | self.viewerElementId;
+    console.log( "Rendering viewer into " + viewerElementId );
+
+    viewerElementId = viewerElementId || self.viewerElementId;
 
     try {
-        self.configuration.render( $( viewerElementId ), self.selections, self.attributes, self.attributeMap, self.parameterMap )
+        self.configuration.render( viewerElementId, self.selections, self.attributes, self.attributeMap, self.parameterMap )
     }
     catch ( error ) {
         console.error( error );
@@ -335,27 +488,31 @@ ElementViewer.prototype.renderViewer = function( viewerElementId ) {
 ElementViewer.prototype.renderEditor = function( editorElementId ) {
     var self = this;
 
-    editorElementId = editorElementId | self.editorElementId;
+    editorElementId = editorElementId || self.editorElementId;
 
     var element = d3.select( editorElementId );
+
     element.html( "" );
 
     var editor = element.append('div').attr( 'id', 'element-viewer-editor-' + self.uuid );
 
     editor.html( '<div>' + 
-        '<b>' + self.configuration.name +'</b>' + 
+        '<div class="element-viewer-title">' + self.configuration.name +'</div>' + 
         '&nbsp;<span class="element-viewer-editor-button element-viewer-editor-save" data-viewer-uuid="' + self.uuid + '""><i class="fa fw fa-check"></i></span>' +
         '&nbsp;<span class="element-viewer-editor-button element-viewer-editor-cancel" data-viewer-uuid="' + self.uuid + '""><i class="fa fw fa-times"></i></span>' +
         '</div>');
 
     d3.selectAll( '.element-viewer-editor-save' ).on( 'click', function(event){
+        // parse changes, then render the viewer
         self.parseParameterValues();
         self.parseAttributeValues();
 
-        self.renderViewer();
+        self.renderViewer( editorElementId );
     });
 
     d3.selectAll( '.element-viewer-editor-cancel' ).on( 'click', function(event){
+        // ignore changes, just render the viewer
+        self.renderViewer( editorElementId );        
     });
 
     for ( var i = 0; i < self.configuration.attributes.length; ++i ) {
