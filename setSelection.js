@@ -358,8 +358,5 @@ function plotSetOverview() {
 
       list_update.map(function(d, i) { updateSetContainment(d, i==list_update.length-1); });
 
-
-
     }
-
 }
