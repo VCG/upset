@@ -945,71 +945,91 @@ function UpSet() {
 //        })
 
 
-
-
-
-
-
-
         // --- Horizon Bars for size.
 
         groupRows.each(function (e, j) {
 
-            var g = d3.select(this);
-            var max_scale = ctx.subSetSizeScale.domain()[1];
-            var cellSizeShrink = 2;
+          var g = d3.select(this);
+          var max_scale = ctx.subSetSizeScale.domain()[1];
+          var cellSizeShrink = 2;
+          var maxLevels = 3;
+          var i = 0, is_overflowing = false;
+          var nbLevels = Math.min(maxLevels, Math.ceil(e.data.setSize / max_scale));
 
-            var i = 0;
-            var nbLevels = Math.ceil(e.data.setSize / max_scale);
-//            console.log("NB levels ", nbLevels)
-            var data = d3.range(Math.ceil(e.data.setSize / max_scale)).map(function () {
+          var data = d3.range(nbLevels).map(function () {
 
-                // Yes, this is for cloning object
-                var f = JSON.parse(JSON.stringify(e))
+              // Yes, this is for cloning object
+//              var f = JSON.parse(JSON.stringify(e))
 
-                if (i == nbLevels - 1)
-                    f.data.setSize = (f.data.setSize % max_scale);
-                else
-                    f.data.setSize = max_scale;
+              var f = {};
+              f.data = {};
+              f.data.type = e.data.type;
 
-                i++;
-                return f;
-            })
+              if (i == nbLevels - 1 &&  Math.ceil(e.data.setSize / max_scale) < nbLevels+1)
+                  f.data.setSize = (e.data.setSize % max_scale);
+              else 
+                  f.data.setSize = max_scale;
+              i++;
+              return f;
+          })
 
-            g.selectAll(".row-type-group").data(data).enter().append('rect')
-                .attr("class",function (d) {
-                    return ( 'subSetSize row-type-group' );
+          var g_lines = g.append("g").selectAll(".cutlines").data(["cutlines"]).enter()
 
-                }).on('click', function (d) {
-                    var selection = Selection.fromSubset(d.data.subSets);
-                    selections.addSelection(selection);
-                    selections.setActive(selection);
-                })
+          g_lines.append("line").attr("class", "cutlines")
+            .attr({x1:400, x2:410, y1:0, y2:20}).style({'stroke':'black', 'stroke-width':1})
+          
+          g_lines.append("line").attr("class", "cutlines")
+            .attr({x1:410, x2:420, y1:0, y2:20}).style({'stroke':'black', 'stroke-width':1})
+          
 
-            g.selectAll(".row-type-group").data(data).exit().remove()
+          // Add new layers
+          var layers_enter = g.selectAll(".row-type-group").data(data).enter()
 
-            g.selectAll(".row-type-group")
-                .attr({
-                    //class: 'subSetSize',
-                    transform: function (d, i) {
-                        var y = 0;
-                        if (d.data.type !== ROW_TYPE.SUBSET)
-                            y = 0;//cellSize / 3 * .4;
-                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (y + cellSizeShrink * i) + ')'; // ' + (textHeight - 5) + ')'
-                    },
+          layers_enter.append('rect')
+              .attr("class",function (d) {
+                  return ( 'subSetSize row-type-group' );
 
-                    width: function (d, i) {
-                        return ctx.subSetSizeScale(d.data.setSize) - i * cellSizeShrink;
-                    },
-                    height: function (d, i) {
-                        return ctx.cellSize - cellSizeShrink * i;
-                    }
-                })
-                .style("opacity", function (d, i) {
-                    return (i + 1) / (nbLevels);
-                })
-//                .on('mouseover', mouseoverRow)
-//                .on('mouseout', mouseoutRow);
+              }).on('click', function (d) {
+                  var selection = Selection.fromSubset(d.data.subSets);
+                  selections.addSelection(selection);
+                  selections.setActive(selection);
+              })
+
+          // Remove layers
+          g.selectAll(".row-type-group").data(data).exit().remove()
+
+          g.selectAll(".cutlines").style({'display': function() {
+            if(Math.ceil(e.data.setSize / max_scale) > maxLevels )
+              return "block";
+            else
+              return "none";
+          }});
+
+          // Update layers
+          g.selectAll(".row-type-group")
+              .attr({
+                  transform: function (d, i) {
+                      var y = 0;
+                      if (d.data.type !== ROW_TYPE.SUBSET)
+                          y = 0;//cellSize / 3 * .4;
+                      return   'translate(' + (ctx.xStartSetSizes) + ', ' + (y + cellSizeShrink * i) + ')'; // ' + (textHeight - 5) + ')'
+                  },
+
+                  width: function (d, i) {
+                      return ctx.subSetSizeScale(d.data.setSize);
+                  },
+                  height: function (d, i) {
+                      return ctx.cellSize - cellSizeShrink * 2 * i;
+                  }
+              })
+              .style("opacity", function (d, i) {
+                  if(nbLevels == 1)
+                    return 1;
+                  else if(nbLevels == 2)
+                    return .8 + i * .2;
+                  else
+                    return .4 + i * .4;
+              })
 
         })
 
