@@ -963,7 +963,7 @@ function UpSet() {
 
           var g = d3.select(this);
           var max_scale = ctx.subSetSizeScale.domain()[1];
-          var cellSizeShrink = 2;
+          var cellSizeShrink = 3;
           var maxLevels = 3;
           var i = 0, is_overflowing = false;
           var nbLevels = Math.min(maxLevels, Math.ceil(e.data.setSize / max_scale));
@@ -988,12 +988,12 @@ function UpSet() {
           var g_lines = g.selectAll(".cutlines").data([e.id]).enter().append("g").attr("class", "cutlines")
 
           g_lines.append("line")
-            .attr({x1:ctx.xStartSetSizes + 270, x2:ctx.xStartSetSizes + 280, y1:0, y2:20})
-            .style({'stroke':'black', 'stroke-width':1})
+            .attr({x1:ctx.xStartSetSizes + 285, x2:ctx.xStartSetSizes + 295, y1:0, y2:20})
+            .style({'stroke':'white', 'stroke-width':1})
           
           g_lines.append("line")
             .attr({x1:ctx.xStartSetSizes + 280, x2:ctx.xStartSetSizes + 290, y1:0, y2:20})
-            .style({'stroke':'black', 'stroke-width':1})
+            .style({'stroke':'white', 'stroke-width':1})
           
           //g.selectAll(".cutlines").data([e.id]).exit().remove();
 
@@ -1623,6 +1623,12 @@ function UpSet() {
 
     document.getElementById('rowSizeValue').addEventListener('input', function () {
         ctx.cellDistance = +(document.getElementById('rowSizeValue').value);
+        //console.log(ctx.cellSize);
+        rowTransition();
+    });
+
+    document.getElementById('rowPaddingValue').addEventListener('input', function () {
+        ctx.cellDistance = +(document.getElementById('rowPaddingValue').value);
         //console.log(ctx.cellSize);
         rowTransition();
     });
