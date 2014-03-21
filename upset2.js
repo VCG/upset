@@ -840,8 +840,12 @@ function UpSet() {
                     return .8 + i * .2;
                   else
                     return .4 + i * .4;
-              }).on('mouseover', mouseoverRow)
-            .on('mouseout', mouseoutRow)
+              })
+            .on('click', function () {
+              ctx.intersectionClicked(d3.select(this).node().parentNode.__data__);
+            })
+            .on('mouseover', function () { mouseoverRow(d3.select(this).node().parentNode.__data__); })
+            .on('mouseout', function () { mouseoutRow(d3.select(this).node().parentNode.__data__); })
 
         })
 
