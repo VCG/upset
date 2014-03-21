@@ -261,7 +261,6 @@ Aggregate.prototype.constructor = Element;
 function makeSubSet(setMask) {
 
     var bitMask = 1;
-
     var tempMask = setMask;
     var sum = 0;
     for (var i = 0; i < usedSets.length; i++) {

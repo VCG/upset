@@ -410,17 +410,7 @@ function setUpSubSets() {
 
     combinations = Math.pow(2, usedSets.length) - 1;
 
-
-//    if (UpSetState.maxCardinality === undefined || UpSetState.minCardinality === undefined) {
-//
-//        UpSetState.minCardinality = 0;
-//        document.getElementById('maxCardinality').value = UpSetState.maxCardinality;
-//        document.getElementById('minCardinality').value = UpSetState.minCardinality;
-//    }
-
     subSets.length = 0;
-    // the max value for the cut-off
-    // console.log("LENGTH = " + attributes[attributes.length - 2].max);
     for (var i = 0; i <= combinations; i++) {
         makeSubSet(i)
     }

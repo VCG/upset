@@ -6,7 +6,7 @@ var SET_SIZE_GROUP_PREFIX = 'SetSizeG_';
 var EMPTY_GROUP_ID = 'EmptyGroup';
 var SET_BASED_GROUPING_PREFIX = "SetG_";
 
-var handleLogicGroups = function (subsets, dataRows, level, parentID) {
+var handleLogicGroups = function (subsets, level, parentID) {
     filterGroups = [];
     UpSetState.logicGroups.forEach(function (d) {
         var group = new QueryGroup(d.id, d.groupName, d.orClauses);
@@ -19,8 +19,75 @@ var handleLogicGroups = function (subsets, dataRows, level, parentID) {
         filterGroups.push(group)
 
     })
+}
 
+var groupByOverlapDegree = function (subSets, level, parentID) {
+    var degree = 2;
+    var newGroups = []
 
+    var combinations = Math.pow(2, usedSets.length) - 1;
+
+    var queries = []
+    for (var i = 0; i <= combinations; i++) {
+        fillMasks(i, usedSets.length, 2, queries);
+
+    }
+    for (var i = 0; i < queries.length; i++) {
+        var name = "";
+        for (var j = 0; j < queries[i].length; j++) {
+            if (queries[i][j] === 1) {
+                name += usedSets[j].elementName + " ";
+            }
+        }
+        var group = new QueryGroup("Overlap_G_" + i + "_" + + parentID, name, queries[i]);
+        getSubsetsForMaskList(subSets, [queries[i]], function (d) {
+            group.addSubSet(d);
+        });
+        if (group.subSets.length > 0) {
+            newGroups.unshift(group);
+        }
+    }
+
+    return newGroups;
+//    console.log(queries);
+
+//    for (var i = 0; i < subSets.length; i++) {
+//        mask = Array.apply(null, new Array(subSets.length)).map(Number.prototype.valueOf, 0);
+//        mask[i] = 1;
+//    }
+
+}
+
+var fillMasks = function (setMask, length, minSets, queries) {
+
+    var bitMask = 1;
+
+    var query = Array.apply(null, new Array(length)).map(Number.prototype.valueOf, 0);
+
+    var memberCount = 0;
+
+    for (var setIndex = length - 1; setIndex >= 0; setIndex--) {
+        if ((setMask & bitMask) === 1) {
+            query[setIndex] = 1;
+            memberCount++;
+        }
+        else {
+            query[setIndex] = 2;
+        }
+        setMask = setMask >> 1;
+    }
+    if (memberCount == minSets) {
+        queries.push(query);
+    }
+
+//    var resultMasks = [];
+//    for (var maskCount = 0; maskCount < length; maskCount++) {
+//        for (var i = 0; i < length; i++) {
+//            var newMask = masks[maskCount].slice(0);
+//
+//
+//        }
+//    }
 }
 
 var groupByRelevanceMeasure = function (subSets, level, parentID) {
@@ -93,7 +160,6 @@ var collapseGroup = function (group) {
     return;
 
 };
-
 
 var collapseAggregate = function (aggregate) {
     aggregate.isCollapsed = !aggregate.isCollapsed;
@@ -218,6 +284,7 @@ var StateMap = {
     groupByIntersectionSize: groupByIntersectionSize,
     groupBySet: groupBySet,
     groupByRelevanceMeasure: groupByRelevanceMeasure,
+    groupByOverlapDegree: groupByOverlapDegree,
 
     sortByCombinationSize: sortByCombinationSize,
     sortBySubSetSize: sortBySubSetSize,
@@ -230,6 +297,7 @@ var StateOpt = {
     groupByIntersectionSize: 'groupByIntersectionSize',
     groupBySet: 'groupBySet',
     groupByRelevanceMeasure: 'groupByRelevanceMeasure',
+    groupByOverlapDegree: 'groupByOverlapDegree',
 
     sortByCombinationSize: 'sortByCombinationSize',
     sortBySubSetSize: 'sortBySubSetSize',
@@ -287,11 +355,10 @@ var updateState = function (parameter) {
     }
 
     if (UpSetState.logicGroupChanged) {
-        handleLogicGroups(subSets, dataRows, 1);
+        handleLogicGroups(subSets, 1);
         UpSetState.logicGroupChanged = false;
 
     }
-
 
     if (filterGroups && filterGroups.length > 0) {
         var filteredRows = unwrapGroups(filterGroups);

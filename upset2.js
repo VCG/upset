@@ -1486,6 +1486,18 @@ function UpSet() {
                 rowTransition();
             });
 
+
+        d3.selectAll('#groupByOverlapDegree').on(
+            'click',
+            function (d) {
+                UpSetState.grouping = StateOpt.groupByOverlapDegree;
+                UpSetState.levelTwoGrouping = undefined;
+                toggleGroupingL2(false);
+                disableL2Equivalent('#groupByOverlapDegreeL2');
+                updateState();
+                rowTransition();
+            });
+
         d3.selectAll('#noGrouping').on(
             'click',
             function (d) {
@@ -1513,6 +1525,14 @@ function UpSet() {
             'click',
             function (d) {
                 UpSetState.levelTwoGrouping = StateOpt.groupBySet;
+                updateState();
+                rowTransition();
+            });
+
+        d3.selectAll('#groupByOverlapDegreeL2').on(
+            'click',
+            function (d) {
+                UpSetState.levelTwoGrouping = StateOpt.groupByOverlapDegree;
                 updateState();
                 rowTransition();
             });
