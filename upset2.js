@@ -720,7 +720,7 @@ function UpSet() {
         })
 
         /// --- the sizeBar
-
+/*
         var sizeBars = subsetRows.selectAll(".row-type-subset").data(function (d) {
             return [d]
         })
@@ -747,6 +747,7 @@ function UpSet() {
             .on('mouseout', mouseoutRow)
         sizeBars.exit().remove();
 
+
         var sizeBarsChanges = sizeBars
         if (ctx.barTransitions) sizeBarsChanges.transition()
         sizeBarsChanges.attr({
@@ -763,6 +764,88 @@ function UpSet() {
                 return ctx.cellSize - 2
             }
         })
+
+      */
+
+      subsetRows.each(function (e, j) {
+
+          var g = d3.select(this);
+          var max_scale = ctx.subSetSizeScale.domain()[1];
+          var cellSizeShrink = 3;
+          var maxLevels = 3;
+          var i = 0, is_overflowing = false;
+          var nbLevels = Math.min(maxLevels, Math.ceil(e.data.setSize / max_scale));
+
+          var data = d3.range(nbLevels).map(function () {
+
+              var f = {};
+              f.data = {};
+              f.data.type = e.data.type;
+
+              if (i == nbLevels - 1 &&  Math.ceil(e.data.setSize / max_scale) < nbLevels+1)
+                  f.data.setSize = (e.data.setSize % max_scale);
+              else 
+                  f.data.setSize = max_scale;
+              i++;
+              return f;
+          })
+
+          g.selectAll(".cutlines").remove();
+
+          if(Math.ceil(e.data.setSize / max_scale) > maxLevels ) {
+            var g_lines = g.selectAll(".cutlines").data([e.id]).enter().append("g").attr("class", "cutlines")
+
+            g_lines.append("line")
+              .attr({x1:ctx.xStartSetSizes + 285, x2:ctx.xStartSetSizes + 295, y1:0, y2:20})
+              .style({'stroke':'white', 'stroke-width':1})
+            
+            g_lines.append("line")
+              .attr({x1:ctx.xStartSetSizes + 280, x2:ctx.xStartSetSizes + 290, y1:0, y2:20})
+              .style({'stroke':'white', 'stroke-width':1})
+          }
+
+          // Add new layers
+          var layers_enter = g.selectAll(".row-type-group").data(data).enter()
+
+          layers_enter.append('rect')
+              .attr("class",function (d) {
+                  return ( 'subSetSize row-type-group' );
+
+              })
+
+          // Remove useless layers
+          g.selectAll(".row-type-group").data(data).exit().remove()
+
+          // Update current layers
+          g.selectAll(".row-type-group")
+              .attr({
+                  transform: function (d, i) {
+                      var y = 0;
+                      if (d.data.type !== ROW_TYPE.SUBSET)
+                          y = 0;//cellSize / 3 * .4;
+                      return   'translate(' + (ctx.xStartSetSizes) + ', ' + (y + cellSizeShrink * i +1) + ')'; // ' + (textHeight - 5) + ')'
+                  },
+
+                  width: function (d, i) {
+                      return ctx.subSetSizeScale(d.data.setSize);
+                  },
+                  height: function (d, i) {
+                      return ctx.cellSize - cellSizeShrink * 2 * i-2;
+                  }
+              })
+              .style("opacity", function (d, i) {
+                  if(nbLevels == 1)
+                    return .8;
+                  else if(nbLevels == 2)
+                    return .8 + i * .2;
+                  else
+                    return .4 + i * .4;
+              }).on('mouseover', mouseoverRow)
+            .on('mouseout', mouseoutRow)
+
+        })
+
+
 
     }
 
@@ -951,10 +1034,6 @@ function UpSet() {
 //                })
 //            })
 
-
-
-
-
 //        })
 
 
@@ -970,9 +1049,6 @@ function UpSet() {
           var nbLevels = Math.min(maxLevels, Math.ceil(e.data.setSize / max_scale));
 
           var data = d3.range(nbLevels).map(function () {
-
-              // Yes, this is for cloning object
-//              var f = JSON.parse(JSON.stringify(e))
 
               var f = {};
               f.data = {};
@@ -999,7 +1075,6 @@ function UpSet() {
               .attr({x1:ctx.xStartSetSizes + 280, x2:ctx.xStartSetSizes + 290, y1:0, y2:20})
               .style({'stroke':'white', 'stroke-width':1})
           }
-          //g.selectAll(".cutlines").data([e.id]).exit().remove();
 
           // Add new layers
           var layers_enter = g.selectAll(".row-type-group").data(data).enter()
@@ -1010,10 +1085,10 @@ function UpSet() {
 
               })
 
-          // Remove layers
+          // Remove useless layers
           g.selectAll(".row-type-group").data(data).exit().remove()
 
-          // Update layers
+          // Update current layers
           g.selectAll(".row-type-group")
               .attr({
                   transform: function (d, i) {
