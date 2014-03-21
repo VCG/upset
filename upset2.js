@@ -1037,13 +1037,13 @@ function UpSet() {
                     return .8 + i * .2;
                   else
                     return .4 + i * .4;
-              })
-
-        }).on('click', function (d) {
-                  var selection = Selection.fromSubset(d.data.subSets);
+              }).on('click', function (d) {
+                  var selection = Selection.fromSubset(d3.select(this).node().parentNode.__data__.data.subSets);
                   selections.addSelection(selection);
                   selections.setActive(selection);
               })
+
+        })
 
     }
 
