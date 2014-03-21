@@ -10,6 +10,7 @@ Ui = function() {
 
     // needs to be called
     self.initialize();
+    self.initWidthHandler();
 };
 
 /**
@@ -68,6 +69,7 @@ Ui.prototype.initialize = function() {
     self.createHeader();
     self.hideMenu();
     self.updateFixedHeightContainers();
+
 }
 
 Ui.prototype.createHeader = function() {
@@ -94,5 +96,69 @@ Ui.prototype.toggleMenu = function() {
     var self = this;
 
     $(".ui-menu").slideToggle( { step: self.updateFixedHeightContainers } );
+
     //$( "#show-menu-button").toggleClass( "fa-spin");
+}
+
+
+Ui.prototype.initWidthHandler = function(){
+    $("#moveHandle").on("drag")
+
+    $(function() {
+        var isDragging = false;
+        var startX = undefined;
+        var endX = undefined;
+        var leftWidth = undefined;
+        var rightLeft = undefined;
+
+        $("#moveHandle")
+            .mousedown(function(event) {
+                event.stopPropagation()
+                console.log("MD");
+                if ( !isDragging ) {
+                    startX = event.clientX; //#set-vis-container
+                    leftWidth = $(".ui-layout-center").width();
+                    rightLeft = $(".ui-layout-east").offset().left;
+                    isDragging = true;
+                }
+
+            });
+
+        $(window).mouseup(function() {
+            if ( isDragging ) {
+//                endX = event.clientX;
+//                $(".ui-layout-center").width( leftWidth + (endX - startX) );
+//                   $("#right").offset( { left: rightLeft + (endX - startX) } );
+//                   $("#right").width( rightLeft - (endX - startX) );
+                isDragging = false;
+            }
+
+
+        });
+
+        $(window).mousemove(function(event) {
+
+            if ( isDragging ) {
+                endX = event.clientX;
+
+                event.stopPropagation()
+
+                $(".ui-layout-center").width( leftWidth + (endX - startX) );
+                $("#vis").width( leftWidth + (endX - startX) );
+//                $("#vis svg").width( leftWidth + (endX - startX) );
+//                $("#right").offset( { left: rightLeft + (endX - startX) } );
+//                $("#right").width( rightLeft - (endX - startX) );
+
+                $(EventManager).trigger( "vis-svg-resize", { newWidth:+(leftWidth + (endX - startX)) });
+
+            }
+        });
+
+    });
+
+
+
+
+
+
 }

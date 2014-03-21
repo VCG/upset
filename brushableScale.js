@@ -120,8 +120,10 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
 
 
     var update = function(params){
+
         if (params.maxValue !=null) maxValue= params.maxValue;
         if (params.labels !=null) labels = params.labels;
+        if (params.width != null) width = params.width;
 
         updateScales();
         updateSliderLabels();
@@ -185,14 +187,15 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
         xOverViewAxisUpper.scale(xScale);
         xOverViewAxisLower.scale(xScale);
 
-//        xDetailScale = d3.scale.linear().domain([0,brushedValue]).range([0,width])
-//        xDetailAxisUpper.scale(xDetailScale);
-//        xDetailAxisLower.scale(xDetailScale);
+        xDetailScale.range([0,width])
+        xDetailAxisUpper.scale(xDetailScale);
+        xDetailAxisLower.scale(xDetailScale);
+        connectionAreaData[2] =  [width,0];
 
         svg.select(".x.overviewAxisUpper.axis").call(xOverViewAxisUpper)
         svg.select(".x.overviewAxisLower.axis").call(xOverViewAxisLower)
-//        svg.select(".x.detailAxisUpper.axis").call(xDetailAxisUpper)
-//        svg.select(".x.detailAxisLower.axis").call(xDetailAxisLower)
+        svg.select(".x.detailAxisUpper.axis").call(xDetailAxisUpper)
+        svg.select(".x.detailAxisLower.axis").call(xDetailAxisLower)
 
         // do NOT redraw !
         overViewBrushDef.x(xScale)

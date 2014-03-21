@@ -590,6 +590,16 @@ html, body, .ui-container {
 
 }
 
+#moveHandle{
+    cursor: pointer;
+    position: relative;
+    left: -25px;
+    background-color: lightgray;
+    float: left;
+    padding: 2px;
+}
+
+
 /*.groupBackGround .filterGroup{*/
      /*fill: #d3d3d3;;  */
     /*logic Color*/

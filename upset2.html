@@ -46,7 +46,7 @@
 
 <div class="ui-container">
     <div class="ui-row">
-        <div class="ui-column">
+        <div class="ui-column ui-layout-west" style="width:120px;">
             <div id="groupConfig" class="configTable">
                 <!--<span>First, group by</span>-->
                 <!--<span>-->
@@ -134,13 +134,15 @@
 
         </div>
 
-        <div class="ui-column">
+        <div class="ui-column ui-layout-center" style="padding: 0px;">
             <div id="set-vis-container" data-height-ratio="1" class="fixed-y-container">
                 <div id="vis"></div>
             </div>
         </div>
 
-        <div class="ui-column ">
+        <div class="ui-column ui-layout-east">
+
+            <i id="moveHandle" class="fa fa-arrows-h"></i>
 
             <div id="element-viewers-container">
                 <div id="element-viewers-controls"></div>
@@ -194,6 +196,10 @@
         $(EventManager).bind("ui-horizontal-resize", function (event, data) {
             // nothing so far
         });
+
+
+
+
     });
 </script>
 

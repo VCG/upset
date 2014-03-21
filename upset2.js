@@ -249,6 +249,8 @@ function UpSet() {
         plotSubSets();
 
         initCallback = [updateHeaders, plotSubSets] //TODO: bad hack !!!
+
+//        updateWidthHandle()
     }
 
 //    // update svg size
@@ -1226,6 +1228,7 @@ function UpSet() {
 
     function plotSubSets() {
 
+
         setDynamicVisVariables();
         initRows();
 
@@ -1377,6 +1380,15 @@ function UpSet() {
             if (usedSets.length !== 2 && usedSets.length !== 3) {
                 $("#venn-diagram-viewer").fadeOut(500);
             }
+        });
+
+        $(EventManager).bind("vis-svg-resize", function (event, data) {
+            //vis-svg-resize", { newWidth:+(leftWidth + (endX - startX)) });
+            updateFrames(null,data.newWidth);
+            updateHeaders()
+            plotSubSets()
+
+
         });
     }
 
@@ -1630,14 +1642,37 @@ function UpSet() {
            })
 
            ctx.foreignDiv.style("height", +(visHeight-ctx.textHeight)+"px")
-       }
+       }else
+
+        if (windowHeight == null){
+            ctx.svg.attr({
+                width:(Math.max(windowWidth,400))
+            })
+
+            ctx.subSetSizeWidth = d3.scale.linear()
+                .domain([680,480]).range([300,100]).clamp(true)(windowWidth);
+
+            ctx.expectedValueWidth = d3.scale.linear()
+                .domain([880,680]).range([300,100]).clamp(true)(windowWidth);
+
+            ctx["brushableScaleSubsetUpdate"](null,{
+                width:ctx.subSetSizeWidth
+            });
+
+        }
+
 
     }
+
+
+
 
 
     bindEvents()
     setUpSortSelections()
     initData(ctx, [init]);
+
+
 
 
 //    init();
