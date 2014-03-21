@@ -92,6 +92,36 @@ function plotSetOverview() {
         "transform": "translate(" + 0 + "," + 0 + ")"
     })
 
+
+function orderChange() {
+  if(!this.checked)
+    return;
+
+  var sortFn;
+
+  if (this.value === "name")
+    sortFn = sortName;
+  else
+    sortFn = sortSize;
+
+  console.log(this.value, sortFn)
+
+  d3.selectAll(".unusedSetSizeBackground")
+    .sort(sortFn)
+    .attr("transform", function (d, i) {
+      return 'translate(' + (cellDistance * (i )) + ', 60)';
+    })
+
+
+  d3.selectAll(".unusedSetSizeBackground")
+    .sort(sortFn)
+    .attr("transform", function (d, i) {
+        return 'translate(' + (cellDistance * (i )) + ', 60)'
+    });
+
+  //d3.selectAll("input[value=setcheck]").property("checked", false);
+}
+
     overview.on('mouseover', function(d, i) {
 
       // Remove current transitions
@@ -116,7 +146,7 @@ function plotSetOverview() {
 
         })
 
-        unusedSets.sort(sortSets).filter(function(d, ii) {
+        unusedSets.sort(sortSize).filter(function(d, ii) {
 
           d3.select(".unusedSets")
             .append("foreignObject")
@@ -172,6 +202,21 @@ function plotSetOverview() {
               d3.selectAll("input[value=setcheck]").property("checked", false);
             });
 
+         d3.select("#vis").select("svg")
+            .append("foreignObject")
+            .attr("width", 200)
+            .attr("height", 100)
+            .attr("class", "bulkCheck")
+            .attr("y", 20)
+            .attr("x", function(d, i) {
+              return 145;//ctx.w- usedSets.length*cellDistance-100;
+            })
+        //    .html("<form style='font-size:12px'>Order by: <input type=radio name='order' value='size' checked/> Size <input type=radio name='order' value='name' /> Name</form>")
+            .on("click", function() {
+//              console.log(this.value, d3.select(this).select)
+              d3.select(this).selectAll("input").property("checked", true).each(orderChange);
+            });
+
            d3.selectAll(".bulkCheck").on("mouseenter", function() {
             // Remove current transitions
             d3.selectAll(".bulkCheck").transition();
@@ -182,6 +227,9 @@ function plotSetOverview() {
             mouseoutColumn(d, i);
             d3.selectAll(".bulkCheck").transition().duration(1500).remove();
         })
+
+
+      d3.selectAll("input").on("click", orderChange);
 
     var formLabels = overview.append("g").attr("class", "usedSets");
 
@@ -244,9 +292,14 @@ function plotSetOverview() {
         .domain(d3.range(unusedSets.length))
         .rangeRoundBands([0, unusedSets.length+cellSize], 0.05); 
 
-    var sortSets = function (a, b) {
-        return b.setSize - a.setSize;
+    var sortSize = function (a, b) {
+      return d3.ascending(a.elementName, b.elementName);
     };
+
+    var sortName = function (a, b) {
+      return d3.ascending(a.elementName, b.elementName);
+    };
+
 
         
     var unusedSetsLabels =  overview.append("foreignObject")
@@ -269,7 +322,7 @@ function plotSetOverview() {
 
     unusedSetsLabels
             .append('rect')
-            .sort(sortSets)
+            .sort(sortSize)
             .attr({
                 class: 'unusedSetSizeBackground',
                 transform: function (d, i) {
@@ -280,10 +333,11 @@ function plotSetOverview() {
             })
             .on('click', setClicked)
 
+
     // background bar
     unusedSetsLabels
         .append('rect')
-        .sort(sortSets)
+        .sort(sortSize)
         .attr({
             class: 'unusedSetSize',
             transform: function (d, i) {
@@ -310,7 +364,7 @@ function plotSetOverview() {
 
             return d.elementName.substring(0, truncateAfter);
           })
-        .sort(sortSets)
+        .sort(sortSize)
         .attr({
             class: 'setLabel',
             id: function (d) {
