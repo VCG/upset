@@ -1,6 +1,6 @@
 {
 	"file": "rand.csv",
-	"name": "Random",
+	"name": "3 Sets, ~2k attributes, randomly distrib.",
 	"header": 0,
 	"separator": ";",
 	"skip": 0,

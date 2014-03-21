@@ -840,8 +840,12 @@ function UpSet() {
                     return .8 + i * .2;
                   else
                     return .4 + i * .4;
-              }).on('mouseover', mouseoverRow)
-            .on('mouseout', mouseoutRow)
+              })
+            .on('click', function () {
+              ctx.intersectionClicked(d3.select(this).node().parentNode.__data__);
+            })
+            .on('mouseover', function () { mouseoverRow(d3.select(this).node().parentNode.__data__); })
+            .on('mouseout', function () { mouseoutRow(d3.select(this).node().parentNode.__data__); })
 
         })
 
@@ -1517,6 +1521,7 @@ function UpSet() {
         $('#groupByIntersectionSizeL2').prop('disabled', disable);
         $('#groupBySetL2').prop('disabled', disable);
         $('#groupByRelevanceMeasureL2').prop('disabled', disable);
+        $('#groupByOverlapDegreeL2').prop('disabled', disable);
     }
 
     function disableL2Equivalent(id) {
@@ -1797,23 +1802,11 @@ function UpSet() {
             ctx["brushableScaleSubsetUpdate"](null,{
                 width:ctx.subSetSizeWidth
             });
-
         }
-
-
     }
 
-
-
-
-
-    //bindEvents()
     setUpSortSelections()
     initData(ctx, [init]);
-
-
-
-
 //    init();
 
 }

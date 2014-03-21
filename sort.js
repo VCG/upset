@@ -25,20 +25,26 @@ var groupByOverlapDegree = function (subSets, level, parentGroup) {
     var degree = 2;
     var newGroups = []
 
+    var defaultMask;
+    if (parentGroup) {
+        defaultMask = parentGroup.combinedSets;
+    }
+
     var combinations = Math.pow(2, usedSets.length) - 1;
 
     var queries = []
     for (var i = 0; i <= combinations; i++) {
-        fillMasks(i, usedSets.length, 2, queries);
+        fillMasks(i, usedSets.length, 2, queries, defaultMask);
     }
     for (var i = 0; i < queries.length; i++) {
         var name = "";
         for (var j = 0; j < queries[i].length; j++) {
             if (queries[i][j] === 1) {
-                name += usedSets[j].elementName + " ";
+                if (parentGroup.elementName !== usedSets[j].elementName)
+                    name += usedSets[j].elementName + " ";
             }
         }
-        var group = new QueryGroup("Overlap_G_" + i + "_" + parentGroup.id, name, queries[i]);
+        var group = new Group("Overlap_G_" + i + "_" + parentGroup.id, name);
         group.level = level;
         getSubsetsForMaskList(subSets, [queries[i]], function (d) {
             group.addSubSet(d);
@@ -58,16 +64,25 @@ var groupByOverlapDegree = function (subSets, level, parentGroup) {
 
 }
 
-var fillMasks = function (setMask, length, minSets, queries) {
+var fillMasks = function (setMask, length, minSets, queries, defaultMask) {
 
     var bitMask = 1;
 
-    var query = Array.apply(null, new Array(length)).map(Number.prototype.valueOf, 0);
-
+    var query;
+    if (defaultMask) {
+        var query = defaultMask.slice(0);
+    }
+    else {
+        query = Array.apply(null, new Array(length)).map(Number.prototype.valueOf, 0);
+    }
     var memberCount = 0;
 
     for (var setIndex = length - 1; setIndex >= 0; setIndex--) {
-        if ((setMask & bitMask) === 1) {
+        if (query[setIndex] === 1) {
+            // true if this element is in the default mask
+            memberCount++;
+        }
+        else if ((setMask & bitMask) === 1) {
             query[setIndex] = 1;
             memberCount++;
         }
@@ -77,7 +92,17 @@ var fillMasks = function (setMask, length, minSets, queries) {
         setMask = setMask >> 1;
     }
     if (memberCount == minSets) {
-        queries.push(query);
+        // FIXME this is to remove duplicates. We shouldn't produce them in the first place
+        var duplicate = false;
+        for (var i = 0; i < queries.length; i++) {
+            if (queries[i].compare(query)) {
+                duplicate = true;
+                break;
+            }
+        }
+        if (!duplicate) {
+            queries.push(query);
+        }
     }
 
 //    var resultMasks = [];
@@ -137,9 +162,11 @@ var groupBySet = function (subSets, level, parentGroup) {
 
     var newGroups = [];
     newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
+
     for (var i = 0; i < usedSets.length; i++) {
         var group = new Group(SET_BASED_GROUPING_PREFIX + (i + 1) + parentGroup.id, usedSets[i].elementName, level);
-
+        group.combinedSets = Array.apply(null, new Array(usedSets.length)).map(Number.prototype.valueOf, 2);
+        group.combinedSets[i] = 1;
         newGroups.push(group);
 
         subSets.forEach(function (subSet) {
