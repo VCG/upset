@@ -1096,6 +1096,10 @@ function UpSet() {
                     return d.data.disproportionality < 0 ? 'disproportionality negative' : 'disproportionality positive';
                 },
                 transform: function (d) {
+                    if (isNaN(d.data.disproportionality))
+                    {
+                        return 'translate(' + 0 + ', ' + 0 + ')';
+                    }
                     var start = ctx.expectedValueScale(d3.min([0, d.data.disproportionality]));
                     start += ctx.xStartExpectedValues;
                     var y = 0;
@@ -1104,6 +1108,10 @@ function UpSet() {
                     return 'translate(' + start + ', ' + y + ')';
                 },
                 width: function (d) {
+                    if (isNaN(d.data.disproportionality))
+                    {
+                        return 0;
+                    }
                     //  console.log(d.data.disproportionality)
                     return Math.abs(ctx.expectedValueScale(d.data.disproportionality) - ctx.expectedValueScale(0));
                 },
