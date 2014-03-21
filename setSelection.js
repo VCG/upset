@@ -104,22 +104,32 @@ function orderChange() {
   else
     sortFn = sortSize;
 
-  console.log(this.value, sortFn)
-
-  d3.selectAll(".unusedSetSizeBackground")
+  d3.selectAll(".unusedSets .unusedSetSizeBackground")
     .sort(sortFn)
+    .transition().duration(500).delay(function(d, i) {
+      return i * 500 / unusedSets.length;
+    })
     .attr("transform", function (d, i) {
-      return 'translate(' + (cellDistance * (i )) + ', 60)';
+       return 'translate(' + (cellDistance * (i )) + ', 20)'
+    })
+  d3.selectAll(".unusedSets .unusedSetSize")
+    .sort(sortFn)
+    .transition().duration(500).delay(function(d, i) {
+      return i * 500 / unusedSets.length;
+    })
+    .attr("transform", function (d, i) {
+        return 'translate(' + (cellDistance * i) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 20) + ')'
     })
 
-
-  d3.selectAll(".unusedSetSizeBackground")
+  d3.selectAll(".unusedSets .setLabel")
     .sort(sortFn)
+    .transition().duration(500).delay(function(d, i) {
+      return i * 500 / unusedSets.length;
+    })
     .attr("transform", function (d, i) {
-        return 'translate(' + (cellDistance * (i )) + ', 60)'
-    });
+        return 'translate(' + (cellDistance * (i + 1) + 5) + ', 20) rotate(90)'
+    })
 
-  //d3.selectAll("input[value=setcheck]").property("checked", false);
 }
 
     overview.on('mouseover', function(d, i) {
@@ -127,7 +137,7 @@ function orderChange() {
       // Remove current transitions
       d3.selectAll(".bulkCheck").transition();
 
-      if(d3.selectAll(".bulkCheck")[0].length>3)
+      if(d3.selectAll(".bulkCheck")[0].length>5)
         return;
 
         usedSets.filter(function(d, ii) {
@@ -154,7 +164,7 @@ function orderChange() {
             .attr("width", 100)
             .attr("height", 100)
             .attr("class", "bulkCheck")
-            .attr("y", 40)
+            .attr("y", 0)
             .attr("x", function(d, i) {
               return cellDistance * (ii);
             })
@@ -211,10 +221,10 @@ function orderChange() {
             .attr("x", function(d, i) {
               return 145;//ctx.w- usedSets.length*cellDistance-100;
             })
-        //    .html("<form style='font-size:12px'>Order by: <input type=radio name='order' value='size' checked/> Size <input type=radio name='order' value='name' /> Name</form>")
+            .html("<form style='font-size:12px'>Order by: <input type=radio name='order' value='size' checked/> Size <input type=radio name='order' value='name' /> Name</form>")
             .on("click", function() {
-//              console.log(this.value, d3.select(this).select)
-              d3.select(this).selectAll("input").property("checked", true).each(orderChange);
+              console.log("toto")
+              d3.select(this).selectAll("input").each(orderChange);
             });
 
            d3.selectAll(".bulkCheck").on("mouseenter", function() {
@@ -227,9 +237,6 @@ function orderChange() {
             mouseoutColumn(d, i);
             d3.selectAll(".bulkCheck").transition().duration(1500).remove();
         })
-
-
-     // d3.selectAll("input").on("click", orderChange);
 
     var formLabels = overview.append("g").attr("class", "usedSets");
 
@@ -293,7 +300,7 @@ function orderChange() {
         .rangeRoundBands([0, unusedSets.length+cellSize], 0.05); 
 
     var sortSize = function (a, b) {
-      return d3.ascending(a.elementName, b.elementName);
+      return b.setSize - a.setSize;
     };
 
     var sortName = function (a, b) {
@@ -304,17 +311,18 @@ function orderChange() {
         
     var unusedSetsLabels =  overview.append("foreignObject")
         .attr("width", 710)
-        .attr("height", 200)
+        .attr("height", textHeight+20)
         .attr("x", usedSets.length*cellSize)
+        .attr("y", 40)
       .append("xhtml:div")
         .style("overflow-x", "auto")
-        .style("margin-top", "50px")
         .append("svg")
         .attr({
-            height: textHeight*2,
+            height: textHeight+20,
             width: unusedSets.length*cellSize
         })
         .append("g")
+        //.attr("transform", "translate(-50)")
         .attr("class", "unusedSets")
         .selectAll('.unsedSetsLabel')
         .data(unusedSets)
@@ -326,7 +334,7 @@ function orderChange() {
             .attr({
                 class: 'unusedSetSizeBackground',
                 transform: function (d, i) {
-                    return 'translate(' + (cellDistance * (i )) + ', 60)'
+                    return 'translate(' + (cellDistance * (i )) + ', 20)'
                 },
                 height: textHeight+20,
                 width: cellSize
@@ -341,7 +349,7 @@ function orderChange() {
         .attr({
             class: 'unusedSetSize',
             transform: function (d, i) {
-                return 'translate(' + (cellDistance * i) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 60) + ')'
+                return 'translate(' + (cellDistance * i) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 20 ) + ')'
             }, // ' + (textHeight - 5) + ')'
             height: function (d) {
                 return setSizeScale(d.setSize);
@@ -371,7 +379,7 @@ function orderChange() {
                 return d.elementName.substring(0, truncateAfter);
             },
                 transform: function (d, i) {
-                    return 'translate(' + (cellDistance * (i + 1) + 5) + ', 60) rotate(90)'
+                    return 'translate(' + (cellDistance * (i + 1) + 5) + ', 20) rotate(90)'
                 },
             y: cellSize - 3,
             x: 3,
