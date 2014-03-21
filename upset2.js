@@ -959,7 +959,6 @@ function UpSet() {
 
 
         // --- Horizon Bars for size.
-        d3.selectAll(".cutlines").remove();
 
         groupRows.each(function (e, j) {
 
@@ -987,16 +986,19 @@ function UpSet() {
               return f;
           })
 
-          var g_lines = g.selectAll(".cutlines").data([e.id]).enter().append("g").attr("class", "cutlines")
+          g.selectAll(".cutlines").remove();
 
-          g_lines.append("line")
-            .attr({x1:ctx.xStartSetSizes + 285, x2:ctx.xStartSetSizes + 295, y1:0, y2:20})
-            .style({'stroke':'white', 'stroke-width':1})
-          
-          g_lines.append("line")
-            .attr({x1:ctx.xStartSetSizes + 280, x2:ctx.xStartSetSizes + 290, y1:0, y2:20})
-            .style({'stroke':'white', 'stroke-width':1})
-          
+          if(Math.ceil(e.data.setSize / max_scale) > maxLevels ) {
+            var g_lines = g.selectAll(".cutlines").data([e.id]).enter().append("g").attr("class", "cutlines")
+
+            g_lines.append("line")
+              .attr({x1:ctx.xStartSetSizes + 285, x2:ctx.xStartSetSizes + 295, y1:0, y2:20})
+              .style({'stroke':'white', 'stroke-width':1})
+            
+            g_lines.append("line")
+              .attr({x1:ctx.xStartSetSizes + 280, x2:ctx.xStartSetSizes + 290, y1:0, y2:20})
+              .style({'stroke':'white', 'stroke-width':1})
+          }
           //g.selectAll(".cutlines").data([e.id]).exit().remove();
 
           // Add new layers
@@ -1006,21 +1008,10 @@ function UpSet() {
               .attr("class",function (d) {
                   return ( 'subSetSize row-type-group' );
 
-              }).on('click', function (d) {
-                  var selection = Selection.fromSubset(d.data.subSets);
-                  selections.addSelection(selection);
-                  selections.setActive(selection);
               })
 
           // Remove layers
           g.selectAll(".row-type-group").data(data).exit().remove()
-
-          g.selectAll(".cutlines").style({'display': function() {
-            if(Math.ceil(e.data.setSize / max_scale) > maxLevels )
-              return "block";
-            else
-              return "none";
-          }});
 
           // Update layers
           g.selectAll(".row-type-group")
@@ -1048,7 +1039,11 @@ function UpSet() {
                     return .4 + i * .4;
               })
 
-        })
+        }).on('click', function (d) {
+                  var selection = Selection.fromSubset(d.data.subSets);
+                  selections.addSelection(selection);
+                  selections.setActive(selection);
+              })
 
     }
 
