@@ -89,7 +89,7 @@ function UpSet() {
 
         ctx.intersectionClicked = function (d) {
             var selection = Selection.fromSubset(d.data);
-            selections.addSelection(selection);
+            selections.addSelection(selection,true);
             selections.setActive(selection);
         }
     }
@@ -1114,7 +1114,7 @@ function UpSet() {
                     return .4 + i * .4;
               }).on('click', function (d) {
                   var selection = Selection.fromSubset(d3.select(this).node().parentNode.__data__.data.subSets);
-                  selections.addSelection(selection);
+                  selections.addSelection(selection,true);
                   selections.setActive(selection);
               })
 
@@ -1211,7 +1211,7 @@ function UpSet() {
             .on('click', function (d) {
                 if (d.data.type === ROW_TYPE.SUBSET) {
                     var selection = Selection.fromSubset(d.data);
-                    selections.addSelection(selection);
+                    selections.addSelection(selection,true);
                     selections.setActive(selection);
                 }
             })
