@@ -7,6 +7,7 @@ function plotSelectionTabs( element, selections, activeSelection ) {
         .attr('class', 'selection-button')
         .html('<i title="New selection" class="fa fw fa-plus"></i>')
         .on("click", function(event){
+            console.log( d3.select(this) );
             createInitialSelection();
         });    
 
@@ -54,6 +55,8 @@ function plotSelectionTabs( element, selections, activeSelection ) {
 
 
 function plotSelectedItems( elementId, selection ) { 
+
+    console.trace();
 
     var element = d3.select(elementId);
     // clear target element
@@ -118,7 +121,7 @@ function plotSelectedItems( elementId, selection ) {
                 });
 
     var rows = tbody.selectAll("tr")
-            .data(selection.items)
+            .data(selection.items.slice(0,100))
         .enter()
             .append("tr")
             .each(function(d,i) { 
