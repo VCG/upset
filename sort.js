@@ -40,10 +40,11 @@ var groupByOverlapDegree = function (subSets, level, parentGroup) {
         var name = "";
         for (var j = 0; j < queries[i].length; j++) {
             if (queries[i][j] === 1) {
-                name += usedSets[j].elementName + " ";
+                if (parentGroup.elementName !== usedSets[j].elementName)
+                    name += usedSets[j].elementName + " ";
             }
         }
-        var group = new QueryGroup("Overlap_G_" + i + "_" + parentGroup.id, name, queries[i]);
+        var group = new Group("Overlap_G_" + i + "_" + parentGroup.id, name);
         group.level = level;
         getSubsetsForMaskList(subSets, [queries[i]], function (d) {
             group.addSubSet(d);
@@ -67,8 +68,13 @@ var fillMasks = function (setMask, length, minSets, queries, defaultMask) {
 
     var bitMask = 1;
 
-    var query = defaultMask.slice(0);//Array.apply(null, new Array(length)).map(Number.prototype.valueOf, 0);
-
+    var query;
+    if (defaultMask) {
+        var query = defaultMask.slice(0);
+    }
+    else {
+        query = Array.apply(null, new Array(length)).map(Number.prototype.valueOf, 0);
+    }
     var memberCount = 0;
 
     for (var setIndex = length - 1; setIndex >= 0; setIndex--) {
@@ -86,7 +92,17 @@ var fillMasks = function (setMask, length, minSets, queries, defaultMask) {
         setMask = setMask >> 1;
     }
     if (memberCount == minSets) {
-        queries.push(query);
+        // FIXME this is to remove duplicates. We shouldn't produce them in the first place
+        var duplicate = false;
+        for (var i = 0; i < queries.length; i++) {
+            if (queries[i].compare(query)) {
+                duplicate = true;
+                break;
+            }
+        }
+        if (!duplicate) {
+            queries.push(query);
+        }
     }
 
 //    var resultMasks = [];
@@ -146,9 +162,11 @@ var groupBySet = function (subSets, level, parentGroup) {
 
     var newGroups = [];
     newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
+
     for (var i = 0; i < usedSets.length; i++) {
         var group = new Group(SET_BASED_GROUPING_PREFIX + (i + 1) + parentGroup.id, usedSets[i].elementName, level);
-
+        group.combinedSets = Array.apply(null, new Array(usedSets.length)).map(Number.prototype.valueOf, 2);
+        group.combinedSets[i] = 1;
         newGroups.push(group);
 
         subSets.forEach(function (subSet) {

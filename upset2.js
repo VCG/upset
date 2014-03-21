@@ -1517,6 +1517,7 @@ function UpSet() {
         $('#groupByIntersectionSizeL2').prop('disabled', disable);
         $('#groupBySetL2').prop('disabled', disable);
         $('#groupByRelevanceMeasureL2').prop('disabled', disable);
+        $('#groupByOverlapDegreeL2').prop('disabled', disable);
     }
 
     function disableL2Equivalent(id) {
@@ -1797,20 +1798,12 @@ function UpSet() {
             ctx["brushableScaleSubsetUpdate"](null,{
                 width:ctx.subSetSizeWidth
             });
-
         }
-
-
     }
-
 
     bindEvents()
     setUpSortSelections()
     initData(ctx, [init]);
-
-
-
-
 //    init();
 
 }
