@@ -229,7 +229,7 @@ function orderChange() {
         })
 
 
-      d3.selectAll("input").on("click", orderChange);
+     // d3.selectAll("input").on("click", orderChange);
 
     var formLabels = overview.append("g").attr("class", "usedSets");
 
