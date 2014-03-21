@@ -184,7 +184,7 @@ function Group(groupID, groupName, level) {
     this.subSets = [];
     /** the visible subsets */
     this.visibleSets = [];
-    this.aggregate = new Aggregate('empty' + groupID, ' Subsets');
+    this.aggregate = new Aggregate('empty' + groupID, ' Subsets', level + 1);
     /** the hidden/aggregated subsets */
     this.hiddenSets = [];
 
@@ -232,12 +232,15 @@ function QueryGroup(groupID, groupName, orClauses) {
 QueryGroup.prototype = Group;
 QueryGroup.prototype.constructor = Group;
 
-function Aggregate(aggregateID, aggregateName) {
+function Aggregate(aggregateID, aggregateName, level) {
     Element.call(this, aggregateID, aggregateName);
     this.type = ROW_TYPE.AGGREGATE;
     this.subSets = [];
 
     this.isCollapsed = true;
+
+    /** the nesting level of the group, 1 is no nesting, 2 is one level down */
+    this.level = level;
 
     //this.setSize = 0;
     this.expectedProb = 0;
@@ -258,7 +261,6 @@ Aggregate.prototype.constructor = Element;
 function makeSubSet(setMask) {
 
     var bitMask = 1;
-
     var tempMask = setMask;
     var sum = 0;
     for (var i = 0; i < usedSets.length; i++) {

@@ -67,6 +67,8 @@
                     Size</label></div>
                 <div><input type='radio' id='groupByRelevanceMeasure' name="group"><label for="groupByRelevanceMeasure">Disproportionality</label>
                 </div>
+                <div><input type='radio' id='groupByOverlapDegree' name="group"><label for="groupByOverlapDegree">Group all Overlaps &gt; 2</label>
+                </div>
                 <div><input type='radio' id='noGrouping' name="group"><label for="noGrouping">Don't Group</label></div>
             </div>
 
@@ -87,6 +89,9 @@
                 <div><input type='radio' id='groupBySetL2' name="groupL2"><label for="groupBySetL2">Sets</label></div>
                 <div><input type='radio' id='groupByIntersectionSizeL2' name="groupL2"><label
                         for="groupByIntersectionSizeL2">Intersection Size</label></div>
+                <div><input type='radio' id='groupByOverlapDegreeL2' name="group"><label for="groupByOverlapDegreeL2">Group all Overlaps &gt; 2</label>
+                </div>
+
                 <div><input type='radio' id='groupByRelevanceMeasureL2' name="groupL2"><label
                         for="groupByRelevanceMeasureL2">Disproportionality</label></div>
                 <div><input type='radio' id='noGroupingL2' name="groupL2" checked="true"><label for="noGroupingL2">Don't
@@ -125,12 +130,16 @@
                 </div>
             </div>
 
+            <div id='rowPadding' class='configTable'>
+                <div class="configHeader">Row padding</div>
+                <div>RowPadding: <input id='rowPaddingValue' type='number' min='10' max='20' value='20'>
+                </div>
+            </div>
 
             <div id='venn-diagram-viewer' class='configTable'>
                 <div class="configHeader">Venn Diagram</div>
                 <div id="venn-vis"></div>
             </div>
-
 
         </div>
 

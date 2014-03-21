@@ -14,6 +14,7 @@ var ctx = {
     subSetSizeWidth: 300,
 
     leftOffset: 90,
+    leftIndent: 10,
     topOffset: 120,
 
     /** The width from the start of the set vis to the right edge */
@@ -565,7 +566,16 @@ function UpSet() {
                         return queryParameters['duration'];
                 })
         subSetTransition.attr({transform: function (d) {
-            return 'translate(0, ' + ctx.rowScale(d.id) + ')';
+
+                if (d.data.type === ROW_TYPE.SUBSET)
+                    return 'translate(0, ' + ctx.rowScale(d.id) + ')';
+                else {
+                    offset_x = 0;
+                    //if (d.data.level == 2)
+                    //    offset_x += 10
+                    return 'translate('+offset_x+', ' + ctx.rowScale(d.id) + ')';
+                }
+
         }, class: function (d) {
             return 'row ' + d.data.type;
         }}).transition().duration(100).style("opacity", 1);
@@ -779,11 +789,11 @@ function UpSet() {
         groupsRect.exit().remove();
         //**update
         groupsRect.attr({
-            width: function () {
-                return ctx.setVisWidth + ctx.leftOffset
+            width: function (d) {
+                return ctx.setVisWidth + ctx.leftOffset - (d.data.level-1)*ctx.leftIndent;
             },
             height: ctx.cellSize,
-            x: -ctx.leftOffset
+            x: function(d) { return (d.data.level-1)*ctx.leftIndent-ctx.leftOffset}
         });
 
         //  console.log('g2: ' + groups);
@@ -793,7 +803,7 @@ function UpSet() {
         groupsText.enter().append('text')
             .attr({class: 'groupLabel groupLabelText',
                 y: ctx.cellSize - 3,
-                x: (-ctx.leftOffset+12),
+                x: function(d) { return (-ctx.leftOffset+12)+(d.data.level-1)*ctx.leftIndent;},
                 'font-size': ctx.cellSize - 6
 
             });
@@ -814,13 +824,14 @@ function UpSet() {
 //                return d.data.elementName;
             if (d.data.type === ROW_TYPE.AGGREGATE)
                 return String.fromCharCode(8709) + '-subsets (' + d.data.subSets.length + ') ';
-            else return d.data.elementName;
+            else 
+                return d.data.elementName;
         }).attr({
                 class: function () {
                      if (ctx.cellDistance<14) return 'groupLabel groupLabelText small'; else return 'groupLabel groupLabelText'
                 },
                 y: ctx.cellSize - 3,
-                x: (-ctx.leftOffset+15)
+                x: function(d) { return (-ctx.leftOffset+15) + (d.data.level-1)*ctx.leftIndent; }
 
             }).on('click', function (d) {
                 collapseGroup(d.data);
@@ -844,9 +855,9 @@ function UpSet() {
                 if (d.data.isCollapsed==0) return "\uf147";
                 else return "\uf196"
             })
-            .attr({
-                "transform":"translate("+(-ctx.leftOffset+2+5)+","+(ctx.cellSize/2+5)+")"
-
+            .attr({"transform": function(d) {
+                return "translate("+(-ctx.leftOffset+2+5+(d.data.level-1)*ctx.leftIndent)+","+(ctx.cellSize/2+5)+")"
+              }
             }).style({
                 "font-size":"10px"
             })
@@ -947,71 +958,95 @@ function UpSet() {
 //        })
 
 
-
-
-
-
-
-
         // --- Horizon Bars for size.
+        d3.selectAll(".cutlines").remove();
 
         groupRows.each(function (e, j) {
 
-            var g = d3.select(this);
-            var max_scale = ctx.subSetSizeScale.domain()[1];
-            var cellSizeShrink = 2;
+          var g = d3.select(this);
+          var max_scale = ctx.subSetSizeScale.domain()[1];
+          var cellSizeShrink = 3;
+          var maxLevels = 3;
+          var i = 0, is_overflowing = false;
+          var nbLevels = Math.min(maxLevels, Math.ceil(e.data.setSize / max_scale));
 
-            var i = 0;
-            var nbLevels = Math.ceil(e.data.setSize / max_scale);
-//            console.log("NB levels ", nbLevels)
-            var data = d3.range(Math.ceil(e.data.setSize / max_scale)).map(function () {
+          var data = d3.range(nbLevels).map(function () {
 
-                // Yes, this is for cloning object
-                var f = JSON.parse(JSON.stringify(e))
+              // Yes, this is for cloning object
+//              var f = JSON.parse(JSON.stringify(e))
 
-                if (i == nbLevels - 1)
-                    f.data.setSize = (f.data.setSize % max_scale);
-                else
-                    f.data.setSize = max_scale;
+              var f = {};
+              f.data = {};
+              f.data.type = e.data.type;
 
-                i++;
-                return f;
-            })
+              if (i == nbLevels - 1 &&  Math.ceil(e.data.setSize / max_scale) < nbLevels+1)
+                  f.data.setSize = (e.data.setSize % max_scale);
+              else 
+                  f.data.setSize = max_scale;
+              i++;
+              return f;
+          })
 
-            g.selectAll(".row-type-group").data(data).enter().append('rect')
-                .attr("class",function (d) {
-                    return ( 'subSetSize row-type-group' );
+          var g_lines = g.selectAll(".cutlines").data([e.id]).enter().append("g").attr("class", "cutlines")
 
-                }).on('click', function (d) {
-                    var selection = Selection.fromSubset(d.data.subSets);
-                    selections.addSelection(selection);
-                    selections.setActive(selection);
-                })
+          g_lines.append("line")
+            .attr({x1:ctx.xStartSetSizes + 285, x2:ctx.xStartSetSizes + 295, y1:0, y2:20})
+            .style({'stroke':'white', 'stroke-width':1})
+          
+          g_lines.append("line")
+            .attr({x1:ctx.xStartSetSizes + 280, x2:ctx.xStartSetSizes + 290, y1:0, y2:20})
+            .style({'stroke':'white', 'stroke-width':1})
+          
+          //g.selectAll(".cutlines").data([e.id]).exit().remove();
 
-            g.selectAll(".row-type-group").data(data).exit().remove()
+          // Add new layers
+          var layers_enter = g.selectAll(".row-type-group").data(data).enter()
 
-            g.selectAll(".row-type-group")
-                .attr({
-                    //class: 'subSetSize',
-                    transform: function (d, i) {
-                        var y = 0;
-                        if (d.data.type !== ROW_TYPE.SUBSET)
-                            y = 0;//cellSize / 3 * .4;
-                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (y + cellSizeShrink * i) + ')'; // ' + (textHeight - 5) + ')'
-                    },
+          layers_enter.append('rect')
+              .attr("class",function (d) {
+                  return ( 'subSetSize row-type-group' );
 
-                    width: function (d, i) {
-                        return ctx.subSetSizeScale(d.data.setSize) - i * cellSizeShrink;
-                    },
-                    height: function (d, i) {
-                        return ctx.cellSize - cellSizeShrink * i;
-                    }
-                })
-                .style("opacity", function (d, i) {
-                    return (i + 1) / (nbLevels);
-                })
-//                .on('mouseover', mouseoverRow)
-//                .on('mouseout', mouseoutRow);
+              }).on('click', function (d) {
+                  var selection = Selection.fromSubset(d.data.subSets);
+                  selections.addSelection(selection);
+                  selections.setActive(selection);
+              })
+
+          // Remove layers
+          g.selectAll(".row-type-group").data(data).exit().remove()
+
+          g.selectAll(".cutlines").style({'display': function() {
+            if(Math.ceil(e.data.setSize / max_scale) > maxLevels )
+              return "block";
+            else
+              return "none";
+          }});
+
+          // Update layers
+          g.selectAll(".row-type-group")
+              .attr({
+                  transform: function (d, i) {
+                      var y = 0;
+                      if (d.data.type !== ROW_TYPE.SUBSET)
+                          y = 0;//cellSize / 3 * .4;
+                      return   'translate(' + (ctx.xStartSetSizes) + ', ' + (y + cellSizeShrink * i) + ')'; // ' + (textHeight - 5) + ')'
+                  },
+
+                  width: function (d, i) {
+                      return ctx.subSetSizeScale(d.data.setSize);
+                  },
+                  height: function (d, i) {
+                      return ctx.cellSize - cellSizeShrink * 2 * i;
+                  }
+              })
+              .style("opacity", function (d, i) {
+                  if(nbLevels == 1)
+                    return 1;
+                  else if(nbLevels == 2)
+                    return .8 + i * .2;
+                  else
+                    return .4 + i * .4;
+              })
 
         })
 
@@ -1063,6 +1098,10 @@ function UpSet() {
                     return d.data.disproportionality < 0 ? 'disproportionality negative' : 'disproportionality positive';
                 },
                 transform: function (d) {
+                    if (isNaN(d.data.disproportionality))
+                    {
+                        return 'translate(' + 0 + ', ' + 0 + ')';
+                    }
                     var start = ctx.expectedValueScale(d3.min([0, d.data.disproportionality]));
                     start += ctx.xStartExpectedValues;
                     var y = 0;
@@ -1071,6 +1110,10 @@ function UpSet() {
                     return 'translate(' + start + ', ' + y + ')';
                 },
                 width: function (d) {
+                    if (isNaN(d.data.disproportionality))
+                    {
+                        return 0;
+                    }
                     //  console.log(d.data.disproportionality)
                     return Math.abs(ctx.expectedValueScale(d.data.disproportionality) - ctx.expectedValueScale(0));
                 },
@@ -1455,6 +1498,18 @@ function UpSet() {
                 rowTransition();
             });
 
+
+        d3.selectAll('#groupByOverlapDegree').on(
+            'click',
+            function (d) {
+                UpSetState.grouping = StateOpt.groupByOverlapDegree;
+                UpSetState.levelTwoGrouping = undefined;
+                toggleGroupingL2(false);
+                disableL2Equivalent('#groupByOverlapDegreeL2');
+                updateState();
+                rowTransition();
+            });
+
         d3.selectAll('#noGrouping').on(
             'click',
             function (d) {
@@ -1482,6 +1537,14 @@ function UpSet() {
             'click',
             function (d) {
                 UpSetState.levelTwoGrouping = StateOpt.groupBySet;
+                updateState();
+                rowTransition();
+            });
+
+        d3.selectAll('#groupByOverlapDegreeL2').on(
+            'click',
+            function (d) {
+                UpSetState.levelTwoGrouping = StateOpt.groupByOverlapDegree;
                 updateState();
                 rowTransition();
             });
@@ -1600,6 +1663,12 @@ function UpSet() {
 
     document.getElementById('rowSizeValue').addEventListener('input', function () {
         ctx.cellDistance = +(document.getElementById('rowSizeValue').value);
+        //console.log(ctx.cellSize);
+        rowTransition();
+    });
+
+    document.getElementById('rowPaddingValue').addEventListener('input', function () {
+        ctx.cellDistance = +(document.getElementById('rowPaddingValue').value);
         //console.log(ctx.cellSize);
         rowTransition();
     });
