@@ -1729,9 +1729,6 @@ function UpSet() {
     }
 
 
-
-
-
     bindEvents()
     setUpSortSelections()
     initData(ctx, [init]);

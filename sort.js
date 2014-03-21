@@ -25,11 +25,16 @@ var groupByOverlapDegree = function (subSets, level, parentGroup) {
     var degree = 2;
     var newGroups = []
 
+    var defaultMask;
+    if (parentGroup) {
+        defaultMask = parentGroup.combinedSets;
+    }
+
     var combinations = Math.pow(2, usedSets.length) - 1;
 
     var queries = []
     for (var i = 0; i <= combinations; i++) {
-        fillMasks(i, usedSets.length, 2, queries);
+        fillMasks(i, usedSets.length, 2, queries, defaultMask);
     }
     for (var i = 0; i < queries.length; i++) {
         var name = "";
@@ -58,16 +63,20 @@ var groupByOverlapDegree = function (subSets, level, parentGroup) {
 
 }
 
-var fillMasks = function (setMask, length, minSets, queries) {
+var fillMasks = function (setMask, length, minSets, queries, defaultMask) {
 
     var bitMask = 1;
 
-    var query = Array.apply(null, new Array(length)).map(Number.prototype.valueOf, 0);
+    var query = defaultMask.slice(0);//Array.apply(null, new Array(length)).map(Number.prototype.valueOf, 0);
 
     var memberCount = 0;
 
     for (var setIndex = length - 1; setIndex >= 0; setIndex--) {
-        if ((setMask & bitMask) === 1) {
+        if (query[setIndex] === 1) {
+            // true if this element is in the default mask
+            memberCount++;
+        }
+        else if ((setMask & bitMask) === 1) {
             query[setIndex] = 1;
             memberCount++;
         }

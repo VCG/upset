@@ -104,7 +104,7 @@ function orderChange() {
   else
     sortFn = sortSize;
 
-  console.log(this.value, sortFn)
+ // console.log(this.value, sortFn);
 
   d3.selectAll(".unusedSetSizeBackground")
     .sort(sortFn)
