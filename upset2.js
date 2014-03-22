@@ -1302,7 +1302,8 @@ function UpSet() {
                 return {uuid: k, items: d.data.selections[k]};
             });
             selArray = selArray.filter(function (d) {
-                return d.items.length !== 0;
+                            console.log(d)
+                return d.items.length !== 0 && d.uuid != "undefined"; // prevents useless black indicators..
             })
             return selArray;
         })
@@ -1312,11 +1313,19 @@ function UpSet() {
             }).on('click', function (d) {
                 selections.setActiveByUuid(d.uuid);
                 updateOverlays(allRows);
-            })
+            }).on('mouseenter', function() {
+              d3.select(this).attr("transform", function (d, i) {
+                return 'translate(' + (ctx.xStartSetSizes + ctx.subSetSizeScale(d.items.length)) + ' , ' + 0 +
+                    ') scale(2)';
+              })
+            }).on('mouseout', function() {
+              d3.select(this).attr("transform", function (d, i) {
+                return 'translate(' + (ctx.xStartSetSizes + ctx.subSetSizeScale(d.items.length)) + ' , ' + 0 +
+                    ') scale(1)';
+            })})
         selectIndicators.exit().remove();
         selectIndicators.attr({
             transform: function (d, i) {
-
                 return 'translate(' + (ctx.xStartSetSizes + ctx.subSetSizeScale(d.items.length)) + ' , ' + 0 +
                     ')';
             },
