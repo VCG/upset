@@ -497,6 +497,10 @@ html, body, .ui-container {
     min-width: 66%;
 }
 
+.ui-column.ui-layout-east {
+    border-left: 1px solid #999;    
+}
+
 .element-viewer-header {
     display: inline;
 }
@@ -593,10 +597,14 @@ html, body, .ui-container {
 #moveHandle{
     cursor: pointer;
     position: relative;
-    left: -25px;
-    background-color: lightgray;
+    left: -13px;
+    background-color: #ddd;
     float: left;
-    padding: 2px;
+    cursor: ew-resize;    
+    border-left: 1px solid #999;
+    border-right: 1px solid #999;
+    width: 3px;
+    height: 25px;
 }
 
 
