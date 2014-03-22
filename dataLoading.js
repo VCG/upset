@@ -9,17 +9,17 @@ var dataSetDescriptions, queryParameters = {};
 var initCallback; // function to call when dataset is loaded
 var globalCtx;
 
-function initData(ctx, callback){
+function initData(ctx, callback) {
     retrieveQueryParameters();
 
     initCallback = callback;
-    globalCtx =ctx;
+    globalCtx = ctx;
     $.when($.ajax({ url: 'datasets.json', dataType: 'json' })).then(
         function (data, textStatus, jqXHR) {
             loadDataSetDescriptions(data);
         },
-        function(data, textStatus, jqXHR) {
-            console.error( 'Error loading "' + this.url + '".' );
+        function (data, textStatus, jqXHR) {
+            console.error('Error loading "' + this.url + '".');
         });
 }
 
@@ -33,13 +33,13 @@ function loadDataSetDescriptions(dataSetList) {
         console.log("Loading " + dataSetList[i])
 
         var deferred = $.ajax({ url: dataSetList[i], dataType: 'json', async: false })
-            .success(function(response) {
+            .success(function (response) {
                 var description = response; //deferred.responseJSON;
 
                 // preprend data file path (based on path to description in data set list)
                 description.file = dataSetList[i].substring(0, dataSetList[i].lastIndexOf('/')) + '/' + description.file;
 
-                descriptions.push(description);                
+                descriptions.push(description);
             });
     }
 
@@ -50,7 +50,6 @@ var setUpConfiguration = function () {
 
     var maxCardSpinner = document.getElementById('maxCardinality');
     var minCardSpinner = document.getElementById('minCardinality');
-
 
     var updateCardinality = function (e) {
 
@@ -126,7 +125,7 @@ function updateQueryParameters() {
 function load(descriptions) {
 
     dataSetDescriptions = descriptions;
-    $(EventManager).trigger( "loading-dataset-started", { description: dataSetDescriptions[queryParameters['dataset']]  } );
+    $(EventManager).trigger("loading-dataset-started", { description: dataSetDescriptions[queryParameters['dataset']]  });
 
     setUpConfiguration();
     loadDataSet(queryParameters['dataset']);
@@ -170,7 +169,7 @@ function run() {
     setUpSubSets();
     // setUpGroupings();
     updateState();
-    initCallback.forEach(function(callback){
+    initCallback.forEach(function (callback) {
         callback();
     })
 //    plot();
@@ -180,7 +179,7 @@ function run() {
     //createInitialSelection();
     plotSetOverview();
 
-    $(EventManager).trigger( "loading-dataset-finished", { } );    
+    $(EventManager).trigger("loading-dataset-finished", { });
 }
 
 function getNumberOfSets(dataSetDescription) {
@@ -408,6 +407,8 @@ function parseDataSet(data, dataSetDescription) {
 
 function setUpSubSets() {
 
+    $(EventManager).trigger("computing-subsets-started", undefined);
+
     combinations = Math.pow(2, usedSets.length) - 1;
 
     subSets.length = 0;
@@ -415,11 +416,14 @@ function setUpSubSets() {
         makeSubSet(i)
     }
 
+    $(EventManager).trigger("computing-subsets-finished", undefined);
+
+
 }
 
 function change() {
 
-    $(EventManager).trigger( "loading-dataset-started", { description: dataSetDescriptions[queryParameters['dataset']]  } );
+    $(EventManager).trigger("loading-dataset-started", { description: dataSetDescriptions[queryParameters['dataset']]  });
 
     sets.length = 0;
     subSets.length = 0;
@@ -443,7 +447,7 @@ function updateSetContainment(set, refresh) {
     if (!set.isSelected) {
         set.isSelected = true;
         usedSets.push(set);
-        $(EventManager).trigger( "set-added", { set: set } );
+        $(EventManager).trigger("set-added", { set: set });
     }
     else {
         set.isSelected = false;
@@ -451,11 +455,11 @@ function updateSetContainment(set, refresh) {
         var index = usedSets.indexOf(set);
         if (index > -1) {
             usedSets.splice(index, 1);
-            $(EventManager).trigger( "set-removed", { set: set } );
+            $(EventManager).trigger("set-removed", { set: set });
         }
     }
 
-    if(refresh) {
+    if (refresh) {
         subSets.length = 0;
         dataRows.length = 0;
         setUpSubSets();
@@ -468,7 +472,7 @@ function updateSetContainment(set, refresh) {
         plotSetOverview();
         ctx.svg.attr("width", ctx.w)
         d3.selectAll(".svgGRows, .foreignGRows").attr("width", ctx.w)
-        d3.selectAll(".backgroundRect").attr("width", ctx.w-ctx.leftOffset)
+        d3.selectAll(".backgroundRect").attr("width", ctx.w - ctx.leftOffset)
     }
 }
 
