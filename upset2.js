@@ -1443,6 +1443,7 @@ function UpSet() {
                 plotSelectedItems("#item-table", data.selection);
                 plotSetOverview();
             }
+            elementViewers.renderViewer();
         });
 
         $(EventManager).bind("ui-resize", function (event, data) {
