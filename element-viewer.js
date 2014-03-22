@@ -791,7 +791,7 @@ ElementViewer.prototype.renderParameterEditor = function( element, parameter, va
             s +=  parameter.name + ' ' + '<input data-element-viewer-parameter-variable="' + parameter.variable + '" type="number" step="1" value="' + d3.format('d')(value) + '"></input>';
             break;
         case 'boolean':
-            s +=  parameter.name + ' ' + '<input data-element-viewer-parameter-variable="' + parameter.variable + '" type="checkbox" checked="' + ( value ? 'checked' : '' ) + '"></input>';
+            s +=  parameter.name + ' ' + '<input data-element-viewer-parameter-variable="' + parameter.variable + '" type="checkbox" ' + ( value ? 'checked' : '' ) + '></input>';
             break;
         case 'string':
             // fall-through
@@ -801,6 +801,8 @@ ElementViewer.prototype.renderParameterEditor = function( element, parameter, va
     }
 
     s += '</div>'; 
+
+    console.log( value );
 
     // add to DOM
     element.html(s);
@@ -819,11 +821,15 @@ ElementViewer.prototype.renderAttributeEditor = function( element, attributes, a
     s += '<b>' + attribute.name + '</b>' + '<select data-element-viewer-attribute-variable="' + attribute.variable +'">';
     for ( var i = 0; i < attributes.length; ++i ) {
         if ( Attribute.matchesType( attributes[i].type, attribute.type ) ) {
-            s += '<option value="' + i + '" >' + attributes[i].name + '</option>';
+            if ( value && value === i ) {
+                s += '<option value="' + i + '" selected>' + attributes[i].name + '</option>';
+            }
+            else {
+                s += '<option value="' + i + '">' + attributes[i].name + '</option>';
+            }
         }
     }
     s += "</select>";
-
     s += '</div>'; 
 
     // add to DOM
