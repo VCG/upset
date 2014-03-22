@@ -344,7 +344,7 @@ select {
 }
 
 .fixed-y-container {
-    overflow-y: scroll;
+    overflow-y: auto;
     border-bottom: 2px solid pink;
 }
 
