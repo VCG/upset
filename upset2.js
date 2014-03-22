@@ -28,7 +28,7 @@ var ctx = {
     paddingTop: 30,
     paddingSide: 20,
 
-    truncateAfter: 25,
+    truncateAfter: 3,
 
     setCellDistance: 12,
     setCellSize: 10,
@@ -726,7 +726,7 @@ function UpSet() {
         })
 
         /// --- the sizeBar
-        /* ORIGINAL SUBSETS SIZE
+
          var sizeBars = subsetRows.selectAll(".row-type-subset").data(function (d) {
          return [d]
          })
@@ -771,8 +771,7 @@ function UpSet() {
          }
          })
 
-         */
-
+        /* ORIGINAL SUBSETS SIZE
         subsetRows.each(function (e, j) {
 
             var g = d3.select(this);
@@ -866,6 +865,8 @@ function UpSet() {
 
         })
 
+*/
+
     }
 
     function updateGroupRows(groupRows) {
@@ -932,8 +933,12 @@ function UpSet() {
 //                return d.data.elementName;
             if (d.data.type === ROW_TYPE.AGGREGATE)
                 return String.fromCharCode(8709) + '-subsets (' + d.data.subSets.length + ') ';
-            else
-                return d.data.elementName;
+            else {
+              var str = d.data.elementName.substring(0, ctx.truncateAfter);
+              if(str.length<d.data.elementName.length)
+                str = str.trim() + "...";
+              return str;
+            }
         }).attr({
                 class: function () {
                     if (ctx.cellDistance < 14) return 'groupLabel groupLabelText small'; else return 'groupLabel groupLabelText'

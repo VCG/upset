@@ -102,7 +102,7 @@ Selection.prototype.createSelection = function (attributeId, filterId, parameter
     ])) );
 };
 
-Selection.prototype.applyFilters = function ( silent ) {
+Selection.prototype.applyFilters = function () {
 
     // start over with all items in the data set
     this.items = allItems;
@@ -120,9 +120,7 @@ Selection.prototype.applyFilters = function ( silent ) {
         this.items = newItems;
     }
 
-    if ( !silent ) {
-        $(EventManager).trigger("item-selection-updated", { selection: this });
-    }
+    $(EventManager).trigger("item-selection-updated", { selection: this });
 }
 
 Selection.prototype.mapToSubsets = function (subsetList) {
@@ -190,7 +188,7 @@ SelectionList.prototype.getSelections = function () {
     return selections.list;
 }
 
-SelectionList.prototype.addSelection = function (selection, silent) {
+SelectionList.prototype.addSelection = function (selection) {
     var self = this;
 
     selection.id = self._nextId();
@@ -198,14 +196,12 @@ SelectionList.prototype.addSelection = function (selection, silent) {
 
     self.colors[selection.id] = self._nextColor();
 
-    if ( !silent ) {
-        $(EventManager).trigger("item-selection-added", { selection: selection });
-    }
+    $(EventManager).trigger("item-selection-added", { selection: selection });
 
     return self;
 };
 
-SelectionList.prototype.removeSelection = function (selection, silent) {
+SelectionList.prototype.removeSelection = function (selection) {
     var self = this;
 
     for (var i = 0; i < this.list.length; ++i) {
@@ -221,9 +217,7 @@ SelectionList.prototype.removeSelection = function (selection, silent) {
             // remove selection from color map
             delete self.colors[selection.id];
 
-            if ( !silent ) {
-                $(EventManager).trigger("item-selection-removed", { selection: selection, index: i });
-            }
+            $(EventManager).trigger("item-selection-removed", { selection: selection, index: i });
 
             if (self.isActive(selection)) {
                 if (self.list.length > 0) {
@@ -343,14 +337,12 @@ SelectionList.prototype.getActive = function () {
     return ( self.active );
 };
 
-SelectionList.prototype.setActive = function (selection, silent ) {
+SelectionList.prototype.setActive = function (selection) {
     var self = this;
 
     self.active = selection;
 
-    if ( !silent ) {
-        $(EventManager).trigger("item-selection-activated", { selection: self.active });   
-    }
+    $(EventManager).trigger("item-selection-activated", { selection: selection });
 
     return ( self );
 };
@@ -360,9 +352,7 @@ SelectionList.prototype.setActiveByUuid = function (uuid) {
 
     self.active = self.getSelectionFromUuid(uuid);
 
-    if ( !silent ) {
-        $(EventManager).trigger("item-selection-activated", { selection: selection });   
-    }
+    $(EventManager).trigger("item-selection-activated", { selection: self.active });
 
     return ( self );
 };
