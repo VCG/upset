@@ -56,15 +56,9 @@ function plotSelectionTabs( element, selections, activeSelection ) {
 
 function plotSelectedItems( elementId, selection ) { 
 
-    console.trace();
-
     var element = d3.select(elementId);
     // clear target element
     element.html("");
-
-    //console.log( "Selection is " );
-    //console.log( selection );
-    //console.trace();
 
     if ( !selection ) {
         return;
