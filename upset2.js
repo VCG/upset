@@ -788,6 +788,12 @@ function UpSet() {
                 f.data = {};
                 f.data.type = e.data.type;
 
+               // Prevent empty bar when right on 1-level value
+                if(nbLevels==1 && e.data.setSize > 0 && (e.data.setSize % max_scale == 0)) {
+                  f.data.setSize = e.data.setSize;
+                  return f;
+                }
+
                 if (i == nbLevels - 1 && Math.ceil(e.data.setSize / max_scale) < nbLevels + 1)
                     f.data.setSize = (e.data.setSize % max_scale);
                 else
@@ -838,7 +844,6 @@ function UpSet() {
                     height: function (d, i) {
                         return ctx.cellSize - cellSizeShrink * 2 * i - 2;
                     },
-                   // fill: function() {console.log(e.id, "tata", selections.getColorFromUuid(e.id)); return selections.getColorFromUuid(e.id); }
                 })
                 .style("opacity", function (d, i) {
                     if (nbLevels == 1)
@@ -849,13 +854,14 @@ function UpSet() {
                         return .4 + i * .4;
                 })
                 .on('click', function () {
-                    ctx.intersectionClicked(d3.select(this).node().parentNode.__data__);
+                  //console.log("e", e, d3.select(this).node().parentNode.__data__)
+                  ctx.intersectionClicked(e);
                 })
                 .on('mouseover', function () {
-                    mouseoverRow(d3.select(this).node().parentNode.__data__);
+                    mouseoverRow(e);
                 })
                 .on('mouseout', function () {
-                    mouseoutRow(d3.select(this).node().parentNode.__data__);
+                    mouseoutRow(e);
                 })
 
         })
@@ -1065,6 +1071,12 @@ function UpSet() {
                 f.data = {};
                 f.data.type = e.data.type;
 
+                // Prevent empty bar when right on 1-level value
+                if(nbLevels==1 && e.data.setSize > 0 && (e.data.setSize % max_scale == 0)) {
+                  f.data.setSize = e.data.setSize;
+                  return f;
+                }
+
                 if (i == nbLevels - 1 && Math.ceil(e.data.setSize / max_scale) < nbLevels + 1)
                     f.data.setSize = (e.data.setSize % max_scale);
                 else
@@ -1103,10 +1115,8 @@ function UpSet() {
             g.selectAll(".row-type-group")
                 .attr({
                     transform: function (d, i) {
-                        var y = 0;
-                        if (d.data.type !== ROW_TYPE.SUBSET)
-                            y = 0;//cellSize / 3 * .4;
-                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (y + cellSizeShrink * i) + ')'; // ' + (textHeight - 5) + ')'
+  
+                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (cellSizeShrink * i) + ')'; // ' + (textHeight - 5) + ')'
                     },
 
                     width: function (d, i) {
@@ -1212,6 +1222,19 @@ function UpSet() {
             allRows.selectAll('.selectionIndicators').remove();
             return;
         }
+
+        // Preparing 
+
+        var newOverlay = allRows.selectAll(".newOverlay").data(function (d) {
+            return [d]
+        })
+
+        newOverlay.enter().append('rect')
+        .attr("class", "newOverlay");
+
+        // Compute the horizon
+
+        // Append to the previous one
 
         var selectionOverlay = allRows.selectAll(".what").data(function (d) {
             return [d]
