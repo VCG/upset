@@ -287,17 +287,8 @@ function UpSet() {
         setRects.enter().append("rect").attr({
             class: "sortBySet connection vertical"
         })
-            // FIXME: this breaks the event for the sorting, but without it, it doesn't highlight
-           // .on('mouseover', mouseoverColumn)
-            .on('mouseout', mouseoutColumn)
-            .on('click', function(d){
-                UpSetState.sorting = StateOpt.sortBySetItem;
-                UpSetState.grouping = undefined;
-                UpSetState.levelTwoGrouping = undefined;
-                UpSetState.forceUpdate = true;
-                updateState(d);
-                rowTransition();
-            })
+        .on('mouseover', mouseoverColumn)
+        .on('mouseout', mouseoutColumn)
 
         setRects.exit().remove();
 
@@ -331,7 +322,7 @@ function UpSet() {
             .append("svg:title")
             .text(function (d, i) {
                 return d.elementName;
-            });
+            })
 
         setRowsText.attr({
             class: function () {
@@ -346,6 +337,18 @@ function UpSet() {
             //  return 'translate(0, ' + ( cellDistance * (i)) + ')';
         },
             class: 'setRow'});
+
+
+        d3.selectAll('.sortBySet, .setLabel').on(
+            'click',
+            function (d) {
+                UpSetState.sorting = StateOpt.sortBySetItem;
+                UpSetState.grouping = undefined;
+                UpSetState.levelTwoGrouping = undefined;
+                UpSetState.forceUpdate = true;
+                updateState(d);
+                rowTransition();
+            });
 
     }
 
@@ -723,7 +726,7 @@ function UpSet() {
         })
 
         /// --- the sizeBar
-        /*
+        /* ORIGINAL SUBSETS SIZE
          var sizeBars = subsetRows.selectAll(".row-type-subset").data(function (d) {
          return [d]
          })
@@ -808,19 +811,19 @@ function UpSet() {
             }
 
             // Add new layers
-            var layers_enter = g.selectAll(".row-type-group").data(data).enter()
+            var layers_enter = g.selectAll(".row-type-subset").data(data).enter()
 
             layers_enter.append('rect')
                 .attr("class", function (d) {
-                    return ( 'subSetSize row-type-group' );
+                    return ( 'subSetSize row-type-subset' );
 
                 })
 
             // Remove useless layers
-            g.selectAll(".row-type-group").data(data).exit().remove()
+            g.selectAll(".row-type-subset").data(data).exit().remove()
 
             // Update current layers
-            g.selectAll(".row-type-group")
+            g.selectAll(".row-type-subset")
                 .attr({
                     transform: function (d, i) {
                         var y = 0;
@@ -834,7 +837,8 @@ function UpSet() {
                     },
                     height: function (d, i) {
                         return ctx.cellSize - cellSizeShrink * 2 * i - 2;
-                    }
+                    },
+                   // fill: function() {console.log(e.id, "tata", selections.getColorFromUuid(e.id)); return selections.getColorFromUuid(e.id); }
                 })
                 .style("opacity", function (d, i) {
                     if (nbLevels == 1)
@@ -1661,17 +1665,15 @@ function UpSet() {
         // --------- sortings ------
 
         // sort based on occurrence of one specific data item
-
-       // FIXME this should be here, not up next to the object
-//        d3.selectAll('.sortBySet').on(
-//            'click',
-//            function (d) {
-//                UpSetState.sorting = StateOpt.sortBySetItem;
-//                UpSetState.grouping = undefined;
-//                UpSetState.levelTwoGrouping = undefined;
-//                updateState(d);
-//                rowTransition();
-//            });
+        //d3.selectAll('.sortBySet, .setLabel').on(
+        //   'click',
+        //    function (d) {
+        //        UpSetState.sorting = StateOpt.sortBySetItem;
+        //        UpSetState.grouping = undefined;
+        //        UpSetState.levelTwoGrouping = undefined;
+        //        updateState(d);
+        //        rowTransition();
+        //    });
 
         d3.selectAll('#sortNrSetsInIntersection').on(
             'click',
