@@ -89,7 +89,7 @@ function UpSet() {
 
         ctx.intersectionClicked = function (d) {
             var selection = Selection.fromSubset(d.data);
-            selections.addSelection(selection);
+            selections.addSelection(selection,true);
             selections.setActive(selection);
         }
     }
@@ -1118,7 +1118,7 @@ function UpSet() {
                     return .4 + i * .4;
               }).on('click', function (d) {
                   var selection = Selection.fromSubset(d3.select(this).node().parentNode.__data__.data.subSets);
-                  selections.addSelection(selection);
+                  selections.addSelection(selection,true);
                   selections.setActive(selection);
               })
 
@@ -1215,7 +1215,7 @@ function UpSet() {
             .on('click', function (d) {
                 if (d.data.type === ROW_TYPE.SUBSET) {
                     var selection = Selection.fromSubset(d.data);
-                    selections.addSelection(selection);
+                    selections.addSelection(selection,true);
                     selections.setActive(selection);
                 }
             })
@@ -1397,7 +1397,7 @@ function UpSet() {
 
     function bindEvents() {
         $(EventManager).bind("item-selection-added", function (event, data) {
-            // console.log("Selection was added to selection list with color " + selections.getColor(data.selection) + ' and ' + data.selection.items.length + ' items.');
+            console.log("Selection was added to selection list with color " + selections.getColor(data.selection) + ' and ' + data.selection.items.length + ' items.');
 
             data.selection.mapToSubsets(subSets);
 
@@ -1407,7 +1407,7 @@ function UpSet() {
         });
 
         $(EventManager).bind("item-selection-updated", function (event, data) {
-            //console.log('Selection was updated! New length is ' + data.selection.items.length + ' items.');
+            console.log('Selection was updated! New length is ' + data.selection.items.length + ' items.');
 
             data.selection.mapToSubsets(subSets);
             plot();
@@ -1419,7 +1419,7 @@ function UpSet() {
         });
 
         $(EventManager).bind("item-selection-removed", function (event, data) {
-//    console.log("Selection was removed from selection list.");
+            console.log("Selection was removed from selection list.");
             data.selection.unmapFromSubsets(subSets);
 
             plot();
@@ -1431,7 +1431,7 @@ function UpSet() {
 
         $(EventManager).bind("item-selection-activated", function (event, data) {
             if (data.selection) {
-                //       console.log('Selection ' + data.selection.id + ' was activated.');
+                console.log('Selection ' + data.selection.id + ' was activated.');
 
                 plot();
                 plotSelectionTabs("#selection-tabs", selections, data.selection);
@@ -1805,7 +1805,6 @@ function UpSet() {
         }
     }
 
-    bindEvents()
     setUpSortSelections()
     initData(ctx, [init]);
 //    init();

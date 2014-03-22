@@ -161,7 +161,7 @@ function createInitialSelection() {
     }
 
     selection.filters = filterList;
-    selections.addSelection(selection);
+    selections.addSelection(selection, true);
     selections.setActive(selection);
 }
 
