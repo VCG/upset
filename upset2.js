@@ -88,7 +88,7 @@ function UpSet() {
 
         ctx.intersectionClicked = function (d) {
             var selection = Selection.fromSubset(d.data);
-            selections.addSelection(selection, true);
+            selections.addSelection(selection, false);
             selections.setActive(selection);
         }
     }
