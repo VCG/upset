@@ -24,19 +24,24 @@ h1 {
 /** The set size bar */
 .setSize {
     fill: #bbb0fb;
+    stroke: white;
+    stroke-width: 1px;
 }
 
 .unusedSetSize {
     fill: lightgray;
+    stroke: white;
+    stroke-width: 1px;
 }
 
 .setSizeBackground, .unusedSetSizeBackground {
     fill: #f0f0f0;
     stroke: white;
+    stroke-width: 1px;
 }
 
 .setSizeBackground:hover {
-    stroke: gray;
+    stroke: white;
     shape-rendering: crispEdges;
 }
 
@@ -56,10 +61,15 @@ h1 {
 .setLabel {
     /*dominant-baseline: middle;*/
     font: 12px sans-serif;
-    cursor: s-resize
+    cursor: s-resize;
+    font-weight:300;
     /*alignment-baseline:middle;*/
     /*alignment-baseline:middle;*/
     /* writing-mode: bt-lr;*/
+}
+
+.setRow .setLabel {
+    font-weight:500;
 }
 
 .setLabel.small{
@@ -67,11 +77,6 @@ h1 {
     font: 9px sans-serif;
     cursor: s-resize
     /* writing-mode: bt-lr;*/
-}
-
-
-
-.setLabel:hover {
 }
 
 .configTable {
@@ -84,6 +89,7 @@ h1 {
     text-anchor: left;
     cursor: s-resize;
     font-size: 11pt;
+    font-weight: 200;
 }
 
 .groupLabel.small {
@@ -133,6 +139,8 @@ h1 {
 
 .setBackground {
     fill: #d3d3d3;
+    stroke-width: 1;
+    fill: white;
 }
 
 .disproportionality.positive {

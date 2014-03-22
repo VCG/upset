@@ -10,11 +10,9 @@ function mouseoverColumn(d,i){
 
 function mouseoverColumnImpl(combinedSets) {
 
-//    console.log(d,i);
-
     d3.selectAll(".connection, .combination rect, .setSize")
     //    .style("opacity", .3)
-    .style("stroke", "none")
+    .style("stroke", "white")
 
     d3.selectAll(".connection.diagonal").filter(function (dd, ii) {
         return combinedSets[ii];
@@ -31,6 +29,13 @@ function mouseoverColumnImpl(combinedSets) {
         .style("opacity", 1)
         .style("stroke", "black")
 
+    d3.selectAll(".setSize").filter(function (dd, ii) {
+        return combinedSets[ii];
+//        return dd.id== d.id;
+    })
+        .style("opacity", 1)
+        .style("stroke", "black")
+
     d3.selectAll(".connection.vertical").filter(function (dd, ii) {
         return combinedSets[ii];
 //        return dd.id== d.id;
@@ -39,12 +44,7 @@ function mouseoverColumnImpl(combinedSets) {
 //        .style("stroke", "black")
         .style("fill",ctx.backHighlightColor)
 
-    d3.selectAll(".setSize").filter(function (dd, ii) {
-        return combinedSets[ii];
-//        return dd.id== d.id;
-    })
-        .style("opacity", 1)
-        .style("stroke", "black")
+
 
     ctx.columnBackgroundNode.selectAll(".columnBackground").style({
         opacity:function(dd,i){return combinedSets[i]}
@@ -56,7 +56,7 @@ function mouseoutColumn() {
 
     d3.selectAll(".connection, .combination rect, .setSize")
         .style("opacity", 1)
-        .style("stroke", "none")
+        .style("stroke", "white")
 
     ctx.tableHeaderNode.selectAll(".connection")
         .style("fill", ctx.grays[0])

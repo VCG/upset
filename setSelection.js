@@ -280,7 +280,7 @@ function orderChange() {
                 return 'translate(' + (cellDistance * (i )) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 60) + ')'
             }, // ' + (textHeight - 5) + ')'
             height: function (d) {
-                return setSizeScale(d.setSize);
+                return setSizeScale(d.setSize)+1;
             },
             width: cellSize//setRowScale.rangeBand()
         })
@@ -293,7 +293,7 @@ function orderChange() {
         return usedSets.indexOf(n) == -1
     });
 
-    var truncateAfter = 15;
+    var truncateAfter = 10;
 
     var xScale = d3.scale.ordinal()
         .domain(d3.range(unusedSets.length))
@@ -324,7 +324,7 @@ function orderChange() {
         .append("g")
         //.attr("transform", "translate(-50)")
         .attr("class", "unusedSets")
-        .selectAll('.unsedSetsLabel')
+        .selectAll('.unusedSetsLabels')
         .data(unusedSets)
         .enter();
 
@@ -336,7 +336,7 @@ function orderChange() {
                 transform: function (d, i) {
                     return 'translate(' + (cellDistance * (i )) + ', 20)'
                 },
-                height: textHeight+20,
+                height: textHeight-2,
                 width: cellSize
             })
             .on('click', setClicked)
@@ -349,10 +349,10 @@ function orderChange() {
         .attr({
             class: 'unusedSetSize',
             transform: function (d, i) {
-                return 'translate(' + (cellDistance * i) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 20 ) + ')'
+                return 'translate(' + (cellDistance * i) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 22 ) + ')'
             }, // ' + (textHeight - 5) + ')'
             height: function (d) {
-                return setSizeScale(d.setSize);
+                return setSizeScale(d.setSize)-1;
             },
             width: cellSize
         })
@@ -366,11 +366,11 @@ function orderChange() {
           //var tmpText = d3.select("svg").append("text").attr("id", "tmpText").text(d.elementName.substring(0, truncateAfter))
           //var str = Utilities.truncate(tmpText, 70)
           //tmpText.remove();
+          var str = d.elementName.substring(0, truncateAfter)
+          if(str.length<d.elementName.length)
+            str = str.trim() + "...";
 
-          //if(str.length<d.elementName.length)
-          //  str = str.trim() + "...";
-
-            return d.elementName.substring(0, truncateAfter);
+            return str;
           })
         .sort(sortSize)
         .attr({
@@ -383,6 +383,7 @@ function orderChange() {
                 },
             y: cellSize - 3,
             x: 3,
+            height: textHeight-4,
             'text-anchor': 'start'
 
 //            transform: function (d, i) {
