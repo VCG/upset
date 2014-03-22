@@ -1,6 +1,6 @@
 {
 	"file": "movies.csv",
-	"name": "Movies - Full Set",
+	"name": "Movies Genres",
 	"header": 0,
 	"separator": ";",
 	"skip": 0,
@@ -11,6 +11,6 @@
 		{ "type": "integer", "index": 21, "name": "Times Watched" }
 	],
 	"sets": [
-		{ "format": "binary", "start": 2, "end": 19 }
+		{ "format": "binary", "start": 2, "end": 18 }
 	]
 }
