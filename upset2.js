@@ -19,7 +19,8 @@ var ctx = {
 
     /** The width from the start of the set vis to the right edge */
 
-
+    cellSizeShrink: 3,
+    maxLevels: 3,
 
     expectedValueWidth: 300,
 
@@ -241,13 +242,13 @@ function UpSet() {
         // For horizon subset size
         ctx.svg.append('defs')
             .append('pattern')
-            .attr('id', 'diagonalHatch')
+            .attr('id', 'diagonalHatch_0')
             .attr('patternUnits', 'userSpaceOnUse')
             .attr('width', 8)
             .attr('height', 8)
             .append('path')
             .attr('d', 'M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4')
-            .attr('stroke', "black")
+            .attr('stroke', "blue")
             .attr('stroke-width', 1);
 
         initRows();
@@ -555,7 +556,7 @@ function UpSet() {
                 return d.id;
             });
 
-        subSets
+        var rowSubSets = subSets
             .enter()
             .append('g')
             .attr({transform: function (d) {
@@ -578,6 +579,12 @@ function UpSet() {
                     return ctx.gRows.selectAll('.row')[0].length ? 0 : 1;
             })
 
+
+            rowSubSets.append("g").attr("class", "gBackgroundRect")
+            rowSubSets.append("g").attr("class", "gIndicators")
+            rowSubSets.append("g").attr("class", "gHorizon")
+            rowSubSets.append("g").attr("class", "gOverlays")
+       
         subSets.exit().remove();
 
         var subSetTransition = subSets;
@@ -631,7 +638,7 @@ function UpSet() {
 
     function updateSubsetRows(subsetRows, setScale) {
 
-        var backgrounds = subsetRows.selectAll(".backgroundRect").data(function (d) {
+        var backgrounds = subsetRows.select(".gBackgroundRect").selectAll(".backgroundRect").data(function (d) {
             return [d]
         })
         backgrounds.enter()
@@ -656,7 +663,7 @@ function UpSet() {
             height: ctx.cellSize
         })
 
-        var combinationGroups = subsetRows.selectAll('g').data(function (d) {
+        var combinationGroups = subsetRows.selectAll('g.combination').data(function (d) {
                 // binding in an array of size one
                 return [d.data.combinedSets];
             }
@@ -745,6 +752,7 @@ function UpSet() {
 
         /// --- the sizeBar
 
+/*
          var sizeBars = subsetRows.selectAll(".row-type-subset").data(function (d) {
          return [d]
          })
@@ -774,30 +782,31 @@ function UpSet() {
 
          var sizeBarsChanges = sizeBars
          if (ctx.barTransitions) sizeBarsChanges.transition()
-         sizeBarsChanges.attr({
+        sizeBarsChanges.attr({
          //class: 'subSetSize',
-         transform: function (d) {
-         var y = 1;
+        transform: function (d) {
+          var y = 1;
          return   'translate(' + ctx.xStartSetSizes + ', ' + y + ')'; // ' + (textHeight - 5) + ')'
-         },
+        },
+        width: function (d) {
+          return ctx.subSetSizeScale(d.data.setSize);
+        },
+        height: function (d) {
+          return ctx.cellSize - 2
+        }
+      })
 
-         width: function (d) {
-         return ctx.subSetSizeScale(d.data.setSize);
-         },
-         height: function (d) {
-         return ctx.cellSize - 2
-         }
-         })
+*/
 
-        /* ORIGINAL SUBSETS SIZE
+
+
         subsetRows.each(function (e, j) {
 
             var g = d3.select(this);
             var max_scale = ctx.subSetSizeScale.domain()[1];
-            var cellSizeShrink = 3;
-            var maxLevels = 3;
+
             var i = 0, is_overflowing = false;
-            var nbLevels = Math.min(maxLevels, Math.ceil(e.data.setSize / max_scale));
+            var nbLevels = Math.min(ctx.maxLevels, Math.ceil(e.data.setSize / max_scale));
 
             var data = d3.range(nbLevels).map(function () {
 
@@ -821,7 +830,7 @@ function UpSet() {
 
             g.selectAll(".cutlines").remove();
 
-            if (Math.ceil(e.data.setSize / max_scale) > maxLevels) {
+            if (Math.ceil(e.data.setSize / max_scale) > ctx.maxLevels) {
                 var g_lines = g.selectAll(".cutlines").data([e.id]).enter().append("g").attr("class", "cutlines")
 
                 g_lines.append("line")
@@ -834,7 +843,7 @@ function UpSet() {
             }
 
             // Add new layers
-            var layers_enter = g.selectAll(".row-type-subset").data(data).enter()
+            var layers_enter = g.selectAll(".gHorizon").selectAll(".row-type-subset").data(data).enter()
 
             layers_enter.append('rect')
                 .attr("class", function (d) {
@@ -852,14 +861,14 @@ function UpSet() {
                         var y = 0;
                         if (d.data.type !== ROW_TYPE.SUBSET)
                             y = 0;//cellSize / 3 * .4;
-                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (y + cellSizeShrink * i + 1) + ')'; // ' + (textHeight - 5) + ')'
+                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (y + ctx.cellSizeShrink * i + 1) + ')'; // ' + (textHeight - 5) + ')'
                     },
 
                     width: function (d, i) {
                         return ctx.subSetSizeScale(d.data.setSize);
                     },
                     height: function (d, i) {
-                        return ctx.cellSize - cellSizeShrink * 2 * i - 2;
+                        return ctx.cellSize - ctx.cellSizeShrink * 2 * i - 2;
                     },
                 })
                 .style("opacity", function (d, i) {
@@ -883,7 +892,7 @@ function UpSet() {
 
         })
 
-*/
+
 
     }
 
@@ -1083,10 +1092,9 @@ function UpSet() {
 
             var g = d3.select(this);
             var max_scale = ctx.subSetSizeScale.domain()[1];
-            var cellSizeShrink = 3;
-            var maxLevels = 3;
+
             var i = 0, is_overflowing = false;
-            var nbLevels = Math.min(maxLevels, Math.ceil(e.data.setSize / max_scale));
+            var nbLevels = Math.min(ctx.maxLevels, Math.ceil(e.data.setSize / max_scale));
 
             var data = d3.range(nbLevels).map(function () {
 
@@ -1110,7 +1118,7 @@ function UpSet() {
 
             g.selectAll(".cutlines").remove();
 
-            if (Math.ceil(e.data.setSize / max_scale) > maxLevels) {
+            if (Math.ceil(e.data.setSize / max_scale) > ctx.maxLevels) {
                 var g_lines = g.selectAll(".cutlines").data([e.id]).enter().append("g").attr("class", "cutlines")
 
                 g_lines.append("line")
@@ -1139,14 +1147,14 @@ function UpSet() {
                 .attr({
                     transform: function (d, i) {
   
-                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (cellSizeShrink * i) + ')'; // ' + (textHeight - 5) + ')'
+                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (ctx.cellSizeShrink * i) + ')'; // ' + (textHeight - 5) + ')'
                     },
 
                     width: function (d, i) {
                         return ctx.subSetSizeScale(d.data.setSize);
                     },
                     height: function (d, i) {
-                        return ctx.cellSize - cellSizeShrink * 2 * i;
+                        return ctx.cellSize - ctx.cellSizeShrink * 2 * i;
                     }
                 })
                 .style("opacity",function (d, i) {
@@ -1242,25 +1250,147 @@ function UpSet() {
     function updateOverlays(allRows) {
         if (selections.getSize() == 0) {
             allRows.selectAll(".what").remove();
+            allRows.selectAll(".newOverlay").remove();            
             allRows.selectAll('.selectionIndicators').remove();
             return;
         }
 
-        // Preparing for new overlays
 
-        var newOverlay = allRows.selectAll(".newOverlay").data(function (d) {
-            return [d]
+
+        allRows.each(function (e, j) {
+
+            if( typeof(e.data.selections)== "undefined")
+                return [];
+
+            var g = d3.select(this);
+            var max_scale = ctx.subSetSizeScale.domain()[1];
+
+            var s = e.data.selections;
+
+            var usedID = false;
+            //   var alternativeID;
+            var sIDs = Object.getOwnPropertyNames(s);
+            sIDs.forEach(function (prop) {
+                var length = s[prop].length;
+                if (selections.isActiveByUuid(prop)) {
+                    usedID = prop;
+                }
+            });
+            if (!usedID) {
+                return 0;
+              }
+
+            var i = 0, is_overflowing = false;
+            var nbLevels = Math.min(ctx.maxLevels, Math.ceil(s[usedID].length / max_scale));
+
+            var data = d3.range(nbLevels).map(function () {
+
+                var f = {};
+                f.data = {};
+                f.data.setSize = e.data.selections[usedID].length
+
+               // Prevent empty bar when right on 1-level value
+                if(nbLevels==1 && e.data.selections[usedID].length > 0 && (e.data.selections[usedID].length % max_scale == 0)) {
+                  f.data.setSize = e.data.selections[usedID].length;
+                  return f;
+                }
+
+                if (i == nbLevels - 1 && Math.ceil(e.data.selections[usedID].length / max_scale) < nbLevels + 1)
+                    f.data.setSize = (e.data.selections[usedID].length % max_scale);
+                else
+                    f.data.setSize = max_scale;
+                i++;
+
+
+                return f;
+            })
+
+            // Add new layers
+            var layers_enter = g.selectAll(".gOverlays").selectAll(".newOverlay").data(data).enter()
+
+            layers_enter.append('rect')
+                .attr("class", "newOverlay")
+
+            // Remove useless layers
+            g.selectAll(".newOverlay").data(data).exit().remove()
+
+            // Update current layers
+            g.selectAll(".newOverlay")
+                .attr({
+                    transform: function (d, i) {
+                        var y = 0;
+                        if (d.data.type !== ROW_TYPE.SUBSET)
+                            y = 0;//cellSize / 3 * .4;
+                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (y + ctx.cellSizeShrink * i + 1) + ')'; // ' + (textHeight - 5) + ')'
+                    },
+
+                    width: function (d, i) {
+
+                    var s = e.data.selections;
+                    if (typeof s !== 'object') {
+                        return 0;
+                    }
+
+                    var usedID = false;
+                    //   var alternativeID;
+                    var sIDs = Object.getOwnPropertyNames(s);
+                    sIDs.forEach(function (prop) {
+                        var length = s[prop].length;
+                        if (selections.isActiveByUuid(prop)) {
+                            usedID = prop;
+                        }
+                    });
+                    if (!usedID) {
+                        return 0;
+                    }
+                     return ctx.subSetSizeScale(d.data.setSize);
+                    },
+                    height: function (d, i) {
+                        return ctx.cellSize - ctx.cellSizeShrink * 2 * i - 2;
+                    },
+                   fill: function(d) {
+                     var usedID = false;
+                    //   var alternativeID;
+                    var sIDs = Object.getOwnPropertyNames(e.data.selections);
+                    var s = e.data.selections;
+                    sIDs.forEach(function (prop) {
+                        var length = s[prop].length;
+                        if (selections.isActiveByUuid(prop)) {
+                            usedID = prop;
+                        }
+                    });
+                    if (!usedID) {
+                        return 0;
+                    }
+
+                    return selections.getColorFromUuid(usedID)//"url(#diagonalHatch_0)"      
+                   }           
+                                       
+                })
+                .style("opacity", function (d, i) {
+
+                    if (nbLevels == 1)
+                        return .5;
+                    else if (nbLevels == 2)
+                        return .5 + i * .2;
+                    else
+                        return .2 + i * .3;
+                })
+                .on('click', function () {
+                  //console.log("e", e, d3.select(this).node().parentNode.__data__)
+                  ctx.intersectionClicked(e);
+                })
+                .on('mouseover', function () {
+                    mouseoverRow(e);
+                })
+                .on('mouseout', function () {
+                    mouseoutRow(e);
+                })
+
         })
 
-        newOverlay.enter().append('rect')
-        .attr("class", "newOverlay");
 
-        // Compute the horizon or update it
-
-        // Append to the previous one
-
-        // Update the indicators' position
-
+/*
         var selectionOverlay = allRows.selectAll(".what").data(function (d) {
             return [d]
         })
@@ -1303,7 +1433,7 @@ function UpSet() {
                     if (!usedID) {
                         return 0;
                     }
-                    d3.select(this).style("fill", selections.getColorFromUuid(usedID));
+                   // d3.select(this).style("fill", selections.getColorFromUuid(usedID));
                     return   ctx.subSetSizeScale(s[usedID].length);
                 },
                 height: function (d) {
@@ -1311,8 +1441,11 @@ function UpSet() {
 
                 }
             })
-
+*/
         // the triangles for the multiple selections
+
+        //allRows.data(["indicators"]).enter().append("g").attr("class", "gIndicators")
+
 
         var selectIndicators = allRows.selectAll('.selectionIndicators').data(function (d, i) {
             if (!d.data.selections)
@@ -1324,6 +1457,9 @@ function UpSet() {
             selArray = selArray.filter(function (d) {
                 return d.items.length !== 0 && d.uuid != "undefined"; // prevents useless black indicators..
             })
+
+            var max_scale = ctx.subSetSizeScale.domain()[1];
+            console.log("update indicator")
             return selArray;
         })
         selectIndicators.enter()
@@ -1334,19 +1470,30 @@ function UpSet() {
                 updateOverlays(allRows);
             }).on('mouseenter', function() {
               d3.select(this).attr("transform", function (d, i) {
-                return 'translate(' + (ctx.xStartSetSizes + ctx.subSetSizeScale(d.items.length)) + ' , ' + 0 +
-                    ') scale(2)';
+                //UPDATE
+                return 'translate(' + d3.transform(d3.select(this).attr("transform")).translate + ') scale(1.5)';
               })
             }).on('mouseout', function() {
+              //UPDATE
               d3.select(this).attr("transform", function (d, i) {
-                return 'translate(' + (ctx.xStartSetSizes + ctx.subSetSizeScale(d.items.length)) + ' , ' + 0 +
-                    ') scale(1)';
+                return 'translate(' + d3.transform(d3.select(this).attr("transform")).translate + ') scale(1)';
             })})
         selectIndicators.exit().remove();
         selectIndicators.attr({
             transform: function (d, i) {
-                return 'translate(' + (ctx.xStartSetSizes + ctx.subSetSizeScale(d.items.length)) + ' , ' + 0 +
-                    ')';
+
+              var nbLevels = Math.floor(d.items.length / ctx.subSetSizeScale.domain()[1]);
+              var subSetSize = d.items.length % ctx.subSetSizeScale.domain()[1];
+              var rotate = 0;
+              if(nbLevels>=ctx.maxLevels) {
+                subSetSize = ctx.subSetSizeScale.domain()[1]
+                nbLevels = ctx.maxLevels-1;
+                rotate = -90;
+              }
+
+
+                return 'translate(' + (ctx.xStartSetSizes + ctx.subSetSizeScale(subSetSize)) + ' , ' + (nbLevels*ctx.cellSizeShrink) +
+                    ') rotate(' + rotate + ')';
             },
             d: function (d) {
                 return  " M -5 0  L  5 0  L 0 6 z M 0 6 L 0 " + ctx.cellSize;
