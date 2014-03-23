@@ -1148,7 +1148,7 @@ function UpSet() {
                 .attr({
                     transform: function (d, i) {
   
-                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (cellSizeShrink * i+1) + ')'; // ' + (textHeight - 5) + ')'
+                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (ctx.cellSizeShrink * i+1) + ')'; // ' + (textHeight - 5) + ')'
 
                     },
 
@@ -1157,7 +1157,7 @@ function UpSet() {
                     },
                     height: function (d, i) {
 
-                        return ctx.cellSize-2 - cellSizeShrink * 2 * i;
+                        return ctx.cellSize-2 - ctx.cellSizeShrink * 2 * i;
 
                     }
                 })
