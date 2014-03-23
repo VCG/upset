@@ -986,8 +986,8 @@ function UpSet() {
 
         collapseIcon
             .text(function (d) {
-                if (d.data.isCollapsed == 0) return "\uf147";
-                else return "\uf196"
+                if (d.data.isCollapsed == 0) return "\uf0dd";//return "\uf147";
+                else return "\uf0da";//return "\uf196"
             })
             .attr({"transform": function (d) {
                 return "translate(" + (-ctx.leftOffset + 2 + 5 + (d.data.level - 1) * ctx.leftIndent) + "," + (ctx.cellSize / 2 + 5) + ")"
