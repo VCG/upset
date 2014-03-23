@@ -87,6 +87,12 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
     // brushed function
     var brushed = function(){
         var endRange = overViewBrushDef.extent()[1];
+        if (endRange<5){
+            endRange =5;
+            overviewBrush.extend([0,5]);
+            
+        }
+
 
         svg.select(".drawBrush").attr({
             width:xScale(endRange)
