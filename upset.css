@@ -125,8 +125,15 @@ h1 {
 }
 
 .groupBackGround {
-    fill: #d3d3d3;
+    /*stroke: #d3d3d3;*/
+    stroke: #555555;
+    stroke-width:1px;
+    fill:#fafafa;
 }
+.groupBackGround.secondLevel{
+    stroke: #aaaaaa;
+}
+
 
 .labelBackground {
     fill: #d3d3d3;
