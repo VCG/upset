@@ -74,6 +74,17 @@ function UpSet() {
     bindEvents();
 
     function setDynamicVisVariables() {
+
+        ctx.subSetMatrixHeight = renderRows.length * (ctx.cellDistance+4);
+        ctx.h = ctx.subSetMatrixHeight + ctx.textHeight;
+
+        ctx.rowScale = d3.scale.ordinal().rangeRoundBands([ ctx.textHeight, ctx.h ], 0, 0);
+
+        ctx.rowScale.domain(renderRows.map(function (d) {
+            return d.id;
+        }));
+
+
         // dynamic context variables
         ctx.cellSize = ctx.cellDistance; // - minorPadding,
         ctx.xStartSetSizes = ctx.cellWidth * usedSets.length + ctx.majorPadding;
@@ -86,7 +97,7 @@ function UpSet() {
             + ctx.subSetSizeWidth + ctx.expectedValueWidth + 50;
         ctx.setMatrixHeight = ctx.setCellDistance + ctx.majorPadding;
 
-        ctx.svgHeight = renderRows.length * ctx.cellSize + ctx.textHeight;
+        ctx.svgHeight = /*renderRows.length * ctx.cellSize*/ctx.rowScale.rangeExtent()[1];// + ctx.textHeight;
 
         ctx.intersectionClicked = function (d) {
             var selection = Selection.fromSubset(d.data);
@@ -187,18 +198,19 @@ function UpSet() {
                 height: renderRows.length * ctx.cellDistance,
                 width: ctx.w,
                 class: "svgGRows"
+//                "transform":"translate("+2+","+2+")"
             })
 
         // -- the background highlights
         ctx.columnBackgroundNode = ctx.foreignSVG.append("g").attr({
             class: "columnBackgroundsGroup"
 
-        }).attr({"transform": "translate(90,-90)"})
+        }).attr({"transform": "translate(91,-89)"})
 
         // Rows container for vertical panning
         ctx.gRows = ctx.foreignSVG
             .append('g')
-            .attr({'class': 'gRows', "transform": "translate(90,-90)"})
+            .attr({'class': 'gRows', "transform": "translate(91,-89)"})
 
         //####################### LogicPanel ##################################################
 
@@ -250,8 +262,6 @@ function UpSet() {
             .attr('d', 'M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4')
             .attr('stroke', "blue")
             .attr('stroke-width', 1);
-
-        initRows();
 
         updateSetsLabels(ctx.tableHeaderNode);
 
@@ -534,18 +544,6 @@ function UpSet() {
 
         updateSetsLabels(ctx.tableHeaderNode)
 
-    }
-
-    function initRows() {
-
-        ctx.subSetMatrixHeight = renderRows.length * ctx.cellDistance;
-        ctx.h = ctx.subSetMatrixHeight + ctx.textHeight;
-
-        ctx.rowScale = d3.scale.ordinal().rangeRoundBands([ ctx.textHeight, ctx.h ], 0, 0);
-
-        ctx.rowScale.domain(renderRows.map(function (d) {
-            return d.id;
-        }));
     }
 
     function updateSubSetGroups() {
@@ -906,9 +904,12 @@ function UpSet() {
                 if (d.data instanceof QueryGroup) {
                     return 'groupBackGround filterGroup';
                 } else {
-                    return 'groupBackGround'
+                    if (d.data.level>1) return 'groupBackGround secondLevel';
+                    else return 'groupBackGround'
                 }
             },
+            rx:5,
+            ry:10,
             width: ctx.setVisWidth + ctx.leftOffset,
             height: ctx.cellSize,
             x: -ctx.leftOffset,
@@ -994,8 +995,8 @@ function UpSet() {
 
         collapseIcon
             .text(function (d) {
-                if (d.data.isCollapsed == 0) return "\uf147";
-                else return "\uf196"
+                if (d.data.isCollapsed == 0) return "\uf0dd";//return "\uf147";
+                else return "\uf0da";//return "\uf196"
             })
             .attr({"transform": function (d) {
                 return "translate(" + (-ctx.leftOffset + 2 + 5 + (d.data.level - 1) * ctx.leftIndent) + "," + (ctx.cellSize / 2 + 5) + ")"
@@ -1147,14 +1148,17 @@ function UpSet() {
                 .attr({
                     transform: function (d, i) {
   
-                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (ctx.cellSizeShrink * i) + ')'; // ' + (textHeight - 5) + ')'
+                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (cellSizeShrink * i+1) + ')'; // ' + (textHeight - 5) + ')'
+
                     },
 
                     width: function (d, i) {
                         return ctx.subSetSizeScale(d.data.setSize);
                     },
                     height: function (d, i) {
-                        return ctx.cellSize - ctx.cellSizeShrink * 2 * i;
+
+                        return ctx.cellSize-2 - cellSizeShrink * 2 * i;
+
                     }
                 })
                 .style("opacity",function (d, i) {
@@ -1554,7 +1558,6 @@ function UpSet() {
     function plotSubSets() {
 
         setDynamicVisVariables();
-        initRows();
 
         // make the scroallable SVG adapt:
         ctx.foreignSVG.attr({

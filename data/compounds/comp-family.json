@@ -9,6 +9,16 @@
             "type": "id",
             "index": 0,
             "name": "Name"
+        },
+        {
+            "type": "float",
+            "index": 11,
+            "name": "ALogP"
+        },
+        {
+            "type": "string",
+            "index": 12,
+            "name": "Smiles"
         }
     ],
     "sets": [
