@@ -28,7 +28,8 @@ var ctx = {
     paddingTop: 30,
     paddingSide: 20,
 
-    truncateAfter: 3,
+    truncateAfter: 20,
+    truncateGroupAfter: 30,
 
     setCellDistance: 12,
     setCellSize: 10,
@@ -237,6 +238,18 @@ function UpSet() {
 //        ctx.vis.append
 //        ctx.brushedScale = new BrushableScale(ctx,)
 
+        // For horizon subset size
+        ctx.svg.append('defs')
+            .append('pattern')
+            .attr('id', 'diagonalHatch')
+            .attr('patternUnits', 'userSpaceOnUse')
+            .attr('width', 8)
+            .attr('height', 8)
+            .append('path')
+            .attr('d', 'M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4')
+            .attr('stroke', "black")
+            .attr('stroke-width', 1);
+
         initRows();
 
         updateSetsLabels(ctx.tableHeaderNode);
@@ -305,7 +318,12 @@ function UpSet() {
         })
         setRowsText.enter().append("text").text(
             function (d) {
-                return d.elementName.substring(0, ctx.truncateAfter);
+
+              var str = d.elementName.substring(0, ctx.truncateAfter);
+              if(str.length<d.elementName.length)
+                str = str.trim() + "...";
+
+              return str;
             }).attr({
                 class: 'setLabel sortBySet',
                 //  "pointer-events": "none",
@@ -934,7 +952,7 @@ function UpSet() {
             if (d.data.type === ROW_TYPE.AGGREGATE)
                 return String.fromCharCode(8709) + '-subsets (' + d.data.subSets.length + ') ';
             else {
-              var str = d.data.elementName.substring(0, ctx.truncateAfter);
+              var str = d.data.elementName.substring(0, ctx.truncateGroupAfter);
               if(str.length<d.data.elementName.length)
                 str = str.trim() + "...";
               return str;
@@ -1228,7 +1246,7 @@ function UpSet() {
             return;
         }
 
-        // Preparing 
+        // Preparing for new overlays
 
         var newOverlay = allRows.selectAll(".newOverlay").data(function (d) {
             return [d]
@@ -1237,9 +1255,11 @@ function UpSet() {
         newOverlay.enter().append('rect')
         .attr("class", "newOverlay");
 
-        // Compute the horizon
+        // Compute the horizon or update it
 
         // Append to the previous one
+
+        // Update the indicators' position
 
         var selectionOverlay = allRows.selectAll(".what").data(function (d) {
             return [d]
@@ -1302,7 +1322,6 @@ function UpSet() {
                 return {uuid: k, items: d.data.selections[k]};
             });
             selArray = selArray.filter(function (d) {
-                            console.log(d)
                 return d.items.length !== 0 && d.uuid != "undefined"; // prevents useless black indicators..
             })
             return selArray;
