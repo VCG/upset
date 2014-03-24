@@ -622,6 +622,13 @@ html, body, .ui-container {
     height: 25px;
 }
 
+.boxPlot{
+    stroke-width:1px;
+    stroke:darkgray;
+    fill:white;
+    shape-rendering: crispEdges;
+}
+
 
 /*.groupBackGround .filterGroup{*/
      /*fill: #d3d3d3;;  */

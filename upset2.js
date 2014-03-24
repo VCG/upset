@@ -36,7 +36,7 @@ var ctx = {
     setCellSize: 10,
     cellWidth: 20,
 
-//         subSetMatrixHeight;
+//         tableBodyHeight;
 //         h;
 //         rowScale;
 
@@ -53,7 +53,14 @@ var ctx = {
         {name: "largest group", id: "G", value: 200 },
         {name: "largest set", id: "S", value: 300 },
         {name: "all items", id: "A", value: 400 }
-    ]
+    ],
+
+    nameForRelevance:"Disproportionality",
+
+    summaryStatisticVis : [{
+        attribute:"",
+        visObject:{}
+    }] // list of all statistic graphs TODO: make dynamic !!!
 
 
 };
@@ -75,11 +82,10 @@ function UpSet() {
 
     function setDynamicVisVariables() {
 
-        ctx.subSetMatrixHeight = renderRows.length * (ctx.cellDistance+4);
-        ctx.h = ctx.subSetMatrixHeight + ctx.textHeight;
+        ctx.tableBodyHeight = renderRows.length * (ctx.cellDistance+4);
+//        ctx.h = ctx.tableBodyHeight + ctx.textHeight;
 
-        ctx.rowScale = d3.scale.ordinal().rangeRoundBands([ ctx.textHeight, ctx.h ], 0, 0);
-
+        ctx.rowScale = d3.scale.ordinal().rangeRoundBands([ ctx.textHeight, ctx.tableBodyHeight + ctx.textHeight ], 0, 0);
         ctx.rowScale.domain(renderRows.map(function (d) {
             return d.id;
         }));
@@ -87,23 +93,31 @@ function UpSet() {
 
         // dynamic context variables
         ctx.cellSize = ctx.cellDistance; // - minorPadding,
+
         ctx.xStartSetSizes = ctx.cellWidth * usedSets.length + ctx.majorPadding;
 
-        ctx.xStartExpectedValues = ctx.xStartSetSizes + ctx.subSetSizeWidth + 20;
+
+
+        ctx.xStartExpectedValues = ctx.xStartSetSizes + ctx.subSetSizeWidth + ctx.majorPadding;
+
         ctx.setVisWidth = ctx.expectedValueWidth + ctx.subSetSizeWidth
             + ctx.majorPadding + ctx.cellDistance + ctx.xStartSetSizes;
 
         ctx.w = ctx.cellWidth * usedSets.length + ctx.majorPadding + ctx.leftOffset
-            + ctx.subSetSizeWidth + ctx.expectedValueWidth + 50;
+            + ctx.subSetSizeWidth + ctx.expectedValueWidth + 50 +150; // TODO: HACK For Statistiucs!!!
         ctx.setMatrixHeight = ctx.setCellDistance + ctx.majorPadding;
 
-        ctx.svgHeight = /*renderRows.length * ctx.cellSize*/ctx.rowScale.rangeExtent()[1];// + ctx.textHeight;
+        ctx.svgHeight = /*renderRows.length * ctx.cellSize*/ctx.rowScale.rangeExtent()[1];// TODO: Duplicate to ctx.tableBodyHeight
 
         ctx.intersectionClicked = function (d) {
             var selection = Selection.fromSubset(d.data);
             selections.addSelection(selection, false);
             selections.setActive(selection);
         }
+
+
+        ctx.xStartStatisticColumns = ctx.xStartExpectedValues+ ctx.expectedValueWidth+10 // TODO: HACK!!!
+
     }
 
     function calculateGlobalStatistics() {
@@ -263,6 +277,15 @@ function UpSet() {
             .attr('stroke', "blue")
             .attr('stroke-width', 1);
 
+
+
+
+        ctx.summaryStatisticVis[0].attribute = attributes.filter(function(d){
+            return d.type=="integer" || d.type=="float"
+        })[0].name
+
+        updateStatistics();
+
         updateSetsLabels(ctx.tableHeaderNode);
 
         updateHeaders();
@@ -379,46 +402,56 @@ function UpSet() {
                 rowTransition();
             });
 
+
     }
+
+
+    function updateStatistics(){
+        ctx.summaryStatisticVis[0].visObject = new StatisticGraphs();
+        ctx.summaryStatisticVis[0].visObject.updateStatistics(subSets, "id", "items", attributes,"name","values", ctx.summaryStatisticVis[0].attribute)
+    }
+
+
+
+    function addStatisticColumn(){
+        var allAttributes = attributes.filter(function(d){
+            return d.type=="integer" || d.type=="float"
+        })
+
+        allAttributes.unshift(ctx.nameForRelevance);
+        // find first not-used
+
+
+        var delList = allAttributes.map(function(d){return d})
+
+        ctx.summaryStatisticVis.forEach(function(stat){
+            delList.remove(stat.attribute);
+        })
+
+        console.log(delList);
+
+
+    }
+
+
+
+
+
 
     function updateHeaders() {
         setDynamicVisVariables()
-
         calculateGlobalStatistics();
+
+
+        // -- Create Table Header:
         var tableHeaderGroup = ctx.tableHeaderNode.selectAll(".tableHeaderGroup").data([1]);
-        var tableHeader = tableHeaderGroup.enter().append("g").attr({class: "tableHeaderGroup"});
+        var tableHeaderGroupEnter = tableHeaderGroup.enter().append("g").attr({class: "tableHeaderGroup"});
 
-        // ------------------- set size bars header --------------------
 
-        // *** init Part
-//        tableHeader.append('rect')
-//            .attr({
-//                id:"subSetSizeLabelRect",
-//                class: 'labelBackground subsetSizeLabel sortIntersectionSizeGlobal'
-//            }).on(
-//                'click',
-//                function (d) {
-//                    UpSetState.sorting = StateOpt.sortBySubSetSize;
-//                    UpSetState.grouping = undefined;
-//                    UpSetState.levelTwoGrouping = undefined;
-//                    UpSetState.forceUpdate = true;
-//                    $('#noGrouping').prop('checked', true);
-//                    toggleGroupingL2(true);
-//                    $('#sortIntersectionSize').prop('checked', true);
-//
-//                    updateState();
-//                    rowTransition();
-//            })
-//        ;
 
-//        tableHeader.append('text').text('Intersection Size')
-//            .attr({
-//                id:"subSetSizeLabelText",
-//                class: 'columnLabel subsetSizeLabel sortIntersectionSizeGlobal',
-//                "pointer-events": "none"
-//            });
+        //------------ subSet value header -----------------------
 
-        tableHeader.append('g').attr()
+        tableHeaderGroupEnter.append('g').attr()
             .attr({
                 id: "subSetSizeAxis",
                 class: 'axis'
@@ -446,13 +479,6 @@ function UpSet() {
                 + (ctx.labelTopPadding + 10) + ')'
         });
 
-//        // scale for the size of the plottingSets TODO --> make own function
-//        ctx.subSetSizeScale = d3.scale.linear().domain([0, d3.max(dataRows, function (d) {
-//            return d.setSize;
-//        })]).nice().range([0, ctx.subSetSizeWidth]);
-
-        var subSetSizeAxis = d3.svg.axis().scale(ctx.subSetSizeScale).orient('top').ticks(4);
-
         var maxValue = d3.max(ctx.globalStatistics, function (d) {
             return d.value
         });
@@ -465,15 +491,12 @@ function UpSet() {
                 labels: ctx.globalStatistics
 
             })
-//            .call(ctx.brushableScaleSubsetUpdate({
-//                maxValue:1000
-//            }))
-//            .call(subSetSizeAxis);
+
 
         // ------------ expected value header -----------------------
 
         // *** init Part
-        tableHeader.append('rect')
+        tableHeaderGroupEnter.append('rect')
             .attr({
                 id: "expectedValueLabelRect",
                 class: 'labelBackground expectedValueLabel sortRelevanceMeasureGlobal'
@@ -491,14 +514,14 @@ function UpSet() {
                 rowTransition();
             });
 
-        tableHeader.append('text').text('Disproportionality')
+        tableHeaderGroupEnter.append('text').text('Disproportionality')
             .attr({
                 id: "expectedValueLabelText",
                 class: 'columnLabel sortRelevanceMeasureGlobal',
                 "pointer-events": "none"
             });
 
-        tableHeader.append('g').attr()
+        tableHeaderGroupEnter.append('g').attr()
             .attr({
                 id: "expectedValueAxis",
                 class: 'axis'
@@ -541,6 +564,57 @@ function UpSet() {
         tableHeaderGroup.select("#expectedValueAxis").transition().attr({
             transform: 'translate(' + ctx.xStartExpectedValues + ',' + (ctx.textHeight - 5) + ')'
         }).call(expectedValueAxis);
+
+
+
+        // some statistics
+        var sumStatFO = tableHeaderGroupEnter.selectAll("foreignObject").data(ctx.summaryStatisticVis).enter().
+            append("foreignObject").attr({
+            width:120,
+            height:30,
+            x:ctx.xStartStatisticColumns,
+            y:10
+
+        }).append("xhtml:body")//.attr("xmlns","http://www.w3.org/1999/xhtml")
+
+//        sumStatFO.append("h1").text("Hal2")
+//        sumStatFO.html("<h1>HALLO</h1>")
+//
+        var attSelEl = sumStatFO.append("select").attr({
+//            id:"sumStatAttributeSelector"
+                class:"columnLabel"
+        }).style({
+                width:"100px",
+                "background":"transparent",
+                border: "1px solid #ccc",
+                "-webkit-appearance": "none",
+                "padding":"5px"
+
+            })
+        var attSel = attSelEl
+          .selectAll("option").data(attributes.filter(function(d){return d.type=="integer" || d.type=="float"}))
+
+        attSel.enter().append("option").attr({
+            "value":function(d,i){return d.name}
+        }).text(function(d){return d.name})
+
+        attSelEl.on({
+            "change":function(d,i){
+
+                d.attribute = d3.event.target.value;
+                updateStatistics();
+                updateHeaders();
+                plotSubSets();
+                console.log("selected:",d3.event.target.value, d);
+
+            }
+        })
+
+
+        ctx.summaryStatisticVis.forEach(function(sumStat,i){
+            sumStat.visObject.renderAxis(tableHeaderGroup,ctx.xStartStatisticColumns+(i*100),ctx.textHeight-5,95);
+
+        })
 
         updateSetsLabels(ctx.tableHeaderNode)
 
@@ -797,6 +871,21 @@ function UpSet() {
 */
 
 
+        subsetRows.each(function(row,j){
+            var rowElement = d3.select(this);
+//            console.log(row);
+            ctx.summaryStatisticVis.forEach(function(sumStat,i){
+                sumStat.visObject.renderBoxPlot(row.data.id,rowElement,ctx.xStartStatisticColumns+i*100,2,null,ctx.cellSize-4) //  function(id, g, x,y,w,h){
+//                console.log(sumStat);
+//                sumStat.visObject.renderAxis(tableHeaderGroup,ctx.xStartStatisticColumns+(i*100),ctx.textHeight-5,95);
+//
+            })
+
+
+        })
+
+
+
 
         subsetRows.each(function (e, j) {
 
@@ -867,7 +956,7 @@ function UpSet() {
                     },
                     height: function (d, i) {
                         return ctx.cellSize - ctx.cellSizeShrink * 2 * i - 2;
-                    },
+                    }
                 })
                 .style("opacity", function (d, i) {
                     if (nbLevels == 1)
@@ -1550,7 +1639,7 @@ function UpSet() {
                 return (ctx.cellWidth) * i;
             },
             y: ctx.textHeight,
-            height: ctx.h, //TODO: better value there
+            height: ctx.tableBodyHeight,
             width: ctx.cellWidth
         })
     }
