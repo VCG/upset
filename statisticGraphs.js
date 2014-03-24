@@ -15,13 +15,6 @@ function StatisticGraphs(){
 
 
 
-
-
-
-
-
-
-
 }
 
 StatisticGraphs.prototype.updateStatistics= function(subsetData, subsetIDselector, itemIDselector, itemData, attributeIDSelector,attributeValueSelector, attributeID ){
@@ -94,9 +87,9 @@ StatisticGraphs.prototype.renderAxis = function(g,x,y,w){
     this.scale.rangeRound([0,w]);
     this.axis.scale(this.scale).ticks(Math.ceil(w/50)); //Math.ceil(w/50)
 
-    var detailStatAxisVis = g.selectAll(".detailStatisticsAxis").data(["summary"])
+    var detailStatAxisVis = g.selectAll(".axis").data(["summary"])
     detailStatAxisVis.enter().append("g").attr({
-        class:"detailStatisticsAxis axis",
+        class:"axis",
         "transform":"translate("+x+","+y+")"
     }).call(this.axis)
 
@@ -106,18 +99,18 @@ StatisticGraphs.prototype.renderAxis = function(g,x,y,w){
 }
 
 
-StatisticGraphs.prototype.renderBoxPlot = function(id, g, x,y,w,h){
+StatisticGraphs.prototype.renderBoxPlot = function(id, g, x,y,w,h,classID){
     var actualStat = this.statistics[id];
     var diffY=2;
 
 
     if (actualStat!=null){
-        var dS = g.selectAll(".detailStatistics").data([actualStat])
+        var dS = g.selectAll("."+classID).data([actualStat])
         dS.exit().remove();
 
 
         var dSEnter = dS.enter().append("g").attr({
-            class:"detailStatistics"
+            class:""+classID
         })
         dSEnter.append("line").attr({
             class:"boxPlot centralLine"

@@ -466,13 +466,22 @@ function updateSetContainment(set, refresh) {
         //  setUpGroupings();
         previousState = undefined;
         updateState();
-        ctx.updateHeaders();
-        plot();
-        plotSetSelection();
+
+
+//        ctx.updateHeaders();
+//
+//        plot();
+//        plotSetSelection();
         plotSetOverview();
-        ctx.svg.attr("width", ctx.w)
-        d3.selectAll(".svgGRows, .foreignGRows").attr("width", ctx.w)
-        d3.selectAll(".backgroundRect").attr("width", ctx.w - ctx.leftOffset)
+        initCallback.forEach(function (callback) {
+            callback();
+        })
+
+
+
+//        ctx.svg.attr("width", ctx.w)
+//        d3.selectAll(".svgGRows, .foreignGRows").attr("width", ctx.w)
+//        d3.selectAll(".backgroundRect").attr("width", ctx.w - ctx.leftOffset)
     }
 }
 

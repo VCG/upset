@@ -22,7 +22,7 @@ var ctx = {
     cellSizeShrink: 3,
     maxLevels: 3,
 
-    expectedValueWidth: 300,
+    expectedValueWidth: 200,
 
     labelTopPadding: 15,
 
@@ -60,8 +60,8 @@ var ctx = {
     summaryStatisticVis : [{
         attribute:"",
         visObject:{}
-    }] // list of all statistic graphs TODO: make dynamic !!!
-
+    }],// list of all statistic graphs TODO: make dynamic !!!
+    summaryStatisticsWidth:100
 
 };
 
@@ -101,10 +101,10 @@ function UpSet() {
         ctx.xStartExpectedValues = ctx.xStartSetSizes + ctx.subSetSizeWidth + ctx.majorPadding;
 
         ctx.setVisWidth = ctx.expectedValueWidth + ctx.subSetSizeWidth
-            + ctx.majorPadding + ctx.cellDistance + ctx.xStartSetSizes;
+            + ctx.majorPadding + ctx.cellDistance + ctx.xStartSetSizes+ctx.summaryStatisticVis.length*(ctx.summaryStatisticsWidth+ctx.majorPadding);// TODO HACK !!!
 
         ctx.w = ctx.cellWidth * usedSets.length + ctx.majorPadding + ctx.leftOffset
-            + ctx.subSetSizeWidth + ctx.expectedValueWidth + 50 +150; // TODO: HACK For Statistiucs!!!
+            + ctx.subSetSizeWidth + ctx.expectedValueWidth + 50 +ctx.summaryStatisticVis.length*(ctx.summaryStatisticsWidth+ctx.majorPadding); // TODO: HACK For Statistiucs!!!
         ctx.setMatrixHeight = ctx.setCellDistance + ctx.majorPadding;
 
         ctx.svgHeight = /*renderRows.length * ctx.cellSize*/ctx.rowScale.rangeExtent()[1];// TODO: Duplicate to ctx.tableBodyHeight
@@ -116,7 +116,7 @@ function UpSet() {
         }
 
 
-        ctx.xStartStatisticColumns = ctx.xStartExpectedValues+ ctx.expectedValueWidth+10 // TODO: HACK!!!
+        ctx.xStartStatisticColumns = ctx.xStartExpectedValues+ ctx.expectedValueWidth+ctx.majorPadding // TODO: HACK!!!
 
     }
 
@@ -184,7 +184,7 @@ function UpSet() {
         // create SVG and VIS Element
         d3.select('#vis').select('svg').remove();
         ctx.svg = d3.select('#vis')
-            .style('width', ctx.w + "px")
+//            .style('width', ctx.w + "px")
             .append('svg')
             .attr('width', ctx.w)
             .attr('height', ctx.svgHeight);
@@ -280,11 +280,14 @@ function UpSet() {
 
 
 
-        ctx.summaryStatisticVis[0].attribute = attributes.filter(function(d){
-            return d.type=="integer" || d.type=="float"
-        })[0].name
+//        ctx.summaryStatisticVis[0].attribute = attributes.filter(function(d){
+//            return d.type=="integer" || d.type=="float"
+//        })[0].name
+//        ctx.summaryStatisticVis[0].visObject = new StatisticGraphs();
 
-        updateStatistics();
+//        updateStatistics();
+
+        dataSetChanged();
 
         updateSetsLabels(ctx.tableHeaderNode);
 
@@ -292,7 +295,7 @@ function UpSet() {
 
         plotSubSets();
 
-        initCallback = [updateHeaders, plotSubSets] //TODO: bad hack !!!
+        initCallback = [dataSetChanged] //TODO: bad hack !!!
 
 //        updateWidthHandle()
     }
@@ -307,6 +310,39 @@ function UpSet() {
 //            .attr('height', ctx.svgHeight)
 //
 //    }
+
+
+    function dataSetChanged(){
+//        ctx.summaryStatisticVis[0].attribute = attributes.filter(function(d){
+//            return d.type=="integer" || d.type=="float"
+//        })[0].name
+
+        ctx.summaryStatisticVis=[];
+        attributes.filter(function(d){
+            return d.type=="integer" || d.type=="float"
+        }).forEach(function(attribute,i){
+
+                ctx.summaryStatisticVis.push({
+                    attribute: attribute.name,
+                    visObject:new StatisticGraphs()
+                })
+//                ctx.summaryStatisticVis[i].attribute = name;
+            })
+
+
+
+
+        updateStatistics()
+        setDynamicVisVariables()
+
+        ctx.svg.attr({
+            width: (Math.max(ctx.w, 400))
+        })
+
+        updateHeaders();
+        plotSubSets();
+
+    }
 
     //####################### SETS ##################################################
     function updateSetsLabels(tableHeaderNode) {
@@ -407,8 +443,9 @@ function UpSet() {
 
 
     function updateStatistics(){
-        ctx.summaryStatisticVis[0].visObject = new StatisticGraphs();
-        ctx.summaryStatisticVis[0].visObject.updateStatistics(subSets, "id", "items", attributes,"name","values", ctx.summaryStatisticVis[0].attribute)
+        ctx.summaryStatisticVis.forEach(function(sumStat,i){sumStat.visObject.updateStatistics(subSets, "id", "items", attributes,"name","values", sumStat.attribute)});
+
+//        ctx.summaryStatisticVis[0].visObject.updateStatistics(subSets, "id", "items", attributes,"name","values", ctx.summaryStatisticVis[0].attribute)
     }
 
 
@@ -432,10 +469,6 @@ function UpSet() {
 
 
     }
-
-
-
-
 
 
     function updateHeaders() {
@@ -568,53 +601,89 @@ function UpSet() {
 
 
         // some statistics
-        var sumStatFO = tableHeaderGroupEnter.selectAll("foreignObject").data(ctx.summaryStatisticVis).enter().
-            append("foreignObject").attr({
-            width:120,
-            height:30,
-            x:ctx.xStartStatisticColumns,
-            y:10
+        var sumStatFO = tableHeaderGroup.selectAll(".summaryStatisticsFO").data(ctx.summaryStatisticVis, function(d,i){return d.attribute+i})
 
-        }).append("xhtml:body")//.attr("xmlns","http://www.w3.org/1999/xhtml")
+        sumStatFO.exit().remove();
+        var sumStatFOHTML = sumStatFO.enter().
+            append("foreignObject").attr({
+                class:"summaryStatisticsFO",
+                width:120,
+                height:30,
+                x:function(d,i){return ctx.xStartStatisticColumns+i*(ctx.summaryStatisticsWidth+ctx.majorPadding)},
+                y:10
+
+            }).append("xhtml:body")//.attr("xmlns","http://www.w3.org/1999/xhtml")
+
+        sumStatFO.attr({
+            x:function(d,i){return ctx.xStartStatisticColumns+i*(ctx.summaryStatisticsWidth+ctx.majorPadding)}
+        })
+
+
 
 //        sumStatFO.append("h1").text("Hal2")
 //        sumStatFO.html("<h1>HALLO</h1>")
 //
-        var attSelEl = sumStatFO.append("select").attr({
+        sumStatFOHTML.append("select").attr({
 //            id:"sumStatAttributeSelector"
                 class:"columnLabel"
         }).style({
-                width:"100px",
+                width:ctx.summaryStatisticsWidth+"px",
                 "background":"transparent",
                 border: "1px solid #ccc",
                 "-webkit-appearance": "none",
                 "padding":"5px"
 
             })
-        var attSel = attSelEl
-          .selectAll("option").data(attributes.filter(function(d){return d.type=="integer" || d.type=="float"}))
-
-        attSel.enter().append("option").attr({
-            "value":function(d,i){return d.name}
-        }).text(function(d){return d.name})
-
-        attSelEl.on({
+        .on({
             "change":function(d,i){
 
                 d.attribute = d3.event.target.value;
                 updateStatistics();
                 updateHeaders();
                 plotSubSets();
-                console.log("selected:",d3.event.target.value, d);
 
             }
         })
 
 
-        ctx.summaryStatisticVis.forEach(function(sumStat,i){
-            sumStat.visObject.renderAxis(tableHeaderGroup,ctx.xStartStatisticColumns+(i*100),ctx.textHeight-5,95);
+        var attSel = sumStatFO.selectAll("select")
+          .selectAll("option").data(attributes.filter(function(d){return d.type=="integer" || d.type=="float"}))
 
+
+
+
+        attSel.exit().remove();
+        attSel.enter().append("option")
+        attSel.attr({
+            "value":function(d,i){
+                return d.name
+            },
+            "selected":function(d,i){
+                return (d.name == d3.select(this.parentNode).datum().attribute)?"selected":null;
+            }
+        }).text(function(d){return d.name})
+
+
+
+
+
+
+        var sumStatAxis = tableHeaderGroup.selectAll(".summaryStatisticsAxis").data(ctx.summaryStatisticVis,function(d,i){return d.attribute+i})
+        sumStatAxis.exit().remove();
+        sumStatAxis.enter().append("g").attr({
+            class:"summaryStatisticsAxis"
         })
+        sumStatAxis.attr({
+            "transform":function(d,i){return "translate("+(ctx.xStartStatisticColumns+(i*(ctx.summaryStatisticsWidth+ctx.majorPadding)))+","+(ctx.textHeight-5)+")"}
+        }).each(function(d,i){
+                d.visObject.renderAxis(d3.select(this),0,0,ctx.summaryStatisticsWidth);
+            })
+
+
+//        ctx.summaryStatisticVis.forEach(function(sumStat,i){
+//            sumStat.visObject.renderAxis(tableHeaderGroup,ctx.xStartStatisticColumns+(i*100),ctx.textHeight-5,95);
+//
+//        })
 
         updateSetsLabels(ctx.tableHeaderNode)
 
@@ -874,12 +943,28 @@ function UpSet() {
         subsetRows.each(function(row,j){
             var rowElement = d3.select(this);
 //            console.log(row);
-            ctx.summaryStatisticVis.forEach(function(sumStat,i){
-                sumStat.visObject.renderBoxPlot(row.data.id,rowElement,ctx.xStartStatisticColumns+i*100,2,null,ctx.cellSize-4) //  function(id, g, x,y,w,h){
-//                console.log(sumStat);
-//                sumStat.visObject.renderAxis(tableHeaderGroup,ctx.xStartStatisticColumns+(i*100),ctx.textHeight-5,95);
-//
+
+            var detailStatisticElements = rowElement.selectAll(".detailStatistic").data(ctx.summaryStatisticVis,function(d,i){return d.attribute+i});
+            detailStatisticElements.exit().remove();
+            detailStatisticElements.enter().append("g").attr({
+                class:function(d){return "detailStatistic"}
             })
+
+
+
+            detailStatisticElements.each(function(d,i){
+
+                d.visObject.renderBoxPlot(row.data.id,d3.select(this),ctx.xStartStatisticColumns+i*(ctx.summaryStatisticsWidth+ctx.majorPadding),2,null,ctx.cellSize-4,"detail"+i); //  function(id, g, x,y,w,h)
+
+            })
+
+
+//            ctx.summaryStatisticVis.forEach(function(sumStat,i){
+//                sumStat.visObject.renderBoxPlot(row.data.id,rowElement,ctx.xStartStatisticColumns+i*100,2,null,ctx.cellSize-4,"detail"+i); //  function(id, g, x,y,w,h){
+////                console.log(sumStat);
+////                sumStat.visObject.renderAxis(tableHeaderGroup,ctx.xStartStatisticColumns+(i*100),ctx.textHeight-5,95);
+////
+//            })
 
 
         })
@@ -1650,8 +1735,15 @@ function UpSet() {
 
         // make the scroallable SVG adapt:
         ctx.foreignSVG.attr({
-            height: ctx.svgHeight
+            height: ctx.svgHeight,
+            width:ctx.w
         })
+
+        ctx.foreignObject.attr({
+            width: ctx.w
+        })
+
+
         // to limit the foraignobject again
         updateFrames($(window).height(), null);
 
@@ -2088,7 +2180,7 @@ function UpSet() {
                 .domain([680, 480]).range([300, 100]).clamp(true)(windowWidth);
 
             ctx.expectedValueWidth = d3.scale.linear()
-                .domain([880, 680]).range([300, 100]).clamp(true)(windowWidth);
+                .domain([880, 680]).range([200, 100]).clamp(true)(windowWidth);
 
             ctx["brushableScaleSubsetUpdate"](null, {
                 width: ctx.subSetSizeWidth

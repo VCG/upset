@@ -624,8 +624,8 @@ html, body, .ui-container {
 
 .boxPlot{
     stroke-width:1px;
-    stroke:darkgray;
-    fill:white;
+    stroke:black;
+    fill:lightgray;
     shape-rendering: crispEdges;
 }
 
