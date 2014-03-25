@@ -22,7 +22,7 @@ Selection.createSubsetDefinition = function( subsets ) {
     }
 
     console.log( "subsets" );
-    console.log( subsets );
+    //console.log( subsets );
 
     var subsetDefinition = {};
 

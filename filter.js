@@ -24,12 +24,12 @@ Filter = function() {
                 for (var id in parameters.subset) {
                     if (parameters.subset.hasOwnProperty(id)) {
                         // set id is 1 => set is selected
-                        if ( parameters.subset[id] === 1 && itemSets.indexOf( +id ) < 0 ) {
+                        if ( parameters.subset[id] === 1 && itemSets.indexOf( id ) < 0 ) {
                             // set id is selected but not found in item sets
                             return false;
                         }
 
-                        if ( parameters.subset[id] === 0 && itemSets.indexOf( +id ) >= 0 ) {
+                        if ( parameters.subset[id] === 0 && itemSets.indexOf( id ) >= 0 ) {
                             // set id is not selected but found in item sets
                             return false;
                         }
