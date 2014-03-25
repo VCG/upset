@@ -39,7 +39,7 @@ function LogicPanel(params){
     var isNewPanel = true;
     var belowVisRestoreTranslate = "translate(0, 90)"
 
-    var actualGroupLabel = "Filter"
+    var actualGroupLabel = "Query"
 
 //    var getListOfValues = function(){
 //        console.log(this);
@@ -115,7 +115,7 @@ function LogicPanel(params){
             x:30,
             y:9
         }).style({ fill:"white" })
-            .text("+ filter")
+            .text("+ query")
             .on("click", addLogic)
 
 
@@ -183,7 +183,7 @@ function LogicPanel(params){
         usedSets.forEach(function(d){
             setNames[d.id] = d.elementName
         })
-        actualGroupLabel = "Filter"
+        actualGroupLabel = "Query"
 
         renderActualPanel();
     }
@@ -256,13 +256,13 @@ function LogicPanel(params){
             if (collectExpressions[d]!=null && collectExpressions[d].length ==setNameListLength){
                 switch(d){
                     case logicState.NOT:
-                        expression=  "the subset that does not overlap with any selected set";
+                        expression=  "the intersection that does not intersect with any selected set";
                         break;
                     case logicState.DONTCARE:
-                        expression =  "all subsets that intersect with the selected sets";
+                        expression =  "all intersections that intersect with the selected sets";
                         break;
                     case logicState.MUST:
-                        expression = "the subset that intersects all selected sets";
+                        expression = "the intersection that intersects all selected sets";
                         break;
                     default : break;
                 }
@@ -270,7 +270,7 @@ function LogicPanel(params){
         })
 
         if (expression.length<1){
-            expression = "subsets that intersect  ";
+            expression = "intersections that intersect  ";
 
             var but = "";
             if (collectExpressions[logicState.MUST]!=null){
@@ -280,7 +280,7 @@ function LogicPanel(params){
             }
             if (collectExpressions[logicState.NOT]!=null){
                 expression += but+"not with set ";
-                expression += collectExpressions[logicState.NOT].join(" nor with set ")
+                expression += collectExpressions[logicState.NOT].map(function(d){return "["+d+"]"}).join(" nor with set ")
             }
 
 
