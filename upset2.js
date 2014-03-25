@@ -29,6 +29,8 @@ var ctx = {
     paddingTop: 30,
     paddingSide: 20,
 
+    setOrder: 'size',
+
     truncateAfter: 20,
     truncateGroupAfter: 30,
 

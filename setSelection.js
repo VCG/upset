@@ -99,10 +99,13 @@ function orderChange() {
 
   var sortFn;
 
-  if (this.value === "name")
+  if (this.value === "name") {
     sortFn = sortName;
-  else
+    ctx.setOrder = "name";
+  }  else {
     sortFn = sortSize;
+    ctx.setOrder = "size";
+  }
 
   d3.selectAll(".unusedSets .unusedSetSizeBackground")
     .sort(sortFn)
@@ -129,6 +132,24 @@ function orderChange() {
     .attr("transform", function (d, i) {
         return 'translate(' + (cellDistance * (i + 1) + 5) + ', 20) rotate(90)'
     })
+    
+   d3.selectAll(".unusedSets .bulkCheck").remove();
+
+    unusedSets.sort(sortFn).filter(function(d, ii) {
+
+      d3.select(".unusedSets")
+        .append("foreignObject")
+        .datum([d])
+        .attr("width", 100)
+        .attr("height", 100)
+        .attr("class", "bulkCheck")
+        .attr("y", 0)
+        .attr("x", function(d, i) {
+          return cellDistance * (ii);
+        })
+        .html("<form><input type=checkbox value=setcheck id="+ii+" /></form>")
+
+    })
 
 }
 
@@ -136,6 +157,14 @@ function orderChange() {
 
       // Remove current transitions
       d3.selectAll(".bulkCheck").transition();
+
+        var sortFn;
+
+        if (ctx.setOrder === "name") {
+          sortFn = sortName;
+        }  else {
+          sortFn = sortSize;
+        }
 
       if(d3.selectAll(".bulkCheck")[0].length>5)
         return;
@@ -156,14 +185,14 @@ function orderChange() {
 
         })
 
-        unusedSets.sort(sortSize).filter(function(d, ii) {
+        var unusedSetsCheck = unusedSets.sort(sortFn).filter(function(d, ii) {
 
           d3.select(".unusedSets")
             .append("foreignObject")
             .datum([d])
             .attr("width", 100)
             .attr("height", 100)
-            .attr("class", "bulkCheck")
+            .attr("class", "bulkCheck unusedSets")
             .attr("y", 0)
             .attr("x", function(d, i) {
               return cellDistance * (ii);
@@ -221,9 +250,8 @@ function orderChange() {
             .attr("x", function(d, i) {
               return 145;//ctx.w- usedSets.length*cellDistance-100;
             })
-            .html("<form style='font-size:12px'>Order by: <input type=radio name='order' value='size' checked/> Size <input type=radio name='order' value='name' /> Name</form>")
+            .html("<form style='font-size:12px'>Order by: <input type=radio name='order' value='size' "+ (ctx.setOrder == 'size' ? 'checked' : '') +"/> Size <input type=radio name='order' value='name' "+ (ctx.setOrder == 'name' ? 'checked' : '') +"/> Name</form>")
             .on("click", function() {
-              console.log("toto")
               d3.select(this).selectAll("input").each(orderChange);
             });
 
@@ -307,6 +335,14 @@ function orderChange() {
       return d3.ascending(a.elementName, b.elementName);
     };
 
+    var sortFn;
+
+    if (ctx.setOrder === "name") {
+      sortFn = sortName;
+    }  else {
+      sortFn = sortSize;
+    }
+
 
         
     var unusedSetsLabels =  overview.append("foreignObject")
@@ -330,7 +366,7 @@ function orderChange() {
 
     unusedSetsLabels
             .append('rect')
-            .sort(sortSize)
+            .sort(sortFn)
             .attr({
                 class: 'unusedSetSizeBackground',
                 transform: function (d, i) {
@@ -345,7 +381,7 @@ function orderChange() {
     // background bar
     unusedSetsLabels
         .append('rect')
-        .sort(sortSize)
+        .sort(sortFn)
         .attr({
             class: 'unusedSetSize',
             transform: function (d, i) {
@@ -372,12 +408,13 @@ function orderChange() {
 
             return str;
           })
-        .sort(sortSize)
+        .sort(sortFn)
         .attr({
             class: 'setLabel',
-            id: function (d) {
-                return d.elementName.substring(0, truncateAfter);
-            },
+         // Not sure we need this..
+         //   id: function (d) {
+         //       return d.elementName.substring(0, truncateAfter);
+         //   },
                 transform: function (d, i) {
                     return 'translate(' + (cellDistance * (i + 1) + 5) + ', 20) rotate(90)'
                 },
