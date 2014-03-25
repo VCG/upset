@@ -21,7 +21,7 @@ Selection.createSubsetDefinition = function( subsets ) {
         //subsets = subsets[0];
     }
 
-    console.log( "subsets" );
+    //console.log( "subsets" );
     //console.log( subsets );
 
     var subsetDefinition = {};
@@ -29,8 +29,8 @@ Selection.createSubsetDefinition = function( subsets ) {
     for ( var s = 0; s < subsets.length; ++s ) {
         var subset = subsets[s].combinedSets;
 
-        console.log( "subset" );
-        console.log( subset );
+        //console.log( "subset" );
+        //console.log( subset );
 
         for (var x = 0; x < subset.length; ++x) {
             if ( subsetDefinition.hasOwnProperty( usedSets[x].id ) ) {
@@ -44,8 +44,8 @@ Selection.createSubsetDefinition = function( subsets ) {
         }        
     }
 
-    console.log( "subsetDefinition" );
-    console.log( subsetDefinition );
+    //console.log( "subsetDefinition" );
+    //console.log( subsetDefinition );
 
     return ( subsetDefinition );
 };
@@ -206,7 +206,7 @@ SelectionList.prototype.removeSelection = function (selection) {
 
     for (var i = 0; i < this.list.length; ++i) {
         if (self.list[i] === selection) {
-            console.log('Deleting selection ' + i + '.');
+//            console.log('Deleting selection ' + i + '.');
 
             // remove selection from list
             self.list.splice(i, 1);
