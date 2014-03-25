@@ -283,6 +283,23 @@ function parseDataSet(data, dataSetDescription) {
         }
     }
 
+    // initialize sets and set IDs
+    var setPrefix = "S_";
+    //var setID = 1;
+    for (var i = 0; i < rawSets.length; i++) {
+        var combinedSets = Array.apply(null, new Array(rawSets.length)).map(Number.prototype.valueOf, 0);
+        combinedSets[i] = 1;
+        var set = new Set(setPrefix + i, setNames[i], combinedSets, rawSets[i]);
+        setIdToSet[setPrefix + i] = set;
+        sets.push(set);
+        if (i < nrDefaultSets) {
+            set.isSelected = true;
+            usedSets.push(set);
+        }
+       // setID = setID << 1;
+    }
+
+
     // initialize attribute data structure
     attributes.length = 0;
     for (var i = 0; i < dataSetDescription.meta.length; ++i) {
@@ -325,7 +342,8 @@ function parseDataSet(data, dataSetDescription) {
         var setList = [];
         for (var s = 0; s < rawSets.length; s++) {
             if (rawSets[s][d] === 1) {
-                setList.push(Math.floor(Math.pow(2, s)));
+                //setList.push(Math.floor(Math.pow(2, s)));
+                setList.push(sets[s].id)
             }
         }
         setsAttribute.values[d] = setList;
@@ -383,20 +401,6 @@ function parseDataSet(data, dataSetDescription) {
         }
     }
 
-    var setPrefix = "S_";
-    //var setID = 1;
-    for (var i = 0; i < rawSets.length; i++) {
-        var combinedSets = Array.apply(null, new Array(rawSets.length)).map(Number.prototype.valueOf, 0);
-        combinedSets[i] = 1;
-        var set = new Set(setPrefix + i, setNames[i], combinedSets, rawSets[i]);
-        setIdToSet[setPrefix + i] = set;
-        sets.push(set);
-        if (i < nrDefaultSets) {
-            set.isSelected = true;
-            usedSets.push(set);
-        }
-       // setID = setID << 1;
-    }
 
     UpSetState.maxCardinality = attributes[attributes.length - 2].max;
     var maxCardSpinner = document.getElementById('maxCardinality');
