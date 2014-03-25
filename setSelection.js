@@ -69,7 +69,7 @@ function plotSetSelection() {
         }).on('click', setClicked);
 
     function setClicked(d) {
-        console.log(d);
+        console.log("setClicked", d);
         updateSetContainment(d);        
         console.log(d.elementName + ": " + d.isSelected);
     }

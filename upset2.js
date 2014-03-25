@@ -429,7 +429,7 @@ function UpSet() {
             class: 'setRow'});
 
 
-        d3.selectAll('.sortBySet, .setLabel').on(
+        d3.selectAll('.sortBySet, .setRow .setLabel').on(
             'click',
             function (d) {
                 UpSetState.sorting = StateOpt.sortBySetItem;
