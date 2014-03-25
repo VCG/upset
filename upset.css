@@ -88,7 +88,7 @@ h1 {
     font: sans-serif;
     text-anchor: left;
     cursor: s-resize;
-    font-size: 11pt;
+    font-size: 10pt;
     font-weight: 200;
 }
 
@@ -98,7 +98,7 @@ h1 {
     /*font-weight:bold;*/
     text-anchor: left;
     cursor: s-resize;
-    font-size: 9pt;
+    font-size: 8pt;
 }
 
 
@@ -128,7 +128,8 @@ h1 {
     /*stroke: #d3d3d3;*/
     stroke: #555555;
     stroke-width:1px;
-    fill:#fafafa;
+    fill:#cccccc;
+    opacity:.5;
 }
 .groupBackGround.secondLevel{
     stroke: #aaaaaa;

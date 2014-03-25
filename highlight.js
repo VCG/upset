@@ -47,7 +47,16 @@ function mouseoverColumnImpl(combinedSets) {
 
 
     ctx.columnBackgroundNode.selectAll(".columnBackground").style({
-        opacity:function(dd,i){return combinedSets[i]}
+        opacity:function(dd,i){
+            var value = combinedSets[i];
+            switch (value){
+                case 2:
+                    return 0; break;
+                default:
+                    return value;
+
+            }
+        }
     })
 
 }

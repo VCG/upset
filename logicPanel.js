@@ -30,6 +30,8 @@ function LogicPanel(params){
 //    ]
 
 
+    var me = this;
+
 
     var setNames= {}
     var collapseHeight = cellSize;
@@ -142,21 +144,41 @@ function LogicPanel(params){
                 width:1,
                 height:1
             })
-        patternDef.append("rect").attr({
-            x:.5,
-            y:0,
-            width:.5,
-            height:1,
-            fill: grays[1]
-        })
+
+
         patternDef.append("rect").attr({
             x:0,
             y:0,
-            width:.5,
+            width:1,
             height:1,
-            fill: grays[0],
-            transform:"rotate(45)"
+            fill: grays[0]
         })
+        patternDef.append("circle").attr({
+            cx:.5,
+            cy:.5,
+            r:.2,
+            fill: grays[1]
+
+        })
+
+
+
+
+//        patternDef.append("rect").attr({
+//            x:.5,
+//            y:0,
+//            width:.5,
+//            height:1,
+//            fill: grays[1]
+//        })
+//        patternDef.append("rect").attr({
+//            x:0,
+//            y:0,
+//            width:.5,
+//            height:1,
+//            fill: grays[0],
+//            transform:"rotate(45)"
+//        })
     }
 
 
@@ -231,7 +253,7 @@ function LogicPanel(params){
 
     }
 
-    function getTextDescription(actualOrClause){
+    this.getTextDescription = function(actualOrClause){
         var actualClause = logicExpression.orClauses[actualOrClause]
         var collectExpressions = {}
 
@@ -426,7 +448,7 @@ function LogicPanel(params){
 
     if (isExpanded){
         var textDescriptionPanel = nodeSelector.selectAll(".logicPanelActualText").data(function(d){
-            return [getTextDescription(actualOrClause)]
+            return [me.getTextDescription(actualOrClause)]
         });
         textDescriptionPanel.enter().append("text").attr({
             class:"logicPanelActualText addButton",
