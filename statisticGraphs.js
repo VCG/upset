@@ -133,7 +133,7 @@ StatisticGraphs.prototype.renderBoxPlot = function(id, g, x,y,w,h,classID){
         })
         dSEnter.append("rect").attr({
             class:"boxPlot quartile"
-        })
+        }).append("title").text(function(d){return "|"+ d.min+" --["+ d.lowerQuartile+" |"+ d.median+"| "+ d.upperQuartile+"]-- "+ d.max+"|"})
 
         dSEnter.append("line").attr({
             class:"boxPlot medianLine"

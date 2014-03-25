@@ -88,7 +88,7 @@ h1 {
     font: sans-serif;
     text-anchor: left;
     cursor: s-resize;
-    font-size: 11pt;
+    font-size: 10pt;
     font-weight: 200;
 }
 
@@ -98,7 +98,7 @@ h1 {
     /*font-weight:bold;*/
     text-anchor: left;
     cursor: s-resize;
-    font-size: 9pt;
+    font-size: 8pt;
 }
 
 
@@ -128,7 +128,8 @@ h1 {
     /*stroke: #d3d3d3;*/
     stroke: #555555;
     stroke-width:1px;
-    fill:#fafafa;
+    fill:#cccccc;
+    opacity:.5;
 }
 .groupBackGround.secondLevel{
     stroke: #aaaaaa;
@@ -238,7 +239,8 @@ th.attribute-header.selected {
 
 .filter-button {
     cursor: default;
-    color: blue;
+    color: #2b8cbe;
+    fill:#2b8cbe; /*should be the same as "color" -- for svg and html*/
 }
 
 .filter-button:hover {
@@ -602,7 +604,7 @@ html, body, .ui-container {
 }
 .collapseIcon, .groupDeleteIcon{
     font-family: FontAwesome;
-    font-size: 10px;
+    font-size: 12px;
     cursor:pointer;
     text-anchor: middle;
     /*dominant-baseline: ;*/
@@ -629,6 +631,14 @@ html, body, .ui-container {
     shape-rendering: crispEdges;
 }
 
+.logicButton{
+    font-family: FontAwesome;
+    font-size: 12px;
+    cursor:pointer;
+    text-anchor: middle;
+    dominant-baseline: central;
+
+}
 
 /*.groupBackGround .filterGroup{*/
      /*fill: #d3d3d3;;  */

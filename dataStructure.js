@@ -227,6 +227,12 @@ function QueryGroup(groupID, groupName, orClauses) {
     this.type = ROW_TYPE.QUERY_GROUP;
     Group.call(this, groupID, groupName, 1);
     this.orClauses = orClauses;
+    // if simple OR Group.. create combinedSet Element
+    if (orClauses.length==1){
+        this.combinedSets=Object.keys(orClauses[0]).map(function(key){
+            return orClauses[0][key].state
+        })
+    }
 }
 
 QueryGroup.prototype = Group;
