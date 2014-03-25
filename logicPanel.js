@@ -419,7 +419,7 @@ function LogicPanel(params){
                         default: // logicState.DONTCARE
                             return "url(#DontCarePattern)"
                     }},
-                stroke:function(){if (isExpanded) return logicColor; else return null;}
+                stroke:function(){if (isExpanded) return logicColor; else return grays[1];}
             })
 
 
@@ -544,7 +544,7 @@ function LogicPanel(params){
                     }},
                 stroke:function(d){
                     if (d.isSelected()) return logicColor;
-                    else return null;
+                    else return grays[1];
                 }
 
          })  .on({

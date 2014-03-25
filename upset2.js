@@ -1193,45 +1193,183 @@ function UpSet() {
             "transform": "translate(" + (ctx.xStartSetSizes - 12) + "," + (ctx.cellSize / 2 + 4) + ")"
         })
 
-//        allQueryGroups.each(function(queryGroup){
-//
-//            var groupData = queryGroupDecoItems.map(function(pE){
-//                    return {pElement:pE,dataSource: queryGroup}
-//                })
-//
-//            var panelElementItems = d3.select(this).selectAll(".decoQuery")
-//                .data(groupData);
-//            var panelElementsEnter = panelElementItems.enter()
-//                .append("g").attr("class","decoQuery")
-//
-//            panelElementsEnter.append("rect").attr({
-//                fill:function(d){return d.pElement.color},
-//                opacity:.5
-//            })
-//            panelElementsEnter.append("text").text(function(d){return d.pElement.id});
-//
-//            panelElementItems.select("rect").attr({
-//                x:function(d,i){return ctx.xStartSetSizes-((i+1) *ctx.cellDistance/2)-1},
-//                y:1,
-//                width:+(ctx.cellDistance/2-1),
-//                height:ctx.cellSize-2
-//            })
-//
-//            panelElementItems.select("text")
-//                .attr({
-//                    class: function(){if (ctx.cellDistance<14) return 'groupLabel small'; else return 'groupLabel'},
-//                    y: ctx.cellSize-3,
-//                    x: function(d,i){return ctx.xStartSetSizes-(i +.5)*ctx.cellDistance/2-1.5}
-////                    'font-size': ctx.cellSize - 6
-//                }).style({
-//                    "text-anchor":"middle",
-//                    "font-weight":"bold"
-//                }).on('click', function (d) {
-//                   console.log(d.dataSource);
-//                })
-//            })
 
+        // --- circles for NOT LOGIC GROUPS !! --- ///
+
+        function decorateRegularGroupsWIthCells(){
+            var nonLogicGroups =  groupRows.filter(function (d) {
+                return !(d.data instanceof QueryGroup) && ("combinedSets" in d.data)
+            })
+            var combinationGroups = nonLogicGroups.selectAll('g.combination').data(function (d) {
+                    // binding in an array of size one
+                    return [d.data.combinedSets];
+                }
+            )
+
+            combinationGroups.enter()
+                .append('g')
+                .attr({class: 'combination'
+                })
+            combinationGroups.exit().remove();
+
+
+            var cells = combinationGroups.selectAll('.cell').data(function (d) {
+
+                return d.map(function (dd, i) {
+                    return {data: usedSets[i], value: dd}
+                });
+            })
+            // ** init
+            cells.enter()
+                .append('circle')
+//            .on({
+//                'click': function (d) {
+//
+//                    /* click event for cells*/
+//                },
+////                'mouseover': function (d, i) {
+////                    mouseoverCell(d3.select(this).node().parentNode.parentNode.__data__, i)
+////                },
+////                'mouseout': mouseoutCell
+//            })
+            cells.exit().remove()
+
+            //** update
+            cells.attr('cx', function (d, i) {
+                return (ctx.cellWidth) * i + ctx.cellWidth / 2;
+            })
+                .attr({
+                    r: ctx.cellSize / 2 - 3,
+                    cy: ctx.cellSize / 2,
+                    class: 'cell'
+                })
+                .style('fill', function (d) {
+                    switch(d.value)
+                    {case 0: //logicState.NOT
+                        return ctx.grays[0]
+                        break;
+                        case 1: //logicState.MUST
+                            return ctx.grays[1]
+                            break;
+                        default: // logicState.DONTCARE
+                            return "url(#DontCarePattern)"}
+                }
+            )
+                .style({
+                    "stroke":ctx.grays[1]
+                })
+
+
+
+        }
+
+        decorateRegularGroupsWIthCells();
+
+        function decorateSimpleLogicGroupsWIthCells(){
+            var simpleLogicGroups =  groupRows.filter(function (d) {
+                return (d.data instanceof QueryGroup) && (d.data.orClauses.length==1)
+            })
+            var combinationGroups = simpleLogicGroups.selectAll('g.combination').data(function (d) {
+                    // binding in an array of size one
+
+                    return [Object.keys(d.data.orClauses[0]).map(function(key){ return d.data.orClauses[0][key].state})];
+                }
+            )
+
+            combinationGroups.enter()
+                .append('g')
+                .attr({class: 'combination'
+                })
+            combinationGroups.exit().remove();
+
+
+            var cells = combinationGroups.selectAll('.cell').data(function (d) {
+
+                return d.map(function (dd, i) {
+                    return {data: usedSets[i], value: dd}
+                });
+            })
+            // ** init
+            cells.enter()
+                .append('circle')
+//            .on({
+//                'click': function (d) {
+//
+//                    /* click event for cells*/
+//                },
+////                'mouseover': function (d, i) {
+////                    mouseoverCell(d3.select(this).node().parentNode.parentNode.__data__, i)
+////                },
+////                'mouseout': mouseoutCell
+//            })
+            cells.exit().remove()
+
+            //** update
+            cells.attr('cx', function (d, i) {
+                return (ctx.cellWidth) * i + ctx.cellWidth / 2;
+            })
+                .attr({
+                    r: ctx.cellSize / 2 - 3,
+                    cy: ctx.cellSize / 2,
+                    class: 'cell'
+                })
+                .style('fill', function (d) {
+                    switch(d.value)
+                    {case 0: //logicState.NOT
+                        return ctx.grays[0]
+                        break;
+                        case 1: //logicState.MUST
+                            return ctx.grays[1]
+                            break;
+                        default: // logicState.DONTCARE
+                            return "url(#DontCarePattern)"}
+                }
+            )
+                .style({
+                    "stroke":ctx.grays[1]
+                })
+
+
+
+        }
+
+        decorateSimpleLogicGroupsWIthCells();
+
+
+
+//        var circles = tableRows.selectAll("circle").data(function(d){return d.selectors})
+//        circles.enter()
+//            .append("circle").attr({
+//                class:"logicPanelCircle",
+//                cx:function(d,i){return (i+.5)*cellWidth}, // TODO: add 90 as params!!
+//                cy: .5*cellSize,
+////                if (animated) return 0.5*cellSize;
+////                else return (i+1.5)*cellSize +5},
+//                r: cellSize/2-2
+//            })
+//
+//        circles.style({
+//            fill:function(d){
+//                switch(d.state)
+//                {
+//                    case logicState.NOT:
+//                        return grays[0]
+//                        break;
+//                    case logicState.MUST:
+//                        return grays[1]
+//                        break;
+//                    default: // logicState.DONTCARE
+//                        return "url(#DontCarePattern)"
+//                }},
+//            stroke:function(d){
+//                if (d.isSelected()) return logicColor;
+//                else return null;
+//            }
+//
 //        })
+
+
+
 
         // --- Horizon Bars for size.
 
