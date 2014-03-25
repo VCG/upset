@@ -32,7 +32,7 @@ function LogicPanel(params){
 
 
     var setNames= {}
-    var collapseHeight = cellSize+5;
+    var collapseHeight = cellSize;
     var uncollapseHeight = 95;
     var isCollapsed = true;
     var toggleState = {}
@@ -154,7 +154,8 @@ function LogicPanel(params){
             y:0,
             width:.5,
             height:1,
-            fill: grays[0]
+            fill: grays[0],
+            transform:"rotate(45)"
         })
     }
 
@@ -403,7 +404,7 @@ function LogicPanel(params){
                 class:"logicPanelHeaderCircle",
                 cx:function(d,i){return (i*cellWidth)+cellWidth/2}, // TODO: add 90 as params!!
                 cy:function(d,i){return cellSize/2},
-                r: cellSize/2-1
+                r: cellSize/2-3
             })
          headerCircles.style({
 //                stroke:grays[1],
@@ -419,7 +420,7 @@ function LogicPanel(params){
                         default: // logicState.DONTCARE
                             return "url(#DontCarePattern)"
                     }},
-                stroke:function(){if (isExpanded) return logicColor; else return grays[1];}
+                stroke:grays[1]//function(){if (isExpanded) return logicColor; else return grays[1];}
             })
 
 
@@ -484,7 +485,7 @@ function LogicPanel(params){
                 default: // logicState.DONTCARE
                     return "maybe"
             }}).attr({
-                x:-2,
+                x:-4,
                 y:cellSize/2,
                 class:"addButton"
             }).style({
@@ -599,7 +600,7 @@ function LogicPanel(params){
         var label = prompt("Group label:",actualGroupLabel);
         if (label !=null){
             actualGroupLabel = label
-            panel.select("#fakeGroup").select("text").text(actualGroupLabel);
+            panel.select("#fakeGroup").select(".groupLabel").text(actualGroupLabel);
         }
 
     }
@@ -618,11 +619,35 @@ function LogicPanel(params){
                 height:cellSize,
                 class:"groupBackGround"
             })
-            fakeGroup.append("text").attr({
-                x:0,
+            var labelText = fakeGroup.append("text")
+            labelText.append("tspan").attr({
+                x:12,
                 y:cellSize-3,
                 class:"groupLabel"
             }).text(actualGroupLabel)
+
+
+            fakeGroup.append("text").text("\uf057").attr({
+                id:"logicPanelCancelText",
+                class:"groupDeleteIcon",
+                "transform": "translate(" + (ctx.xStartSetSizes +ctx.leftOffset- 12) + "," + (ctx.cellSize / 2 + 4) + ")" //TODO: needs context
+            }).style({
+                  "fill": "#f46d43"
+                })
+                .on({
+                    "click":function(){destroyPanel();}
+                })
+
+            labelText.append("tspan").text(" \uf040").attr({
+                id:"logicPanelLabelChangeText",
+                class:"logicButton filter-button"
+            }).style({
+                    "font-size":"9pt",
+                    "dominant-baseline":"auto"
+                })
+                .on({
+                    "click":function(){changeGroupLabel();}
+                })
         }
 
 
@@ -646,13 +671,20 @@ function LogicPanel(params){
 
         // add row buttons
         logicPanelRowEnter.append("text").text("V")
-            .attr("class","addButton logicPanelSelect")
+            .attr("class","logicButton logicPanelSelect ")
             .style("text-anchor","start")
             .on("click", function(d,i){selectRow(i)});
-        logicPanelRowEnter.append("text").text("del")
-            .attr("class","addButton logicPanelRemove")
+        logicPanelRowEnter.append("text").text("\uf057")
+            .attr("class","logicButton logicPanelRemove")
             .style("text-anchor","start")
             .on("click", function(d,i){removeRow(i)});
+
+
+
+
+
+
+
         logicPanelRowEnter.append("rect").attr({
             class:"logicPanelRect",
             width:width,
@@ -691,7 +723,7 @@ function LogicPanel(params){
             })
 
         logicPanelRows.select(".logicPanelRemove").transition().attr({
-            x:60,
+            x:ctx.leftOffset-14,
             y: function(d,i){
 //                if (actualOrClause==i) return uncollapseHeight/2;
 //                else
@@ -718,9 +750,9 @@ function LogicPanel(params){
                     "transform":"translate("+0+","+endOfPanel+")"
                 })
 
-            buttonGroup.append("text").text("add OR").attr({
+            buttonGroup.append("text").text("\uf067").attr({
                 id:"logicPanelAddText",
-                class:"addButton",
+                class:"logicButton",
                 x:25
 //                "transform":"translate("+0+","+endOfPanel+")"
             }).style({
@@ -730,42 +762,17 @@ function LogicPanel(params){
                     "click":function(){addOrClause();}
                 })
 
-            buttonGroup.append("text").text("create").attr({
+            buttonGroup.append("text").text("\uf00c").attr({
                 id:"logicPanelSubmitText",
-                class:"addButton",
-                x:230
+                class:"logicButton",
+                x:70
 //                "transform":"translate("+35+","+endOfPanel+")"
             }).style({
-//                    "text-anchor":"start"
+                   "fill":logicColor
                 })
                 .on({
                     "click":function(){submitExpression();}
                 })
-
-            buttonGroup.append("text").text("cancel").attr({
-                id:"logicPanelCancelText",
-                class:"addButton",
-                x:280
-//                "transform":"translate("+70+","+endOfPanel+")"
-            }).style({
-//                    "text-anchor":"start"
-                })
-                .on({
-                    "click":function(){destroyPanel();}
-                })
-
-            buttonGroup.append("text").text("change group label").attr({
-                id:"logicPanelCancelText",
-                class:"addButton",
-                x:120
-//                "transform":"translate("+70+","+endOfPanel+")"
-            }).style({
-//                    "text-anchor":"start"
-                })
-                .on({
-                    "click":function(){changeGroupLabel();}
-                })
-
 
 
 

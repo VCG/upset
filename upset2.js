@@ -1169,7 +1169,7 @@ function UpSet() {
 //            fill:"#f46d43"
 //        })
         groupDeleteIconEnter.append("text")
-            .text("\uf05e")
+            .text("\uf057") // uf057 uf05e
             .on({
                 "click": function (d) {
 
