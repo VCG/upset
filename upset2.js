@@ -366,7 +366,7 @@ function UpSet() {
 
         setRows.exit().remove();
 
-        var setRects = setRows.selectAll("rect").data(function (d, i) {
+        var setRects = setRows.selectAll(".sortBySet.connection.vertical").data(function (d, i) {
             return [d]
         })
         setRects.enter().append("rect").attr({
@@ -378,8 +378,8 @@ function UpSet() {
         setRects.exit().remove();
 
         setRects.attr({
-            transform: function (d, i) {
-                return 'skewX(45) translate(' + (ctx.cellWidth * i - ctx.leftOffset) + ', 0)';
+            transform: function (d, i) { console.log("IIII", i)
+                return 'skewX(45) translate(' + (- ctx.leftOffset) + ', 0)';
             },
             width: ctx.cellWidth,
             height: ctx.textHeight - 2
@@ -403,7 +403,7 @@ function UpSet() {
                     return d.elementName.substring(0, ctx.truncateAfter);
                 },
                 transform: function (d, i) {
-                    return 'translate(' + (ctx.cellWidth * (i )) + ',' + (ctx.textHeight - ctx.textSpacing - 2) + ')rotate(45)';
+                    return 'translate(0,' + (ctx.textHeight - ctx.textSpacing - 2) + ')rotate(45)';
                 },
                 'text-anchor': 'end'
             })
