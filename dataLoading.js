@@ -383,18 +383,19 @@ function parseDataSet(data, dataSetDescription) {
         }
     }
 
-    var setID = 1;
+    var setPrefix = "S_";
+    //var setID = 1;
     for (var i = 0; i < rawSets.length; i++) {
         var combinedSets = Array.apply(null, new Array(rawSets.length)).map(Number.prototype.valueOf, 0);
         combinedSets[i] = 1;
-        var set = new Set(setID, setNames[i], combinedSets, rawSets[i]);
-        setIdToSet[setID] = set;
+        var set = new Set(setPrefix + i, setNames[i], combinedSets, rawSets[i]);
+        setIdToSet[setPrefix + i] = set;
         sets.push(set);
         if (i < nrDefaultSets) {
             set.isSelected = true;
             usedSets.push(set);
         }
-        setID = setID << 1;
+       // setID = setID << 1;
     }
 
     UpSetState.maxCardinality = attributes[attributes.length - 2].max;
