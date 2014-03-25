@@ -347,7 +347,7 @@ function orderChange() {
         
     var unusedSetsLabels =  overview.append("foreignObject")
         .attr("width", 710)
-        .attr("height", textHeight+20)
+        .attr("height", textHeight+40)
         .attr("x", usedSets.length*cellSize)
         .attr("y", 40)
       .append("xhtml:div")
