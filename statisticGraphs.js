@@ -33,9 +33,19 @@ StatisticGraphs.prototype.updateStatistics= function(subsetData, subsetIDselecto
 
 //        console.log("attr",attributeColumn);
 
-        var itemList = subset[itemIDselector].map(function(itemID){
+        var itemIDSelectors = itemIDselector.split(".")
+
+        var actualSubset = subset;
+        itemIDSelectors.forEach((function(selector){
+            actualSubset = actualSubset[selector];
+        }))
+//        console.log(actualSubset);
+
+        var itemList = actualSubset.map(function(itemID){
             return +attributeColumn[itemID]
         })
+
+//        console.log(itemList);
 
         var summaryStatistics ={
             min:0,

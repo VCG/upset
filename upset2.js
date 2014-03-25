@@ -248,7 +248,7 @@ function UpSet() {
                 buttonY: ctx.textHeight - 20,
                 stateObject: UpSetState,
                 subsets: subSets,
-                callAfterSubmit: [updateState, rowTransition],
+                callAfterSubmit: [updateState, updateStatistics, rowTransition],
                 ctx: ctx,
                 cellWidth: ctx.cellWidth
 
@@ -445,8 +445,9 @@ function UpSet() {
 
 
     function updateStatistics(){
-        ctx.summaryStatisticVis.forEach(function(sumStat,i){sumStat.visObject.updateStatistics(subSets, "id", "items", attributes,"name","values", sumStat.attribute)});
-
+        ctx.summaryStatisticVis.forEach(function(sumStat,i){
+            sumStat.visObject.updateStatistics(renderRows, "id", "data.items", attributes,"name","values", sumStat.attribute)
+        });
 //        ctx.summaryStatisticVis[0].visObject.updateStatistics(subSets, "id", "items", attributes,"name","values", ctx.summaryStatisticVis[0].attribute)
     }
 
@@ -942,37 +943,6 @@ function UpSet() {
 */
 
 
-        subsetRows.each(function(row,j){
-            var rowElement = d3.select(this);
-//            console.log(row);
-
-            var detailStatisticElements = rowElement.selectAll(".detailStatistic").data(ctx.summaryStatisticVis,function(d,i){return d.attribute+i});
-            detailStatisticElements.exit().remove();
-            detailStatisticElements.enter().append("g").attr({
-                class:function(d){return "detailStatistic"}
-            })
-
-
-
-            detailStatisticElements.each(function(d,i){
-
-                d.visObject.renderBoxPlot(row.data.id,d3.select(this),ctx.xStartStatisticColumns+i*(ctx.summaryStatisticsWidth+ctx.majorPadding),2,null,ctx.cellSize-4,"detail"+i); //  function(id, g, x,y,w,h)
-
-            })
-
-
-//            ctx.summaryStatisticVis.forEach(function(sumStat,i){
-//                sumStat.visObject.renderBoxPlot(row.data.id,rowElement,ctx.xStartStatisticColumns+i*100,2,null,ctx.cellSize-4,"detail"+i); //  function(id, g, x,y,w,h){
-////                console.log(sumStat);
-////                sumStat.visObject.renderAxis(tableHeaderGroup,ctx.xStartStatisticColumns+(i*100),ctx.textHeight-5,95);
-////
-//            })
-
-
-        })
-
-
-
 
         subsetRows.each(function (e, j) {
 
@@ -1427,6 +1397,32 @@ function UpSet() {
         }
     }
 
+    function updateAttributeStatistic(allRows){
+        allRows.each(function(row,j){
+            var rowElement = d3.select(this);
+
+            var detailStatisticElements = rowElement.selectAll(".detailStatistic").data(ctx.summaryStatisticVis,function(d,i){return d.attribute+i});
+            detailStatisticElements.exit().remove();
+            detailStatisticElements.enter().append("g").attr({
+                class:function(d){return "detailStatistic"}
+            })
+
+
+
+            detailStatisticElements.each(function(d,i){
+
+                d.visObject.renderBoxPlot(row.id,d3.select(this),ctx.xStartStatisticColumns+i*(ctx.summaryStatisticsWidth+ctx.majorPadding),2,null,ctx.cellSize-4,"detail"+i); //  function(id, g, x,y,w,h)
+
+            })
+
+        })
+
+
+
+
+    }
+
+
     function updateOverlays(allRows) {
         if (selections.getSize() == 0) {
             allRows.selectAll(".what").remove();
@@ -1783,6 +1779,9 @@ function UpSet() {
 
         updateRelevanceBars(allRows);
 
+        // ----------------------- all Rows -------------------
+        updateAttributeStatistic(allRows);
+
         // Adjust the row height
         d3.select(".divForeign").select("svg").attr("height", renderRows.length * ctx.cellDistance);
     }
@@ -1938,6 +1937,8 @@ function UpSet() {
                 disableL2Equivalent('#groupByIntersectionSizeL2');
 
                 updateState();
+                updateStatistics();
+
                 rowTransition();
 //                d3.selectAll('#groupByIntersectionSizeL2').attr('disabled', true);
             });
@@ -1951,6 +1952,7 @@ function UpSet() {
                 disableL2Equivalent('#groupBySetL2');
 
                 updateState();
+                updateStatistics();
                 rowTransition();
             });
 
@@ -1962,6 +1964,7 @@ function UpSet() {
                 toggleGroupingL2(false);
                 disableL2Equivalent('#groupByRelevanceMeasureL2');
                 updateState();
+                updateStatistics();
                 rowTransition();
             });
 
@@ -1973,6 +1976,7 @@ function UpSet() {
                 toggleGroupingL2(false);
                 disableL2Equivalent('#groupByOverlapDegreeL2');
                 updateState();
+                updateStatistics();
                 rowTransition();
             });
 
@@ -1986,6 +1990,7 @@ function UpSet() {
                 toggleGroupingL2(true);
 
                 updateState();
+                updateStatistics();
                 rowTransition();
             });
 
@@ -1996,6 +2001,7 @@ function UpSet() {
             function (d) {
                 UpSetState.levelTwoGrouping = StateOpt.groupByIntersectionSize;
                 updateState();
+                updateStatistics();
                 rowTransition();
             });
 
@@ -2004,6 +2010,7 @@ function UpSet() {
             function (d) {
                 UpSetState.levelTwoGrouping = StateOpt.groupBySet;
                 updateState();
+                updateStatistics();
                 rowTransition();
             });
 
@@ -2012,6 +2019,7 @@ function UpSet() {
             function (d) {
                 UpSetState.levelTwoGrouping = StateOpt.groupByOverlapDegree;
                 updateState();
+                updateStatistics();
                 rowTransition();
             });
 
@@ -2020,6 +2028,7 @@ function UpSet() {
             function (d) {
                 UpSetState.levelTwoGrouping = StateOpt.groupByRelevanceMeasure;
                 updateState();
+                updateStatistics();
                 rowTransition();
             });
 
@@ -2028,6 +2037,7 @@ function UpSet() {
             function (d) {
                 UpSetState.levelTwoGrouping = undefined;
                 updateState();
+                updateStatistics();
                 rowTransition();
             });
 
@@ -2039,6 +2049,7 @@ function UpSet() {
                 UpSetState.collapseAll = true;
                 UpSetState.collapseChanged = true;
                 updateState();
+                updateStatistics();
                 rowTransition();
             });
 
@@ -2048,6 +2059,7 @@ function UpSet() {
                 UpSetState.expandAll = true;
                 UpSetState.collapseChanged = true;
                 updateState();
+                updateStatistics();
                 rowTransition();
             });
 
