@@ -321,7 +321,7 @@ function UpSet() {
 
         ctx.summaryStatisticVis=[];
         attributes.filter(function(d){
-            return d.type=="integer" || d.type=="float"
+            return (d.type=="integer" || d.type=="float") && (d.name!="Set Count")
         }).forEach(function(attribute,i){
 
                 ctx.summaryStatisticVis.push({
