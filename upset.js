@@ -15,7 +15,7 @@ var ctx = {
 
     leftOffset: 90,
     leftIndent: 10,
-    topOffset: 120,
+    topOffset: 100,
 
     /** The width from the start of the set vis to the right edge */
 
@@ -206,7 +206,7 @@ function UpSet() {
             .attr("width", ctx.w)
             .attr("height", ctx.svgHeight)
             .attr("x", 0)//*cellSize)
-            .attr("y", 210)//*cellSize)
+            .attr("y", 190)//*cellSize)
             .attr("class", "foreignGRows")
         ctx.foreignDiv = ctx.foreignObject.append("xhtml:div")
             .style("position", "relative")

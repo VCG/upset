@@ -89,7 +89,7 @@ function plotSetOverview() {
 
     var overview = d3.select('#vis').select('svg').append("g").attr({
         class: "visOverview",
-        "transform": "translate(" + 0 + "," + 0 + ")"
+        "transform": "translate(" + 0 + "," + -20 + ")"
     })
 
 
@@ -206,7 +206,7 @@ function orderChange() {
             .attr("width", 100)
             .attr("height", 100)
             .attr("class", "bulkCheck")
-            .attr("y", 20)
+            .attr("y", 0)
             .attr("x", function(d, i) {
               return 0;//ctx.w- usedSets.length*cellDistance-100;
             })
@@ -218,7 +218,7 @@ function orderChange() {
             .attr("width", 100)
             .attr("height", 100)
             .attr("class", "bulkCheck")
-            .attr("y", 20)
+            .attr("y", 0)
             .attr("x", function(d, i) {
               return 60;//ctx.w- usedSets.length*cellDistance-100;
             })
@@ -232,7 +232,7 @@ function orderChange() {
             .attr("width", 100)
             .attr("height", 100)
             .attr("class", "bulkCheck")
-            .attr("y", 20)
+            .attr("y", 0)
             .attr("x", function(d, i) {
               return 95;//ctx.w- usedSets.length*cellDistance-100;
             })
@@ -246,7 +246,7 @@ function orderChange() {
             .attr("width", 200)
             .attr("height", 100)
             .attr("class", "bulkCheck")
-            .attr("y", 20)
+            .attr("y", 10)
             .attr("x", function(d, i) {
               return 145;//ctx.w- usedSets.length*cellDistance-100;
             })
@@ -316,6 +316,8 @@ function orderChange() {
         .on('mouseover', mouseoverColumn)
         .on('mouseout', mouseoutColumn)
         .on('click', setClicked)
+              .append("svg:title")
+      .text(function(d, i) { return d.elementName + " (" +d.setSize+ ")"; });
 
     var unusedSets = sets.filter(function(n) {
         return usedSets.indexOf(n) == -1
@@ -349,7 +351,7 @@ function orderChange() {
         .attr("width", 710)
         .attr("height", textHeight+40)
         .attr("x", usedSets.length*cellSize)
-        .attr("y", 40)
+        .attr("y", 20)
       .append("xhtml:div")
         .style("overflow-x", "auto")
         .append("svg")
@@ -429,7 +431,7 @@ function orderChange() {
       })
       .on('click', setClicked)
       .append("svg:title")
-      .text(function(d, i) { return d.elementName; });
+      .text(function(d, i) { return d.elementName + " (" +d.setSize+ ")"; });
 
 
     function setClicked(d, i) {
