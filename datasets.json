@@ -8,6 +8,7 @@
     "data/compounds/comp-protein.json",
     "data/compounds/comp-family.json",
 
+    "UpSet-Data/data/variants/allvcf_depth.json",
     "UpSet-Data/data/variants/allvcf_10x.json",
     "UpSet-Data/data/variants/allvcf_20x.json",
     "UpSet-Data/data/variants/allvcf_30x.json",
