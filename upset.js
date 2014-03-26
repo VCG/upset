@@ -63,7 +63,13 @@ var ctx = {
         attribute:"",
         visObject:{}
     }],// list of all statistic graphs TODO: make dynamic !!!
-    summaryStatisticsWidth:100
+    summaryStatisticsWidth:100,
+
+
+    // GROUPING OPTIONS
+    groupingOptions : {}
+
+
 
 };
 
@@ -1987,123 +1993,164 @@ function UpSet() {
         l2.prop('disabled', true);
     }
 
+    function updateL2Grouping(){
+
+        if (UpSetState.grouping==undefined){
+            d3.select("#secondLevelGroupingSelect").attr({disabled:true})
+        }else{
+            d3.select("#secondLevelGroupingSelect").attr({disabled:null})
+            var selectableOptions = {};
+            Object.keys(ctx.groupingOptions).forEach(function(key){
+                if (key!=UpSetState.grouping) selectableOptions[key] = ctx.groupingOptions[key];
+            })
+
+            console.log("updateL2:",selectableOptions);
+
+    //        UpSetState.grouping = StateOpt.groupByRelevanceMeasure;
+    //        UpSetState.levelTwoGrouping = undefined;
+
+            var l2GroupingSelect = d3.select("#secondLevelGrouping").selectAll("select").data([selectableOptions]);
+            l2GroupingSelect.exit().remove();
+            l2GroupingSelect.enter().append("select").attr({
+                id: "secondLevelGroupingSelect"
+            }).on({
+                    "change": function () {
+                        var value = this.options[this.selectedIndex].value;
+                        ctx.groupingOptions[value].l2action();
+                        updateState();
+                        updateStatistics();
+                        rowTransition();
+                    }
+                });
+
+
+            // has to be deleted to keep order in list :((
+            d3.select("#secondLevelGroupingSelect").selectAll("option").remove();
+            var l2GroupingOptions = d3.select("#secondLevelGroupingSelect").selectAll("option")
+                .data(
+                    function (d) { return Object.keys(d).map(function (key) { return {key: key, data: d[key]} }) },
+                    function(d){ return d.key})
+                .enter().append("option").attr({
+                    value:function(d){return d.key;},
+                    selected:function(d){return (d.key==UpSetState.levelTwoGrouping || (d.key=="dont" && UpSetState.levelTwoGrouping==undefined))?"selected":null}
+                }).text(function(d){return d.data.name});
+
+        }
+    }
+
+
     function setUpSortSelections() {
+
+        // groupingDefinitions
+        ctx.groupingOptions[StateOpt.groupBySet]={ name: "Sets", l1action:function(){},l2action:function(){} };
+        ctx.groupingOptions[StateOpt.groupByIntersectionSize] = { name: "Intersection Size", l1action:function(){},l2action:function(){} };
+        ctx.groupingOptions[StateOpt.groupByRelevanceMeasure] ={ name: "Disproportionality", l1action:function(){}, l2action:function(){} };
+        ctx.groupingOptions[StateOpt.groupByOverlapDegree] = { name: "Group all overlaps > 2", l1action:function(){}, l2action:function(){} };
+        ctx.groupingOptions["dont"] ={ name: "Don't Group", l1action:function(){}, l2action:function(){} };
+
+
+
+
+
+       // ---- define L1 actions
+
+       ctx.groupingOptions[StateOpt.groupByIntersectionSize]
+           .l1action = function(){
+               UpSetState.grouping = StateOpt.groupByIntersectionSize;
+               UpSetState.levelTwoGrouping = undefined;
+           }
+
+       ctx.groupingOptions[StateOpt.groupBySet]
+           .l1action= function () {
+               UpSetState.grouping = StateOpt.groupBySet;
+               UpSetState.levelTwoGrouping = undefined;
+           };
+
+
+        ctx.groupingOptions[StateOpt.groupByRelevanceMeasure]
+            .l1action=function () {
+                UpSetState.grouping = StateOpt.groupByRelevanceMeasure;
+                UpSetState.levelTwoGrouping = undefined;
+            };
+
+        ctx.groupingOptions[StateOpt.groupByOverlapDegree]
+            .l1action=function () {
+                UpSetState.grouping = StateOpt.groupByOverlapDegree;
+                UpSetState.levelTwoGrouping = undefined;
+            };
+
+        ctx.groupingOptions["dont"]
+            .l1action=function () {
+                UpSetState.grouping = undefined;
+                UpSetState.levelTwoGrouping = undefined;
+                UpSetState.forceUpdate = true;
+            };
+
+
+       // --- define L2 actions
+
+
+        // ---------------- Grouping L2 -----------
+
+        ctx.groupingOptions[StateOpt.groupByIntersectionSize]
+            .l2action=function () {
+                UpSetState.levelTwoGrouping = StateOpt.groupByIntersectionSize;
+            };
+
+        ctx.groupingOptions[StateOpt.groupBySet]
+            .l2action=function () {
+                UpSetState.levelTwoGrouping = StateOpt.groupBySet;
+            };
+
+        ctx.groupingOptions[StateOpt.groupByOverlapDegree]
+            .l2action=function () {
+                UpSetState.levelTwoGrouping = StateOpt.groupByOverlapDegree;
+            };
+
+        ctx.groupingOptions[StateOpt.groupByRelevanceMeasure]
+            .l2action=function () {
+                UpSetState.levelTwoGrouping = StateOpt.groupByRelevanceMeasure;
+            };
+
+        ctx.groupingOptions["dont"]
+            .l2action=function () {
+                UpSetState.levelTwoGrouping = undefined;
+            };
+
 
 
         // ----------- grouping L1 -------------------------
 
-        d3.selectAll('#groupByIntersectionSize').on(
-            'click',
-            function (d) {
-                UpSetState.grouping = StateOpt.groupByIntersectionSize;
-                UpSetState.levelTwoGrouping = undefined;
-                toggleGroupingL2(false);
-                disableL2Equivalent('#groupByIntersectionSizeL2');
+        var l1GroupingSelect = d3.select("#firstLevelGrouping").selectAll("select").data([ctx.groupingOptions]);
+        l1GroupingSelect.exit().remove(); // will not be called
+        l1GroupingSelect.enter().append("select").attr({
+            id: "firstLevelGroupingSelect"
+        }).on({
+                "change": function () {
+                    var value = this.options[this.selectedIndex].value;
+                    ctx.groupingOptions[value].l1action();
+                    updateL2Grouping();
+                    updateState();
+                    updateStatistics();
+                    rowTransition();
 
-                updateState();
-                updateStatistics();
-
-                rowTransition();
-//                d3.selectAll('#groupByIntersectionSizeL2').attr('disabled', true);
+                }
             });
 
-        d3.selectAll('#groupBySet').on(
-            'click',
-            function (d) {
-                UpSetState.grouping = StateOpt.groupBySet;
-                UpSetState.levelTwoGrouping = undefined;
-                toggleGroupingL2(false);
-                disableL2Equivalent('#groupBySetL2');
+        var l1GroupingOptions = l1GroupingSelect.selectAll("option")
+            .data(function (d) {return Object.keys(d).map(function (key) { return {key: key, data: d[key]} }) });
+        l1GroupingOptions.exit().remove();
+        l1GroupingOptions.enter().append("option").attr({
+            value:function(d){return d.key;}
+        }).text(function(d){return d.data.name});
 
-                updateState();
-                updateStatistics();
-                rowTransition();
-            });
+        // ----------- grouping L2 as update as it depends on L1 -------------------------
+        updateL2Grouping();
 
-        d3.selectAll('#groupByRelevanceMeasure').on(
-            'click',
-            function (d) {
-                UpSetState.grouping = StateOpt.groupByRelevanceMeasure;
-                UpSetState.levelTwoGrouping = undefined;
-                toggleGroupingL2(false);
-                disableL2Equivalent('#groupByRelevanceMeasureL2');
-                updateState();
-                updateStatistics();
-                rowTransition();
-            });
 
-        d3.selectAll('#groupByOverlapDegree').on(
-            'click',
-            function (d) {
-                UpSetState.grouping = StateOpt.groupByOverlapDegree;
-                UpSetState.levelTwoGrouping = undefined;
-                toggleGroupingL2(false);
-                disableL2Equivalent('#groupByOverlapDegreeL2');
-                updateState();
-                updateStatistics();
-                rowTransition();
-            });
 
-        d3.selectAll('#noGrouping').on(
-            'click',
-            function (d) {
-                UpSetState.grouping = undefined;
-                UpSetState.levelTwoGrouping = undefined;
-                UpSetState.forceUpdate = true;
 
-                toggleGroupingL2(true);
 
-                updateState();
-                updateStatistics();
-                rowTransition();
-            });
-
-        // ---------------- Grouping L2 -----------
-
-        d3.selectAll('#groupByIntersectionSizeL2').on(
-            'click',
-            function (d) {
-                UpSetState.levelTwoGrouping = StateOpt.groupByIntersectionSize;
-                updateState();
-                updateStatistics();
-                rowTransition();
-            });
-
-        d3.selectAll('#groupBySetL2').on(
-            'click',
-            function (d) {
-                UpSetState.levelTwoGrouping = StateOpt.groupBySet;
-                updateState();
-                updateStatistics();
-                rowTransition();
-            });
-
-        d3.selectAll('#groupByOverlapDegreeL2').on(
-            'click',
-            function (d) {
-                UpSetState.levelTwoGrouping = StateOpt.groupByOverlapDegree;
-                updateState();
-                updateStatistics();
-                rowTransition();
-            });
-
-        d3.selectAll('#groupByRelevanceMeasureL2').on(
-            'click',
-            function (d) {
-                UpSetState.levelTwoGrouping = StateOpt.groupByRelevanceMeasure;
-                updateState();
-                updateStatistics();
-                rowTransition();
-            });
-
-        d3.selectAll('#noGroupingL2').on(
-            'click',
-            function (d) {
-                UpSetState.levelTwoGrouping = undefined;
-                updateState();
-                updateStatistics();
-                rowTransition();
-            });
 
         // ------- options ----
 
