@@ -21,14 +21,14 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
 
     var width = width;
 
-    var xScale = d3.scale.linear().domain([1,width]).range([0, width])
+    var xScale = d3.scale.pow().exponent(2).domain([1,width]).range([0, width])
     var xOverViewAxisUpper = d3.svg.axis().scale(xScale);
     var xOverViewAxisLower = d3.svg.axis().scale(xScale).orient("top").tickFormat(function(d){return ""});
 
 
     var xDetailScale = d3.scale.linear().domain([0,width]).range([0,width]).clamp(true)
-    var xDetailAxisUpper = d3.svg.axis().scale(xDetailScale);
-    var xDetailAxisLower = d3.svg.axis().scale(xDetailScale).orient("top").tickFormat(function(d){return ""});
+    var xDetailAxisUpper = d3.svg.axis().scale(xDetailScale).ticks(5);
+    var xDetailAxisLower = d3.svg.axis().scale(xDetailScale).orient("top").tickFormat(function(d){return ""}).ticks(5);
 
     var param = param
 
@@ -189,9 +189,17 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
     function updateScales(){
 
         var brushedValue = d3.min([overViewBrushDef.extent()[1], maxValue]);
-        xScale = d3.scale.linear().domain([0,maxValue]).range([0, width])
-        xOverViewAxisUpper.scale(xScale);
-        xOverViewAxisLower.scale(xScale);
+        var optimalExponent = getOptimalExponent(maxValue,width);
+        xScale.domain([0,maxValue]).range([0, width]).exponent(optimalExponent);
+
+
+        var tickValues = xScale.ticks(5); //[0,Math.floor(maxValue/3),Math.floor(maxValue*2/3),maxValue]
+        console.log("ticks:",tickValues);
+        tickValues.pop();
+        tickValues.push(maxValue);
+
+        xOverViewAxisUpper.scale(xScale).tickValues(tickValues);
+        xOverViewAxisLower.scale(xScale).tickValues(tickValues);
 
         xDetailScale.range([0,width])
         xDetailAxisUpper.scale(xDetailScale);
@@ -249,6 +257,28 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
             })
 
     }
+
+
+    function getOptimalExponent(maxValue, width){
+
+        if (maxValue<=width) return 1;
+        else{
+            // ensure that value 5 has at least 5 pixel
+            var deltaValue = 5;
+            var deltaPixel = 5;
+
+
+            var optimalExponent = Math.log(deltaPixel/width)/Math.log(deltaValue/maxValue);
+
+            return optimalExponent;
+
+        }
+
+
+
+
+    }
+
 
     function updateConnectionArea(){
         var cAreaNode = svg.selectAll(".connectionArea").data([connectionAreaData])
