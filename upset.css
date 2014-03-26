@@ -640,6 +640,11 @@ html, body, .ui-container {
 
 }
 
+
+.gSeparatorLine{
+    stroke:darkgrey;
+    stroke-width:3;
+}
 /*.groupBackGround .filterGroup{*/
      /*fill: #d3d3d3;;  */
     /*logic Color*/

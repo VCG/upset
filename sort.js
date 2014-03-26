@@ -337,7 +337,7 @@ var UpSetState = {
     expandAll: false,
     // collapseChanged: false,
 
-    grouping: queryParameters["grouping"] || StateOpt.groupBySet,
+    grouping: queryParameters["grouping"] || StateOpt.groupByIntersectionSize,
     levelTwoGrouping: undefined,
     sorting: StateOpt.sortByCombinationSize,
 

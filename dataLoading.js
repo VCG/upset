@@ -456,61 +456,127 @@ function setUpSubSets() {
     console.log(aggregateIntersection);
 
 
-    for (var bitMask = 0; bitMask <= combinations; bitMask++) {
-        tempBitMask = bitMask;//originalSetMask
-
-        var card= 0;
-        var combinedSets = Array.apply(null,new Array(usedSetLength)).map(function(){  //combinedSets
-            actualBit = tempBitMask%2;
-            tempBitMask=(tempBitMask-actualBit)/2;
-            card+=actualBit;
-            return +actualBit}).reverse() // reverse not necessary.. just to keep order
-
-        combinedSetsFlat = combinedSets.join("");
+    if (usedSetLength>20){ // TODo HACK !!!!
+        Object.keys(aggregateIntersection).forEach(function(key){
+            var list = aggregateIntersection[key]
 
 
-        if (card>UpSetState.maxCardinality) continue;//UpSetState.maxCardinality = card;
-        if (card<UpSetState.minCardinality) continue;//UpSetState.minCardinality = card;
+
+            var combinedSets = key.split("");
+
+            //combinedSetsFlat = combinedSets.join("");
 
 
-        names=[];
-        var expectedValue = 1;
-        var notExpectedValue = 1;
-        // go over the sets
-        combinedSets.forEach(function(d,i){
+//            if (card>UpSetState.maxCardinality) continue;//UpSetState.maxCardinality = card;
+//            if (card<UpSetState.minCardinality) continue;//UpSetState.minCardinality = card;
 
 
-//                console.log(usedSets[i]);
-            if (d==1) { // if set is present
-                names.push(usedSets[i].elementName);
-                expectedValue  = expectedValue *  usedSets[i].dataRatio;
-            }else{
-                notExpectedValue = notExpectedValue * (1- usedSets[i].dataRatio);
+            names=[];
+            var expectedValue = 1;
+            var notExpectedValue = 1;
+            // go over the sets
+            combinedSets.forEach(function(d,i){
+                    //                console.log(usedSets[i]);
+                    if (d==1) { // if set is present
+                        names.push(usedSets[i].elementName);
+                        expectedValue  = expectedValue *  usedSets[i].dataRatio;
+                    }else{
+                        notExpectedValue = notExpectedValue * (1- usedSets[i].dataRatio);
+                    }
+                }
+
+            );
+
+            //        console.log(expectedValue, notExpectedValue);
+            expectedValue *= notExpectedValue;
+
+            //        console.log(combinedSetsFlat);
+
+            var name = "";
+            if (names.length>0){
+                name = names.reverse().join(" ")+" " // not very clever
             }
+
+            //        var arghhList = Array.apply(null,new Array(setsAttribute.values.length)).map(function(){return 0})
+            //        list.forEach(function(d){arghhList[d]=1});
+
+
+            console.log(parseInt(key,2), name, combinedSets, list, expectedValue);
+
+            var subSet = new SubSet(bitMask, name, combinedSets, list, expectedValue);
+            subSets.push(subSet);
+
+
+
+
+
+
+
+
+
+        })
+
+
+
+
+    }else{
+
+
+        for (var bitMask = 0; bitMask <= combinations; bitMask++) {
+            tempBitMask = bitMask;//originalSetMask
+
+            var card= 0;
+            var combinedSets = Array.apply(null,new Array(usedSetLength)).map(function(){  //combinedSets
+                actualBit = tempBitMask%2;
+                tempBitMask=(tempBitMask-actualBit)/2;
+                card+=actualBit;
+                return +actualBit}).reverse() // reverse not necessary.. just to keep order
+
+            combinedSetsFlat = combinedSets.join("");
+
+
+            if (card>UpSetState.maxCardinality) continue;//UpSetState.maxCardinality = card;
+            if (card<UpSetState.minCardinality) continue;//UpSetState.minCardinality = card;
+
+
+            names=[];
+            var expectedValue = 1;
+            var notExpectedValue = 1;
+            // go over the sets
+            combinedSets.forEach(function(d,i){
+
+
+    //                console.log(usedSets[i]);
+                if (d==1) { // if set is present
+                    names.push(usedSets[i].elementName);
+                    expectedValue  = expectedValue *  usedSets[i].dataRatio;
+                }else{
+                    notExpectedValue = notExpectedValue * (1- usedSets[i].dataRatio);
+                }
+                }
+
+            );
+
+    //        console.log(expectedValue, notExpectedValue);
+            expectedValue *= notExpectedValue;
+
+    //        console.log(combinedSetsFlat);
+            var list = aggregateIntersection[combinedSetsFlat];
+            if (list==null) {list=[];}
+
+            var name = "";
+            if (names.length>0){
+                name = names.reverse().join(" ")+" " // not very clever
             }
 
-        );
+    //        var arghhList = Array.apply(null,new Array(setsAttribute.values.length)).map(function(){return 0})
+    //        list.forEach(function(d){arghhList[d]=1});
 
-//        console.log(expectedValue, notExpectedValue);
-        expectedValue *= notExpectedValue;
 
-//        console.log(combinedSetsFlat);
-        var list = aggregateIntersection[combinedSetsFlat];
-        if (list==null) {list=[];}
-
-        var name = "";
-        if (names.length>0){
-            name = names.reverse().join(" ")+" " // not very clever
+            var subSet = new SubSet(bitMask, name, combinedSets, list, expectedValue);
+            subSets.push(subSet);
         }
-
-//        var arghhList = Array.apply(null,new Array(setsAttribute.values.length)).map(function(){return 0})
-//        list.forEach(function(d){arghhList[d]=1});
-
-
-        var subSet = new SubSet(bitMask, name, combinedSets, list, expectedValue);
-        subSets.push(subSet);
     }
-
     aggregateIntersection={};
 
 
