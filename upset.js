@@ -1280,7 +1280,7 @@ function UpSet() {
 
 
 
-
+  
         // --- Horizon Bars for size.
 
         groupRows.each(function (e, j) {
@@ -1479,15 +1479,41 @@ function UpSet() {
             return;
         }
 
-
+        var currentRowSize = 0
 
         allRows.each(function (e, j) {
-
-            if( typeof(e.data.selections)== "undefined")
-                return [];
-
+          
             var g = d3.select(this);
             var max_scale = ctx.subSetSizeScale.domain()[1];
+
+
+          if(e.data.type==ROW_TYPE.GROUP) {
+
+            e.data.selections = {};
+            e.data.selections.setSize = e.data.setSize;
+            currentRowSize = e.data.setSize;
+
+            e.data.subSets.map(function(s, k) {
+
+              if(typeof(e.data.selections) == "undefined")
+                e.data.selections = {};
+
+                for (var p in s.selections) {
+                  if(typeof(e.data.selections[p]) == "undefined")
+                    e.data.selections[p] = [];
+
+                  e.data.selections[p] = e.data.selections[p].concat(s.selections[p]);
+                
+              }
+            });
+
+
+            console.log(e.data.type, "e", e.data.selections.setSize)
+          } else {
+
+
+          if( typeof(e.data.selections)== "undefined")
+              return [];
 
             var s = e.data.selections;
 
@@ -1500,27 +1526,31 @@ function UpSet() {
                     usedID = prop;
                 }
             });
+
             if (!usedID) {
                 return 0;
               }
 
-            var i = 0, is_overflowing = false;
-            var nbLevels = Math.min(ctx.maxLevels, Math.ceil(s[usedID].length / max_scale));
+              currentRowSize = s[usedID].length;
+          }
 
+            var i = 0, is_overflowing = false;
+            var nbLevels = Math.min(ctx.maxLevels, Math.ceil(currentRowSize / max_scale));
+      //    console.log(currentRowSize, ctx.maxLevels, Math.ceil(currentRowSize / max_scale), max_scale)
             var data = d3.range(nbLevels).map(function () {
 
                 var f = {};
                 f.data = {};
-                f.data.setSize = e.data.selections[usedID].length
-
+                f.data.setSize = currentRowSize
+                f.data.type = e.data.type;
                // Prevent empty bar when right on 1-level value
-                if(nbLevels==1 && e.data.selections[usedID].length > 0 && (e.data.selections[usedID].length % max_scale == 0)) {
-                  f.data.setSize = e.data.selections[usedID].length;
+                if(nbLevels==1 && currentRowSize > 0 && (currentRowSize % max_scale == 0)) {
+                  f.data.setSize = currentRowSize;
                   return f;
                 }
 
-                if (i == nbLevels - 1 && Math.ceil(e.data.selections[usedID].length / max_scale) < nbLevels + 1)
-                    f.data.setSize = (e.data.selections[usedID].length % max_scale);
+                if (i == nbLevels - 1 && Math.ceil(currentRowSize / max_scale) < nbLevels + 1)
+                    f.data.setSize = (currentRowSize % max_scale);
                 else
                     f.data.setSize = max_scale;
                 i++;
@@ -1528,6 +1558,7 @@ function UpSet() {
 
                 return f;
             })
+            console.log("aaaaaa", e.data.type == ROW_TYPE.GROUP)
 
             // Add new layers
             var layers_enter = g.selectAll(".gOverlays").selectAll(".newOverlay").data(data).enter()
@@ -1542,31 +1573,13 @@ function UpSet() {
             g.selectAll(".newOverlay")
                 .attr({
                     transform: function (d, i) {
-                        var y = 0;
-                        if (d.data.type !== ROW_TYPE.SUBSET)
-                            y = 0;//cellSize / 3 * .4;
-                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (y + ctx.cellSizeShrink * i + 1) + ')'; // ' + (textHeight - 5) + ')'
+                     //   var y = 0;
+                     //   if (d.data.type !== ROW_TYPE.SUBSET)
+                     //       y = 0;//cellSize / 3 * .4;
+                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (ctx.cellSizeShrink * i + 1) + ')'; // ' + (textHeight - 5) + ')'
                     },
 
                     width: function (d, i) {
-
-                    var s = e.data.selections;
-                    if (typeof s !== 'object') {
-                        return 0;
-                    }
-
-                    var usedID = false;
-                    //   var alternativeID;
-                    var sIDs = Object.getOwnPropertyNames(s);
-                    sIDs.forEach(function (prop) {
-                        var length = s[prop].length;
-                        if (selections.isActiveByUuid(prop)) {
-                            usedID = prop;
-                        }
-                    });
-                    if (!usedID) {
-                        return 0;
-                    }
                      return ctx.subSetSizeScale(d.data.setSize);
                     },
                     height: function (d, i) {
@@ -1601,7 +1614,6 @@ function UpSet() {
                         return .2 + i * .3;
                 })
                 .on('click', function () {
-                  //console.log("e", e, d3.select(this).node().parentNode.__data__)
                   ctx.intersectionClicked(e);
                 })
                 .on('mouseover', function () {
