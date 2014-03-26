@@ -378,7 +378,8 @@ function UpSet() {
         setRects.exit().remove();
 
         setRects.attr({
-            transform: function (d, i) { console.log("IIII", i)
+            transform: function (d, i) {
+//                console.log("IIII", i)
                 return 'skewX(45) translate(' + (- ctx.leftOffset) + ', 0)';
             },
             width: ctx.cellWidth,
@@ -1698,7 +1699,7 @@ function UpSet() {
             })
 
             var max_scale = ctx.subSetSizeScale.domain()[1];
-            console.log("update indicator")
+//            console.log("update indicator")
             return selArray;
         })
         selectIndicators.enter()
