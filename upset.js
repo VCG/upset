@@ -385,7 +385,6 @@ function UpSet() {
 
         setRects.attr({
             transform: function (d, i) {
-//                console.log("IIII", i)
                 return 'skewX(45) translate(' + (- ctx.leftOffset) + ', 0)';
             },
             width: ctx.cellWidth,
@@ -728,10 +727,10 @@ function UpSet() {
 
       // Anticipating future overlays
       rowSubSets.append("g").attr("class", "gBackgroundRect")
-      rowSubSets.append("g").attr("class", "gIndicators")
       rowSubSets.append("g").attr("class", "gHorizon")
       rowSubSets.append("g").attr("class", "gOverlays")
-       
+      rowSubSets.append("g").attr("class", "gIndicators")
+      
       subSets.exit().remove();
 
       var subSetTransition = subSets;
@@ -1014,7 +1013,7 @@ function UpSet() {
     }
 
     function updateGroupRows(groupRows) {
-        var groupsRect = groupRows.selectAll(".groupBackGround").data(function (d) {
+        var groupsRect = groupRows.select(".gBackgroundRect").selectAll(".groupBackGround").data(function (d) {
             return [d];
         });
         //**init
@@ -1326,7 +1325,7 @@ function UpSet() {
             }
 
             // Add new layers
-            var layers_enter = g.selectAll(".row-type-group").data(data).enter()
+            var layers_enter = g.select(".gHorizon").selectAll(".row-type-group").data(data).enter()
 
             layers_enter.append('rect')
                 .attr("class", function (d) {
@@ -1507,36 +1506,29 @@ function UpSet() {
               }
             });
 
-
-            console.log(e.data.type, "e", e.data.selections.setSize)
-          } else {
-
-
-          if( typeof(e.data.selections)== "undefined")
-              return [];
-
-            var s = e.data.selections;
-
-            var usedID = false;
+          }
+            // FIND UUID
+             var usedID = false;
             //   var alternativeID;
-            var sIDs = Object.getOwnPropertyNames(s);
+            var sIDs = Object.getOwnPropertyNames(e.data.selections);
+            var s = e.data.selections;
             sIDs.forEach(function (prop) {
                 var length = s[prop].length;
                 if (selections.isActiveByUuid(prop)) {
                     usedID = prop;
                 }
             });
-
             if (!usedID) {
                 return 0;
-              }
+            }
 
-              currentRowSize = s[usedID].length;
-          }
+            currentRowSize =  s[usedID].length;
+            if(e.data.type==ROW_TYPE.GROUP) 
+              e.data.selections.setSize =currentRowSize;
+
 
             var i = 0, is_overflowing = false;
             var nbLevels = Math.min(ctx.maxLevels, Math.ceil(currentRowSize / max_scale));
-      //    console.log(currentRowSize, ctx.maxLevels, Math.ceil(currentRowSize / max_scale), max_scale)
             var data = d3.range(nbLevels).map(function () {
 
                 var f = {};
@@ -1579,8 +1571,10 @@ function UpSet() {
                     },
 
                     width: function (d, i) {
+
                      return ctx.subSetSizeScale(d.data.setSize);
-                    },
+                    
+                  },
                     height: function (d, i) {
                         return ctx.cellSize - ctx.cellSizeShrink * 2 * i - 2;
                     },
@@ -1682,7 +1676,7 @@ function UpSet() {
         //allRows.data(["indicators"]).enter().append("g").attr("class", "gIndicators")
 
 
-        var selectIndicators = allRows.selectAll('.selectionIndicators').data(function (d, i) {
+        var selectIndicators = allRows.select('.gIndicators').selectAll('.selectionIndicators').data(function (d, i) {
             if (!d.data.selections)
                 return [];
             var selectionIDs = Object.getOwnPropertyNames(d.data.selections);
@@ -1690,11 +1684,10 @@ function UpSet() {
                 return {uuid: k, items: d.data.selections[k]};
             });
             selArray = selArray.filter(function (d) {
-                return d.items.length !== 0 && d.uuid != "undefined"; // prevents useless black indicators..
+                return d.items.length !== 0 && d.uuid != "undefined" && d.uuid != "setSize"; // prevents useless black indicators.. + Bug
             })
-
+            console.log("DDDD", selArray)
             var max_scale = ctx.subSetSizeScale.domain()[1];
-//            console.log("update indicator")
             return selArray;
         })
         selectIndicators.enter()
