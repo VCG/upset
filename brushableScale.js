@@ -192,13 +192,22 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
         var optimalExponent = getOptimalExponent(maxValue,width);
         xScale.domain([0,maxValue]).range([0, width]).exponent(optimalExponent);
 
-
-        var tickValues = xScale.ticks(5); //[0,Math.floor(maxValue/3),Math.floor(maxValue*2/3),maxValue]
-        console.log("ticks:",tickValues);
-        tickValues.pop();
+        // Heavy label stuff
+        var formatFunction = null;
+        var tickValues = [0];
+        if (optimalExponent>.8){
+            tickValues = xScale.ticks(6);
+            formatFunction = function(d,i){return d;}
+             //[0,Math.floor(maxValue/3),Math.floor(maxValue*2/3),maxValue]
+        }else{
+            tickValues = xScale.ticks(10);
+            formatFunction = function(d,i){return (i%2==0 || i<5 || i==(tickValues.length-1))?d:"";}
+        }
+//        tickValues.pop();
         tickValues.push(maxValue);
 
-        xOverViewAxisUpper.scale(xScale).tickValues(tickValues);
+
+        xOverViewAxisUpper.scale(xScale).tickValues(tickValues).tickFormat(formatFunction);
         xOverViewAxisLower.scale(xScale).tickValues(tickValues);
 
         xDetailScale.range([0,width])
