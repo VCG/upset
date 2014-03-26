@@ -108,7 +108,7 @@ Separator.prototype.constructor = Element;
  * @param setData
  * @constructor
  */
-function BaseSet(setID, setName, combinedSets, setData) {
+function BaseSet(setID, setName, combinedSets, setData, fake) {
     Element.call(this, setID, setName);
 
     /** An array of all the sets that are combined in this set. The array contains a 1 if a set at the corresponding position in the sets array is combined. */
@@ -122,13 +122,19 @@ function BaseSet(setID, setName, combinedSets, setData) {
             this.nrCombinedSets++;
         }
     }
+//    console.log(this.nrCombinedSets);
 
     for (var i = 0; i < setData.length; i++) {
-        if (setData[i] !== 0) {
-            this.items.push(i);
+            this.items.push(setData[i]);
             this.setSize++;
-        }
     }
+
+//    for (var i = 0; i < setData.length; i++) {
+//        if (setData[i] !== 0) {
+//            this.items.push(i);
+//            this.setSize++;
+//        }
+//    }
 
     this.dataRatio = this.setSize / depth;
 }
@@ -137,11 +143,20 @@ BaseSet.prototype = Element;
 BaseSet.prototype.constructor = Element;
 
 function Set(setID, setName, combinedSets, itemList) {
-    BaseSet.call(this, setID, setName, combinedSets, itemList);
+    BaseSet.call(this, setID, setName, combinedSets,[],1);
+        for (var i = 0; i < itemList.length; i++) {
+        if (itemList[i] !== 0) {
+            this.items.push(i);
+            this.setSize++;
+        }
+    }
+    this.dataRatio = this.setSize / depth;
+
     this.type = ROW_TYPE.SET;
     /** Array of length depth where each element that is in this subset is set to 1, others are set to 0 */
     this.itemList = itemList;
     this.isSelected = false;
+
 }
 
 Set.prototype = BaseSet;
@@ -284,6 +299,7 @@ function makeSubSet(setMask) {
     var originalSetMask = setMask;
 
     var combinedSets = Array.apply(null, new Array(usedSets.length)).map(Number.prototype.valueOf, 0);
+//    console.log("combinedSets:",combinedSets);
 
     var combinedData = Array.apply(null, new Array(depth)).map(Number.prototype.valueOf, 1);
 
@@ -320,8 +336,10 @@ function makeSubSet(setMask) {
     }
 
 
-
+//    console.log(expectedValue, notExpectedValue);
+//    console.log("combinedData:", combinedData);
     expectedValue *= notExpectedValue;
+    console.log(originalSetMask,name,combinedSets,combinedData,expectedValue);
     var subSet = new SubSet(originalSetMask, name, combinedSets, combinedData, expectedValue);
     subSets.push(subSet);
 }

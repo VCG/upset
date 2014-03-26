@@ -410,6 +410,11 @@ function parseDataSet(data, dataSetDescription) {
     minCardSpinner.max = UpSetState.maxCardinality;
 }
 
+function createSignature(listOfUsedSets, listOfSets){
+    return listOfUsedSets.map(function(d){ return (listOfSets.indexOf(d)>-1)?1:0 }).join("")
+
+}
+
 function setUpSubSets() {
 
     $(EventManager).trigger("computing-subsets-started", undefined);
@@ -417,9 +422,107 @@ function setUpSubSets() {
     combinations = Math.pow(2, usedSets.length) - 1;
 
     subSets.length = 0;
-    for (var i = 0; i <= combinations; i++) {
-        makeSubSet(i)
+
+
+    var aggregateIntersection = {}
+
+    var listOfUsedSets = usedSets.map(function(d){return d.id})
+
+    var setsAttribute = attributes.filter(function(d){return d.type=="sets"})[0];
+
+    var signature="";
+
+    var itemList;
+    //HEAVY !!!
+    setsAttribute.values.forEach(function(listOfSets,index){
+        signature=createSignature(listOfUsedSets,listOfSets)
+        itemList = aggregateIntersection[signature];
+        if (itemList==null) {
+            aggregateIntersection[signature]=[index];
+        }else{
+            itemList.push(index);
+        }
+    })
+
+
+
+    // used Variables for iterations
+    var tempBitMask=0;
+    var usedSetLength = usedSets.length
+        var combinedSetsFlat = "";
+    var actualBit=-1;
+    var names=[];
+
+    console.log(aggregateIntersection);
+
+
+    for (var bitMask = 0; bitMask <= combinations; bitMask++) {
+        tempBitMask = bitMask;//originalSetMask
+
+        var card= 0;
+        var combinedSets = Array.apply(null,new Array(usedSetLength)).map(function(){  //combinedSets
+            actualBit = tempBitMask%2;
+            tempBitMask=(tempBitMask-actualBit)/2;
+            card+=actualBit;
+            return +actualBit}).reverse() // reverse not necessary.. just to keep order
+
+        combinedSetsFlat = combinedSets.join("");
+
+
+        if (card>UpSetState.maxCardinality) continue;//UpSetState.maxCardinality = card;
+        if (card<UpSetState.minCardinality) continue;//UpSetState.minCardinality = card;
+
+
+        names=[];
+        var expectedValue = 1;
+        var notExpectedValue = 1;
+        // go over the sets
+        combinedSets.forEach(function(d,i){
+
+
+//                console.log(usedSets[i]);
+            if (d==1) { // if set is present
+                names.push(usedSets[i].elementName);
+                expectedValue  = expectedValue *  usedSets[i].dataRatio;
+            }else{
+                notExpectedValue = notExpectedValue * (1- usedSets[i].dataRatio);
+            }
+            }
+
+        );
+
+//        console.log(expectedValue, notExpectedValue);
+        expectedValue *= notExpectedValue;
+
+//        console.log(combinedSetsFlat);
+        var list = aggregateIntersection[combinedSetsFlat];
+        if (list==null) {list=[];}
+
+        var name = "";
+        if (names.length>0){
+            name = names.reverse().join(" ")+" " // not very clever
+        }
+
+//        var arghhList = Array.apply(null,new Array(setsAttribute.values.length)).map(function(){return 0})
+//        list.forEach(function(d){arghhList[d]=1});
+
+
+        var subSet = new SubSet(bitMask, name, combinedSets, list, expectedValue);
+        subSets.push(subSet);
     }
+
+    aggregateIntersection={};
+
+
+
+
+
+//    var subSet = new SubSet(originalSetMask, name, combinedSets, combinedData, expectedValue);
+//    subSets.push(subSet);
+//
+//    for (var i = 0; i <= combinations; i++) {
+//        makeSubSet(i)
+//    }
 
     $(EventManager).trigger("computing-subsets-finished", undefined);
 
