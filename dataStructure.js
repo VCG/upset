@@ -210,6 +210,7 @@ function Group(groupID, groupName, level) {
     //this.setSize = 0;
     this.expectedProb = 0;
     this.disproportionality = 0;
+    this.disproportionalitySum =0;
 
     this.addSubSet = function (subSet) {
         this.subSets.push(subSet);
@@ -224,7 +225,11 @@ function Group(groupID, groupName, level) {
         this.items = this.items.concat(subSet.items);
         this.setSize += subSet.setSize;
         this.expectedProb += subSet.expectedProb;
-        this.disproportionality += subSet.disproportionality;
+        this.disproportionalitySum += subSet.disproportionality;
+        if (this.subSets.length>0)
+            this.disproportionality = this.disproportionalitySum/this.subSets.length;
+
+//        this.disproportionality += subSet.disproportionality;
     }
 
     this.contains = function (element) {
