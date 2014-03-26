@@ -168,9 +168,13 @@ function SubSet(setID, setName, combinedSets, itemList, expectedProb) {
     this.expectedProb = expectedProb;
     this.selections = {};
 
-    var observedProb = this.setSize / depth;
+    var observedProb = this.setSize*1.0 / depth;
 
-    this.disproportionality =  observedProb - expectedProb;
+    this.disproportionality =  observedProb/expectedProb;
+    if (this.disproportionality<1 && this.disproportionality>0) this.disproportionality=-(1/this.disproportionality);
+    if (this.disproportionality>10) this.disproportionality=20;
+    if (this.disproportionality<-10) this.disproportionality=-20;
+
 }
 
 SubSet.prototype.toString = function () {

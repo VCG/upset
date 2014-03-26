@@ -4,7 +4,7 @@
 
 
 var ctx = {
-    majorPadding: 17,
+    majorPadding: 25,
     minorPadding: 2,
     cellDistance: 20,
     textHeight: 90,
@@ -600,7 +600,7 @@ function UpSet() {
 
         ctx.expectedValueScale = d3.scale.linear().domain([-bound, bound]).nice().range([0, ctx.expectedValueWidth]);
 
-        var formatPercent = d3.format(".0%");
+        var formatPercent = d3.format(".0 ");
 
         var expectedValueAxis = d3.svg.axis().scale(ctx.expectedValueScale).orient('top').ticks(4).tickFormat(formatPercent);
 
