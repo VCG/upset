@@ -407,12 +407,13 @@ function UpSet() {
                 class: 'setLabel sortBySet',
                 //  "pointer-events": "none",
                 id: function (d) {
+                    console.log(ROW_TYPE.GROUP, d)
                     return d.elementName.substring(0, ctx.truncateAfter);
                 },
                 transform: function (d, i) {
                     return 'translate(0,' + (ctx.textHeight - ctx.textSpacing - 2) + ')rotate(45)';
                 },
-                'text-anchor': 'end'
+                'text-anchor': 'end',
             })
             .on('mouseover', mouseoverColumn)
             .on('mouseout', mouseoutColumn)
@@ -674,10 +675,6 @@ function UpSet() {
         }).text(function(d){return d.name})
 
 
-
-
-
-
         var sumStatAxis = tableHeaderGroup.selectAll(".summaryStatisticsAxis").data(ctx.summaryStatisticVis,function(d,i){return d.attribute+i})
         sumStatAxis.exit().remove();
         sumStatAxis.enter().append("g").attr({
@@ -701,90 +698,60 @@ function UpSet() {
 
     function updateSubSetGroups() {
 
-        // ------------------- the rows -----------------------
-        var subSets = ctx.gRows.selectAll('.row')
-            .data(renderRows, function (d, i) {
-                return d.id;
-            });
+      // ------------------- the rows -----------------------
+      var subSets = ctx.gRows.selectAll('.row')
+          .data(renderRows, function (d, i) {
+              return d.id;
+          });
 
-        var rowSubSets = subSets
-            .enter()
-            .append('g')
-            .attr({transform: function (d) {
+      var rowSubSets = subSets
+          .enter()
+          .append('g')
+          .attr({transform: function (d) {
 
-                if (d.data.type === ROW_TYPE.SUBSET)
-                    return 'translate(0, ' + ctx.rowScale(d.id) + ')';
-                else {
-                    var offset_y = ctx.textHeight;
-                    if (d.data.level == 2)
-                        offset_y += 10
-                    return 'translate(0, ' + offset_y + ')';
-                }
-            }, class: function (d) {
-                return 'row ' + d.data.type;
-            }
-            }).style("opacity", function (d) {
-                if (d.data.type === ROW_TYPE.SUBSET)
-                    return ctx.gRows.selectAll('.row')[0].length == 0 ? 1 : 0;
-                else
-                    return ctx.gRows.selectAll('.row')[0].length ? 0 : 1;
-            })
+              if (d.data.type === ROW_TYPE.SUBSET)
+                  return 'translate(0, ' + ctx.rowScale(d.id) + ')';
+              else {
+                  var offset_y = ctx.textHeight;
+                  if (d.data.level == 2)
+                      offset_y += 10
+                  return 'translate(0, ' + offset_y + ')';
+              }
+          }, class: function (d) {
+              return 'row ' + d.data.type;
+          }
+          }).style("opacity", function (d) {
+              if (d.data.type === ROW_TYPE.SUBSET)
+                  return ctx.gRows.selectAll('.row')[0].length == 0 ? 1 : 0;
+              else
+                  return ctx.gRows.selectAll('.row')[0].length ? 0 : 1;
+          })
 
-
-            rowSubSets.append("g").attr("class", "gBackgroundRect")
-            rowSubSets.append("g").attr("class", "gIndicators")
-            rowSubSets.append("g").attr("class", "gHorizon")
-            rowSubSets.append("g").attr("class", "gOverlays")
+      // Anticipating future overlays
+      rowSubSets.append("g").attr("class", "gBackgroundRect")
+      rowSubSets.append("g").attr("class", "gIndicators")
+      rowSubSets.append("g").attr("class", "gHorizon")
+      rowSubSets.append("g").attr("class", "gOverlays")
        
-        subSets.exit().remove();
+      subSets.exit().remove();
 
-        var subSetTransition = subSets;
-        if (ctx.rowTransitions)
-            subSetTransition = subSets
-                .transition().duration(function (d, i) {
-                    if (d.data.type === ROW_TYPE.SUBSET)
-                        return queryParameters['duration'];
-                    else
-                        return queryParameters['duration'];
-                })
-        subSetTransition.attr({transform: function (d) {
+      var subSetTransition = subSets;
+      if (ctx.rowTransitions)
+          subSetTransition = subSets
+              .transition().duration(function (d, i) {
+                  if (d.data.type === ROW_TYPE.SUBSET)
+                      return queryParameters['duration'];
+                  else
+                      return queryParameters['duration'];
+              })
+      subSetTransition.attr({transform: function (d) {
+        return 'translate(0, ' + ctx.rowScale(d.id) + ')';
+          
+      }, class: function (d) {
+          return 'row ' + d.data.type;
+      }}).transition().duration(100).style("opacity", 1);
 
-            if (d.data.type === ROW_TYPE.SUBSET)
-                return 'translate(0, ' + ctx.rowScale(d.id) + ')';
-            else {
-                offset_x = 0;
-                //if (d.data.level == 2)
-                //    offset_x += 10
-                return 'translate(' + offset_x + ', ' + ctx.rowScale(d.id) + ')';
-            }
-
-        }, class: function (d) {
-            return 'row ' + d.data.type;
-        }}).transition().duration(100).style("opacity", 1);
-
-        /*
-         // add transparent background to make each row it sensitive for interaction
-         combinationRows.selectAll('.backgroundRect').data(function (d) {
-         return [d]
-         })
-         .enter().append("rect").attr({
-         class: "backgroundRect",
-         x: 0,
-         y: 0,
-         width: setVisWidth,
-         height: cellSize
-         })
-         .style({
-         "fill-opacity": 0,
-         fill: "grey" // for debugging
-         })
-         .on({
-         'mouseover': mouseoverRow,
-         'mouseout': mouseoutRow
-         });
-         */
-
-        return subSets;
+      return subSets;
     }
 
     function updateSubsetRows(subsetRows, setScale) {
@@ -1115,7 +1082,13 @@ function UpSet() {
             if (d.data.type === ROW_TYPE.AGGREGATE)
                 return String.fromCharCode(8709) + '-subsets (' + d.data.subSets.length + ') ';
             else {
-              var str = d.data.elementName.substring(0, ctx.truncateGroupAfter);
+                var truncateLength = 0;
+              if (d.data.type === ROW_TYPE.GROUP) {
+                truncateLength = 10;
+              } else {
+                truncateLength = ctx.truncateGroupAfter;
+              }
+              var str = d.data.elementName.substring(0, truncateLength);
               if(str.length<d.data.elementName.length)
                 str = str.trim() + "...";
               return str;
@@ -1129,10 +1102,15 @@ function UpSet() {
                     return (-ctx.leftOffset + 15) + (d.data.level - 1) * ctx.leftIndent;
                 }
 
-            }).on('click', function (d) {
+            })
+        .on('click', function (d) {
                 collapseGroup(d.data);
                 rowTransition(false);
-            });
+            })
+        .append("svg:title")
+            .text(function (d, i) {
+                return d.data.elementName;
+            })
 
         var collapseIcon = groupRows.selectAll(".collapseIcon").data(function (d) {
             return [d];
