@@ -407,7 +407,6 @@ function UpSet() {
                 class: 'setLabel sortBySet',
                 //  "pointer-events": "none",
                 id: function (d) {
-                    console.log(ROW_TYPE.GROUP, d)
                     return d.elementName.substring(0, ctx.truncateAfter);
                 },
                 transform: function (d, i) {
@@ -1079,11 +1078,12 @@ function UpSet() {
 //            }
 //            if (d.data.type === ROW_TYPE.GROUP)
 //                return d.data.elementName;
+
             if (d.data.type === ROW_TYPE.AGGREGATE)
                 return String.fromCharCode(8709) + '-subsets (' + d.data.subSets.length + ') ';
             else {
                 var truncateLength = 0;
-              if (d.data.type === ROW_TYPE.GROUP) {
+              if (d.data.type === ROW_TYPE.GROUP && typeof(d.data.combinedSets) != "undefined") {
                 truncateLength = 10;
               } else {
                 truncateLength = ctx.truncateGroupAfter;
@@ -1558,7 +1558,6 @@ function UpSet() {
 
                 return f;
             })
-            console.log("aaaaaa", e.data.type == ROW_TYPE.GROUP)
 
             // Add new layers
             var layers_enter = g.selectAll(".gOverlays").selectAll(".newOverlay").data(data).enter()
