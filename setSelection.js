@@ -387,10 +387,10 @@ function orderChange() {
         .attr({
             class: 'unusedSetSize',
             transform: function (d, i) {
-                return 'translate(' + (cellDistance * i) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 22 ) + ')'
+                return 'translate(' + (cellDistance * i) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 21 ) + ')'
             }, // ' + (textHeight - 5) + ')'
             height: function (d) {
-                return setSizeScale(d.setSize)-1;
+                return setSizeScale(d.setSize);
             },
             width: cellSize
         })
