@@ -1,13 +1,16 @@
 {
 	"file": "countries100.csv",
-	"name": "Countries Exports by Products (100)",
+	"name": "Countries Exports by Products (1335)",
 	"header": 0,
 	"separator": ",",
 	"skip": 0,
 	"meta": [
-		{ "type": "id", "index": 0, "name": "Name" }
+		{ "type": "id", "index": 0, "name": "Name" },
+		{ "type": "integer", "index": 1355, "name": "Population" },
+		{ "type": "float", "index": 1357, "name": "ECI" },
+		{ "type": "float", "index": 1358, "name": "OppGain" }
 	],
 	"sets": [
-		{ "format": "binary", "start": 1, "end": 345}
+		{ "format": "binary", "start": 1, "end": 1354}
 	]
 }
