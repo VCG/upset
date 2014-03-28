@@ -4,7 +4,7 @@
 
 
 var ctx = {
-    majorPadding: 17,
+    majorPadding: 25,
     minorPadding: 2,
     cellDistance: 20,
     textHeight: 90,
@@ -598,7 +598,7 @@ function UpSet() {
 
         ctx.expectedValueScale = d3.scale.linear().domain([-bound, bound]).nice().range([0, ctx.expectedValueWidth]);
 
-        var formatPercent = d3.format(".0%");
+        var formatPercent = d3.format(".0 ");
 
         var expectedValueAxis = d3.svg.axis().scale(ctx.expectedValueScale).orient('top').ticks(4).tickFormat(formatPercent);
 
@@ -1445,6 +1445,8 @@ function UpSet() {
 
     function updateAttributeStatistic(allRows){
         allRows.each(function(row,j){
+            if (row.data.type == ROW_TYPE.SEPARATOR) return;
+
             var rowElement = d3.select(this);
 
             var detailStatisticElements = rowElement.selectAll(".detailStatistic").data(ctx.summaryStatisticVis,function(d,i){return d.attribute+i});
@@ -1779,6 +1781,7 @@ function UpSet() {
 
     function plotSubSets() {
 
+        console.log("plot");
         setDynamicVisVariables();
 
         // make the scroallable SVG adapt:
@@ -1797,8 +1800,14 @@ function UpSet() {
 
         updateColumnBackgrounds();
 
+        var separatorRow = null;
         // generate <g> elements for all rows
-        var allRows = updateSubSetGroups()
+        var allRows = updateSubSetGroups().filter(function(r){
+            if (r.data.type==ROW_TYPE.SEPARATOR){
+                separatorRow= d3.select(this);
+                return false;
+            }else return true;
+        })
 
         var setScale = d3.scale.ordinal().domain([0, 1]).range(ctx.grays);
 
@@ -1831,6 +1840,27 @@ function UpSet() {
 
         // ----------------------- all Rows -------------------
         updateAttributeStatistic(allRows);
+
+
+//        var separatorColumns = renderRows.filter(function(d){return (d.data instanceof Separator)});
+//        separatorColumns.append("")
+
+        if (separatorRow!=null){
+            var sepRowLine = separatorRow.selectAll(".gSeparatorLine").data([1])
+            sepRowLine.enter().append("line").attr({
+                    class:"gSeparatorLine"
+                })
+
+            sepRowLine.attr({
+                x1:-ctx.leftOffset,
+                x2:ctx.w,
+                y1:ctx.cellSize/2,
+                y2:ctx.cellSize/2
+            })
+
+        }
+
+
 
         // Adjust the row height
         d3.select(".divForeign").select("svg").attr("height", renderRows.length * ctx.cellDistance);
@@ -2022,8 +2052,8 @@ function UpSet() {
     function setUpSortSelections() {
 
         // groupingDefinitions
-        ctx.groupingOptions[StateOpt.groupBySet]={ name: "Sets", l1action:function(){},l2action:function(){} };
         ctx.groupingOptions[StateOpt.groupByIntersectionSize] = { name: "Intersection Size", l1action:function(){},l2action:function(){} };
+        ctx.groupingOptions[StateOpt.groupBySet]={ name: "Sets", l1action:function(){},l2action:function(){} };
         ctx.groupingOptions[StateOpt.groupByRelevanceMeasure] ={ name: "Disproportionality", l1action:function(){}, l2action:function(){} };
         ctx.groupingOptions[StateOpt.groupByOverlapDegree] = { name: "Group all overlaps > 2", l1action:function(){}, l2action:function(){} };
         ctx.groupingOptions["dont"] ={ name: "Don't Group", l1action:function(){}, l2action:function(){} };

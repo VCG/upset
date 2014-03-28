@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script type="text/javascript" src="../jquery-1.11.0.min.js"></script>
+<script src="libs/FileSaver.js"></script>
+
+<div id="vis"></div>
+
+
+
+
+
+<script>
+
+    var fileName = "../data/RadialSets/genres.txt";
+    var setColumn = "Sets";
+    var outputFile = "genresUP.txt"
+
+    d3.tsv(fileName,function(error,data){
+
+        var setNames = {}
+
+
+        console.log(data);
+
+        var sets=[];
+        data.forEach(function(d){
+            sets = d[setColumn].split("|");
+            d.upsetSets = sets;
+            sets.forEach(function(set){
+                if (!(set in setNames)){
+                    setNames[set]=1
+                }
+            })
+
+        })
+
+
+        function createSignature(upsetSet, setNames){
+            return Object.keys(setNames).map(function(key){return (upsetSet.indexOf(key)>-1)?1:0});
+        }
+
+
+        var allLines=[];
+        var allKeys= [];
+        Object.keys(data[0]).forEach(function(d){
+            if (d!=setColumn && d!="upsetSets") allKeys.push(d);
+        });
+
+        var header = allKeys.concat(Object.keys(setNames))
+        allLines.push(header.join("\t"));
+
+        var dataItem = data.pop();
+        while (dataItem != undefined)
+        {
+
+            var line = allKeys.map(function(key){
+                return dataItem[key];
+            })
+            line = line.concat(createSignature(dataItem.upsetSets, setNames));
+            allLines.push(line.join("\t"))
+
+
+            dataItem = data.pop();
+        }
+
+//        console.log(allLines);
+
+
+        saveToFile(allLines,outputFile);
+
+
+//        saveToFile(reducedDataSet,"reduced2003.json")
+
+
+
+    })
+
+    var saveToFile = function(arrayOfLines, fileName) {
+        /* adds linebreaks at the end*/
+        var blob, blobText;
+        blobText = arrayOfLines.map(function(d) {
+//            if (d.endsWith("\n")) {
+//                return d;
+//            } else {
+                return d + "\n";
+//            }
+        });
+        blob = new Blob(blobText, {
+            type: "text/plain;charset=utf-8"
+        });
+        return saveAs(blob, fileName);
+    };
+
+    String.prototype.endsWith = function(suffix) {
+        return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    };
+//
+//    var saveToFile = function(object, filename){
+//        var blob, blobText;
+//        blobText = [JSON.stringify(object)];
+//        blob = new Blob(blobText, {
+//            type: "text/plain;charset=utf-8"
+//        });
+//        saveAs(blob, filename);
+//    }
+
+
+</script>
+
+
+</body>
+</html>
