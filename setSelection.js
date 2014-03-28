@@ -69,9 +69,7 @@ function plotSetSelection() {
         }).on('click', setClicked);
 
     function setClicked(d) {
-        console.log("setClicked", d);
         updateSetContainment(d);        
-        console.log(d.elementName + ": " + d.isSelected);
     }
 }
 
@@ -89,7 +87,7 @@ function plotSetOverview() {
 
     var overview = d3.select('#vis').select('svg').append("g").attr({
         class: "visOverview",
-        "transform": "translate(" + 0 + "," + -20 + ")"
+        "transform": "translate(" + 0 + "," + 0 + ")"
     })
 
 
@@ -206,7 +204,7 @@ function orderChange() {
             .attr("width", 100)
             .attr("height", 100)
             .attr("class", "bulkCheck")
-            .attr("y", 0)
+            .attr("y", 20)
             .attr("x", function(d, i) {
               return 0;//ctx.w- usedSets.length*cellDistance-100;
             })
@@ -218,7 +216,7 @@ function orderChange() {
             .attr("width", 100)
             .attr("height", 100)
             .attr("class", "bulkCheck")
-            .attr("y", 0)
+            .attr("y", 20)
             .attr("x", function(d, i) {
               return 60;//ctx.w- usedSets.length*cellDistance-100;
             })
@@ -232,7 +230,7 @@ function orderChange() {
             .attr("width", 100)
             .attr("height", 100)
             .attr("class", "bulkCheck")
-            .attr("y", 0)
+            .attr("y", 20)
             .attr("x", function(d, i) {
               return 95;//ctx.w- usedSets.length*cellDistance-100;
             })
@@ -246,7 +244,7 @@ function orderChange() {
             .attr("width", 200)
             .attr("height", 100)
             .attr("class", "bulkCheck")
-            .attr("y", 10)
+            .attr("y", 20)
             .attr("x", function(d, i) {
               return 145;//ctx.w- usedSets.length*cellDistance-100;
             })
@@ -316,8 +314,6 @@ function orderChange() {
         .on('mouseover', mouseoverColumn)
         .on('mouseout', mouseoutColumn)
         .on('click', setClicked)
-              .append("svg:title")
-      .text(function(d, i) { return d.elementName + " (" +d.setSize+ ")"; });
 
     var unusedSets = sets.filter(function(n) {
         return usedSets.indexOf(n) == -1
@@ -349,9 +345,9 @@ function orderChange() {
         
     var unusedSetsLabels =  overview.append("foreignObject")
         .attr("width", 710)
-        .attr("height", textHeight+40)
+        .attr("height", textHeight+20)
         .attr("x", usedSets.length*cellSize)
-        .attr("y", 20)
+        .attr("y", 40)
       .append("xhtml:div")
         .style("overflow-x", "auto")
         .append("svg")
@@ -387,10 +383,10 @@ function orderChange() {
         .attr({
             class: 'unusedSetSize',
             transform: function (d, i) {
-                return 'translate(' + (cellDistance * i) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 21 ) + ')'
+                return 'translate(' + (cellDistance * i) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 22 ) + ')'
             }, // ' + (textHeight - 5) + ')'
             height: function (d) {
-                return setSizeScale(d.setSize);
+                return setSizeScale(d.setSize)-1;
             },
             width: cellSize
         })
@@ -432,7 +428,6 @@ function orderChange() {
       .on('click', setClicked)
       .append("svg:title")
       .text(function(d, i) { return d.elementName + " (" +d.setSize+ ")"; });
-
 
     function setClicked(d, i) {
         updateSetContainment(d, true);        

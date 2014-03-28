@@ -15,7 +15,7 @@ var ctx = {
 
     leftOffset: 90,
     leftIndent: 10,
-    topOffset: 100,
+    topOffset: 120,
 
     /** The width from the start of the set vis to the right edge */
 
@@ -206,7 +206,7 @@ function UpSet() {
             .attr("width", ctx.w)
             .attr("height", ctx.svgHeight)
             .attr("x", 0)//*cellSize)
-            .attr("y", 190)//*cellSize)
+            .attr("y", ctx.topOffset+90)//*cellSize)
             .attr("class", "foreignGRows")
         ctx.foreignDiv = ctx.foreignObject.append("xhtml:div")
             .style("position", "relative")
@@ -220,7 +220,6 @@ function UpSet() {
                 height: renderRows.length * ctx.cellDistance,
                 width: ctx.w,
                 class: "svgGRows"
-//                "transform":"translate("+2+","+2+")"
             })
 
         // -- the background highlights
@@ -1686,7 +1685,6 @@ function UpSet() {
             selArray = selArray.filter(function (d) {
                 return d.items.length !== 0 && d.uuid != "undefined" && d.uuid != "setSize"; // prevents useless black indicators.. + Bug
             })
-            console.log("DDDD", selArray)
             var max_scale = ctx.subSetSizeScale.domain()[1];
             return selArray;
         })

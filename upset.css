@@ -363,6 +363,7 @@ select {
 .fixed-y-container {
     overflow-y: auto;
     border-bottom: 2px solid pink;
+    margin-top:-40px;
 }
 
 .fixed-y-container:hover {
