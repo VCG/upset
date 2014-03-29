@@ -46,6 +46,7 @@ var groupByOverlapDegree = function (subSets, level, parentGroup) {
         }
         var group = new Group("Overlap_G_" + i + "_" + parentGroup.id, name);
         group.level = level;
+        group.combinedSets = queries[i];
         getSubsetsForMaskList(subSets, [queries[i]], function (d) {
             group.addSubSet(d);
         });
