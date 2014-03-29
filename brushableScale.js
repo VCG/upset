@@ -194,15 +194,42 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
 
         // Heavy label stuff
         var formatFunction = null;
-        var tickValues = [0];
-        if (optimalExponent>.8){
-            tickValues = xScale.ticks(6);
-            formatFunction = function(d,i){return d;}
-             //[0,Math.floor(maxValue/3),Math.floor(maxValue*2/3),maxValue]
-        }else{
-            tickValues = xScale.ticks(10);
-            formatFunction = function(d,i){return (i%2==0 || i<5 || i==(tickValues.length-1))?d:"";}
-        }
+        var tickValues = xScale.ticks(10);
+        tickValues.push(maxValue);
+        var tickValuesReverse = tickValues.reverse();
+        var drawLabels = {};
+
+        var numberWidth = 6/2;// TODO magic Number 6
+        var maxSpace = width-maxValue.toString(10).length* numberWidth;
+
+        drawLabels[maxValue]=true;
+        tickValuesReverse.forEach(function(label){
+
+            if (xScale(label)+label.toString(10).length*numberWidth<maxSpace){
+                maxSpace = xScale(label)-label.toString(10).length*numberWidth;
+                drawLabels[label] = true;
+            }
+
+            console.log(label,xScale(label)+label.toString(10).length*numberWidth,maxSpace);
+        })
+
+        formatFunction = function(d,i){return (d in drawLabels)?d:"";}
+        // kill last regular tick if too close to maxValue
+//        if (xScale(tickValuesReverse[0])<  width-maxValue.toString(10).length* numberWidth){
+//            tickValues.slice()
+//        }
+
+
+
+
+//        if (optimalExponent>.8){
+//            tickValues = xScale.ticks(6);
+//            formatFunction = function(d,i){return d;}
+//             //[0,Math.floor(maxValue/3),Math.floor(maxValue*2/3),maxValue]
+//        }else{
+//            tickValues = xScale.ticks(8);
+//            formatFunction = function(d,i){return (i%2==0 || i<4 || i==(tickValues.length-1))?d:"";}
+//        }
 //        tickValues.pop();
         tickValues.push(maxValue);
 
