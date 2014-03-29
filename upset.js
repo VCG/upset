@@ -510,7 +510,7 @@ function UpSet() {
                     ctx,
                     d3.select(this),
                     ctx.subSetSizeWidth,
-                    "brushableScaleSubsetUpdate", "plotTable", "subSetSizeScale", {columnLabel:"Intersection Size",
+                    "brushableScaleSubsetUpdate", "plotTable", "subSetSizeScale", {columnLabel:"Cardinality",
                         actionsTrioggeredByLabelClick:[function(){
                             UpSetState.sorting = StateOpt.sortBySubSetSize;
                             UpSetState.grouping = undefined;
@@ -572,7 +572,7 @@ function UpSet() {
                 rowTransition();
             });
 
-        tableHeaderGroupEnter.append('text').text('Disproportionality')
+        tableHeaderGroupEnter.append('text').text('Deviation')
             .attr({
                 id: "expectedValueLabelText",
                 class: 'columnLabel sortRelevanceMeasureGlobal',
@@ -2119,11 +2119,11 @@ function UpSet() {
     function setUpSortSelections() {
 
         // groupingDefinitions
-        ctx.groupingOptions[StateOpt.groupByIntersectionSize] = { name: "Intersection Size", l1action:function(){},l2action:function(){} };
+        ctx.groupingOptions[StateOpt.groupByIntersectionSize] = { name: "Degree", l1action:function(){},l2action:function(){} };
         ctx.groupingOptions[StateOpt.groupBySet]={ name: "Sets", l1action:function(){},l2action:function(){} };
-        ctx.groupingOptions[StateOpt.groupByRelevanceMeasure] ={ name: "Disproportionality", l1action:function(){}, l2action:function(){} };
-        ctx.groupingOptions[StateOpt.groupByOverlapDegree] = { name: "Group all overlaps > 2", l1action:function(){}, l2action:function(){} };
-        ctx.groupingOptions["dont"] ={ name: "Don't Group", l1action:function(){}, l2action:function(){} };
+        ctx.groupingOptions[StateOpt.groupByRelevanceMeasure] ={ name: "Deviation", l1action:function(){}, l2action:function(){} };
+        ctx.groupingOptions[StateOpt.groupByOverlapDegree] = { name: "Overlaps", l1action:function(){}, l2action:function(){} };
+        ctx.groupingOptions["dont"] ={ name: "Don't Aggregate", l1action:function(){}, l2action:function(){} };
 
 
 
@@ -2328,17 +2328,17 @@ function UpSet() {
 
     }
 
-    document.getElementById('rowSizeValue').addEventListener('input', function () {
+    document.getElementById('rowSizeValue').addEventListener('change', function () {
         ctx.cellDistance = +(document.getElementById('rowSizeValue').value);
         //console.log(ctx.cellSize);
         rowTransition();
     });
 
-    document.getElementById('rowPaddingValue').addEventListener('input', function () {
-        ctx.cellDistance = +(document.getElementById('rowPaddingValue').value);
-        //console.log(ctx.cellSize);
-        rowTransition();
-    });
+//    document.getElementById('rowPaddingValue').addEventListener('input', function () {
+//        ctx.cellDistance = +(document.getElementById('rowPaddingValue').value);
+//        //console.log(ctx.cellSize);
+//        rowTransition();
+//    });
 
     var rowTransition = function (animateRows) {
         if (animateRows != null) ctx.rowTransitions = animateRows;
