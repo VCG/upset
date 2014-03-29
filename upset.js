@@ -11,7 +11,8 @@ var ctx = {
     textSpacing: 3,
 
     setSizeWidth: 700,
-    subSetSizeWidth: 300,
+    subSetSizeWidth: 200,
+    subSetSizeWidthMax: 200,
 
     leftOffset: 90,
     leftIndent: 10,
@@ -22,7 +23,8 @@ var ctx = {
     cellSizeShrink: 3,
     maxLevels: 3,
 
-    expectedValueWidth: 200,
+    expectedValueWidth: 150,
+    expectedValueWidthMax: 150,
 
     labelTopPadding: 15,
 
@@ -112,7 +114,7 @@ function UpSet() {
             + ctx.majorPadding + ctx.cellDistance + ctx.xStartSetSizes+ctx.summaryStatisticVis.length*(ctx.summaryStatisticsWidth+ctx.majorPadding);// TODO HACK !!!
 
         ctx.w = ctx.cellWidth * usedSets.length + ctx.majorPadding + ctx.leftOffset
-            + ctx.subSetSizeWidth + ctx.expectedValueWidth + 50 +ctx.summaryStatisticVis.length*(ctx.summaryStatisticsWidth+ctx.majorPadding); // TODO: HACK For Statistiucs!!!
+            + ctx.subSetSizeWidth + ctx.expectedValueWidth + 50 +ctx.summaryStatisticVis.length*(ctx.summaryStatisticsWidth+ctx.majorPadding);
         ctx.setMatrixHeight = ctx.setCellDistance + ctx.majorPadding;
 
         ctx.svgHeight = /*renderRows.length * ctx.cellSize*/ctx.rowScale.rangeExtent()[1];// TODO: Duplicate to ctx.tableBodyHeight
@@ -1781,7 +1783,7 @@ function UpSet() {
 
     function plotSubSets() {
 
-        console.log("plot");
+//        console.log("plot");
         setDynamicVisVariables();
 
         // make the scroallable SVG adapt:
@@ -2311,11 +2313,14 @@ function UpSet() {
                 width: (Math.max(windowWidth, 400))
             })
 
+            var totalWidthMax = ctx.cellWidth * usedSets.length + ctx.majorPadding + ctx.leftOffset
+                + ctx.subSetSizeWidthMax + ctx.expectedValueWidthMax + 50+ctx.summaryStatisticVis.length*(ctx.summaryStatisticsWidth+ctx.majorPadding);
+
             ctx.subSetSizeWidth = d3.scale.linear()
-                .domain([680, 480]).range([300, 100]).clamp(true)(windowWidth);
+                .domain([totalWidthMax-(ctx.expectedValueWidthMax-100), totalWidthMax-(ctx.expectedValueWidthMax-100)-(ctx.subSetSizeWidthMax-100)]).range([ctx.subSetSizeWidthMax, 100]).clamp(true)(windowWidth);
 
             ctx.expectedValueWidth = d3.scale.linear()
-                .domain([880, 680]).range([200, 100]).clamp(true)(windowWidth);
+                .domain([totalWidthMax, totalWidthMax-(ctx.expectedValueWidthMax-100)]).range([ctx.expectedValueWidthMax, 100]).clamp(true)(windowWidth);
 
             ctx["brushableScaleSubsetUpdate"](null, {
                 width: ctx.subSetSizeWidth
