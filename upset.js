@@ -26,7 +26,7 @@ var ctx = {
     expectedValueWidth: 150,
     expectedValueWidthMax: 150,
 
-    labelTopPadding: 15,
+    labelTopPadding: 20+22,
 
     paddingTop: 30,
     paddingSide: 20,
@@ -500,7 +500,8 @@ function UpSet() {
         tableHeaderGroupEnter.append('g').attr()
             .attr({
                 id: "subSetSizeAxis",
-                class: 'axis'
+                class: 'axis',
+                "transform":"translate("+0+","+20+")"
             }).each(function () {
                 ctx.brushableScaleSubsetUpdate = function () {
 
@@ -509,28 +510,39 @@ function UpSet() {
                     ctx,
                     d3.select(this),
                     ctx.subSetSizeWidth,
-                    "brushableScaleSubsetUpdate", "plotTable", "subSetSizeScale", {})
+                    "brushableScaleSubsetUpdate", "plotTable", "subSetSizeScale", {columnLabel:"Intersection Size",
+                        actionsTrioggeredByLabelClick:[function(){
+                            UpSetState.sorting = StateOpt.sortBySubSetSize;
+                            UpSetState.grouping = undefined;
+                            UpSetState.levelTwoGrouping = undefined;
+                            UpSetState.forceUpdate = true;
+                            $('#noGrouping').prop('checked', true);
+                            $('#sortRelevanceMeasure').prop('checked', true);
+                            toggleGroupingL2(true);
+                            updateState();
+                            rowTransition();
+                        }]})
             });
 
         // *** update Part
 
-        tableHeaderGroup.selectAll("#subSetSizeLabelRect").attr({
-            transform: 'translate(' + ctx.xStartSetSizes + ',' + (ctx.labelTopPadding) + ')',
-            height: '20',
-            width: ctx.subSetSizeWidth
-        });
-
-        tableHeaderGroup.selectAll("#subSetSizeLabelText").attr({
-            transform: 'translate(' + (ctx.xStartSetSizes + ctx.subSetSizeWidth / 2) + ','
-                + (ctx.labelTopPadding + 10) + ')'
-        });
+//        tableHeaderGroup.selectAll("#subSetSizeLabelRect").attr({
+//            transform: 'translate(' + ctx.xStartSetSizes + ',' + (ctx.labelTopPadding) + ')',
+//            height: '20',
+//            width: ctx.subSetSizeWidth
+//        });
+//
+//        tableHeaderGroup.selectAll("#subSetSizeLabelText").attr({
+//            transform: 'translate(' + (ctx.xStartSetSizes + ctx.subSetSizeWidth / 2) + ','
+//                + (ctx.labelTopPadding + 10) + ')'
+//        });
 
         var maxValue = d3.max(ctx.globalStatistics, function (d) {
             return d.value
         });
 
         tableHeaderGroup.selectAll("#subSetSizeAxis").transition().attr({
-            transform: 'translate(' + ctx.xStartSetSizes + ',' + (ctx.textHeight - 70) + ')'
+            transform: 'translate(' + ctx.xStartSetSizes + ',' + (ctx.textHeight - 70) + ')' // TODO magic number
         }).call(ctx.brushableScaleSubsetUpdate,
             {
                 maxValue: maxValue,
@@ -623,7 +635,7 @@ function UpSet() {
                 width:120,
                 height:30,
                 x:function(d,i){return ctx.xStartStatisticColumns+i*(ctx.summaryStatisticsWidth+ctx.majorPadding)},
-                y:10
+                y:ctx.labelTopPadding-5
 
             }).append("xhtml:body")//.attr("xmlns","http://www.w3.org/1999/xhtml")
 

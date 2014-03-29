@@ -111,7 +111,7 @@ h1 {
     dominant-baseline:middle;
 }
 
-.columnLabel {
+.columnLabel, .axis .columnLabel {
     dominant-baseline: central;
     font: 13px sans-serif;
     text-anchor: middle;
