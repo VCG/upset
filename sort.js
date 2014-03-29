@@ -145,10 +145,10 @@ var groupByRelevanceMeasure = function (subSets, level, parentGroup) {
 
 var groupByIntersectionSize = function (subSets, level, parentGroup) {
     var newGroups = [];
-    newGroups.push(new Group(EMPTY_GROUP_ID + parentGroup.id, 'Degree 0', level));
+    newGroups.push(new Group(EMPTY_GROUP_ID + parentGroup.id, 'Degree 0 (in no set)', level));
     var maxSetSize = Math.min(usedSets.length, UpSetState.maxCardinality);
     for (var i = UpSetState.minCardinality; i < maxSetSize; i++) {
-        newGroups.push(new Group(SET_SIZE_GROUP_PREFIX + (i + 1) + '_' + parentGroup.id, 'Degree ' + (i + 1), level));
+        newGroups.push(new Group(SET_SIZE_GROUP_PREFIX + (i + 1) + '_' + parentGroup.id, 'Degree ' + (i + 1) + " (" + (i + 1) + " set intersect.)", level));
     }
     subSets.forEach(function (subSet) {
         var group = newGroups[subSet.nrCombinedSets];
@@ -165,10 +165,9 @@ var groupByIntersectionSize = function (subSets, level, parentGroup) {
  */
 var groupBySet = function (subSets, level, parentGroup) {
 
-    // TODO add empty subset
-
     var newGroups = [];
-    newGroups.push(new Group(EMPTY_GROUP_ID, 'No Set', level));
+    var noSet = new Group(EMPTY_GROUP_ID, 'No Set', level);
+    newGroups.push(noSet);
 
     for (var i = 0; i < usedSets.length; i++) {
         var group = new Group(SET_BASED_GROUPING_PREFIX + (i + 1) + parentGroup.id, usedSets[i].elementName, level);
@@ -180,8 +179,18 @@ var groupBySet = function (subSets, level, parentGroup) {
             if (subSet.combinedSets[i] !== 0) {
                 group.addSubSet(subSet);
             }
+
         });
+
     }
+
+    subSets.forEach(function (subSet) {
+        if (subSet.id == 0) {
+            noSet.addSubSet(subSet);
+            noSet.combinedSets = subSet.combinedSets;
+        }
+    });
+
     return newGroups;
 };
 
