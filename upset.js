@@ -128,6 +128,9 @@ function UpSet() {
 
         ctx.xStartStatisticColumns = ctx.xStartExpectedValues+ ctx.expectedValueWidth+ctx.majorPadding // TODO: HACK!!!
 
+
+        ctx.horizonBarGrays = d3.scale.linear().domain([0,2]).range(["#bdbdbd","#252525" ])
+
     }
 
     function calculateGlobalStatistics() {
@@ -951,11 +954,11 @@ function UpSet() {
                 var g_lines = g.selectAll(".cutlines").data([e.id]).enter().append("g").attr("class", "cutlines")
 
                 g_lines.append("line")
-                    .attr({x1: ctx.xStartSetSizes + 285, x2: ctx.xStartSetSizes + 295, y1: 0, y2: 20})
+                    .attr({x1: ctx.xStartSetSizes + ctx.subSetSizeWidth-15, x2: ctx.xStartSetSizes + ctx.subSetSizeWidth-5, y1: 0, y2: 20})
                     .style({'stroke': 'white', 'stroke-width': 1})
 
                 g_lines.append("line")
-                    .attr({x1: ctx.xStartSetSizes + 280, x2: ctx.xStartSetSizes + 290, y1: 0, y2: 20})
+                    .attr({x1: ctx.xStartSetSizes + ctx.subSetSizeWidth-20, x2: ctx.xStartSetSizes + ctx.subSetSizeWidth-10, y1: 0, y2: 20})
                     .style({'stroke': 'white', 'stroke-width': 1})
             }
 
@@ -988,14 +991,17 @@ function UpSet() {
                         return ctx.cellSize - ctx.cellSizeShrink * 2 * i - 2;
                     }
                 })
-                .style("opacity", function (d, i) {
-                    if (nbLevels == 1)
-                        return .8;
-                    else if (nbLevels == 2)
-                        return .8 + i * .2;
-                    else
-                        return .4 + i * .4;
+                .style({
+                    fill:function(d,i){ console.log("HB:",i,d);return ctx.horizonBarGrays(i);}
                 })
+//                .style("opacity", function (d, i) {
+//                    if (nbLevels == 1)
+//                        return .8;
+//                    else if (nbLevels == 2)
+//                        return .8 + i * .2;
+//                    else
+//                        return .4 + i * .4;
+//                })
                 .on('click', function () {
                   //console.log("e", e, d3.select(this).node().parentNode.__data__)
                   ctx.intersectionClicked(e);
@@ -1317,11 +1323,11 @@ function UpSet() {
                 var g_lines = g.selectAll(".cutlines").data([e.id]).enter().append("g").attr("class", "cutlines")
 
                 g_lines.append("line")
-                    .attr({x1: ctx.xStartSetSizes + 285, x2: ctx.xStartSetSizes + 295, y1: 0, y2: 20})
+                    .attr({x1: ctx.xStartSetSizes + ctx.subSetSizeWidth-15, x2: ctx.xStartSetSizes + ctx.subSetSizeWidth-5, y1: 0, y2: 20})
                     .style({'stroke': 'white', 'stroke-width': 1})
 
                 g_lines.append("line")
-                    .attr({x1: ctx.xStartSetSizes + 280, x2: ctx.xStartSetSizes + 290, y1: 0, y2: 20})
+                    .attr({x1: ctx.xStartSetSizes + ctx.subSetSizeWidth-20, x2: ctx.xStartSetSizes + ctx.subSetSizeWidth-10, y1: 0, y2: 20})
                     .style({'stroke': 'white', 'stroke-width': 1})
             }
 
@@ -1354,15 +1360,18 @@ function UpSet() {
                         return ctx.cellSize-2 - ctx.cellSizeShrink * 2 * i;
 
                     }
+                })       .style({
+                    fill:function(d,i){ console.log("HB:",i,d);return ctx.horizonBarGrays(i);}
                 })
-                .style("opacity",function (d, i) {
-                    if (nbLevels == 1)
-                        return 1;
-                    else if (nbLevels == 2)
-                        return .8 + i * .2;
-                    else
-                        return .4 + i * .4;
-                }).on('click', function (d) {
+//                .style("opacity",function (d, i) {
+//                    if (nbLevels == 1)
+//                        return 1;
+//                    else if (nbLevels == 2)
+//                        return .8 + i * .2;
+//                    else
+//                        return .4 + i * .4;
+//                })
+            .on('click', function (d) {
                     var selection = Selection.fromSubset(d3.select(this).node().parentNode.__data__.data.subSets);
                     selections.addSelection(selection, true);
                     selections.setActive(selection);
