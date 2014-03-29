@@ -281,13 +281,15 @@ var unwrapGroups = function (groupList) {
             continue;
         }
         dataRows.push(group);
-        if (UpSetState.collapseAll) {
+        if (UpSetState.collapseAll && !(UpSetState.levelTwoGrouping && group.nestedGroups )) {
             group.isCollapsed = true;
         }
         if (UpSetState.expandAll) {
             group.isCollapsed = false;
         }
-        if (UpSetState.levelTwoGrouping && group.nestedGroups) {
+//        if (UpSetState.levelTwoGrouping && group.nestedGroups && (!group.isCollapsed || UpSetState.collapseAll)) {
+        if (UpSetState.levelTwoGrouping && group.nestedGroups && !group.isCollapsed) {
+
             dataRows = dataRows.concat(unwrapGroups(group.nestedGroups, []));
             continue;
         }
