@@ -413,6 +413,7 @@ function LogicPanel(params){
         var nodeSelector = d3.select(node);
         var noOfSets = Object.keys(node.__data__).length
 
+//        console.log(node.__data__);
         var panelTableHeader = nodeSelector.select(".logicPanelSelectionHeader");
         panelTableHeader.attr({
             "transform":"translate("+90+","+0+")"
@@ -420,17 +421,27 @@ function LogicPanel(params){
         panelTableHeader.on({
             click:function(d) {selectRow(rowIndex);}
         })
-        var infoBar = panelTableHeader.selectAll(".logicPanelHeaderBar").data(function(){
+        var infoBarGroup = panelTableHeader.selectAll(".logicPanelHeaderBarGroup").data(function(){
+            var countRation =0;
             var count =0;
             getSubsetsForMaskList(subsets,[logicExpression.getListOfValues()[rowIndex]], function(d){
-                count++;
+//                console.log(d);
+                countRation+= d.dataRatio;
+                count+= d.items.length;
             })
 
-            return [count/subsets.length];
+            console.log(countRation,logicExpression.getListOfValues()[rowIndex] );
+            return [{countRatio:countRation,count:count}]; ///subsets.length
         })
+            infoBarGroup.enter().append("g").attr({
+                class:"logicPanelHeaderBarGroup"
+            })
+
+        var infoBar =  infoBarGroup.selectAll(".logicPanelHeaderBar").data(function(d){return [d]})
+
         infoBar.enter().append("rect").attr({
             class:"logicPanelHeaderBar",
-            x:function(d){return noOfSets*cellWidth+5;},
+            x:function(d){return (ctx.xStartSetSizes);},
             y:2,
             height:cellSize-4
         }).style({
@@ -438,8 +449,27 @@ function LogicPanel(params){
             })
 
         infoBar.transition().attr({
-            width:(function(d){return d*ctx.subSetSizeScale.range()[1]})
+            width:(function(d){return d.countRatio*ctx.subSetSizeScale.range()[1]})
         })
+
+
+
+        infoBarGroup.selectAll(".logicPanelHeaderBarLabel").data(function(d){return [d]}).enter().append("text").attr({
+            class:"logicPanelHeaderBarLabel addButton",
+            y:(cellSize-4),
+            x:function(d){return (ctx.xStartSetSizes) + d.countRatio*ctx.subSetSizeScale.range()[1]+5;}
+        })
+        .style({
+            "text-anchor":"start",
+            "dominant-baseline": "auto"
+        })
+        .text(function(d){return d.count;})
+
+        infoBarGroup.selectAll(".logicPanelHeaderBarLabel").transition().attr({
+            x:function(d){return (ctx.xStartSetSizes) + d.countRatio*ctx.subSetSizeScale.range()[1]+5;}
+        })
+            .text(function(d){return d.count;})
+
 
 
         var headerCircles = panelTableHeader
