@@ -2024,11 +2024,13 @@ function UpSet() {
             var l2GroupingSelect = d3.select("#secondLevelGrouping").selectAll("select").data([selectableOptions]);
             l2GroupingSelect.exit().remove();
             l2GroupingSelect.enter().append("select").attr({
-                id: "secondLevelGroupingSelect"
+                id: "secondLevelGroupingSelect",
+                class:"groupingSelect"
             }).on({
                     "change": function () {
                         var value = this.options[this.selectedIndex].value;
                         ctx.groupingOptions[value].l2action();
+                        updateCardinalitySpinners();
                         updateState();
                         updateStatistics();
                         rowTransition();
@@ -2048,6 +2050,50 @@ function UpSet() {
                 }).text(function(d){return d.data.name});
 
         }
+    }
+
+    function updateCardinalitySpinners(){
+        //  <div id='firstLevelMinCardinality' hidden>min: <input id='firstLevelMinCardinalityInput' type='number' min='0' max='12' value='0'>
+        d3.select("#firstLevelMinCardinality").attr({
+            hidden:((UpSetState.grouping == StateOpt.groupByOverlapDegree)?null:"true")
+        }).select("input").attr({
+                value:UpSetState.levelOneDegree,
+                min: 1,
+                max: usedSets.length
+            }).on({
+                "change":function(d){
+                    UpSetState.levelOneDegree = +(d3.select(this).node().value);
+                    UpSetState.forceUpdate=true;
+                    console.log("SSS");
+                    updateState();
+                    updateStatistics();
+                    rowTransition();
+                }
+
+
+            })
+
+
+
+        //<div id='secondLevelMinCardinality' hidden>min: <input id='secondLevelMinCardinalityInput' type='number' min='0' max='12' value='0'>
+        d3.select("#secondLevelMinCardinality").attr({
+            hidden:((UpSetState.levelTwoGrouping== StateOpt.groupByOverlapDegree)?null:"true")
+        }).select("input").attr({
+                value:UpSetState.levelTwoDegree,
+                min: 1,
+                max: usedSets.length
+            }).on({
+                "change":function(d){
+                    UpSetState.levelTwoDegree = +(d3.select(this).node().value);
+                    UpSetState.forceUpdate=true;
+                    updateState();
+                    updateStatistics();
+                    rowTransition();
+                }
+
+
+            })
+
     }
 
 
@@ -2136,12 +2182,14 @@ function UpSet() {
         var l1GroupingSelect = d3.select("#firstLevelGrouping").selectAll("select").data([ctx.groupingOptions]);
         l1GroupingSelect.exit().remove(); // will not be called
         l1GroupingSelect.enter().append("select").attr({
-            id: "firstLevelGroupingSelect"
+            id: "firstLevelGroupingSelect",
+            class:"groupingSelect"
         }).on({
                 "change": function () {
                     var value = this.options[this.selectedIndex].value;
                     ctx.groupingOptions[value].l1action();
                     updateL2Grouping();
+                    updateCardinalitySpinners();
                     updateState();
                     updateStatistics();
                     rowTransition();
@@ -2158,7 +2206,7 @@ function UpSet() {
 
         // ----------- grouping L2 as update as it depends on L1 -------------------------
         updateL2Grouping();
-
+        updateCardinalitySpinners();
 
 
 

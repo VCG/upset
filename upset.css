@@ -573,6 +573,7 @@ html, body, .ui-container {
 
 .configHeader {
     font-weight: bold;
+    padding-bottom: .2em;
 }
 
 /** ==== for range slider == **/
@@ -647,6 +648,12 @@ html, body, .ui-container {
     stroke:darkgrey;
     stroke-width:3;
 }
+
+/*.groupingSelect{*/
+    /*position: relative;*/
+    /*left:-6px;*/
+/*}*/
+
 /*.groupBackGround .filterGroup{*/
      /*fill: #d3d3d3;;  */
     /*logic Color*/

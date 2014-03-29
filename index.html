@@ -73,6 +73,9 @@
 
                 <div class="configHeader">First, group by </div>
                 <div id="firstLevelGrouping"></div>
+                <div id='firstLevelMinCardinality' style="padding-top: 5px;" hidden>min: <input id='firstLevelMinCardinalityInput' type='number' min='0' max='12' value='0'>
+
+                </div>
             </div>
 
 
@@ -94,8 +97,10 @@
 
             <div id="groupL2Config" class="configTable">
                 <div class="configHeader">Then, group by </div>
-                <div id="secondLevelGrouping"></div>
+                <div id="secondLevelGrouping" ></div>
+                <div id='secondLevelMinCardinality'  style="padding-top: 5px;" hidden>min: <input id='secondLevelMinCardinalityInput' type='number' min='0' max='12' value='0'>
 
+                </div>
 
                 <!--<div class="configHeader">Then, group by</div>-->
                 <!--<div><input type='radio' id='groupBySetL2' name="groupL2"><label for="groupBySetL2">Sets</label></div>-->
