@@ -131,6 +131,8 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
         if (params.labels !=null) labels = params.labels;
         if (params.width != null) width = params.width;
 
+        console.log(labels);
+
         updateScales();
         updateSliderLabels();
     }
@@ -149,8 +151,8 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
             "transform": "translate(" + offsetX + "," + (offsetY) + ")"
         });
 
-        sliders.append("g").attr({
-            class:"labels"
+        sliders.append("path").attr({
+            class:"connectionArea"
         })
 
         sliders.append("rect").attr({
@@ -184,6 +186,10 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
             width:10
         })
 
+        sliders.append("g").attr({
+            class:"labels"
+        })
+
     }
 
     function updateScales(){
@@ -210,7 +216,7 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
                 drawLabels[label] = true;
             }
 
-            console.log(label,xScale(label)+label.toString(10).length*numberWidth,maxSpace);
+//            console.log(label,xScale(label)+label.toString(10).length*numberWidth,maxSpace);
         })
 
         formatFunction = function(d,i){return (d in drawLabels)?d:"";}
@@ -260,7 +266,7 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
 
 
         // slider labels
-        var sliderLabels = sliders.select(".labels").selectAll(".sliderLabel").data(labels, function(d){return d.id})
+        var sliderLabels = sliders.select(".labels").selectAll(".sliderLabel").data(labels, function(d){return d.name})
         sliderLabels.exit().remove();
         var sliderLabelsEnter = sliderLabels.enter().append("g").attr({
             class:"sliderLabel"
@@ -287,7 +293,7 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
         })
 
         sliderLabels.attr({
-            "transform":function(d){return "translate("+xScale(d.value)+","+(-20)+")"}
+            "transform":function(d){return "translate("+xScale(d.value)+","+(+distanceBetweenUpperAndLower+5)+")"}
         }).on({
                 "click":function(d){setBrush(d.value);}
             })
@@ -322,10 +328,11 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
         cAreaNode.enter().append("path")
             .attr({
                 class:"connectionArea",
-                "transform":"translate("+offsetX+","+(offsetY+distanceBetweenUpperAndLower+distanceBetweenAxis)+")"
+                 "transform":"translate("+offsetX+","+(offsetY+distanceBetweenUpperAndLower+distanceBetweenAxis)+")"
 
             })
         cAreaNode.attr({
+            "transform":"translate("+offsetX+","+(offsetY+distanceBetweenUpperAndLower+distanceBetweenAxis)+")",
             d:d3.svg.area()
         })
 

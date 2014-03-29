@@ -54,9 +54,9 @@ var ctx = {
 
     globalStatistics: [
         {name: "largest intersection", id: "I", value: 100 },
-        {name: "largest group", id: "G", value: 200 },
+        {name: "largest aggregate", id: "A", value: 200 },
         {name: "largest set", id: "S", value: 300 },
-        {name: "all items", id: "A", value: 400 }
+        {name: "universal set", id: "U", value: 400 }
     ],
 
     nameForRelevance:"Disproportionality",
@@ -129,7 +129,7 @@ function UpSet() {
         ctx.xStartStatisticColumns = ctx.xStartExpectedValues+ ctx.expectedValueWidth+ctx.majorPadding // TODO: HACK!!!
 
 
-        ctx.horizonBarGrays = d3.scale.linear().domain([0,2]).range(["#bdbdbd","#252525" ])
+        ctx.horizonBarGrays = d3.scale.linear().domain([0,1,2]).range(["#bdbdbd","#888888","#252525" ])
 
     }
 
@@ -170,10 +170,10 @@ function UpSet() {
                 case "I":
                     d.value = collector[ROW_TYPE.SUBSET];
                     break;
-                case "G":
+                case "A":
                     d.value = collector[ROW_TYPE.GROUP];
                     break;
-                case "A":
+                case "U":
                     d.value = allItems.length;
                     break;
                 case "S":
@@ -992,7 +992,7 @@ function UpSet() {
                     }
                 })
                 .style({
-                    fill:function(d,i){ console.log("HB:",i,d);return ctx.horizonBarGrays(i);}
+                    fill:function(d,i){ return ctx.horizonBarGrays(i);}
                 })
 //                .style("opacity", function (d, i) {
 //                    if (nbLevels == 1)
@@ -1348,7 +1348,7 @@ function UpSet() {
                 .attr({
                     transform: function (d, i) {
   
-                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (ctx.cellSizeShrink * i+1) + ')'; // ' + (textHeight - 5) + ')'
+                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (ctx.cellSizeShrink * i+2) + ')'; // ' + (textHeight - 5) + ')'
 
                     },
 
@@ -1357,11 +1357,11 @@ function UpSet() {
                     },
                     height: function (d, i) {
 
-                        return ctx.cellSize-2 - ctx.cellSizeShrink * 2 * i;
+                        return ctx.cellSize-4 - ctx.cellSizeShrink * 2 * i;
 
                     }
                 })       .style({
-                    fill:function(d,i){ console.log("HB:",i,d);return ctx.horizonBarGrays(i);}
+                    fill:function(d,i){ return ctx.horizonBarGrays(i);}
                 })
 //                .style("opacity",function (d, i) {
 //                    if (nbLevels == 1)

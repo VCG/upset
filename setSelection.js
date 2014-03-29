@@ -303,10 +303,10 @@ function orderChange() {
         .attr({
             class: 'setSize',
             transform: function (d, i) {
-                return 'translate(' + (cellDistance * (i )+1) + ', ' + (textHeight-(setSizeScale(d.setSize)-1)+60) + ')'//( textHeight - minorPadding - setSizeScale(d.setSize) + 60)
+                return 'translate(' + (cellDistance * (i )+1) + ', ' + (textHeight-(setSizeScale(d.setSize))+60) + ')'//( textHeight - minorPadding - setSizeScale(d.setSize) + 60)
             }, // ' + (textHeight - 5) + ')'
             height: function (d) {
-                return setSizeScale(d.setSize)+1;
+                return setSizeScale(d.setSize);
             },
             width: cellSize-2//setRowScale.rangeBand()
         })
