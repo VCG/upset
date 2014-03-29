@@ -106,19 +106,44 @@ function LogicPanel(params){
             "transform":"translate("+buttonX+","+buttonY+")"
         })
 
+//        addLogicButton.append("rect").attr({
+//            width:60,
+//            height:18
+//        }).style({fill: logicColor })
+//            .on("click", addLogic)
+
         addLogicButton.append("rect").attr({
-            width:60,
-            height:18
-        }).style({fill: logicColor })
+            width:20,
+            height:20,
+            x:0,
+            y:0,
+            rx:5,
+            ry:5
+
+        }).style({fill: logicColor, "cursor":"pointer", opacity:.5 })
             .on("click", addLogic)
+            .on("mouseover",function(){d3.select(this).style("opacity",1);})
+            .on("mouseout",function(){d3.select(this).style("opacity",.5);})
+
+        addLogicButton.append("text").attr({
+            class:"selection-button",
+            "transform":"translate("+3+","+16+")",
+            "pointer-events":"none"
+        }).style({
+                "font-family":"FontAwesome"
+
+            })
+            .text('\uf067')
+
+
 
         addLogicButton.append("text").attr({
             class:"addButton",
-            x:30,
-            y:9
-        }).style({ fill:"white" })
-            .text("+ query")
-            .on("click", addLogic)
+            x:25,
+            y:10
+        }).style({ fill:"black", "text-anchor":"start", "cursor":"auto" })
+            .text("Query")
+//            .on("click", addLogic)
 
 
         defineDontCarePattern(panel,cellSize,grays);
