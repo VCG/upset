@@ -10,7 +10,11 @@ var variantFrequencyConfiguration = {
             type: "string",
             variable: "alternative"
         }],
-    parameters: [],
+    parameters: [{
+            name: "Show Matrix",
+            type: "boolean",
+            variable: "showMatrix"
+        }],
     render: function( elementId, selections, attributes, attributeMap, parameterMap ) {
         var data = [];
 
@@ -19,6 +23,8 @@ var variantFrequencyConfiguration = {
 
         // create data structure: array of pair arrays for each selection
         for ( var s = 0; s < selections.getSize(); ++s ) {
+
+            var max = 0;
 
             var values =
                 [
@@ -40,6 +46,10 @@ var variantFrequencyConfiguration = {
                 var alternativeIndex = nucleotideIndexMap[attributeAlternative.values[selection.items[i]]];
                 values[referenceIndex][alternativeIndex] += 1;
 
+                if ( values[referenceIndex][alternativeIndex] > max ) {
+                    max = values[referenceIndex][alternativeIndex];
+                }
+
                 var change = attributeReference.values[selection.items[i]] + attributeAlternative.values[selection.items[i]];
 
                 if ( change === "AG" || change === "GA" || change === "CT" || change === "TC" ) {
@@ -54,6 +64,7 @@ var variantFrequencyConfiguration = {
             values.color = selections.getColor( selection );
             values.transitions = transitions;
             values.transversions = transversions;
+            values.max = max;
 
             data.push( values );
         }      
@@ -68,61 +79,90 @@ var variantFrequencyConfiguration = {
                 .html( function( d ) {  return ( 'ti/tv = ' + ( d.transitions / d.transversions ) + ' (' + d.transitions + '/' + d.transversions + ')' ); } )
                 .style( "color", function( d ) { return ( d.color ); } );
 
-        /*
+        if (!parameterMap.showMatrix) {
+            return;
+        }
+
         var margin = {top: 20, right: 20, bottom: 30, left: 40},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
-        var x = d3.scale.ordinal()
-            .domain([0, 1, 2, 3])
-            .rangeBands([0, 1,2,3]);
+        var size = 20;
 
-        var y = d3.scale.ordinal()
-            .domain([0, 1, 2, 3])
-            .rangeBands([0, 1,2,3]);
+        for ( var s = 0; s < selections.getSize(); ++s ) {
 
-        var z = d3.scale.ordinal()
-            .domain([0, 1, 2, 3])
-            .rangeBands([0, 1,2,3]);
+            var x = d3.scale.ordinal()
+                .domain(['A', 'C', 'G', 'T'])
+                .rangePoints([0.5*size,3.5*size]);
 
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
+            var y = d3.scale.ordinal()
+                .domain(['A', 'C', 'G', 'T'])
+                .rangePoints([0.5*size,3.5*size]);
 
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left")
-            .ticks(10, "%");
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom");
 
-        var svg = d3.select("body").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-          .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left");
 
-          svg.append("g")
-              .attr("class", "x axis")
-              .attr("transform", "translate(0," + height + ")")
-              .call(xAxis);
+            var color = d3.scale.linear()
+                .domain([0,data[s].max])
+                .range(["#e8e8e8", "#080808"]);        
 
-          svg.append("g")
-              .attr("class", "y axis")
-              .call(yAxis)
+            var svg = d3.select(elementId).append("svg")
+                .attr("width", size * 5 + margin.left + margin.right)
+                .attr("height", size * 5 + margin.top + margin.bottom)
+              .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + size*4 + ")")
+                .attr('stroke-width','0')
+                .call(xAxis)
+            .append("text")
+              .attr("transform", "translate(0," + (size+10) + ")" )
+              .style("text-anchor", "start")
+              .text("Ref Allele");
+
+            svg.append("g")
+                .attr("class", "y axis")
+                .attr('stroke-width','0')
+                .call(yAxis)
             .append("text")
               .attr("transform", "rotate(-90)")
-              .attr("y", 6)
+              .attr("y", -10-size)
               .attr("dy", ".71em")
               .style("text-anchor", "end")
-              .text("Frequency");
+              .text("Alt Allele");
 
-          svg.selectAll(".bar")
-              .data(data)
-            .enter().append("rect")
-              .attr("class", "bar")
-              .attr("x", function(d) { return x(d.letter); })
-              .attr("width", x.rangeBand())
-              .attr("y", function(d) { return y(d.frequency); })
-              .attr("height", function(d) { return height - y(d.frequency); });            
-        */
+            var hm = svg.append("svg:g");
+            var hmrows = hm.selectAll("g")
+                    .data(data)
+                    .enter().append("svg:g")
+                    .attr("transform", function(d, i) {
+                            return "translate(0," + (size * i) + ")";
+                        });
+
+            var hmcells = hmrows.selectAll("g")
+                    .data(function(d,i) { return d; })
+                .enter().append("svg:g")
+                    .attr("transform", function(d, i) {
+                            return "translate(" + (size * i) + ",0)";
+                        });
+
+            hmcells = hmcells.selectAll('rect')
+                    .data(function(d,i) { return d; })            
+                .enter().append("svg:rect")
+                    .attr("width", size)
+                    .attr("height", size)
+                    .attr("transform", function(d, i) {
+                            return "translate(0," + (size * i) + ")";
+                        })
+                    .attr('fill', function(d,i) { console.log(d); return( color(d) ); })
+                    .attr('stroke', 'white');
+        }
     }
 };
