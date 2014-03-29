@@ -126,7 +126,7 @@ var groupByRelevanceMeasure = function (subSets, level, parentGroup) {
     var newGroups = [];
     newGroups.push(new Group('GROUP_POS_DEV' + parentGroup.id, 'Positive Expected Value', level));
     newGroups.push(new Group('GROUP_NEG_DEV' + parentGroup.id, 'Negative Expected Value', level));
-    newGroups.push(new Group(EMPTY_GROUP_ID + parentGroup.id, 'Empty Subset', level));
+    newGroups.push(new Group(EMPTY_GROUP_ID + parentGroup.id, 'As Expected', level));
     for (var i = 0; i < subSets.length; i++) {
         var index = 0
         if (subSets[i].disproportionality > 0) {
@@ -145,10 +145,10 @@ var groupByRelevanceMeasure = function (subSets, level, parentGroup) {
 
 var groupByIntersectionSize = function (subSets, level, parentGroup) {
     var newGroups = [];
-    newGroups.push(new Group(EMPTY_GROUP_ID + parentGroup.id, 'Empty Subset', level));
+    newGroups.push(new Group(EMPTY_GROUP_ID + parentGroup.id, 'Degree 0', level));
     var maxSetSize = Math.min(usedSets.length, UpSetState.maxCardinality);
     for (var i = UpSetState.minCardinality; i < maxSetSize; i++) {
-        newGroups.push(new Group(SET_SIZE_GROUP_PREFIX + (i + 1) + '_' + parentGroup.id, (i + 1) + '-Set Subsets', level));
+        newGroups.push(new Group(SET_SIZE_GROUP_PREFIX + (i + 1) + '_' + parentGroup.id, 'Degree ' + (i + 1), level));
     }
     subSets.forEach(function (subSet) {
         var group = newGroups[subSet.nrCombinedSets];
@@ -168,7 +168,7 @@ var groupBySet = function (subSets, level, parentGroup) {
     // TODO add empty subset
 
     var newGroups = [];
-    newGroups.push(new Group(EMPTY_GROUP_ID, 'Empty Subset', level));
+    newGroups.push(new Group(EMPTY_GROUP_ID, 'No Set', level));
 
     for (var i = 0; i < usedSets.length; i++) {
         var group = new Group(SET_BASED_GROUPING_PREFIX + (i + 1) + parentGroup.id, usedSets[i].elementName, level);
@@ -350,7 +350,7 @@ var UpSetState = {
     levelTwoGrouping: undefined,
 
     /** the degree used in case of groupByOverlapDegree on L1 */
-    levelOneDegree: 3,
+    levelOneDegree: 2,
     /** the degree used in case of groupByOverlapDegree on L2 */
     levelTwoDegree: 2,
 
