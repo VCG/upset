@@ -1710,12 +1710,12 @@ function UpSet() {
             }).on('mouseenter', function() {
               d3.select(this).attr("transform", function (d, i) {
                 //UPDATE
-                return 'translate(' + d3.transform(d3.select(this).attr("transform")).translate + ') scale(1.5)';
+                return 'translate(' + d3.transform(d3.select(this).attr("transform")).translate + ') scale(1.5) rotate('+d3.transform(d3.select(this).attr("transform")).rotate+')';
               })
             }).on('mouseout', function() {
               //UPDATE
               d3.select(this).attr("transform", function (d, i) {
-                return 'translate(' + d3.transform(d3.select(this).attr("transform")).translate + ') scale(1)';
+                return 'translate(' + d3.transform(d3.select(this).attr("transform")).translate + ') scale(1) rotate('+d3.transform(d3.select(this).attr("transform")).rotate+')';
             })})
         selectIndicators.exit().remove();
         selectIndicators.attr({
@@ -1729,8 +1729,6 @@ function UpSet() {
                 nbLevels = ctx.maxLevels-1;
                 rotate = -90;
               }
-
-
                 return 'translate(' + (ctx.xStartSetSizes + ctx.subSetSizeScale(subSetSize)) + ' , ' + (nbLevels*ctx.cellSizeShrink) +
                     ') rotate(' + rotate + ')';
             },
