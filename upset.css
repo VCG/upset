@@ -23,7 +23,8 @@ h1 {
 
 /** The set size bar */
 .setSize {
-    fill: #bbb0fb;
+    /*fill: #bbb0fb;*/
+    fill: #636363;
     stroke: white;
     stroke-width: 1px;
 }
@@ -152,11 +153,11 @@ h1 {
 }
 
 .disproportionality.positive {
-    fill: steelblue;
+    fill: #74add1;
 }
 
 .disproportionality.negative {
-    fill: brown;
+    fill: #f46d43;
 }
 
 .connection {

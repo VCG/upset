@@ -284,7 +284,7 @@ function orderChange() {
             transform: function (d, i) {
                 return 'translate(' + (cellDistance * (i )) + ', 60)'
             }, // ' + (textHeight - 5) + ')'
-            height: textHeight,
+            height: (textHeight+1),
             width: cellSize//setRowScale.rangeBand()
         })
         .on('click', setClicked)
@@ -303,12 +303,12 @@ function orderChange() {
         .attr({
             class: 'setSize',
             transform: function (d, i) {
-                return 'translate(' + (cellDistance * (i )) + ', ' + ( textHeight - minorPadding - setSizeScale(d.setSize) + 60) + ')'
+                return 'translate(' + (cellDistance * (i )+1) + ', ' + (textHeight-(setSizeScale(d.setSize)-1)+60) + ')'//( textHeight - minorPadding - setSizeScale(d.setSize) + 60)
             }, // ' + (textHeight - 5) + ')'
             height: function (d) {
                 return setSizeScale(d.setSize)+1;
             },
-            width: cellSize//setRowScale.rangeBand()
+            width: cellSize-2//setRowScale.rangeBand()
         })
       //  .attr("transform", "skewX(45)")
         .on('mouseover', mouseoverColumn)

@@ -22,19 +22,26 @@ function mouseoverColumnImpl(combinedSets) {
         .style("stroke", "black")
 
 
-    d3.selectAll(".combination").selectAll("rect").filter(function (dd, ii) {
-        return combinedSets[ii];
-//        return dd.id== d.id;
-    })
-        .style("opacity", 1)
-        .style("stroke", "black")
+//    d3.selectAll(".combination").selectAll("rect").filter(function (dd, ii) {
+//        return combinedSets[ii];
+////        return dd.id== d.id;
+//    })
+//        .style("opacity", 1)
+//        .style("stroke", ctx.backHighlightColor)
 
-    d3.selectAll(".setSize").filter(function (dd, ii) {
+//    d3.selectAll(".setSize").filter(function (dd, ii) {
+//        return combinedSets[ii];
+////        return dd.id== d.id;
+//    })
+//        .style("opacity", 1)
+//        .style("stroke", "black")
+
+    d3.selectAll(".setSizeBackground").filter(function (dd, ii) {
         return combinedSets[ii];
 //        return dd.id== d.id;
     })
         .style("opacity", 1)
-        .style("stroke", "black")
+        .style("fill", ctx.backHighlightColor)
 
     d3.selectAll(".connection.vertical").filter(function (dd, ii) {
         return combinedSets[ii];
@@ -63,9 +70,14 @@ function mouseoverColumnImpl(combinedSets) {
 
 function mouseoutColumn() {
 
-    d3.selectAll(".connection, .combination rect, .setSize")
+    d3.selectAll(".connection, .combination rect")
         .style("opacity", 1)
-        .style("stroke", "white")
+        .style("stroke", "none")
+
+    d3.selectAll((".setSizeBackground")).style({
+        "stroke": "none",
+        "fill":ctx.grays[0]
+    })
 
     ctx.tableHeaderNode.selectAll(".connection")
         .style("fill", ctx.grays[0])
@@ -145,6 +157,15 @@ function mouseoverCell(rowData, columnIndex) {
     var columnBackgrounds = ctx.columnBackgroundNode.selectAll(".columnBackground").style({
         stroke:function(dd,i){if (i==columnIndex) return 1; else return "none"}
     })
+
+    d3.selectAll(".setSize").style({
+        stroke:function(dd,i){if (i==columnIndex) return "black"; else return "white"}
+    })
+//        .style("opacity", 1)
+//        .style("fill", ctx.backHighlightColor)
+//
+
+
 
     d3.selectAll(".connection.vertical")
         .style("stroke",function(d,i){
