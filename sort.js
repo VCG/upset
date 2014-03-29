@@ -23,6 +23,12 @@ var handleLogicGroups = function (subsets, level, parentGroup) {
 
 var groupByOverlapDegree = function (subSets, level, parentGroup) {
     var degree = 2;
+    if (level == 1) {
+        degree = UpSetState.levelOneDegree;
+    }
+    else if (level == 2) {
+        degree = UpSetState.levelTwoDegree;
+    }
     var newGroups = []
 
     var defaultMask;
@@ -34,7 +40,7 @@ var groupByOverlapDegree = function (subSets, level, parentGroup) {
 
     var queries = []
     for (var i = 0; i <= combinations; i++) {
-        fillMasks(i, usedSets.length, 2, queries, defaultMask);
+        fillMasks(i, usedSets.length, degree, queries, defaultMask);
     }
     for (var i = 0; i < queries.length; i++) {
         var name = "";
@@ -342,6 +348,12 @@ var UpSetState = {
 
     grouping: queryParameters["grouping"] || StateOpt.groupByIntersectionSize,
     levelTwoGrouping: undefined,
+
+    /** the degree used in case of groupByOverlapDegree on L1 */
+    levelOneDegree: 3,
+    /** the degree used in case of groupByOverlapDegree on L2 */
+    levelTwoDegree: 2,
+
     sorting: StateOpt.sortByCombinationSize,
 
     /** hide empty subsets, groups and aggregates */
