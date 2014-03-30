@@ -45,7 +45,7 @@ var scatterplotConfiguration = {
             data.push( values );
         }
            
-        var margin = {top: 10, right: 10, bottom: 20, left: 50},
+        var margin = {top: 10, right: 10, bottom: 35, left: 45},
             width = 300 - margin.left - margin.right,
             height = 200 - margin.top - margin.bottom;
             
@@ -95,9 +95,15 @@ var scatterplotConfiguration = {
         .orient('bottom');
 
         main.append('g')
-        .attr('transform', 'translate(0,' + height + ')')
-        .attr('class', 'main axis date')
-        .call(xAxis);
+            .attr('transform', 'translate(0,' + height + ')')
+            .attr('class', 'main axis date')
+            .call(xAxis)
+            .append("text")
+                .attr("transform", "translate(0," + 30 + ")" )
+                .style("text-anchor", "start")
+                .text(attributeX.name);
+
+
 
         // draw the y axis
         var yAxis = d3.svg.axis()
@@ -105,9 +111,15 @@ var scatterplotConfiguration = {
         .orient('left');
 
         main.append('g')
-        .attr('transform', 'translate(0,0)')
-        .attr('class', 'main axis date')
-        .call(yAxis);
+            .attr('transform', 'translate(0,0)')
+            .attr('class', 'main axis date')
+            .call(yAxis)
+            .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", -margin.left)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text( attributeY.name );
 
         var g = main.append("svg:g"); 
         

@@ -115,9 +115,9 @@ var histogramConfiguration = {
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis)
             .append("text")
-              .attr("transform", "translate(0," + 30 + ")" )
-              .style("text-anchor", "start")
-              .text(attribute.name);
+                .attr("transform", "translate(0," + 30 + ")" )
+                .style("text-anchor", "start")
+                .text(attribute.name);
         
         svg.append("g")
             .attr("class", "x axis")
