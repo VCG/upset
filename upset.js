@@ -618,7 +618,8 @@ function UpSet() {
 
         ctx.expectedValueScale = d3.scale.linear().domain([-bound, bound]).nice().range([0, ctx.expectedValueWidth]);
 
-        var formatPercent = d3.format(".0 ");
+//        var formatPercent = d3.format(".0 ");
+        var formatPercent = d3.format("%");
 
         var expectedValueAxis = d3.svg.axis().scale(ctx.expectedValueScale).orient('top').ticks(4).tickFormat(formatPercent);
 
@@ -1054,10 +1055,13 @@ function UpSet() {
             height: ctx.cellSize,
             x: -ctx.leftOffset,
             y: 0
-        }).on('click', function (d) {
-                collapseGroup(d.data);
-                rowTransition(false);
-            });
+        })
+//            .on('click', function (d) {
+//                collapseGroup(d.data);
+//                updateStatistics();
+//
+//                rowTransition(false);
+//            });
 
         groupsRect.exit().remove();
         //**update
@@ -1126,6 +1130,7 @@ function UpSet() {
             })
         .on('click', function (d) {
                 collapseGroup(d.data);
+                updateStatistics();
                 rowTransition(false);
             })
         .append("svg:title")
@@ -1142,6 +1147,7 @@ function UpSet() {
                 class: "collapseIcon"
             }).on('click', function (d) {
                 collapseGroup(d.data);
+                updateStatistics();
                 rowTransition(false);
             });
 
@@ -1578,8 +1584,8 @@ function UpSet() {
                 transform: function (d) {
                     var start = ctx.expectedValueScale(d3.min([0, d.data.disproportionality]));
                     start += ctx.xStartExpectedValues;
-                    var y = 0;
-                    if (d.data.type !== ROW_TYPE.SUBSET)
+                    var y = 2;
+                    if (d.data.type === ROW_TYPE.SUBSET)
                         y = 1;//cellSize / 3 * 1.7;
                     return 'translate(' + start + ', ' + y + ')';
                 },
@@ -1588,7 +1594,7 @@ function UpSet() {
                     if (d.data.type === ROW_TYPE.SUBSET)
                         return ctx.cellSize - 2;
                     else
-                        return ctx.cellSize;// / 3;
+                        return ctx.cellSize-4;// / 3;
                 }
             })
             .on('mouseover', mouseoverRow)
@@ -1618,7 +1624,7 @@ function UpSet() {
                     }
                     var start = ctx.expectedValueScale(d3.min([0, d.data.disproportionality]));
                     start += ctx.xStartExpectedValues;
-                    var y = 0;
+                    var y = 2;
                     if (d.data.type == ROW_TYPE.SUBSET)
                         y = 1;//cellSize / 3 * 1.7;
                     return 'translate(' + start + ', ' + y + ')';
@@ -1634,7 +1640,7 @@ function UpSet() {
                     if (d.data.type === ROW_TYPE.SUBSET)
                         return ctx.cellSize - 2;
                     else
-                        return ctx.cellSize;// / 3;
+                        return ctx.cellSize-4;// / 3;
                 }
             })
         }
