@@ -66,9 +66,12 @@ function plotSelectedItems( elementId, selection ) {
 
     //d3.select(element).html('<p>' + selection.items.length + ' of ' + depth + ' selected</p>')
 
+    /*
     for ( var i = 0; i < selection.filters.length; ++i ) {
         filter.renderViewer(element, selection, selection.filters[i].uuid );
     }
+    */
+    selection.filterCollection.renderController(d3.select("filters-controller"));
     
     var table = element.append("table");
     var thead = table.append("thead");

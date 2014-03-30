@@ -147,9 +147,11 @@ function clearSelections() {
 }
 
 function createInitialSelection() {
-    var selection = new Selection(allItems);
-    var filterList = [];
+    var selection = new Selection(allItems, new FilterCollection("#filters-controls","#filters-list") );
 
+    //var filterCollection = new FilterCollection();
+    //var filterList = [];
+    /*
     for (var a = 0; a < attributes.length - 1; ++a) {
         if (attributes[a].type === 'integer' || attributes[a].type === 'float') {
             filterList.push({ attributeId: a, id: "numericRange", parameters: { min: attributes[a].min, max: attributes[a].max }, uuid: Utilities.generateUuid() });
@@ -159,8 +161,9 @@ function createInitialSelection() {
             filterList.push({ attributeId: a, id: "stringRegex", parameters: { pattern: "." }, uuid: Utilities.generateUuid() });
         }
     }
+    */
 
-    selection.filters = filterList;
+    //selection.filters = filterList;
     selections.addSelection(selection, true);
     selections.setActive(selection);
 }

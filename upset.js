@@ -1361,7 +1361,7 @@ function UpSet() {
 
                     }
                 })       .style({
-                    fill:function(d,i){ console.log("HB:",i,d);return ctx.horizonBarGrays(i);}
+                    fill:function(d,i){ /*console.log("HB:",i,d);*/ return ctx.horizonBarGrays(i);}
                 })
 //                .style("opacity",function (d, i) {
 //                    if (nbLevels == 1)
@@ -1915,6 +1915,7 @@ function UpSet() {
 
                 plot();
                 plotSelectionTabs("#selection-tabs", selections, data.selection);
+                data.selection.filterCollection.renderFilters();
                 plotSelectedItems("#item-table", data.selection);
                 plotSetOverview();
             }

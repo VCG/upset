@@ -363,12 +363,10 @@ select {
 
 .fixed-y-container {
     overflow-y: auto;
-    border-bottom: 2px solid pink;
-    margin-top:-40px;
+    margin-top:0px;
 }
 
 .fixed-y-container:hover {
-    border-bottom: 2px solid red;
 }
 
 #set-vis-container {
@@ -382,8 +380,6 @@ select {
 }
 
 #selection-vis-container {
-    min-height: 100px;
-    max-height: 100px;
 }
 
 #item-table-container {
@@ -552,6 +548,47 @@ html, body, .ui-container {
     display: inline;
     float: none;
 }
+
+/** === Filter Controls === */
+
+#filters-container {
+    display: block;
+}
+
+.filter-header {
+    display: inline;
+}
+
+.filter-title {
+    display: inline;
+}
+
+.filter-editor-button {
+    display: inline;
+    margin-left: 5px;
+    color: #000;
+}
+
+.filter-editor-button:hover {
+    color: #136382;
+    text-shadow: 0 0 10px #3fa0c7
+}
+
+
+.filter-active {
+    background-color: white;
+    border: 1px dashed lightgray;
+    padding: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#filter-selector {
+    display: inline;
+    float: none;
+}
+
+
 
 /** ============ Configuration ============== */
 .configTable {
