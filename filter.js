@@ -9,12 +9,10 @@ $(EventManager).bind("filter-removed", function (event, data) {
 
 
 $(EventManager).bind("filter-added", function (event, data) {
-    selections.getActive().filterCollection.renderFilters();    
 });
 
 
 $(EventManager).bind("filter-activated", function (event, data) {
-    //filters.renderViewer();
 });
 
 FilterConfigurations = {
