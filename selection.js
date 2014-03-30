@@ -3,9 +3,10 @@
  */
 
 
-Selection = function (items, filters) {
+Selection = function (items, filterCollection ) {
     this.items = items || [];
-    this.filters = filters || [];
+    //this.filters = filters || [];
+    this.filterCollection = filterCollection;
     this.id = undefined;
 };
 
@@ -53,8 +54,9 @@ Selection.createSubsetDefinition = function( subsets ) {
 
 /** Create a selection from a subset */
 Selection.fromSubset = function ( subsets ) {
-    // extract a subset definition for use with the subset filter
+    var self = this;
 
+    // extract a subset definition for use with the subset filter
     var subsetDefinition = Selection.createSubsetDefinition( subsets );
 
     /*
@@ -64,25 +66,10 @@ Selection.fromSubset = function ( subsets ) {
     }
     */
     
-
-    var filterList = [];
-
     // create subset filter and create new selection based on all items
-    var selection = new Selection(allItems);
+    var selection = new Selection(allItems, new FilterCollection("#filters-controls","#filters-list"));
 
-    filterList.push({ attributeId: attributes.length - 1, id: "subset", parameters: { subset: subsetDefinition }, uuid: Utilities.generateUuid() });
-
-    for (var a = 0; a < attributes.length - 1; ++a) {
-        if (attributes[a].type === 'integer' || attributes[a].type === 'float') {
-            filterList.push({ attributeId: a, id: "numericRange", parameters: { min: attributes[a].min, max: attributes[a].max }, uuid: Utilities.generateUuid() });
-        }
-
-        if (attributes[a].type === 'string' || attributes[a].type === 'id') {
-            filterList.push({ attributeId: a, id: "stringRegex", parameters: { pattern: "." }, uuid: Utilities.generateUuid() });
-        }
-    }
-
-    selection.filters = filterList;
+    selection.filterCollection.add(new Filter(attributes[attributes.length-1], FilterConfigurations.subset,  { subset: subsetDefinition } ) );
     selection.applyFilters();
 
     return selection;
@@ -103,24 +90,25 @@ Selection.prototype.createSelection = function (attributeId, filterId, parameter
 };
 
 Selection.prototype.applyFilters = function () {
+    var self = this;
 
     // start over with all items in the data set
-    this.items = allItems;
+    self.items = allItems;
 
-    for (var f = 0; f < this.filters.length; ++f) {
-        var filterInstance = this.filters[f];
+    for (var f = 0; f < self.filterCollection.list.length; ++f) {
+        var filterInstance = self.filterCollection.list[f];
         var newItems = [];
 
-        for (var i = 0; i < this.items.length; ++i) {
-            if (filter.get(filterInstance.id).test(this.items[i], attributes[filterInstance.attributeId], filterInstance.parameters)) {
-                newItems.push(this.items[i]);
+        for (var i = 0; i < self.items.length; ++i) {
+            if (filterInstance.configuration.test(self.items[i], filterInstance.attribute, filterInstance.parameterMap)) {
+                newItems.push(self.items[i]);
             }
         }
 
-        this.items = newItems;
+        self.items = newItems;
     }
 
-    $(EventManager).trigger("item-selection-updated", { selection: this });
+    $(EventManager).trigger("item-selection-updated", { selection: self });
 }
 
 Selection.prototype.mapToSubsets = function (subsetList) {
@@ -137,7 +125,7 @@ Selection.prototype.mapToSubsets = function (subsetList) {
             subsetDefinition[usedSets[x].id] = subset.combinedSets[x];
         }
 
-        var subsetFilter = filter.get('subset');
+        var subsetFilter = FilterConfigurations.subset;
         var mappedItems = [];
 
         for (var j = 0; j < this.items.length; ++j) {
@@ -162,14 +150,11 @@ Selection.prototype.unmapFromSubsets = function (subsetList) {
 }
 
 Selection.prototype.getFilter = function (uuid) {
-    for (var i = 0; i < this.filters.length; ++i) {
-        if (this.filters[i].uuid === uuid) {
-            return ( this.filters[i] );
-        }
-    }
+    var self = this;
 
-    return undefined;
+    return self.filterCollection.get(uuid);
 }
+
 
 // should be a singleton
 SelectionList = function (palette) {

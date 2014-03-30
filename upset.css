@@ -10,6 +10,11 @@ h1 {
     padding: 0;
 }
 
+.header-label-left {
+    margin-right: 5px;
+    float: left;
+}
+
 .axis path,
 .axis line {
     fill: none;
@@ -315,9 +320,6 @@ th.attribute-header.selected {
     float: right;
 }
 
-select {
-    margin-left: 5px;
-}
 
 .header-container {
     padding-top: 5px;
@@ -363,12 +365,10 @@ select {
 
 .fixed-y-container {
     overflow-y: auto;
-    border-bottom: 2px solid pink;
     margin-top:0px;
 }
 
 .fixed-y-container:hover {
-    border-bottom: 2px solid red;
 }
 
 #set-vis-container {
@@ -382,8 +382,6 @@ select {
 }
 
 #selection-vis-container {
-    min-height: 100px;
-    max-height: 100px;
 }
 
 #item-table-container {
@@ -552,6 +550,79 @@ html, body, .ui-container {
     display: inline;
     float: none;
 }
+
+/** === Filter Controls === */
+
+#filters-container {
+    display: block;
+}
+
+.filter-header {
+    display: inline;
+}
+
+.filter-title {
+    display: inline;
+}
+
+.filter-editor-button {
+    display: inline;
+    margin-left: 5px;
+    color: #000;
+}
+
+.filter-editor-button:hover {
+    color: #136382;
+    text-shadow: 0 0 10px #3fa0c7
+}
+
+
+.filter-active {
+    background-color: white;
+    border: 1px dashed lightgray;
+    padding: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#filter-selector {
+    display: inline;
+    float: none;
+}
+
+.filter-editor:nth-child(odd) {
+    padding-bottom: 5px;
+    padding-top: 3px;
+    margin-bottom: 3px;
+    margin-top: 3px;
+    //border-bottom: 1px solid #ddd;
+    background-color: #eee;
+}
+
+#filters-controls {
+    padding-top: 5px;
+}
+
+.element-view-header {
+    border-bottom: 1px dashed black;
+    margin-top: 8px;
+    margin-bottom: 3px;
+    padding-left: 5px;
+}
+
+.element-view-title {
+    display: inline;
+    background-color: #636363;
+    color: white;
+    padding: 1px 3px 1px 3px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    margin-bottom: 0px;
+    font-weight: bold;
+    font-size: 10pt;
+}
+
+
 
 /** ============ Configuration ============== */
 .configTable {

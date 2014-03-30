@@ -3,9 +3,9 @@
 */
 
 ElementViewerConfigurations = {
-    variantFrequency: variantFrequencyConfiguration,
     scatterplot: scatterplotConfiguration,
     histogram: histogramConfiguration,
+    variantFrequency: variantFrequencyConfiguration,
 };
 
 

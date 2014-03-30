@@ -238,6 +238,9 @@ function UpSet() {
             .append('g')
             .attr({'class': 'gRows', "transform": "translate(91,-89)"})
 
+
+        ctx.toolTipLayer = ctx.foreignSVG.append("g").attr({class:"toolTipLayer"});
+
         //####################### LogicPanel ##################################################
 
         ctx.logicPanelNode = ctx.vis.append("g").attr({
@@ -1255,7 +1258,7 @@ function UpSet() {
                 }
             )
                 .style({
-                    "stroke":"none"//ctx.grays[1]
+                    "stroke":function(d){if (d.value ==0) return ctx.grays[1]; else return "none"}//ctx.grays[1]
                 })
 
 
@@ -1263,6 +1266,177 @@ function UpSet() {
         }
 
         decorateGroupsWithCells();
+
+
+        function decorateComplexQueries() {
+            var complexLogicGroups =  groupRows.filter(function (d) {
+                return  ("orClauses" in d.data && d.data.orClauses.length>1); //!(d.data instanceof QueryGroup) &&
+            })
+            var combinationGroups = complexLogicGroups.selectAll('g.complexCombination').data(function (d) {
+                    // binding in an array of size one
+                    return [d.data.orClauses];
+                }
+            )
+            combinationGroups.enter()
+                .append('g')
+                .attr({class: 'complexCombination'
+                })
+            combinationGroups.exit().remove();
+
+
+            combinationGroups.selectAll("text").data(function(d){return [d]}).enter().append("text")
+                .attr({
+                    class: function () {
+                        if (ctx.cellDistance < 14) return 'groupLabel small'; else return 'groupLabel'
+                    },
+                    x:(usedSets.length*ctx.cellWidth *.5),
+                    y: ctx.cellWidth-3
+                })
+                .style({
+                    cursor:"pointer",
+                    "text-anchor":"middle"
+                })
+                .text(function(d){return "combination";})
+                .on({
+                    "mouseover":function(d){
+                        var xy = d3.select(this.parentNode.parentNode).attr("transform").split(/[,()]/);
+                        console.log(d3.select(this.parentNode.parentNode).attr("transform"),d);
+//                        console.log(xy.split(/[,()]/));
+                        if (xy.length==4){
+                            var infoGroup = ctx.toolTipLayer.append("g").attr({
+                                class:"toolTipQuery",
+                                "transform":"translate("+
+                                    (+xy[1]+ctx.leftOffset-5)+","+
+                                    (+xy[2]-ctx.textHeight+ctx.cellSize+5)+")"})
+                            infoGroup.style({
+                                "opacity":.00001
+                            }).transition().style({
+                                "opacity":1
+                            });
+
+//                            b.append("circle").attr({
+//                                cx:5,
+//                                cy:5,
+//                                r:3
+//                            })
+
+//                            console.log(b);
+
+//                            var infoGroup = ctx.toolTipLayer.select("#toolTipQuery");
+                            infoGroup.append("rect").attr({
+//                                class:"groupBackGround",
+                                width:(usedSets.length*ctx.cellWidth+10),
+                                height: d.length*ctx.cellSize+10,
+                                rx:10,
+                                ry:10
+                            }).style({
+                                    "stroke-width":2,
+                                    "stroke":ctx.grays[1],
+                                    "fill":ctx.grays[0]
+                                })
+
+
+
+                            console.log(infoGroup);
+
+                            d.forEach(function(row,index){
+                                var y = index*ctx.cellSize;
+
+                                var actualRow = infoGroup.append("g").attr({
+                                    class:"combination",
+                                    "transform":"translate("+0+","+y+")"
+                                })
+
+                                actualRow.selectAll('.cell').data(function (d) { return Object.keys(row).map(function(key){return row[key];})})
+                                .enter()
+                                    .append('circle')
+                                    .attr('cx', function (d, i) {
+                                        return (ctx.cellWidth) * i + ctx.cellWidth / 2+5;
+                                    })
+                                    .attr({
+                                        r: ctx.cellSize / 2 - 3,
+                                        cy: ctx.cellSize / 2+5,
+                                        class: 'cell'
+                                    })
+                                    .style('fill', function (d) {
+
+                                        switch(d.state)
+                                        {case 0: //logicState.NOT
+                                            return ctx.grays[0]
+                                            break;
+                                            case 1: //logicState.MUST
+                                                return ctx.grays[1]
+                                                break;
+                                            default: // logicState.DONTCARE
+                                                return "url(#DontCarePattern)"}
+                                    }
+                                )
+                                    .style({
+                                        "stroke":function(d){if (d.value ==0) return ctx.grays[1]; else return "none"}//ctx.grays[1]
+                                    })
+
+
+                            })
+
+
+
+                        }
+
+
+                    },
+                    "mouseout":function(){
+                        ctx.toolTipLayer.selectAll(".toolTipQuery").transition().attr({opacity:.0001}).remove();
+                    }
+
+                })
+            ;
+
+//            var cells = combinationGroups.selectAll('.cell').data(function (d) {
+//
+//                return d.map(function (dd, i) {
+//                    return {data: usedSets[i], value: dd}
+//                });
+//            })
+//            // ** init
+//            cells.enter()
+//                .append('circle')
+//                .on({
+//                    'mouseover': function (d, i) {
+//                        mouseoverCell(d3.select(this).node().parentNode.parentNode.__data__, i)
+//                    },
+//                    'mouseout': mouseoutCell
+//                })
+//            cells.exit().remove()
+//
+//            //** update
+//            cells.attr('cx', function (d, i) {
+//                return (ctx.cellWidth) * i + ctx.cellWidth / 2;
+//            })
+//                .attr({
+//                    r: ctx.cellSize / 2 - 3,
+//                    cy: ctx.cellSize / 2,
+//                    class: 'cell'
+//                })
+//                .style('fill', function (d) {
+//                    switch(d.value)
+//                    {case 0: //logicState.NOT
+//                        return ctx.grays[0]
+//                        break;
+//                        case 1: //logicState.MUST
+//                            return ctx.grays[1]
+//                            break;
+//                        default: // logicState.DONTCARE
+//                            return "url(#DontCarePattern)"}
+//                }
+//            )
+//                .style({
+//                    "stroke":function(d){if (d.value ==0) return ctx.grays[1]; else return "none"}//ctx.grays[1]
+//                })
+
+        }
+
+        decorateComplexQueries();
+
 
 
 //        var circles = tableRows.selectAll("circle").data(function(d){return d.selectors})
@@ -1914,6 +2088,11 @@ function UpSet() {
             //console.log("Selection was removed from selection list.");
             data.selection.unmapFromSubsets(subSets);
 
+            if ( selections.list.length === 0 ) {
+                $( '#filters-list' ).html("");
+                $( '#filters-controls' ).html("");
+            }
+
             plot();
             plotSelectionTabs("#selection-tabs", selections, selections.getActive());
             plotSelectedItems("#item-table", selections.getActive());
@@ -1927,6 +2106,7 @@ function UpSet() {
 
                 plot();
                 plotSelectionTabs("#selection-tabs", selections, data.selection);
+                data.selection.filterCollection.renderFilters();
                 plotSelectedItems("#item-table", data.selection);
                 plotSetOverview();
             }

@@ -2,101 +2,300 @@
  * author: Nils Gehlenborg - nils@hms.harvard.edu
 */
 
-Filter = function() {
-    // do nothing
 
-    this.list = {
-        // subset filter
-        subset: {
-          name: "Subset",
-          types: ["sets"],
-          parameters: [ { name: "Subset", type: "subset", variable: "subset" } ],
-          test: function( item, attribute, parameters ) {
-                /* subset definition example:
-                    key = set id, value = yes or no
-                    { 0: 1, 1: 1, 4: 0, 512: 1 }
-                    sets not listed are treated as "*" (do not care)
-                 */
+$(EventManager).bind("filter-removed", function (event, data) {
+});
 
-                var itemSets = attribute.values[item];
 
-                // iterate over keys in subset definitions
-                for (var id in parameters.subset) {
-                    if (parameters.subset.hasOwnProperty(id)) {
-                        // set id is 1 => set is selected
-                        if ( parameters.subset[id] === 1 && itemSets.indexOf( id ) < 0 ) {
-                            // set id is selected but not found in item sets
-                            return false;
-                        }
+$(EventManager).bind("filter-added", function (event, data) {
+});
 
-                        if ( parameters.subset[id] === 0 && itemSets.indexOf( id ) >= 0 ) {
-                            // set id is not selected but found in item sets
-                            return false;
-                        }
+
+$(EventManager).bind("filter-activated", function (event, data) {
+    //filters.renderViewer();
+});
+
+FilterConfigurations = {
+    // subset filter
+    subset: {
+      name: "Subset",
+      types: ["sets"],
+      parameters: [ { name: "Subset", type: "subset", variable: "subset" } ],
+      test: function( item, attribute, parameters ) {
+            /* subset definition example:
+                key = set id, value = yes or no
+                { 0: 1, 1: 1, 4: 0, 512: 1 }
+                sets not listed are treated as "*" (do not care)
+             */
+
+            var itemSets = attribute.values[item];
+
+            // iterate over keys in subset definitions
+            for (var id in parameters.subset) {
+                if (parameters.subset.hasOwnProperty(id)) {
+                    // set id is 1 => set is selected
+                    if ( parameters.subset[id] === 1 && itemSets.indexOf( id ) < 0 ) {
+                        // set id is selected but not found in item sets
+                        return false;
+                    }
+
+                    if ( parameters.subset[id] === 0 && itemSets.indexOf( id ) >= 0 ) {
+                        // set id is not selected but found in item sets
+                        return false;
                     }
                 }
+            }
 
-                return true;
-            }   
-        },
-        // exact string length filter
-        stringLength: {
-          name: "Length",
-          types: ["string", "id"],
-          parameters: [ { name: "Length", type: "integer", variable: "len" } ],
-          test: function( item, attribute, parameters ) {
-                return ( attribute.values[item].length === parameters.len );
-            }   
-        },
-        // string match filter
-        stringMatch: {
-          name: "Find",
-          types: ["string", "id"],
-          parameters: [ { name: "String", type: "string", variable: "pattern" } ],
-          test: function( item, attribute, parameters ) {
-                return ( attribute.values[item].indexOf( parameters.pattern ) >= 0 );
-            }   
-        },
-        // string match filter
-        stringRegex: {
-          name: "Regular Expression",
-          types: ["string", "id"],
-          parameters: [ { name: "Pattern", type: "string", variable: "pattern" } ],
-          test: function( item, attribute, parameters ) {
-                return ( attribute.values[item].match( parameters.pattern ) !== null );
-            }   
-        },
-        // numeric range filter
-        numericRange: {
-          name: "Range",
-          types: ["float", "integer"],
-          parameters: [ { name: "Minimum", type: "float", variable: "min" }, { name: "Maximum", type: "float", variable: "max" } ],
-          test: function( item, attribute, parameters ) {
-                return ( attribute.values[item] >= parameters.min && attribute.values[item] <= parameters.max );
-            }           
-        },
-        // numeric minimum filter
-        numericMinimum: {
-          name: "Minimum",
-          types: ["float", "integer"],
-          parameters: [ { name: "Minimum", type: "float", variable: "min" } ],
-          test: function( item, attribute, parameters ) {
-                return ( attribute.values[item] >= parameters.min );
-            }           
-        },
-        // numeric maximum filter
-        numericMaximum: {
-          name: "Maximum",
-          types: ["float", "integer"],
-          parameters: [ { name: "Maximum", type: "float", variable: "max" } ],
-          test: function( item, attribute, parameters ) {
-                return ( attribute.values[item] <= parameters.max );
-            }           
-        }        
+            return true;
+        }   
+    },
+    // exact string length filter
+    stringLength: {
+      name: "Length",
+      types: ["string", "id"],
+      parameters: [ { name: "Length", type: "integer", variable: "len" } ],
+      test: function( item, attribute, parameters ) {
+            return ( attribute.values[item].length === parameters.len );
+        }   
+    },
+    // string match filter
+    stringMatch: {
+      name: "Find",
+      types: ["string", "id"],
+      parameters: [ { name: "String", type: "string", variable: "pattern" } ],
+      test: function( item, attribute, parameters ) {
+            return ( attribute.values[item].indexOf( parameters.pattern ) >= 0 );
+        }   
+    },
+    // string match filter
+    stringRegex: {
+      name: "Regular Expression",
+      types: ["string", "id"],
+      parameters: [ { name: "Pattern", type: "string", variable: "pattern" } ],
+      test: function( item, attribute, parameters ) {
+            return ( attribute.values[item].match( parameters.pattern ) !== null );
+        }   
+    },
+    // numeric range filter
+    numericRange: {
+      name: "Range",
+      types: ["float", "integer"],
+      parameters: [ { name: "Minimum", type: "float", variable: "min" }, { name: "Maximum", type: "float", variable: "max" } ],
+      test: function( item, attribute, parameters ) {
+            return ( attribute.values[item] >= parameters.min && attribute.values[item] <= parameters.max );
+        }           
+    },
+    // numeric minimum filter
+    numericMinimum: {
+      name: "Minimum",
+      types: ["float", "integer"],
+      parameters: [ { name: "Minimum", type: "float", variable: "min" } ],
+      test: function( item, attribute, parameters ) {
+            return ( attribute.values[item] >= parameters.min );
+        }           
+    },
+    // numeric maximum filter
+    numericMaximum: {
+      name: "Maximum",
+      types: ["float", "integer"],
+      parameters: [ { name: "Maximum", type: "float", variable: "max" } ],
+      test: function( item, attribute, parameters ) {
+            return ( attribute.values[item] <= parameters.max );
+        }           
+    }        
+};
 
+
+
+FilterCollection = function( controllerElementId, filterElementId ) {
+    var self = this;
+
+    self.list = [];
+
+    self.controllerElementId = controllerElementId;
+    self.filterElementId = filterElementId;
+};
+
+
+FilterCollection.prototype.add = function( filter ) {
+    var self = this;
+
+    self.list.push( filter );
+
+    $(EventManager).trigger("filter-added", { viewer: filter });
+};
+
+
+FilterCollection.prototype.remove = function( filter ) {
+    var self = this;
+
+    for ( var i = 0; i < self.list.length; ++i ) {
+        if ( self.list[i].uuid === filter.uuid ) {
+            self.list.splice(i, 1);
+
+            $(EventManager).trigger("filter-removed", { viewer: filter });
+        }
     }
 };
 
+
+FilterCollection.prototype.getIndex = function( filter ) {
+    var self = this;
+
+    for ( var i = 0; i < self.list.length; ++i ) {
+        if ( self.list[i].uuid === filter.uuid ) {
+            return ( i );
+        }
+    }
+
+    return ( undefined );
+};
+
+
+FilterCollection.prototype.get = function( uuid ) {
+    var self = this;
+
+    for ( var i = 0; i < self.list.length; ++i ) {
+        if ( self.list[i].uuid === uuid ) {
+            return ( self.list[i] );
+        }
+    }
+
+    return ( undefined );
+};
+
+
+
+// render the controller (i.e. list of viewers that can be added and a "new" button)
+FilterCollection.prototype.renderController = function() {
+    var self = this;
+    var controllerElement = d3.select( self.controllerElementId );
+
+    controllerElement.html("");    
+
+    var attributeSelect = controllerElement.append('select');
+    var filterSelect = controllerElement.append('select');
+    filterSelect.attr('id', 'filter-selector');
+
+    attributeSelect.attr('id', 'attribute-selector')
+        .selectAll('option')
+            .data( attributes )
+        .enter()
+            .append('option')
+            .attr('value', function (d, i) {
+                return i;
+            })
+        .text(function (d) {
+            return d.name;
+        });
+
+    attributeSelect.on('change', self.initializeFilterList );
+    self.initializeFilterList();
+
+    // create header and controls
+    var viewerElementHeader = controllerElement.append( "div" ).attr( "class", "filter-header" );
+
+    viewerElementHeader.append( "div" )
+            .attr( "class", "filter-editor-button" )
+            .attr( "id", "filter-add" )
+            .on( "click", function() {
+                var filterSelector = document.getElementById( 'filter-selector' );
+                var configuration = filterSelector.options[filterSelector.selectedIndex].__data__;
+                var attributeSelector = document.getElementById( 'attribute-selector' );
+                var attribute = attributeSelector.options[attributeSelector.selectedIndex].__data__;
+                console.log( attribute );
+                var filter = new Filter( attribute, configuration );
+                self.add( filter );
+
+                // add DOM nodes for filter viewer and editor
+                d3.select(self.filterElementId).insert( 'div' ).attr('class', 'filter-editor').attr( 'id', filter.editorElementId.substring(1) );
+                filter.renderEditor( d3.select( filter.editorElementId ), selections.getActive() );
+            })
+        .append( "i" ).
+            attr( "class", "fa fw fa-plus" );
+};
+
+FilterCollection.prototype.initializeFilterList = function() {
+    var filterSelect = d3.select( "#filter-selector");
+    filterSelect.html("");
+    filterSelect.selectAll('option')
+            .data( function() {
+                // convert FilterConfiguration into array
+                // return only those filters that can be applied to the selected attribute
+                return $.map(FilterConfigurations, function(value, index) {
+                    var selector = document.getElementById( 'attribute-selector' );
+                    var attribute = selector.options[selector.selectedIndex].__data__;
+                    if ( value.types.indexOf( attribute.type ) >= 0 ) {
+                        return [value];
+                    }
+                });
+            })
+        .enter()
+            .append('option')
+            .attr('value', function (d, i) {
+                return i;
+            })
+        .text(function (d) {
+            return d.name;
+        });
+};
+
+// render the active viewer
+FilterCollection.prototype.renderFilters = function() {
+    var self = this;
+
+    var filterElement = d3.select( self.filterElementId );
+
+    // clear element
+    filterElement.html("");
+    filterElement = filterElement.append( "div" ); //.attr( "class", "filter-active" );
+
+    // check if there is a viewer
+    if ( self.list.length === 0 ) {
+        //filterElement.append( "div" ).attr( "class", "filter-message" ).text( "No filter added!" );
+
+        return self;
+    }
+    else {
+        for ( var f = 0; f < self.list.length; ++f ) {
+            var filter = self.list[f];
+            filterElement.append( 'div' ).attr( 'id', filter.editorElementId.substring(1) );
+            filter.renderViewer( d3.select( filter.editorElementId ), selections.getActive() );
+        }
+    }
+
+    return self;
+};
+
+Filter = function(attribute, configuration,parameterMap) {
+    var self = this;
+
+    self.attribute = attribute;
+    self.uuid = Utilities.generateUuid();
+    self.editorElementId = '#filter-editor-' + self.uuid;
+    self.viewerElementId = '#filter-viewer-' + self.uuid;
+    self.configuration = configuration;
+    self.parameterMap = {};
+
+    if ( !parameterMap ) {
+        self.initializeParameterMap();
+    }
+    else {
+        self.parameterMap = parameterMap;
+    }
+};
+
+Filter.prototype.initializeParameterMap = function() {
+    var self = this;
+
+    for ( var i = 0; i < self.configuration.parameters.length; ++i ) {
+        var parameter = self.configuration.parameters[i];
+
+        self.parameterMap[parameter.variable] = parameter.default;
+    }    
+};
+
+/*
 Filter.prototype.getList = function( type ) {
     var typeList = [];
 
@@ -119,45 +318,42 @@ Filter.prototype.getList = function( type ) {
 
     return typeList;
 };
+*/
 
 
-Filter.prototype.get = function( filter ) {
-    return ( this.list[filter] );
-};
-
-
-Filter.prototype.renderViewer = function( element, selection, filterUuid ) { // filterId, attributeId, parameters
+Filter.prototype.renderViewer = function( element, selection ) { 
     var self = this;
 
-    var filterId = selection.getFilter( filterUuid ).id;
-    var attributeId = selection.getFilter( filterUuid ).attributeId;
-    var parameters = selection.getFilter( filterUuid ).parameters;
+    var parameters = self.parameterMap;
+    var filterViewer = element;
 
-    var filterInstance = self.get( filterId );
-    var filterViewer = element.select('#filter-' + filterUuid );
-    if ( filterViewer.empty() ) {
-        filterViewer = element.append('div').attr( 'id', 'filter-' + filterUuid );
-    }
-
-    filterViewer.html( '<div><u>' + attributes[attributeId].name +'</u>: <b>' + filterInstance.name + '</b> (<i>' + filterInstance.types + '</i>)&nbsp;' + 
-        '<span class="filter-button filter-edit" data-filter-uuid="' + filterUuid + '""><i class="fa fw fa-pencil"></i></span>' +
+    filterViewer.html( '<div>' + self.attribute.name +': <b>' + self.configuration.name + '</b>&nbsp;' + 
+        '<span class="filter-button filter-edit" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-pencil"></i></span>' +
+        '<span class="filter-button filter-remove" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-times-circle"></i></span>' +
         '</div>');
 
-    d3.selectAll( '.filter-edit' ).on( 'click', function(event){
-        self.renderEditor( element, selection, this.dataset.filterUuid );
+    $('.filter-edit[data-filter-uuid="' + self.uuid + '"]').on( 'click', function(){
+        self.renderEditor( element, selection, self.uuid );
     });
+
+    $( '.filter-remove[data-filter-uuid="' + self.uuid + '"]').on( 'click', function(){        
+        $( self.editorElementId ).remove();
+        selection.filterCollection.remove( self );
+        selection.applyFilters();
+    });
+
 
     var parameterType = undefined;
     var parameterName = undefined;
     for ( var parameterVariable in parameters ) {
         if ( parameters.hasOwnProperty(parameterVariable) ) {
-            var parameterViewer = filterViewer.append( 'div' ).style( "margin-left", "10px");
+            var parameterViewer = filterViewer.append( 'div' );
 
             // look up parameter type in filter instance
-            for ( var p = 0; p < filterInstance.parameters.length; ++p ) {
-                if ( filterInstance.parameters[p].variable === parameterVariable ) {
-                    parameterType = filterInstance.parameters[p].type;
-                    parameterName = filterInstance.parameters[p].name;
+            for ( var p = 0; p < self.configuration.parameters.length; ++p ) {
+                if ( self.configuration.parameters[p].variable === parameterVariable ) {
+                    parameterType = self.configuration.parameters[p].type;
+                    parameterName = self.configuration.parameters[p].name;
                 }
             }
 
@@ -166,45 +362,38 @@ Filter.prototype.renderViewer = function( element, selection, filterUuid ) { // 
     }
 };
 
-Filter.prototype.renderEditor = function( element, selection, filterUuid ) { // filterId, attributeId, parameters
+Filter.prototype.renderEditor = function( element, selection ) { // filterId, attributeId, parameters
     var self = this;
 
-    var filterId = selection.getFilter( filterUuid ).id;
-    var attributeId = selection.getFilter( filterUuid ).attributeId;
-    var parameters = selection.getFilter( filterUuid ).parameters;
+    var parameters = self.parameterMap;
+    var filterEditor = element;
 
-    var filterInstance = self.get( filterId );
-    var filterEditor = element.select('#filter-' + filterUuid );
-    if ( filterEditor.empty() ) {
-        filterEditor = element.append('div').attr( 'id', 'filter-' + filterUuid );
-    }
-
-    filterEditor.html( '<div><u>' + attributes[attributeId].name +'</u>: <b>' + filterInstance.name + '</b> (<i>' + filterInstance.types + '</i>)' + 
-        '&nbsp;<span class="filter-button filter-save" data-filter-uuid="' + filterUuid + '""><i class="fa fw fa-check"></i></span>' +
-        '&nbsp;<span class="filter-button filter-cancel" data-filter-uuid="' + filterUuid + '""><i class="fa fw fa-times"></i></span>' +
+    filterEditor.html( '<div>' + self.attribute.name +': <b>' + self.configuration.name + '</b>' + 
+        '&nbsp;<span class="filter-button filter-save" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-check"></i></span>' +
+        '&nbsp;<span class="filter-button filter-cancel" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-times"></i></span>' +
         '</div>');
 
-    d3.selectAll( '.filter-save' ).on( 'click', function(event){
-        self.parseParameterValues( this.dataset.filterUuid, selection );
+    $('.filter-save[data-filter-uuid="' + self.uuid + '"]').on( 'click', function(){
+        self.parseParameterValues( selection );
         selection.applyFilters();
-        self.renderViewer( element, selection, this.dataset.filterUuid );
+        self.renderViewer( element, selection );
     });
 
-    d3.selectAll( '.filter-cancel' ).on( 'click', function(event){
-        self.renderViewer( element, selection, this.dataset.filterUuid );
+    $('.filter-cancel[data-filter-uuid="' + self.uuid + '"]').on( 'click', function(){
+        self.renderViewer( element, selection );
     });
 
     var parameterType = undefined;
     var parameterName = undefined;
     for ( var parameterVariable in parameters ) {
         if ( parameters.hasOwnProperty(parameterVariable) ) {
-            var parameterEditor = filterEditor.append( 'div' ).style( "margin-left", "10px");
+            var parameterEditor = filterEditor.append( 'div' );
 
             // look up parameter type in filter instance
-            for ( var p = 0; p < filterInstance.parameters.length; ++p ) {
-                if ( filterInstance.parameters[p].variable === parameterVariable ) {
-                    parameterType = filterInstance.parameters[p].type;
-                    parameterName = filterInstance.parameters[p].name;
+            for ( var p = 0; p < self.configuration.parameters.length; ++p ) {
+                if ( self.configuration.parameters[p].variable === parameterVariable ) {
+                    parameterType = self.configuration.parameters[p].type;
+                    parameterName = self.configuration.parameters[p].name;
                 }
             }
 
@@ -243,13 +432,13 @@ Filter.prototype.renderParameterViewer = function( element, parameterName, param
     }
 };
 
-Filter.prototype.parseParameterValues = function( filterUuid, selection ) {
+Filter.prototype.parseParameterValues = function( selection ) {
     var self = this;
-    var filterParameters = self.get( selection.getFilter( filterUuid ).id ).parameters;
-    var filterInstanceParameters = selection.getFilter( filterUuid ).parameters;
+    var filterParameters = self.configuration.parameters;
+    var filterInstanceParameters = self.parameterMap;
 
     for ( var i = 0; i < filterParameters.length; ++i ) {
-        var value = self.parseParameterValue( filterUuid, filterParameters[i].variable, filterParameters[i].type );
+        var value = self.parseParameterValue( filterParameters[i].variable, filterParameters[i].type );
 
         if ( value ) {
             console.log( 'Replacing ' + filterParameters[i].variable + ' (' + filterParameters[i].type + ') = "' + filterInstanceParameters[filterParameters[i].variable] + '" with "' + value + '"' );
@@ -258,26 +447,25 @@ Filter.prototype.parseParameterValues = function( filterUuid, selection ) {
     }
 }
 
-Filter.prototype.parseParameterValue = function( filterUuid, parameterVariable, parameterType ) {
-    var filterEditor = d3.select('#filter-' + filterUuid );
-    if ( filterEditor.empty() ) {
-        return undefined;
-    }
+Filter.prototype.parseParameterValue = function( parameterVariable, parameterType ) {
+    var self = this;
+
+    var filterEditor = $( self.editorElementId );
 
     var value = undefined;
 
     switch ( parameterType ) {
         case 'float':
-            var parameterEditor = $('[data-filter-parameter-variable="' + parameterVariable + '"]' );
+            var parameterEditor = filterEditor.find('[data-filter-parameter-variable="' + parameterVariable + '"]' );
             value = parseFloat( $( parameterEditor ).val() );
             break;
         case 'integer':
-            var parameterEditor = $('[data-filter-parameter-variable="' + parameterVariable + '"]' );
+            var parameterEditor = filterEditor.find('[data-filter-parameter-variable="' + parameterVariable + '"]' );
             value = parseInt( $( parameterEditor ).val(), 10 );
             break;
         case 'subset':
             value = {};
-            var parameterEditor = filterEditor.selectAll( ".subset-state-toggle-button" ).each(function() {
+            var parameterEditor = filterEditor.find( ".subset-state-toggle-button" ).each(function() {
                 value[this.dataset.subset] = +this.dataset.subsetState;
             });
             console.log( value );
@@ -285,7 +473,7 @@ Filter.prototype.parseParameterValue = function( filterUuid, parameterVariable, 
         case 'string':
             // fall-through
         default:
-            var parameterEditor = $('[data-filter-parameter-variable="' + parameterVariable + '"]' );
+            var parameterEditor = filterEditor.find('[data-filter-parameter-variable="' + parameterVariable + '"]' );
             value = $( parameterEditor ).val();
             break;
     }
@@ -346,7 +534,7 @@ Filter.prototype.subsetStateToClass = function( state ) {
             s += 'fa fw fa-circle';
             break;
         case "2":
-            s += 'fa fw fa-adjust';
+            s += 'fa fw fa-dot-circle-o';
             break;
         default:
             s += 'fa fw fa-question-circle';

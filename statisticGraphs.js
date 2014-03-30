@@ -68,6 +68,8 @@ StatisticGraphs.prototype.updateStatistics= function(subsetData, subsetIDselecto
             summaryStatistics.upperQuartile =d3.quantile(itemList, 0.75);
             //.. see D3
 
+            summaryStatistics.numberElements = itemList.length;
+
 
             if (min==undefined || min>summaryStatistics.min){
                 min = summaryStatistics.min;
@@ -151,7 +153,9 @@ StatisticGraphs.prototype.renderBoxPlot = function(id, g, x,y,w,h,classID){
                 return localScale(d.upperQuartile)-localScale(d.lowerQuartile);
             },
             height:(h-(2*diffY))
-        })
+        }).attr({
+                opacity:function(d){return (d.numberElements>4)?1:0.0001}
+            })
 
         dS.select(".boxPlot.centralLine").transition().attr({
             x1:function(d){return x+localScale(d.min)},
@@ -179,7 +183,9 @@ StatisticGraphs.prototype.renderBoxPlot = function(id, g, x,y,w,h,classID){
             x2:function(d){return x+localScale(d.median)},
             y1:y,
             y2:y+h
-        })
+        }).attr({
+                opacity:function(d){return (d.numberElements==3 || d.numberElements >4)?1:0}
+            })
 
 
 

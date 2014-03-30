@@ -43,7 +43,7 @@ var depth = 0;
 /** an array representing all items */
 var allItems = [];
 
-var filter = new Filter();
+//var filter = new Filter();
 
 /** Indices of selected items **/
 var selectedItems = [];

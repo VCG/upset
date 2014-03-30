@@ -73,7 +73,9 @@ var setUpConfiguration = function () {
     };
     hideEmptiesCheck.addEventListener('click', hideEmptiesFu);
 
-    var dataSelect = d3.select("#dataset-selector").append('div').text('Choose Dataset');
+    var dataSelect = d3.select("#dataset-selector").append('div');
+
+    dataSelect.append('div').attr("class","header-label-left").text('Choose Dataset');
 
     var select = dataSelect.append('select');
     select.on('change', change)
@@ -147,20 +149,8 @@ function clearSelections() {
 }
 
 function createInitialSelection() {
-    var selection = new Selection(allItems);
-    var filterList = [];
+    var selection = new Selection(allItems, new FilterCollection("#filters-controls","#filters-list") );
 
-    for (var a = 0; a < attributes.length - 1; ++a) {
-        if (attributes[a].type === 'integer' || attributes[a].type === 'float') {
-            filterList.push({ attributeId: a, id: "numericRange", parameters: { min: attributes[a].min, max: attributes[a].max }, uuid: Utilities.generateUuid() });
-        }
-
-        if (attributes[a].type === 'string' || attributes[a].type === 'id') {
-            filterList.push({ attributeId: a, id: "stringRegex", parameters: { pattern: "." }, uuid: Utilities.generateUuid() });
-        }
-    }
-
-    selection.filters = filterList;
     selections.addSelection(selection, true);
     selections.setActive(selection);
 }
