@@ -10,6 +10,11 @@ h1 {
     padding: 0;
 }
 
+.header-label-left {
+    margin-right: 5px;
+    float: left;
+}
+
 .axis path,
 .axis line {
     fill: none;
@@ -315,9 +320,6 @@ th.attribute-header.selected {
     float: right;
 }
 
-select {
-    margin-left: 5px;
-}
 
 .header-container {
     padding-top: 5px;
@@ -586,6 +588,38 @@ html, body, .ui-container {
 #filter-selector {
     display: inline;
     float: none;
+}
+
+.filter-editor:nth-child(odd) {
+    padding-bottom: 5px;
+    padding-top: 3px;
+    margin-bottom: 3px;
+    margin-top: 3px;
+    //border-bottom: 1px solid #ddd;
+    background-color: #eee;
+}
+
+#filters-controls {
+    padding-top: 5px;
+}
+
+.element-view-header {
+    border-bottom: 1px dashed black;
+    margin-top: 8px;
+    margin-bottom: 3px;
+    padding-left: 5px;
+}
+
+.element-view-title {
+    display: inline;
+    background-color: black;
+    color: white;
+    padding: 1px 3px 1px 3px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    margin-bottom: 0px;
+    font-weight: bold;
+    font-size: 10pt;
 }
 
 

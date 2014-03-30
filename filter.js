@@ -208,7 +208,7 @@ FilterCollection.prototype.renderController = function() {
                 self.add( filter );
 
                 // add DOM nodes for filter viewer and editor
-                d3.select(self.filterElementId).insert( 'div' ).attr( 'id', filter.editorElementId.substring(1) );
+                d3.select(self.filterElementId).insert( 'div' ).attr('class', 'filter-editor').attr( 'id', filter.editorElementId.substring(1) );
                 filter.renderEditor( d3.select( filter.editorElementId ), selections.getActive() );
             })
         .append( "i" ).
@@ -321,13 +321,13 @@ Filter.prototype.getList = function( type ) {
 */
 
 
-Filter.prototype.renderViewer = function( element, selection ) { // filterId, attributeId, parameters
+Filter.prototype.renderViewer = function( element, selection ) { 
     var self = this;
 
     var parameters = self.parameterMap;
     var filterViewer = element;
 
-    filterViewer.html( '<div><u>' + self.attribute.name +'</u>: <b>' + self.configuration.name + '</b> (<i>' + self.configuration.types + '</i>)&nbsp;' + 
+    filterViewer.html( '<div>' + self.attribute.name +': <b>' + self.configuration.name + '</b>&nbsp;' + 
         '<span class="filter-button filter-edit" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-pencil"></i></span>' +
         '<span class="filter-button filter-remove" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-times-circle"></i></span>' +
         '</div>');
@@ -368,7 +368,7 @@ Filter.prototype.renderEditor = function( element, selection ) { // filterId, at
     var parameters = self.parameterMap;
     var filterEditor = element;
 
-    filterEditor.html( '<div><u>' + self.attribute.name +'</u>: <b>' + self.configuration.name + '</b> (<i>' + self.configuration.types + '</i>)' + 
+    filterEditor.html( '<div>' + self.attribute.name +': <b>' + self.configuration.name + '</b>' + 
         '&nbsp;<span class="filter-button filter-save" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-check"></i></span>' +
         '&nbsp;<span class="filter-button filter-cancel" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-times"></i></span>' +
         '</div>');
@@ -387,7 +387,7 @@ Filter.prototype.renderEditor = function( element, selection ) { // filterId, at
     var parameterName = undefined;
     for ( var parameterVariable in parameters ) {
         if ( parameters.hasOwnProperty(parameterVariable) ) {
-            var parameterEditor = filterEditor.append( 'div' ).style( "margin-left", "10px");
+            var parameterEditor = filterEditor.append( 'div' );
 
             // look up parameter type in filter instance
             for ( var p = 0; p < self.configuration.parameters.length; ++p ) {

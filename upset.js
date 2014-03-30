@@ -1914,6 +1914,11 @@ function UpSet() {
             //console.log("Selection was removed from selection list.");
             data.selection.unmapFromSubsets(subSets);
 
+            if ( selections.list.length === 0 ) {
+                $( '#filters-list' ).html("");
+                $( '#filters-controls' ).html("");
+            }
+
             plot();
             plotSelectionTabs("#selection-tabs", selections, selections.getActive());
             plotSelectedItems("#item-table", selections.getActive());
