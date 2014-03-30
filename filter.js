@@ -208,7 +208,7 @@ FilterCollection.prototype.renderController = function() {
                 self.add( filter );
 
                 // add DOM nodes for filter viewer and editor
-                d3.select(self.filterElementId).append( 'div' ).attr( 'id', filter.editorElementId.substring(1) );
+                d3.select(self.filterElementId).insert( 'div' ).attr( 'id', filter.editorElementId.substring(1) );
                 filter.renderEditor( d3.select( filter.editorElementId ), selections.getActive() );
             })
         .append( "i" ).
