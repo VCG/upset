@@ -116,6 +116,7 @@ var scatterplotConfiguration = {
           .enter()
             .append( 'g' )
             .attr( 'class', '.selection-group' )
+            .style('fill-opacity', 0.5 )
             .attr("fill", function(d) {  return ( d.color ); } );
 
         var marks = selectionGroup.selectAll( '.element-mark' )
