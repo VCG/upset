@@ -534,7 +534,7 @@ Filter.prototype.subsetStateToClass = function( state ) {
             s += 'fa fw fa-circle';
             break;
         case "2":
-            s += 'fa fw fa-adjust';
+            s += 'fa fw fa-dot-circle-o';
             break;
         default:
             s += 'fa fw fa-question-circle';
