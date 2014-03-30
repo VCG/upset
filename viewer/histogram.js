@@ -107,7 +107,7 @@ var histogramConfiguration = {
             .attr("x", 1)
             .attr("width", function(d) { return x(d.dx+attribute.min) - 1; }) //x(histograms[0].dx+attribute.min) - 1
             .attr("height", function(d) { return height - y(d.y); })
-            .style('fill-opacity', 0.75 )
+            .style('fill-opacity', 0.5 )
             .style('fill', function(d){ return (d.color) } );
 
         svg.append("g")
