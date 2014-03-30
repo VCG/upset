@@ -76,7 +76,7 @@ var variantFrequencyConfiguration = {
                 .data( data )
             .enter()
                 .append( 'p' )
-                .html( function( d ) {  return ( 'ti/tv = ' + ( d.transitions / d.transversions ) + ' (' + d.transitions + '/' + d.transversions + ')' ); } )
+                .html( function( d ) {  return ( 'ti/tv = ' + d3.round( d.transitions / d.transversions, 3 ) + ' (' + d.transitions + '/' + d.transversions + ')' ); } )
                 .style( "color", function( d ) { return ( d.color ); } );
 
         if (!parameterMap.showMatrix) {
