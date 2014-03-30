@@ -612,7 +612,7 @@ html, body, .ui-container {
 
 .element-view-title {
     display: inline;
-    background-color: black;
+    background-color: #636363;
     color: white;
     padding: 1px 3px 1px 3px;
     border-top-left-radius: 5px;
