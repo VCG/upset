@@ -9,7 +9,12 @@ var histogramConfiguration = {
             name: "Small Multiples?",
             type: "boolean",
             variable: "smallMultiples"
-        }*/],
+        }*/{
+            name: "Bins",
+            type: "integer",
+            variable: "bins",
+            default: 20
+        }],
     render: function( elementId, selections, attributes, attributeMap, parameterMap ) {
 
         var attribute = attributes[attributeMap.variable];
@@ -24,7 +29,7 @@ var histogramConfiguration = {
             format = d3.format("d");
         }
 
-        var margin = {top: 0, right: 10, bottom: 20, left: 10},
+        var margin = {top: 0, right: 10, bottom: 35, left: 10},
             width = 300 - margin.left - margin.right,
             height = 200 - margin.top - margin.bottom;
 
@@ -60,7 +65,7 @@ var histogramConfiguration = {
             // Generate a histogram using twenty uniformly-spaced bins.
             var histogram = d3.layout.histogram()
                 .frequency(false)
-                .bins(x.ticks(20))
+                .bins(x.ticks(parameterMap.bins))
                 (values);
 
             // interleave by shifting bar positions and adjusting bar widths
@@ -98,6 +103,13 @@ var histogramConfiguration = {
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
+            .call(xAxis)
+            .append("text")
+              .attr("transform", "translate(0," + 30 + ")" )
+              .style("text-anchor", "start")
+              .text(attribute.name);
+
+
+
     }
 };
