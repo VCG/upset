@@ -371,7 +371,7 @@ th.attribute-header.selected {
 
 .fixed-y-container {
     overflow-y: auto;
-    margin-top:0px;
+    margin-top:-40px;
 }
 
 .fixed-y-container:hover {
