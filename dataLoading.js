@@ -512,6 +512,8 @@ function setUpSubSets() {
     }else{
 
 
+//        var expectedValueForOneSet = 1/usedSetLength;
+
         for (var bitMask = 0; bitMask <= combinations; bitMask++) {
             tempBitMask = bitMask;//originalSetMask
 
@@ -539,6 +541,7 @@ function setUpSubSets() {
     //                console.log(usedSets[i]);
                 if (d==1) { // if set is present
                     names.push(usedSets[i].elementName);
+//                    expectedValue*=expectedValueForOneSet;
                     expectedValue  = expectedValue *  usedSets[i].dataRatio;
                 }else{
                     notExpectedValue = notExpectedValue * (1- usedSets[i].dataRatio);

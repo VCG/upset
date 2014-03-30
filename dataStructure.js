@@ -170,10 +170,12 @@ function SubSet(setID, setName, combinedSets, itemList, expectedProb) {
 
     var observedProb = this.setSize*1.0 / depth;
 
-    this.disproportionality =  observedProb/expectedProb;
-    if (this.disproportionality<1 && this.disproportionality>0) this.disproportionality=-(1/this.disproportionality);
-    if (this.disproportionality>10) this.disproportionality=20;
-    if (this.disproportionality<-10) this.disproportionality=-20;
+//    this.disproportionality =
+
+    this.disproportionality =  observedProb-expectedProb;
+//    if (this.disproportionality<1 && this.disproportionality>0) this.disproportionality=-(1/this.disproportionality);
+//    if (this.disproportionality>10) this.disproportionality=20;
+//    if (this.disproportionality<-10) this.disproportionality=-20;
 
 }
 
@@ -225,9 +227,9 @@ function Group(groupID, groupName, level) {
         this.items = this.items.concat(subSet.items);
         this.setSize += subSet.setSize;
         this.expectedProb += subSet.expectedProb;
-        this.disproportionalitySum += subSet.disproportionality;
-        if (this.subSets.length>0)
-            this.disproportionality = this.disproportionalitySum/this.subSets.length;
+        this.disproportionality += subSet.disproportionality;
+//        if (this.subSets.length>0)
+//            this.disproportionality = this.disproportionalitySum/this.subSets.length;
 
 //        this.disproportionality += subSet.disproportionality;
     }
