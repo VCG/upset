@@ -26,7 +26,7 @@ var ctx = {
     expectedValueWidth: 150,
     expectedValueWidthMax: 150,
 
-    labelTopPadding: 15,
+    labelTopPadding: 20+22,
 
     paddingTop: 30,
     paddingSide: 20,
@@ -54,9 +54,9 @@ var ctx = {
 
     globalStatistics: [
         {name: "largest intersection", id: "I", value: 100 },
-        {name: "largest group", id: "G", value: 200 },
+        {name: "largest aggregate", id: "A", value: 200 },
         {name: "largest set", id: "S", value: 300 },
-        {name: "all items", id: "A", value: 400 }
+        {name: "universal set", id: "U", value: 400 }
     ],
 
     nameForRelevance:"Disproportionality",
@@ -129,7 +129,7 @@ function UpSet() {
         ctx.xStartStatisticColumns = ctx.xStartExpectedValues+ ctx.expectedValueWidth+ctx.majorPadding // TODO: HACK!!!
 
 
-        ctx.horizonBarGrays = d3.scale.linear().domain([0,2]).range(["#bdbdbd","#252525" ])
+        ctx.horizonBarGrays = d3.scale.linear().domain([0,1,2]).range(["#bdbdbd","#888888","#252525" ])
 
     }
 
@@ -170,10 +170,10 @@ function UpSet() {
                 case "I":
                     d.value = collector[ROW_TYPE.SUBSET];
                     break;
-                case "G":
+                case "A":
                     d.value = collector[ROW_TYPE.GROUP];
                     break;
-                case "A":
+                case "U":
                     d.value = allItems.length;
                     break;
                 case "S":
@@ -500,7 +500,8 @@ function UpSet() {
         tableHeaderGroupEnter.append('g').attr()
             .attr({
                 id: "subSetSizeAxis",
-                class: 'axis'
+                class: 'axis',
+                "transform":"translate("+0+","+20+")"
             }).each(function () {
                 ctx.brushableScaleSubsetUpdate = function () {
 
@@ -509,28 +510,39 @@ function UpSet() {
                     ctx,
                     d3.select(this),
                     ctx.subSetSizeWidth,
-                    "brushableScaleSubsetUpdate", "plotTable", "subSetSizeScale", {})
+                    "brushableScaleSubsetUpdate", "plotTable", "subSetSizeScale", {columnLabel:"Cardinality",
+                        actionsTrioggeredByLabelClick:[function(){
+                            UpSetState.sorting = StateOpt.sortBySubSetSize;
+                            UpSetState.grouping = undefined;
+                            UpSetState.levelTwoGrouping = undefined;
+                            UpSetState.forceUpdate = true;
+                            $('#noGrouping').prop('checked', true);
+                            $('#sortRelevanceMeasure').prop('checked', true);
+                            toggleGroupingL2(true);
+                            updateState();
+                            rowTransition();
+                        }]})
             });
 
         // *** update Part
 
-        tableHeaderGroup.selectAll("#subSetSizeLabelRect").attr({
-            transform: 'translate(' + ctx.xStartSetSizes + ',' + (ctx.labelTopPadding) + ')',
-            height: '20',
-            width: ctx.subSetSizeWidth
-        });
-
-        tableHeaderGroup.selectAll("#subSetSizeLabelText").attr({
-            transform: 'translate(' + (ctx.xStartSetSizes + ctx.subSetSizeWidth / 2) + ','
-                + (ctx.labelTopPadding + 10) + ')'
-        });
+//        tableHeaderGroup.selectAll("#subSetSizeLabelRect").attr({
+//            transform: 'translate(' + ctx.xStartSetSizes + ',' + (ctx.labelTopPadding) + ')',
+//            height: '20',
+//            width: ctx.subSetSizeWidth
+//        });
+//
+//        tableHeaderGroup.selectAll("#subSetSizeLabelText").attr({
+//            transform: 'translate(' + (ctx.xStartSetSizes + ctx.subSetSizeWidth / 2) + ','
+//                + (ctx.labelTopPadding + 10) + ')'
+//        });
 
         var maxValue = d3.max(ctx.globalStatistics, function (d) {
             return d.value
         });
 
         tableHeaderGroup.selectAll("#subSetSizeAxis").transition().attr({
-            transform: 'translate(' + ctx.xStartSetSizes + ',' + (ctx.textHeight - 70) + ')'
+            transform: 'translate(' + ctx.xStartSetSizes + ',' + (ctx.textHeight - 70) + ')' // TODO magic number
         }).call(ctx.brushableScaleSubsetUpdate,
             {
                 maxValue: maxValue,
@@ -560,7 +572,7 @@ function UpSet() {
                 rowTransition();
             });
 
-        tableHeaderGroupEnter.append('text').text('Disproportionality')
+        tableHeaderGroupEnter.append('text').text('Deviation')
             .attr({
                 id: "expectedValueLabelText",
                 class: 'columnLabel sortRelevanceMeasureGlobal',
@@ -623,7 +635,7 @@ function UpSet() {
                 width:120,
                 height:30,
                 x:function(d,i){return ctx.xStartStatisticColumns+i*(ctx.summaryStatisticsWidth+ctx.majorPadding)},
-                y:10
+                y:ctx.labelTopPadding-5
 
             }).append("xhtml:body")//.attr("xmlns","http://www.w3.org/1999/xhtml")
 
@@ -992,7 +1004,7 @@ function UpSet() {
                     }
                 })
                 .style({
-                    fill:function(d,i){ console.log("HB:",i,d);return ctx.horizonBarGrays(i);}
+                    fill:function(d,i){ return ctx.horizonBarGrays(i);}
                 })
 //                .style("opacity", function (d, i) {
 //                    if (nbLevels == 1)
@@ -1348,7 +1360,7 @@ function UpSet() {
                 .attr({
                     transform: function (d, i) {
   
-                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (ctx.cellSizeShrink * i+1) + ')'; // ' + (textHeight - 5) + ')'
+                        return   'translate(' + (ctx.xStartSetSizes) + ', ' + (ctx.cellSizeShrink * i+2) + ')'; // ' + (textHeight - 5) + ')'
 
                     },
 
@@ -1357,11 +1369,11 @@ function UpSet() {
                     },
                     height: function (d, i) {
 
-                        return ctx.cellSize-2 - ctx.cellSizeShrink * 2 * i;
+                        return ctx.cellSize-4 - ctx.cellSizeShrink * 2 * i;
 
                     }
                 })       .style({
-                    fill:function(d,i){ /*console.log("HB:",i,d);*/ return ctx.horizonBarGrays(i);}
+                    fill:function(d,i){ return ctx.horizonBarGrays(i);}
                 })
 //                .style("opacity",function (d, i) {
 //                    if (nbLevels == 1)
@@ -2108,11 +2120,11 @@ function UpSet() {
     function setUpSortSelections() {
 
         // groupingDefinitions
-        ctx.groupingOptions[StateOpt.groupByIntersectionSize] = { name: "Intersection Size", l1action:function(){},l2action:function(){} };
+        ctx.groupingOptions[StateOpt.groupByIntersectionSize] = { name: "Degree", l1action:function(){},l2action:function(){} };
         ctx.groupingOptions[StateOpt.groupBySet]={ name: "Sets", l1action:function(){},l2action:function(){} };
-        ctx.groupingOptions[StateOpt.groupByRelevanceMeasure] ={ name: "Disproportionality", l1action:function(){}, l2action:function(){} };
-        ctx.groupingOptions[StateOpt.groupByOverlapDegree] = { name: "Group all overlaps > 2", l1action:function(){}, l2action:function(){} };
-        ctx.groupingOptions["dont"] ={ name: "Don't Group", l1action:function(){}, l2action:function(){} };
+        ctx.groupingOptions[StateOpt.groupByRelevanceMeasure] ={ name: "Deviation", l1action:function(){}, l2action:function(){} };
+        ctx.groupingOptions[StateOpt.groupByOverlapDegree] = { name: "Overlaps", l1action:function(){}, l2action:function(){} };
+        ctx.groupingOptions["dont"] ={ name: "Don't Aggregate", l1action:function(){}, l2action:function(){} };
 
 
 
@@ -2317,17 +2329,17 @@ function UpSet() {
 
     }
 
-    document.getElementById('rowSizeValue').addEventListener('input', function () {
+    document.getElementById('rowSizeValue').addEventListener('change', function () {
         ctx.cellDistance = +(document.getElementById('rowSizeValue').value);
         //console.log(ctx.cellSize);
         rowTransition();
     });
 
-    document.getElementById('rowPaddingValue').addEventListener('input', function () {
-        ctx.cellDistance = +(document.getElementById('rowPaddingValue').value);
-        //console.log(ctx.cellSize);
-        rowTransition();
-    });
+//    document.getElementById('rowPaddingValue').addEventListener('input', function () {
+//        ctx.cellDistance = +(document.getElementById('rowPaddingValue').value);
+//        //console.log(ctx.cellSize);
+//        rowTransition();
+//    });
 
     var rowTransition = function (animateRows) {
         if (animateRows != null) ctx.rowTransitions = animateRows;

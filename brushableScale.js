@@ -32,6 +32,8 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
 
     var param = param
 
+    var columnLabel ="ABC";
+
     var maxValue = 100;
 
     var labels=[
@@ -41,6 +43,8 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
         {name: "all items",id:"A", value:400 }
     ]
 
+
+    var actionsTriggeredByLabelClick=params.actionsTrioggeredByLabelClick;
 
 
     var connectionAreaData =[
@@ -123,7 +127,16 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
     }
 
 
+    function updateColumnLabel() {
+        svg.select(".columnLabelGroup").select("rect").attr({
+            width:width
+        })
 
+        svg.select(".columnLabelGroup").select("text").attr({
+            x:width/2
+        })
+
+    }
 
     var update = function(params){
 
@@ -131,27 +144,79 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
         if (params.labels !=null) labels = params.labels;
         if (params.width != null) width = params.width;
 
+//        console.log(labels);
+
+
         updateScales();
         updateSliderLabels();
+        updateColumnLabel();
     }
 
     function init(){
+        if (params.columnLabel != null) columnLabel = params.columnLabel;
+
         // define slider
         overViewBrushDef = d3.svg.brush()
             .x(xScale)
             .extent([0, 100])
-            .on(
-                "brush", brushed
-            );
+            .on("brush", brushed)
+            .on("brushstart", function(){
+                svg.selectAll(".columnLabelGroup").transition().duration(100).style({
+                    opacity:0
+                })
+                svg.selectAll(".connectionArea").transition().duration(100).style({
+                    opacity:.2
+                })
+
+            })
+            .on("brushend", function(){
+                svg.selectAll(".columnLabelGroup").transition().duration(500).style({
+                    opacity:1
+                })
+                svg.selectAll(".connectionArea").transition().duration(500).style({
+                    opacity:.00001
+                })
+            });
 
         sliders = svg.append("g").attr({
             class: "sliderGroup",
             "transform": "translate(" + offsetX + "," + (offsetY) + ")"
         });
 
-        sliders.append("g").attr({
-            class:"labels"
+        sliders.append("path").attr({
+            class:"connectionArea"
+        }).style({
+                opacity:.00001
+            })
+
+        var labelHeight = 20;
+
+        var columnLabelGroup = svg.append("g").attr({
+            class:"columnLabelGroup",
+            "transform":"translate("+(0)+","+(distanceBetweenUpperAndLower+(distanceBetweenAxis-labelHeight)/2)+")" //Math.floor
         })
+
+        columnLabelGroup.append("rect").attr({
+            class:"labelBackground",
+            x:0,
+            y:0,
+            width:width,
+            height:labelHeight// TODO magic number
+        }).on({
+                "click": function(){ actionsTriggeredByLabelClick.forEach(function(d){d();})}
+            })
+
+        columnLabelGroup.append("text").attr({
+            class:"columnLabel",
+            "pointer-events":"none",
+            x:width/2,
+            y:labelHeight/2
+        })
+//            .style({
+//                "font-size":"1em"
+//            })
+            .text(columnLabel);
+
 
         sliders.append("rect").attr({
             class:"drawBrush",
@@ -184,6 +249,10 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
             width:10
         })
 
+        sliders.append("g").attr({
+            class:"labels"
+        })
+
     }
 
     function updateScales(){
@@ -210,7 +279,7 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
                 drawLabels[label] = true;
             }
 
-            console.log(label,xScale(label)+label.toString(10).length*numberWidth,maxSpace);
+//            console.log(label,xScale(label)+label.toString(10).length*numberWidth,maxSpace);
         })
 
         formatFunction = function(d,i){return (d in drawLabels)?d:"";}
@@ -260,7 +329,7 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
 
 
         // slider labels
-        var sliderLabels = sliders.select(".labels").selectAll(".sliderLabel").data(labels, function(d){return d.id})
+        var sliderLabels = sliders.select(".labels").selectAll(".sliderLabel").data(labels, function(d){return d.name})
         sliderLabels.exit().remove();
         var sliderLabelsEnter = sliderLabels.enter().append("g").attr({
             class:"sliderLabel"
@@ -322,10 +391,11 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
         cAreaNode.enter().append("path")
             .attr({
                 class:"connectionArea",
-                "transform":"translate("+offsetX+","+(offsetY+distanceBetweenUpperAndLower+distanceBetweenAxis)+")"
+                 "transform":"translate("+offsetX+","+(offsetY+distanceBetweenUpperAndLower+distanceBetweenAxis)+")"
 
             })
         cAreaNode.attr({
+            "transform":"translate("+offsetX+","+(offsetY+distanceBetweenUpperAndLower+distanceBetweenAxis)+")",
             d:d3.svg.area()
         })
 

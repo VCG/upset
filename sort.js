@@ -8,17 +8,27 @@ var SET_BASED_GROUPING_PREFIX = "SetG_";
 
 var handleLogicGroups = function (subsets, level, parentGroup) {
     filterGroups = [];
+    var deleteCandidates =[];
     UpSetState.logicGroups.forEach(function (d) {
-        var group = new QueryGroup(d.id, d.groupName, d.orClauses);
         var maskList = d.getListOfValues();
-
+        var group = new QueryGroup(d.id, d.groupName, d.orClauses);
         getSubsetsForMaskList(subsets, maskList, function (d) {
             group.addSubSet(d);
         });
+        if (group.subSets.length>0){
 
-        filterGroups.push(group)
-
+            filterGroups.push(group)
+        }else{
+            deleteCandidates.append(d);
+        }
     })
+
+    // TODO: HAS TO BE IMPROVED !!!
+    deleteCandidates.forEach(function(d){
+        UpSetState.logicGroups.slice(UpSetState.indexOf(d),1);
+    })
+
+
 }
 
 var groupByOverlapDegree = function (subSets, level, parentGroup) {

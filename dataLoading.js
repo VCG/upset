@@ -504,7 +504,7 @@ function setUpSubSets() {
             //        list.forEach(function(d){arghhList[d]=1});
 
 
-            console.log(parseInt(key,2), name, combinedSets, list, expectedValue);
+//            console.log(parseInt(key,2), name, combinedSets, list, expectedValue);
 
             var subSet = new SubSet(bitMask, name, combinedSets, list, expectedValue);
             subSets.push(subSet);

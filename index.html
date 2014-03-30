@@ -71,9 +71,9 @@
                 <!--</div>-->
                 <!--<div><input type='radio' id='noGrouping' name="group"><label for="noGrouping">Don't Group</label></div>-->
 
-                <div class="configHeader">First, group by </div>
+                <div class="configHeader">First, aggregate by </div>
                 <div id="firstLevelGrouping"></div>
-                <div id='firstLevelMinCardinality' style="padding-top: 5px;" hidden>min: <input id='firstLevelMinCardinalityInput' type='number' min='0' max='12' value='0'>
+                <div id='firstLevelMinCardinality' style="padding-top: 5px;" hidden>overlap degree:<br/> <input id='firstLevelMinCardinalityInput' type='number' min='0' max='12' value='0'>
 
                 </div>
             </div>
@@ -96,9 +96,9 @@
             <!--</div>-->
 
             <div id="groupL2Config" class="configTable">
-                <div class="configHeader">Then, group by </div>
+                <div class="configHeader">Then, aggregate by </div>
                 <div id="secondLevelGrouping" ></div>
-                <div id='secondLevelMinCardinality'  style="padding-top: 5px;" hidden>min: <input id='secondLevelMinCardinalityInput' type='number' min='0' max='12' value='0'>
+                <div id='secondLevelMinCardinality'  style="padding-top: 5px;" hidden>overlap degree:<br/> <input id='secondLevelMinCardinalityInput' type='number' min='0' max='12' value='0'>
 
                 </div>
 
@@ -118,40 +118,55 @@
             <div id="sortConfig" class="configTable">
                 <div class="configHeader"> Sort by</div>
                 <div><input type='radio' id='sortNrSetsInIntersection' name='sort' checked="true">
-                    <label for="sortNrSetsInIntersection"># Sets in Intersection</label></div>
+                    <label for="sortNrSetsInIntersection">Degree</label></div>
                 <div><input type='radio' id='sortIntersectionSize' name='sort'><label for="sortIntersectionSize">
-                    Intersection Size</label></div>
+                    Cardinality</label></div>
                 <div><input type='radio' id="sortRelevanceMeasure" name='sort'>
-                    <label for="sortRelevanceMeasure"> Relevance Measure</label></div>
+                    <label for="sortRelevanceMeasure"> Deviation</label></div>
             </div>
 
             <div id='options' class='configTable'>
-                <div class="configHeader">Options</div>
-                <div><span class="option" id="collapseAll">Collapse Groups</span></div>
-                <div><span class="option" id="expandAll">Expand Groups</span></div>
+                <div class="configHeader">Aggregates</div>
+                <div><span class="option" id="collapseAll">Collapse All</span></div>
+                <div><span class="option" id="expandAll">Expand All</span></div>
+            </div>
+
+
+
+            <!--<div id='rowSize' class='configTable'>-->
+                <!--<div class="configHeader">Row size</div>-->
+                <!--<div>RowSize: <input id='rowSizeValue' type='number' min='10' max='20' value='20'>-->
+                <!--</div>-->
+            <!--</div>-->
+
+            <div id='rowSize' class='configTable'>
+                <div class="configHeader">Row height</div>
+                <div>
+                    <select id='rowSizeValue'>
+                        <option value="20">big</option>
+                        <option value="15">small</option>
+                        <option value="12">tiny</option>
+                    </select>
+                </div>
+            </div>
+
+
+
+            <div id='intersectionSize' class='configTable'>
+                <div class="configHeader">Data:</div>
+                <div>Min Degree:<br/> <input id='minCardinality' type='number' min='0' max='12' value='0'>
+
+                </div>
+                <div>Max Degree:<br/><input id='maxCardinality' type='number' min='0' max='12'> </div>
                 <div><input type='checkbox' id='hideEmpties' checked='true'><label for="hideEmpties">Hide Empty
                     Intersections</label></div>
             </div>
 
-            <div id='intersectionSize' class='configTable'>
-                <div class="configHeader">Limit to</div>
-                <div>At least <input id='minCardinality' type='number' min='0' max='12' value='0'>
-                    intersections.
-                </div>
-                <div>At most <input id='maxCardinality' type='number' min='0' max='12'> intersections.</div>
-            </div>
-
-            <div id='rowSize' class='configTable'>
-                <div class="configHeader">Row size</div>
-                <div>RowSize: <input id='rowSizeValue' type='number' min='10' max='20' value='20'>
-                </div>
-            </div>
-
-            <div id='rowPadding' class='configTable'>
-                <div class="configHeader">Row padding</div>
-                <div>RowPadding: <input id='rowPaddingValue' type='number' min='10' max='20' value='20'>
-                </div>
-            </div>
+            <!--<div id='rowPadding' class='configTable'>-->
+                <!--<div class="configHeader">Row padding</div>-->
+                <!--<div>RowPadding: <input id='rowPaddingValue' type='number' min='10' max='20' value='20'>-->
+                <!--</div>-->
+            <!--</div>-->
 
             <div id='venn-diagram-viewer' class='configTable'>
                 <div class="configHeader">Venn Diagram</div>
