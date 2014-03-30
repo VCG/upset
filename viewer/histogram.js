@@ -29,7 +29,7 @@ var histogramConfiguration = {
             format = d3.format("d");
         }
 
-        var margin = {top: 0, right: 10, bottom: 35, left: 10},
+        var margin = {top: 10, right: 10, bottom: 35, left: 45},
             width = 300 - margin.left - margin.right,
             height = 200 - margin.top - margin.bottom;
 
@@ -82,6 +82,10 @@ var histogramConfiguration = {
             .domain([0, d3.max(histograms, function(histogram) { return d3.max( histogram, function(d) { return d.y; } ); })])
             .range([height, 0]);
 
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
         var histogram = svg.selectAll(".histogram")
                 .data( histograms )
             .enter().append("g")
@@ -108,7 +112,17 @@ var histogramConfiguration = {
               .attr("transform", "translate(0," + 30 + ")" )
               .style("text-anchor", "start")
               .text(attribute.name);
-
+        
+        svg.append("g")
+            .attr("class", "x axis")
+            //.attr('stroke-width','1')
+            .call(yAxis)
+            .append("text")
+              .attr("transform", "rotate(-90)")
+              .attr("y", -margin.left)
+              .attr("dy", ".71em")
+              .style("text-anchor", "end")
+              .text("Frequency");
 
 
     }
