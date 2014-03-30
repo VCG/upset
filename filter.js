@@ -252,7 +252,7 @@ FilterCollection.prototype.renderFilters = function() {
 
     // check if there is a viewer
     if ( self.list.length === 0 ) {
-        filterElement.append( "div" ).attr( "class", "filter-message" ).text( "No filter added!" );
+        //filterElement.append( "div" ).attr( "class", "filter-message" ).text( "No filter added!" );
 
         return self;
     }
@@ -325,22 +325,29 @@ Filter.prototype.renderViewer = function( element, selection ) { // filterId, at
     var self = this;
 
     var parameters = self.parameterMap;
-
-    filterViewer = element;
+    var filterViewer = element;
 
     filterViewer.html( '<div><u>' + self.attribute.name +'</u>: <b>' + self.configuration.name + '</b> (<i>' + self.configuration.types + '</i>)&nbsp;' + 
         '<span class="filter-button filter-edit" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-pencil"></i></span>' +
+        '<span class="filter-button filter-remove" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-times-circle"></i></span>' +
         '</div>');
 
-    d3.selectAll( '.filter-edit' ).on( 'click', function(event){
+    $('.filter-edit[data-filter-uuid="' + self.uuid + '"]').on( 'click', function(){
         self.renderEditor( element, selection, self.uuid );
     });
+
+    $( '.filter-remove[data-filter-uuid="' + self.uuid + '"]').on( 'click', function(){        
+        $( self.editorElementId ).remove();
+        selection.filterCollection.remove( self );
+        selection.applyFilters();
+    });
+
 
     var parameterType = undefined;
     var parameterName = undefined;
     for ( var parameterVariable in parameters ) {
         if ( parameters.hasOwnProperty(parameterVariable) ) {
-            var parameterViewer = filterViewer.append( 'div' ); //.style( "margin-left", "10px");
+            var parameterViewer = filterViewer.append( 'div' );
 
             // look up parameter type in filter instance
             for ( var p = 0; p < self.configuration.parameters.length; ++p ) {
@@ -358,34 +365,21 @@ Filter.prototype.renderViewer = function( element, selection ) { // filterId, at
 Filter.prototype.renderEditor = function( element, selection ) { // filterId, attributeId, parameters
     var self = this;
 
-    //var filterId = selection.getFilter( self.uuid ).id;
-    //var attributeId = selection.getFilter( self.uuid ).attributeId;
     var parameters = self.parameterMap;
-
-    console.log( parameters );
-
     var filterEditor = element;
-
-    //var filterInstance = self.get( filterId );
-    /*
-    var filterEditor = element.select('#filter-' + self.uuid );
-    if ( filterEditor.empty() ) {
-        filterEditor = element.append('div').attr( 'id', 'filter-' + self.uuid );
-    }
-    */
 
     filterEditor.html( '<div><u>' + self.attribute.name +'</u>: <b>' + self.configuration.name + '</b> (<i>' + self.configuration.types + '</i>)' + 
         '&nbsp;<span class="filter-button filter-save" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-check"></i></span>' +
         '&nbsp;<span class="filter-button filter-cancel" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-times"></i></span>' +
         '</div>');
 
-    d3.selectAll( '.filter-save' ).on( 'click', function(event){
+    $('.filter-save[data-filter-uuid="' + self.uuid + '"]').on( 'click', function(){
         self.parseParameterValues( selection );
         selection.applyFilters();
         self.renderViewer( element, selection );
     });
 
-    d3.selectAll( '.filter-cancel' ).on( 'click', function(event){
+    $('.filter-cancel[data-filter-uuid="' + self.uuid + '"]').on( 'click', function(){
         self.renderViewer( element, selection );
     });
 
