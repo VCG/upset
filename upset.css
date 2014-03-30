@@ -371,7 +371,6 @@ th.attribute-header.selected {
 
 .fixed-y-container {
     overflow-y: auto;
-    margin-top:-40px;
 }
 
 .fixed-y-container:hover {
@@ -380,6 +379,7 @@ th.attribute-header.selected {
 #set-vis-container {
     min-height: 300px;
     padding-bottom: 10px;
+    margin-top:-40px;
 }
 
 #item-vis-container {
