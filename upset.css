@@ -533,6 +533,8 @@ html, body, .ui-container {
     cursor: default;
     display: inline-block;
 
+    font-weight: bold;
+
     background-color: #ccc;
     color: #444;    
 
@@ -727,29 +729,10 @@ html, body, .ui-container {
 }
 
 .option {
-    //text-decoration: underline;
-
-    display: inline-block;
-    margin-left: 3px;
-    margin-right: 3px;
-    margin-top: 1px;
-    margin-bottom: 1px;
-    color: #000;
-    border-radius: 10px;
-    //width: 10px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 1px;
-    padding-bottom: 1px;
-    background-color: #aaa;
-    color: #444;
-    font-weight: bold;
-
 }
 
 .option:hover{
-    background: #bdbdbd;
-}
+ }
 
 .configHeader {
     font-weight: bold;
