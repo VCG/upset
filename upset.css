@@ -212,9 +212,15 @@ th.attribute-header.selected {
     background-color: yellow;
 }
 
+#selection-tabs {
+    border-bottom: 1px dotted #bbb;
+    padding-bottom: 3px;
+    margin-bottom: 3px;    
+}
+
 .selection-tab-list {
     display: inline-block;
-    height: 20px;
+    min-height: 30px;
     margin-left: 5px;
 }
 
@@ -389,6 +395,11 @@ th.attribute-header.selected {
     padding-bottom: 10px;
 }
 
+#item-table {
+    border-bottom: 1px dotted #bbb;    
+    padding-bottom: 2px;    
+}
+
 .button-panel {
     display: inline-block;
     margin-left: 10px;
@@ -518,6 +529,63 @@ html, body, .ui-container {
     border-left: 1px solid #999;    
 }
 
+.level-1-button {
+    cursor: default;
+    display: inline-block;
+
+    background-color: #aaa;
+    color: #444;    
+
+    border-radius: 10px;
+
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+.level-1-button:hover {
+    background-color: #888;
+    color: #444;    
+}
+
+.level-2-button {
+    cursor: default;
+    display: inline-block;
+
+    color: #444;    
+
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+.level-2-button:hover {
+    color: #111;    
+}
+
+.info-message {
+    display: block;
+    background-color: #eee;
+    color: #444;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding: 3px;
+    font-style: italic;
+}
+
+
 .element-viewer-header {
     display: inline;
 }
@@ -527,22 +595,18 @@ html, body, .ui-container {
 }
 
 .element-viewer-editor-button {
-    display: inline;
-    margin-left: 5px;
-    color: #000;
+    display: inline-block;
 }
 
 .element-viewer-editor-button:hover {
-    color: #136382;
-    text-shadow: 0 0 10px #3fa0c7
+    /*text-shadow: 0 0 10px #3fa0c7*/
 }
 
 
 .element-viewer-active {
-    background-color: white;
-    border: 1px dashed lightgray;
-    padding: 5px;
     margin-top: 5px;
+    border-bottom: 1px dotted #bbb;
+    padding-bottom: 3px;
     margin-bottom: 5px;
 }
 
@@ -566,16 +630,12 @@ html, body, .ui-container {
 }
 
 .filter-editor-button {
-    display: inline;
-    margin-left: 5px;
-    color: #000;
+    display: inline-block;
 }
 
 .filter-editor-button:hover {
-    color: #136382;
-    text-shadow: 0 0 10px #3fa0c7
+    //text-shadow: 0 0 10px #3fa0c7
 }
-
 
 .filter-active {
     background-color: white;
@@ -585,11 +645,28 @@ html, body, .ui-container {
     margin-bottom: 5px;
 }
 
-#filter-selector {
-    display: inline;
-    float: none;
+.filter-parameter-viewer {
+    font-size: 10pt;
 }
 
+.filter-viewer:not(:first-child) {
+    border-top: 1px dotted #bbb;
+}
+
+.filter-viewer {
+    padding-bottom: 3px;
+    margin-bottom: 1px;
+}
+
+#filter-selector {
+    display: inline;
+    margin-left: 5px;
+}
+
+#filters-list {
+    border-bottom: 1px dotted #bbb;    
+    padding-bottom: 2px;
+}
 .filter-editor:nth-child(odd) {
     padding-bottom: 5px;
     padding-top: 3px;
@@ -604,8 +681,8 @@ html, body, .ui-container {
 }
 
 .element-view-header {
-    border-bottom: 1px dashed black;
-    margin-top: 8px;
+    border-bottom: 1px solid #636363;
+    margin-top: 12px;
     margin-bottom: 3px;
     padding-left: 5px;
 }
@@ -614,7 +691,7 @@ html, body, .ui-container {
     display: inline;
     background-color: #636363;
     color: white;
-    padding: 1px 3px 1px 3px;
+    padding: 2px 5px 1px 5px;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     margin-bottom: 0px;
@@ -622,6 +699,22 @@ html, body, .ui-container {
     font-size: 10pt;
 }
 
+.element-view-subtitle {
+    display: inline;
+    color: #636363;
+    padding: 1px 3px 1px 3px;
+    margin-bottom: 0px;
+    font-weight: bold;
+    font-size: 10pt;
+}
+
+
+.element-view-container {
+}
+
+.element-view-controls {
+    min-height: 25px;
+}
 
 
 /** ============ Configuration ============== */
@@ -634,8 +727,24 @@ html, body, .ui-container {
 }
 
 .option {
-    text-decoration: underline;
-    cursor: pointer;
+    //text-decoration: underline;
+
+    display: inline-block;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    color: #000;
+    border-radius: 10px;
+    //width: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    background-color: #aaa;
+    color: #444;
+    font-weight: bold;
+
 }
 
 .option:hover{

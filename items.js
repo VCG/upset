@@ -2,55 +2,61 @@ function plotSelectionTabs( element, selections, activeSelection ) {
     // clear target element
     d3.select(element).html("");
 
-    d3.select(element)
-        .append('span')
-        .attr('class', 'selection-button')
-        .html('<i title="New selection" class="fa fw fa-plus"></i>')
-        .on("click", function(event){
-            console.log( d3.select(this) );
-            createInitialSelection();
-        });    
-
     if ( selections.getSize() <= 0 ) {
-        d3.select(element).append('p' )
-            .attr( 'class', 'selection-tab-list' )
-            .html( 'No selections. Click <i class="fa fw fa-plus"></i> button to add a new selection.' );
+        d3.select(element).append('div' )
+            .attr( 'class', 'info-message' )
+            .html( 'No queries. Click <i class="fa fw fa-plus"></i> button to add a new query.' );
 
-        return;
+        d3.select('#filters-list').html("");
+        d3.select('#filters-list').append( "div" ).attr( "class", "info-message" ).html( 'No active query.' );
+        d3.select('#filters-controls').html("");
+    }
+    else {
+        var table = d3.select(element)
+            .append("table")
+            .attr("class", "selection-tab-list");
+
+        var tbody = table.append("tbody");
+
+        var tabs = tbody.append("tr")
+                .selectAll("td")
+                .data(selections.list)
+            .enter()
+                .append("td")
+                    .attr("class", "selection-tab")
+                    .classed( { 'active': function(d,i) { return ( selections.isActive(d) ); } } )
+                    .on("click", function(k) { // is attribute object
+                        // check if selection has been deleted or not
+                        if ( selections.getSelectionFromUuid( k.id ) ) {
+                            selections.setActive( k );
+                        }
+                    });
+
+                tabs.append("i")
+                    .attr( "class", "fa fa-square" )
+                    .style("color", function(d,i) { return ( selections.getColor( d ) ); } )
+                    .style( "margin-right", "2px");
+                tabs.append("span")
+                    .text(function(d) { return d3.format("5d")( d.items.length ); });
+                tabs.append("i")
+                    .attr( "class", "fa fa-times-circle" )
+                    .style( "margin-left", "5px")
+                    .on("click", function(k) { // is attribute object
+                        selections.removeSelection( k );
+                    });
     }
 
-    var table = d3.select(element)
-        .append("table")
-        .attr("class", "selection-tab-list");
 
-    var tbody = table.append("tbody");
 
-    var tabs = tbody.append("tr")
-            .selectAll("td")
-            .data(selections.list)
-        .enter()
-            .append("td")
-                .attr("class", "selection-tab")
-                .classed( { 'active': function(d,i) { return ( selections.isActive(d) ); } } )
-                .on("click", function(k) { // is attribute object
-                    // check if selection has been deleted or not
-                    if ( selections.getSelectionFromUuid( k.id ) ) {
-                        selections.setActive( k );
-                    }
-                });
-
-            tabs.append("i")
-                .attr( "class", "fa fa-square" )
-                .style("color", function(d,i) { return ( selections.getColor( d ) ); } )
-                .style( "margin-right", "2px");
-            tabs.append("span")
-                .text(function(d) { return d3.format("5d")( d.items.length ); });
-            tabs.append("i")
-                .attr( "class", "fa fa-times-circle" )
-                .style( "margin-left", "5px")
-                .on("click", function(k) { // is attribute object
-                    selections.removeSelection( k );
-                });
+    d3.select('#selection-controls').html("");
+    d3.select('#selection-controls')
+        .append('div')
+        .attr('class', 'selection-button level-1-button')
+        .attr('title', 'Create element query' )
+        .html('<i class="fa fw fa-plus"></i>')
+        .on("click", function(event){
+            createInitialSelection();
+        });                    
 }
 
 
@@ -61,6 +67,7 @@ function plotSelectedItems( elementId, selection ) {
     element.html("");
 
     if ( !selection ) {
+        element.append( "div" ).attr( "class", "info-message" ).html( 'No active query.' );
         return;
     }
 

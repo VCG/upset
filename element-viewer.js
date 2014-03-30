@@ -153,7 +153,23 @@ ElementViewerCollection.prototype.renderController = function() {
 
     controllerElement.html("");    
 
-    //var dataSelect = d3.select("#dataset-selector").append('div').text('Choose Dataset');
+    // create header and controls
+    var viewerElementHeaderLeft = controllerElement.append( "div" ).attr( "class", "element-viewer-header" );
+
+    viewerElementHeaderLeft.append( "div" )
+            .attr( "class", "element-viewer-editor-button level-1-button" )
+            .attr( "id", "element-viewer-add" )
+            .on( "click", function() {
+                var selector = document.getElementById( 'element-viewer-selector' );
+                var elementViewerConfiguration = selector.options[selector.selectedIndex].__data__;
+                var elementViewer = new ElementViewer( attributes, selections, elementViewerConfiguration );
+                self.add( elementViewer );
+                var index = self.getIndex( elementViewer );
+                self.activeIndex = index;
+                self.renderViewer( true );
+            })
+        .append( "i" ).
+            attr( "class", "fa fw fa-plus" );
 
     var select = controllerElement.append('select');
 
@@ -174,11 +190,10 @@ ElementViewerCollection.prototype.renderController = function() {
             return d.name;
         });
 
-    // create header and controls
-    var viewerElementHeader = controllerElement.append( "div" ).attr( "class", "element-viewer-header" );
+    var viewerElementHeaderRight = controllerElement.append( "div" ).attr( "class", "element-viewer-header" );
 
-    viewerElementHeader.append( "div" )
-            .attr( "class", "element-viewer-editor-button" )
+    viewerElementHeaderRight.append( "div" )
+            .attr( "class", "element-viewer-editor-button level-1-button" )
             .attr( "id", "element-viewer-previous" )
             .on( "click", function() {
                 self.activatePrevious();
@@ -186,8 +201,8 @@ ElementViewerCollection.prototype.renderController = function() {
         .append( "i" ).
             attr( "class", "fa fw fa-arrow-left" );
 
-    viewerElementHeader.append( "div" )
-            .attr( "class", "element-viewer-editor-button" )
+    viewerElementHeaderRight.append( "div" )
+            .attr( "class", "element-viewer-editor-button level-1-button" )
             .attr( "id", "element-viewer-next" )
             .on( "click", function() {
                 self.activateNext();
@@ -195,23 +210,9 @@ ElementViewerCollection.prototype.renderController = function() {
         .append( "i" ).
             attr( "class", "fa fw fa-arrow-right" );
 
-    viewerElementHeader.append( "div" )
-            .attr( "class", "element-viewer-editor-button" )
-            .attr( "id", "element-viewer-add" )
-            .on( "click", function() {
-                var selector = document.getElementById( 'element-viewer-selector' );
-                var elementViewerConfiguration = selector.options[selector.selectedIndex].__data__;
-                var elementViewer = new ElementViewer( attributes, selections, elementViewerConfiguration );
-                self.add( elementViewer );
-                var index = self.getIndex( elementViewer );
-                self.activeIndex = index;
-                self.renderViewer( true );
-            })
-        .append( "i" ).
-            attr( "class", "fa fw fa-plus" );
 
-    viewerElementHeader.append( "div" )
-            .attr( "class", "element-viewer-editor-button" )
+    viewerElementHeaderRight.append( "div" )
+            .attr( "class", "element-viewer-editor-button level-1-button" )
             .attr( "id", "element-viewer-edit" )
             .on( "click", function() {
                 self.renderViewer( true );
@@ -219,8 +220,8 @@ ElementViewerCollection.prototype.renderController = function() {
         .append( "i" ).
             attr( "class", "fa fw fa-pencil" );
 
-    viewerElementHeader.append( "div" )
-            .attr( "class", "element-viewer-editor-button" )
+    viewerElementHeaderRight.append( "div" )
+            .attr( "class", "element-viewer-editor-button level-1-button" )
             .attr( "id", "element-viewer-remove" )
             .on( "click", function() {
                 self.remove( self.getActive() );
@@ -243,7 +244,7 @@ ElementViewerCollection.prototype.renderViewer = function( showEditor ) {
 
     // check if there is a viewer
     if ( self.list.length === 0 ) {
-        viewerElement.append( "div" ).attr( "class", "element-viewer-message" ).text( "No viewer available!" );
+        viewerElement.append( "div" ).attr( "class", "info-message" ).html( 'No visualizations configured. Click <i class="fa fw fa-plus"></i> button to add a new visualization.' );
 
         return self;
     }
@@ -325,8 +326,8 @@ ElementViewer.prototype.renderEditor = function( editorElementId ) {
 
     editor.html( '<div>' + 
         '<div class="element-viewer-title">' + self.configuration.name +'</div>' + 
-        '&nbsp;<span class="element-viewer-editor-button element-viewer-editor-save" data-viewer-uuid="' + self.uuid + '""><i class="fa fw fa-check"></i></span>' +
-        '&nbsp;<span class="element-viewer-editor-button element-viewer-editor-cancel" data-viewer-uuid="' + self.uuid + '""><i class="fa fw fa-times"></i></span>' +
+        '&nbsp;<span class="element-viewer-editor-button level-2-button element-viewer-editor-save" data-viewer-uuid="' + self.uuid + '""><i class="fa fw fa-check"></i></span>' +
+        '&nbsp;<span class="element-viewer-editor-button level-2-button element-viewer-editor-cancel" data-viewer-uuid="' + self.uuid + '""><i class="fa fw fa-times"></i></span>' +
         '</div>');
 
     d3.selectAll( '.element-viewer-editor-save' ).on( 'click', function(event){

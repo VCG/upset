@@ -4,10 +4,12 @@
 
 
 $(EventManager).bind("filter-removed", function (event, data) {
+    selections.getActive().filterCollection.renderFilters();
 });
 
 
 $(EventManager).bind("filter-added", function (event, data) {
+    selections.getActive().filterCollection.renderFilters();    
 });
 
 
@@ -49,22 +51,22 @@ FilterConfigurations = {
             return true;
         }   
     },
-    // exact string length filter
-    stringLength: {
-      name: "Length",
-      types: ["string", "id"],
-      parameters: [ { name: "Length", type: "integer", variable: "len" } ],
-      test: function( item, attribute, parameters ) {
-            return ( attribute.values[item].length === parameters.len );
-        }   
-    },
     // string match filter
     stringMatch: {
-      name: "Find",
+      name: "Contains",
       types: ["string", "id"],
       parameters: [ { name: "String", type: "string", variable: "pattern" } ],
       test: function( item, attribute, parameters ) {
             return ( attribute.values[item].indexOf( parameters.pattern ) >= 0 );
+        }   
+    },
+    // exact string length filter
+    stringLength: {
+      name: "String Length",
+      types: ["string", "id"],
+      parameters: [ { name: "Length", type: "integer", variable: "len" } ],
+      test: function( item, attribute, parameters ) {
+            return ( attribute.values[item].length === parameters.len );
         }   
     },
     // string match filter
@@ -173,6 +175,28 @@ FilterCollection.prototype.renderController = function() {
 
     controllerElement.html("");    
 
+    // create header and controls
+    var viewerElementHeader = controllerElement.append( "div" ).attr( "class", "filter-header" );
+
+    viewerElementHeader.append( "div" )
+            .attr( "class", "filter-editor-button level-1-button" )
+            .attr( "id", "filter-add" )
+            .on( "click", function() {
+                var filterSelector = document.getElementById( 'filter-selector' );
+                var configuration = filterSelector.options[filterSelector.selectedIndex].__data__;
+                var attributeSelector = document.getElementById( 'attribute-selector' );
+                var attribute = attributeSelector.options[attributeSelector.selectedIndex].__data__;
+                console.log( attribute );
+                var filter = new Filter( attribute, configuration );
+                self.add( filter );
+
+                // add DOM nodes for filter viewer and editor
+                d3.select(self.filterElementId).insert( 'div' ).attr('class', 'filter-editor').attr( 'id', filter.editorElementId.substring(1) );
+                filter.renderEditor( d3.select( filter.editorElementId ), selections.getActive() );
+            })
+        .append( "i" ).
+            attr( "class", "fa fw fa-plus" );
+
     var attributeSelect = controllerElement.append('select');
     var filterSelect = controllerElement.append('select');
     filterSelect.attr('id', 'filter-selector');
@@ -192,27 +216,6 @@ FilterCollection.prototype.renderController = function() {
     attributeSelect.on('change', self.initializeFilterList );
     self.initializeFilterList();
 
-    // create header and controls
-    var viewerElementHeader = controllerElement.append( "div" ).attr( "class", "filter-header" );
-
-    viewerElementHeader.append( "div" )
-            .attr( "class", "filter-editor-button" )
-            .attr( "id", "filter-add" )
-            .on( "click", function() {
-                var filterSelector = document.getElementById( 'filter-selector' );
-                var configuration = filterSelector.options[filterSelector.selectedIndex].__data__;
-                var attributeSelector = document.getElementById( 'attribute-selector' );
-                var attribute = attributeSelector.options[attributeSelector.selectedIndex].__data__;
-                console.log( attribute );
-                var filter = new Filter( attribute, configuration );
-                self.add( filter );
-
-                // add DOM nodes for filter viewer and editor
-                d3.select(self.filterElementId).insert( 'div' ).attr('class', 'filter-editor').attr( 'id', filter.editorElementId.substring(1) );
-                filter.renderEditor( d3.select( filter.editorElementId ), selections.getActive() );
-            })
-        .append( "i" ).
-            attr( "class", "fa fw fa-plus" );
 };
 
 FilterCollection.prototype.initializeFilterList = function() {
@@ -252,7 +255,7 @@ FilterCollection.prototype.renderFilters = function() {
 
     // check if there is a viewer
     if ( self.list.length === 0 ) {
-        //filterElement.append( "div" ).attr( "class", "filter-message" ).text( "No filter added!" );
+        filterElement.append( "div" ).attr( "class", "info-message" ).html( 'No filters configured. Click <i class="fa fw fa-plus"></i> button to add a new filter.' );
 
         return self;
     }
@@ -273,7 +276,7 @@ Filter = function(attribute, configuration,parameterMap) {
     self.attribute = attribute;
     self.uuid = Utilities.generateUuid();
     self.editorElementId = '#filter-editor-' + self.uuid;
-    self.viewerElementId = '#filter-viewer-' + self.uuid;
+    //self.viewerElementId = '#filter-viewer-' + self.uuid;
     self.configuration = configuration;
     self.parameterMap = {};
 
@@ -327,10 +330,12 @@ Filter.prototype.renderViewer = function( element, selection ) {
     var parameters = self.parameterMap;
     var filterViewer = element;
 
-    filterViewer.html( '<div>' + self.attribute.name +': <b>' + self.configuration.name + '</b>&nbsp;' + 
-        '<span class="filter-button filter-edit" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-pencil"></i></span>' +
-        '<span class="filter-button filter-remove" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-times-circle"></i></span>' +
-        '</div>');
+    filterViewer.attr( 'class', 'filter-viewer' );
+
+    filterViewer.html( '<div>' + 
+        '<span class="filter-button level-2-button filter-remove" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-times-circle"></i></span>' +
+        '<span class="filter-button level-2-button filter-edit" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-pencil"></i></span>' +
+        '&nbsp;<b>' + self.configuration.name + '</b>&nbsp;|&nbsp;' + self.attribute.name +'</div>');
 
     $('.filter-edit[data-filter-uuid="' + self.uuid + '"]').on( 'click', function(){
         self.renderEditor( element, selection, self.uuid );
@@ -347,7 +352,7 @@ Filter.prototype.renderViewer = function( element, selection ) {
     var parameterName = undefined;
     for ( var parameterVariable in parameters ) {
         if ( parameters.hasOwnProperty(parameterVariable) ) {
-            var parameterViewer = filterViewer.append( 'div' );
+            var parameterViewer = filterViewer.append( 'div' ).attr( 'class', 'filter-parameter-viewer' );
 
             // look up parameter type in filter instance
             for ( var p = 0; p < self.configuration.parameters.length; ++p ) {
@@ -368,10 +373,10 @@ Filter.prototype.renderEditor = function( element, selection ) { // filterId, at
     var parameters = self.parameterMap;
     var filterEditor = element;
 
-    filterEditor.html( '<div>' + self.attribute.name +': <b>' + self.configuration.name + '</b>' + 
-        '&nbsp;<span class="filter-button filter-save" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-check"></i></span>' +
-        '&nbsp;<span class="filter-button filter-cancel" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-times"></i></span>' +
-        '</div>');
+    filterEditor.html( '<div>' + 
+        '<span class="filter-button level-2-button filter-cancel" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-times"></i></span>' +
+        '<span class="filter-button level-2-button filter-save" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-check"></i></span>' +
+        '&nbsp;<b>' + self.configuration.name + '</b>&nbsp;|&nbsp;' + self.attribute.name +'</div>');
 
     $('.filter-save[data-filter-uuid="' + self.uuid + '"]').on( 'click', function(){
         self.parseParameterValues( selection );
@@ -407,10 +412,10 @@ Filter.prototype.renderParameterViewer = function( element, parameterName, param
     
     switch ( parameterType ) {
         case 'float':
-            element.html( parameterName + ' (' + parameterType + '): ' + d3.format('f')(parameterValue) );
+            element.html( '<i>' + parameterName + '</i> = ' + d3.format('f')(parameterValue) );
             break;
         case 'integer':
-            element.html( parameterName + ' (' + parameterType + '): ' + d3.format('d')(parameterValue) );
+            element.html( '<i>' + parameterName + '</i> = ' + d3.format('d')(parameterValue) );
             break;
         case 'subset':
             var s = "";
@@ -427,7 +432,7 @@ Filter.prototype.renderParameterViewer = function( element, parameterName, param
         case 'string':
             // fall-through
         default:
-            element.html( parameterName + ' (' + parameterType + '): ' + parameterValue );
+            element.html( '<i>' + parameterName + '</i> = "' + parameterValue + '"' );
             break;
     }
 };
@@ -489,10 +494,10 @@ Filter.prototype.renderParameterEditor = function( element, parameterName, param
     
     switch ( parameterType ) {
         case 'float':
-            s += parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="number" step="0.1" value="' + d3.format('f')(parameterValue) + '"></input>';
+            s += '<i>' + parameterName + '</i> = ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="number" step="0.1" value="' + d3.format('f')(parameterValue) + '"></input>';
             break;
         case 'integer':
-            s +=  parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="number" step="1" value="' + d3.format('d')(parameterValue) + '"></input>';
+            s +=  '<i>' + parameterName + '</i> = ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="number" step="1" value="' + d3.format('d')(parameterValue) + '"></input>';
             break;
         case 'subset':        
             var subset = parameterValue;
@@ -506,7 +511,7 @@ Filter.prototype.renderParameterEditor = function( element, parameterName, param
         case 'string':
             // fall-through
         default:
-            s += parameterName + ' (' + parameterType + '): ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="text" value="' + parameterValue + '"></input>';
+            s += '<i>' + parameterName + '</i> = ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="text" value="' + parameterValue + '"></input>';
             break;
     }
 
