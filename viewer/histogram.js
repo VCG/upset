@@ -14,6 +14,12 @@ var histogramConfiguration = {
             type: "integer",
             variable: "bins",
             default: 20
+        },
+        {
+            name: "Frequency?",
+            type: "boolean",
+            variable: "isFrequency",
+            default: false
         }],
     render: function( elementId, selections, attributes, attributeMap, parameterMap ) {
 
@@ -64,7 +70,7 @@ var histogramConfiguration = {
 
             // Generate a histogram using twenty uniformly-spaced bins.
             var histogram = d3.layout.histogram()
-                .frequency(false)
+                .frequency(parameterMap.isFrequency)
                 .bins(x.ticks(parameterMap.bins))
                 (values);
 
@@ -122,7 +128,7 @@ var histogramConfiguration = {
               .attr("y", -margin.left)
               .attr("dy", ".71em")
               .style("text-anchor", "end")
-              .text("Frequency");
+              .text(function() { return ( parameterMap.isFrequency ? "Frequency" : "Probability" ); } );
 
 
     }
