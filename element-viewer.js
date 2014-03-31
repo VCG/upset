@@ -33,6 +33,14 @@ ElementViewerCollection = function( controllerElementId, viewerElementId ) {
     self.viewerElementId = viewerElementId;
 };
 
+ElementViewerCollection.prototype.reset = function() {
+    var self = this;
+
+    self.list = [];
+    self.activeIndex = undefined;
+};
+
+
 
 ElementViewerCollection.prototype.add = function( elementViewer, isActive ) {
     var self = this;

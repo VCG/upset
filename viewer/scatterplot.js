@@ -45,8 +45,8 @@ var scatterplotConfiguration = {
             data.push( values );
         }
            
-        var margin = {top: 10, right: 10, bottom: 35, left: 45},
-            width = 300 - margin.left - margin.right,
+        var margin = {top: 10, right: 20, bottom: 35, left: 45},
+            width = 350 - margin.left - margin.right,
             height = 200 - margin.top - margin.bottom;
             
         var x;
