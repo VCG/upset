@@ -156,6 +156,9 @@ function createInitialSelection() {
 }
 
 function run() {
+
+    elementViewers.reset();
+
     setUpSubSets();
     // setUpGroupings();
     updateState();
