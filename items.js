@@ -66,7 +66,7 @@ function plotSelectedItems( elementId, selection ) {
     // clear target element
     element.html("");
 
-    if ( !selection ) {
+    if ( !selection || selections.getSize() === 0 || !selections.getColor( selection ) ) {
         element.append( "div" ).attr( "class", "info-message" ).html( 'No active query.' );
         return;
     }
@@ -84,18 +84,20 @@ function plotSelectedItems( elementId, selection ) {
     var thead = table.append("thead");
     var tbody = table.append("tbody");
 
+    var selectionColor = parseInt( selections.getColor( selection ).substring(1), 16 );
+    //console.log( selectionColor + " --- " + selections.getColor( selection ) + " --- " + ( ( selectionColor << 24 ) >>> 24 ).toString(16) );
+    //console.log( 'rgba(' + ( ( ( selectionColor << 8 ) >> 24 ) >>>0 ) + ',' + ( ( ( selectionColor << 16 ) >> 24 ) >>> 0 ) + ',' + ( ( ( selectionColor << 24 ) >> 24 ) >>> 0 ) + ', 0.25)' );
+
     thead.append("tr")
             .selectAll("th")
             .data(attributes.slice(0,attributes.length-1)) // don't show set column
         .enter()
             .append("th")
-                .style("background-color", selections.getColor( selection ) )
+                .style("background-color", 'rgba(' + ( ( ( selectionColor << 8 ) >> 24 ) >>>0 ) + ',' + ( ( ( selectionColor << 16 ) >> 24 ) >>> 0 ) + ',' + ( ( selectionColor << 24 ) >>> 24 ) + ', 0.5)' )
+                .style("border-bottom", "3px solid " + selections.getColor( selection ) )
+                .attr("class", "item-table-header" )
                 .text(function(d) { return d.name; })
                 .on("click", function(k) { // is attribute object
-
-                    if ( k.type === "float" || k.type === "integer" ) {
-                        plotHistogram( k );
-                    }
 
                     thead.selectAll('th').data(attributes).text(function(d) { return d.name; });
                     d3.select(this).html( ( k.sort > 0 ? "&#x25B2;" : "&#x25BC;" ) + " " + k.name );
