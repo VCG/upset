@@ -307,10 +307,10 @@ function LogicPanel(params){
                         expression=  "the intersection that does not intersect with any selected set";
                         break;
                     case logicState.DONTCARE:
-                        expression =  "all intersections that intersect with the selected sets";
+                        expression =  "all intersections of all selected sets";
                         break;
                     case logicState.MUST:
-                        expression = "the intersection that intersects all selected sets";
+                        expression = "the intersection of all selected sets";
                         break;
                     default : break;
                 }
@@ -318,17 +318,17 @@ function LogicPanel(params){
         })
 
         if (expression.length<1){
-            expression = "intersections that intersect  ";
+            expression = "intersections of  ";
 
             var but = "";
             if (collectExpressions[logicState.MUST]!=null){
-                expression += "with set"+((collectExpressions[logicState.MUST].length>1)?"s ":" ")
+                expression += "set"+((collectExpressions[logicState.MUST].length>1)?"s ":" ")
                 expression += collectExpressions[logicState.MUST].map(function(d){return "["+d+"]"}).join(" and ")
                 but=" but "
             }
             if (collectExpressions[logicState.NOT]!=null){
-                expression += but+"not with set ";
-                expression += collectExpressions[logicState.NOT].map(function(d){return "["+d+"]"}).join(" nor with set ")
+                expression += but+"excluding "+ "set"+((collectExpressions[logicState.NOT].length>1)?"s ":" ");
+                expression += collectExpressions[logicState.NOT].map(function(d){return "["+d+"]"}).join(" and ")
             }
 
 
