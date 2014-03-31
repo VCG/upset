@@ -669,13 +669,14 @@ html, body, .ui-container {
     border-bottom: 1px dotted #bbb;    
     padding-bottom: 2px;
 }
-.filter-editor:nth-child(odd) {
-    padding-bottom: 5px;
-    padding-top: 3px;
-    margin-bottom: 3px;
-    margin-top: 3px;
-    //border-bottom: 1px solid #ddd;
-    background-color: #eee;
+
+.filter-editor:not(:first-child) {
+    border-top: 1px dotted #bbb;
+}
+
+.filter-editor {
+    padding-bottom: 3px;
+    margin-bottom: 1px;
 }
 
 #filters-controls {

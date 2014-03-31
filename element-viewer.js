@@ -5,6 +5,7 @@
 ElementViewerConfigurations = {
     scatterplot: scatterplotConfiguration,
     histogram: histogramConfiguration,
+    wordCloud: wordCloudConfiguration,
     variantFrequency: variantFrequencyConfiguration,
 };
 
