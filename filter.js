@@ -53,7 +53,7 @@ FilterConfigurations = {
     stringMatch: {
       name: "Contains",
       types: ["string", "id"],
-      parameters: [ { name: "String", type: "string", variable: "pattern" } ],
+      parameters: [ { name: "String", type: "string", variable: "pattern", default: "" } ],
       test: function( item, attribute, parameters ) {
             return ( attribute.values[item].indexOf( parameters.pattern ) >= 0 );
         }   
@@ -62,7 +62,7 @@ FilterConfigurations = {
     stringLength: {
       name: "String Length",
       types: ["string", "id"],
-      parameters: [ { name: "Length", type: "integer", variable: "len" } ],
+      parameters: [ { name: "Length", type: "integer", variable: "len", default: 0 } ],
       test: function( item, attribute, parameters ) {
             return ( attribute.values[item].length === parameters.len );
         }   
@@ -71,7 +71,7 @@ FilterConfigurations = {
     stringRegex: {
       name: "Regular Expression",
       types: ["string", "id"],
-      parameters: [ { name: "Pattern", type: "string", variable: "pattern" } ],
+      parameters: [ { name: "Pattern", type: "string", variable: "pattern", default: "." } ],
       test: function( item, attribute, parameters ) {
             return ( attribute.values[item].match( parameters.pattern ) !== null );
         }   
@@ -80,7 +80,7 @@ FilterConfigurations = {
     numericRange: {
       name: "Range",
       types: ["float", "integer"],
-      parameters: [ { name: "Minimum", type: "float", variable: "min" }, { name: "Maximum", type: "float", variable: "max" } ],
+      parameters: [ { name: "Minimum", type: "float", variable: "min", default: 0 }, { name: "Maximum", type: "float", variable: "max", default: 1 } ],
       test: function( item, attribute, parameters ) {
             return ( attribute.values[item] >= parameters.min && attribute.values[item] <= parameters.max );
         }           
@@ -89,7 +89,7 @@ FilterConfigurations = {
     numericMinimum: {
       name: "Minimum",
       types: ["float", "integer"],
-      parameters: [ { name: "Minimum", type: "float", variable: "min" } ],
+      parameters: [ { name: "Minimum", type: "float", variable: "min", default: 0 } ],
       test: function( item, attribute, parameters ) {
             return ( attribute.values[item] >= parameters.min );
         }           
@@ -98,7 +98,7 @@ FilterConfigurations = {
     numericMaximum: {
       name: "Maximum",
       types: ["float", "integer"],
-      parameters: [ { name: "Maximum", type: "float", variable: "max" } ],
+      parameters: [ { name: "Maximum", type: "float", variable: "max", default: 0 } ],
       test: function( item, attribute, parameters ) {
             return ( attribute.values[item] <= parameters.max );
         }           
@@ -184,8 +184,13 @@ FilterCollection.prototype.renderController = function() {
                 var configuration = filterSelector.options[filterSelector.selectedIndex].__data__;
                 var attributeSelector = document.getElementById( 'attribute-selector' );
                 var attribute = attributeSelector.options[attributeSelector.selectedIndex].__data__;
-                console.log( attribute );
                 var filter = new Filter( attribute, configuration );
+
+                // if this is the first filter, make sure that the parent element (filters-list) is empty
+                if ( self.list.length == 0 ) {
+                    d3.select('#filters-list').html("");
+                }
+
                 self.add( filter );
 
                 // add DOM nodes for filter viewer and editor
