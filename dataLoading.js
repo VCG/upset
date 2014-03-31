@@ -396,6 +396,11 @@ function parseDataSet(data, dataSetDescription) {
 
 
     UpSetState.maxCardinality = attributes[attributes.length - 2].max;
+    if(isNaN(UpSetState.maxCardinality))
+    {
+        // fixme hack to make it work without attributes
+        UpSetState.maxCardinality = sets.length;
+    }
     var maxCardSpinner = document.getElementById('maxCardinality');
     maxCardSpinner.value = UpSetState.maxCardinality;
     maxCardSpinner.max = UpSetState.maxCardinality;
