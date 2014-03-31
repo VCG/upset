@@ -20,6 +20,12 @@ var histogramConfiguration = {
             type: "boolean",
             variable: "isFrequency",
             default: false
+        },
+        {
+            name: "Only active?",
+            type: "boolean",
+            variable: "isActiveOnly",
+            default: false
         }],
     render: function( elementId, selections, attributes, attributeMap, parameterMap ) {
 
@@ -64,6 +70,10 @@ var histogramConfiguration = {
             var values = [];
             var selection = selections.getSelection(s);
 
+            if ( parameterMap.isActiveOnly && !selections.isActive(selection) ) {
+                    continue;
+            }
+
             for ( var i = 0; i < selection.items.length; ++i ) {
                 values.push( attribute.values[selection.items[i]] );
             }
@@ -77,7 +87,9 @@ var histogramConfiguration = {
             // interleave by shifting bar positions and adjusting bar widths
             for ( var i = 0; i < histogram.length; ++i ) {
                 histogram[i].color = selections.getColor( selection );
-                histogram[i].dx = histogram[i].dx/selections.getSize();
+                if ( !parameterMap.isActiveOnly ) {
+                    histogram[i].dx = histogram[i].dx/selections.getSize();
+                }
                 histogram[i].x = histogram[i].x + s*histogram[i].dx
             }
 
