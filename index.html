@@ -10,7 +10,6 @@
     <link rel="stylesheet" type="text/css" href="lib/fontawesome/css/font-awesome.min.css">
 
 
-
 </head>
 <body>
 
@@ -36,11 +35,18 @@
 <div class="ui-menu">
     <div class="menu-container">
         <div id="header">
+            <span>UpSet is developed at Harvard University by <a href="http://alexander-lex.com">Alexander
+            Lex</a>, <a href="http://gehlenborg.com">Nils Gehlenborg</a>, <a href="http://hendrik.strobelt.com">Hendrik
+            Strobelt</a>, <a href="http://www.vuillemot.net/">Romain Vuillemot</a>, and <a
+                href="http://vcg.seas.harvard.edu">Hanspeter Pfister</a></span> | <span><a href="about/">Find out more</a></span>
+
         </div>
+
     </div>
 </div>
 
 <div class="ui-fader">
+
 </div>
 
 
@@ -62,25 +68,22 @@
                 <!--</div>-->
 
                 <!--<div><input type='radio' id='groupBySet' name="group" checked="true"><label-->
-                        <!--for="groupBySet">Sets</label></div>-->
+                <!--for="groupBySet">Sets</label></div>-->
                 <!--<div><input type='radio' id='groupByIntersectionSize' name="group"><label for="groupByIntersectionSize">Intersection-->
-                    <!--Size</label></div>-->
+                <!--Size</label></div>-->
                 <!--<div><input type='radio' id='groupByRelevanceMeasure' name="group"><label for="groupByRelevanceMeasure">Disproportionality</label>-->
                 <!--</div>-->
                 <!--<div><input type='radio' id='groupByOverlapDegree' name="group"><label for="groupByOverlapDegree">Group all Overlaps &gt; 2</label>-->
                 <!--</div>-->
                 <!--<div><input type='radio' id='noGrouping' name="group"><label for="noGrouping">Don't Group</label></div>-->
 
-                <div class="configHeader">First, aggregate by </div>
+                <div class="configHeader">First, aggregate by</div>
                 <div id="firstLevelGrouping"></div>
-                <div id='firstLevelMinCardinality' style="padding-top: 5px;" hidden>overlap degree:<br/> <input id='firstLevelMinCardinalityInput' type='number' min='0' max='12' value='0'>
+                <div id='firstLevelMinCardinality' style="padding-top: 5px;" hidden>overlap degree:<br/> <input
+                        id='firstLevelMinCardinalityInput' type='number' min='0' max='12' value='0'>
 
                 </div>
             </div>
-
-
-
-
 
 
             <!--<div id="groupL2Config" class="configTable">-->
@@ -96,23 +99,24 @@
             <!--</div>-->
 
             <div id="groupL2Config" class="configTable">
-                <div class="configHeader">Then, aggregate by </div>
-                <div id="secondLevelGrouping" ></div>
-                <div id='secondLevelMinCardinality'  style="padding-top: 5px;" hidden>overlap degree:<br/> <input id='secondLevelMinCardinalityInput' type='number' min='0' max='12' value='0'>
+                <div class="configHeader">Then, aggregate by</div>
+                <div id="secondLevelGrouping"></div>
+                <div id='secondLevelMinCardinality' style="padding-top: 5px;" hidden>overlap degree:<br/> <input
+                        id='secondLevelMinCardinalityInput' type='number' min='0' max='12' value='0'>
 
                 </div>
 
                 <!--<div class="configHeader">Then, group by</div>-->
                 <!--<div><input type='radio' id='groupBySetL2' name="groupL2"><label for="groupBySetL2">Sets</label></div>-->
                 <!--<div><input type='radio' id='groupByIntersectionSizeL2' name="groupL2"><label-->
-                        <!--for="groupByIntersectionSizeL2">Intersection Size</label></div>-->
+                <!--for="groupByIntersectionSizeL2">Intersection Size</label></div>-->
                 <!--<div><input type='radio' id='groupByOverlapDegreeL2' name="groupL2"><label for="groupByOverlapDegreeL2">Group all Overlaps &gt; 2</label>-->
                 <!--</div>-->
 
                 <!--<div><input type='radio' id='groupByRelevanceMeasureL2' name="groupL2"><label-->
-                        <!--for="groupByRelevanceMeasureL2">Disproportionality</label></div>-->
+                <!--for="groupByRelevanceMeasureL2">Disproportionality</label></div>-->
                 <!--<div><input type='radio' id='noGroupingL2' name="groupL2" checked="true"><label for="noGroupingL2">Don't-->
-                    <!--Group</label></div>-->
+                <!--Group</label></div>-->
             </div>
 
             <div id="sortConfig" class="configTable">
@@ -132,11 +136,10 @@
             </div>
 
 
-
             <!--<div id='rowSize' class='configTable'>-->
-                <!--<div class="configHeader">Row size</div>-->
-                <!--<div>RowSize: <input id='rowSizeValue' type='number' min='10' max='20' value='20'>-->
-                <!--</div>-->
+            <!--<div class="configHeader">Row size</div>-->
+            <!--<div>RowSize: <input id='rowSizeValue' type='number' min='10' max='20' value='20'>-->
+            <!--</div>-->
             <!--</div>-->
 
             <div id='rowSize' class='configTable'>
@@ -151,21 +154,20 @@
             </div>
 
 
-
             <div id='intersectionSize' class='configTable'>
                 <div class="configHeader">Data</div>
                 <div>Min Degree:<br/> <input id='minCardinality' type='number' min='0' max='12' value='0'>
 
                 </div>
-                <div>Max Degree:<br/><input id='maxCardinality' type='number' min='0' max='12'> </div>
+                <div>Max Degree:<br/><input id='maxCardinality' type='number' min='0' max='12'></div>
                 <div><input type='checkbox' id='hideEmpties' checked='true'><label for="hideEmpties">Hide Empty
                     Intersections</label></div>
             </div>
 
             <!--<div id='rowPadding' class='configTable'>-->
-                <!--<div class="configHeader">Row padding</div>-->
-                <!--<div>RowPadding: <input id='rowPaddingValue' type='number' min='10' max='20' value='20'>-->
-                <!--</div>-->
+            <!--<div class="configHeader">Row padding</div>-->
+            <!--<div>RowPadding: <input id='rowPaddingValue' type='number' min='10' max='20' value='20'>-->
+            <!--</div>-->
             <!--</div>-->
 
             <div id='venn-diagram-viewer' class='configTable'>
@@ -236,10 +238,10 @@
                 </div>
             </div>
 
-            <div id="filters-container"  class="element-view-container">
+            <div id="filters-container" class="element-view-container">
                 <div id="filters-list"></div>
                 <div id="filters-controls" class="element-view-controls"></div>
-            </div>            
+            </div>
 
             <div class="element-view-header">
                 <div class="element-view-subtitle">
@@ -298,9 +300,6 @@
         $(EventManager).bind("ui-horizontal-resize", function (event, data) {
             // nothing so far
         });
-
-
-
 
     });
 </script>
