@@ -458,7 +458,7 @@ html, body, .ui-container {
     width: 100%;
     height: 100%;
     z-index: 90; /* makes the div the second most top layer, so it’ll lay on top of everything else EXCEPT for divs with a higher z-index (meaning the #overlay ruleset) */
-}}
+}
 
 .ui-overlay-loading {
     display: block; /* ensures it’s invisible until it’s called */
@@ -821,6 +821,18 @@ html, body, .ui-container {
 .gSeparatorLine{
     stroke:darkgrey;
     stroke-width:3;
+}
+
+
+#bodyVis, #headerVis {
+    display: block;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.matrixTableContainer {
+    display: block;
+    overflow-y: hidden;
+    overflow-x: scroll;
 }
 
 /*.groupingSelect{*/

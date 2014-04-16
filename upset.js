@@ -95,7 +95,7 @@ function UpSet() {
         ctx.tableBodyHeight = renderRows.length * (ctx.cellDistance+4);
 //        ctx.h = ctx.tableBodyHeight + ctx.textHeight;
 
-        ctx.rowScale = d3.scale.ordinal().rangeRoundBands([ ctx.textHeight, ctx.tableBodyHeight + ctx.textHeight ], 0, 0);
+        ctx.rowScale = d3.scale.ordinal().rangeRoundBands([ 0, ctx.tableBodyHeight], 0, 0);
         ctx.rowScale.domain(renderRows.map(function (d) {
             return d.id;
         }));
@@ -195,73 +195,67 @@ function UpSet() {
         setDynamicVisVariables();
 
         // create SVG and VIS Element
-        d3.select('#vis').select('svg').remove();
-        ctx.svg = d3.select('#vis')
+        d3.select('#bodyVis').select('svg').remove();
+        ctx.svgBody = d3.select('#bodyVis')
 //            .style('width', ctx.w + "px")
             .append('svg')
             .attr('width', ctx.w)
-            .attr('height', ctx.svgHeight);
+            .attr('height', renderRows.length * ctx.cellDistance);
 
-        ctx.vis = ctx.svg.append("g").attr({
-            class: "visContainer",
-            "transform": "translate(" + ctx.leftOffset + "," + ctx.topOffset + ")"
-        });
-
-        ctx.foreignObject = ctx.vis.append("foreignObject")
-            .attr("width", ctx.w)
-            .attr("height", ctx.svgHeight)
-            .attr("x", 0)//*cellSize)
-            .attr("y", ctx.topOffset+90)//*cellSize)
-            .attr("class", "foreignGRows")
-        ctx.foreignDiv = ctx.foreignObject.append("xhtml:div")
-            .style("position", "relative")
-            .style("overflow-y", "auto")
-            .style("height", "600px")
-            .on("mousemove", function () {
-                // Prevent global scrolling here?
-            })
-        ctx.foreignSVG = ctx.foreignDiv.append("svg")
-            .attr({
-                height: renderRows.length * ctx.cellDistance,
-                width: ctx.w,
-                class: "svgGRows"
-            })
+//        ctx.vis = ctx.svgBody.append("g").attr({
+//            class: "svgRows",
+//            "transform": "translate(" + ctx.leftOffset + "," + ctx.topOffset + ")"
+//        });
 
         // -- the background highlights
-        ctx.columnBackgroundNode = ctx.foreignSVG.append("g").attr({
+        ctx.columnBackgroundNode = ctx.svgBody.append("g").attr({
             class: "columnBackgroundsGroup"
 
-        }).attr({"transform": "translate(91,-89)"})
+        }).attr({
+           "transform":"translate("+ctx.leftOffset+","+0+")"
+        })
 
         // Rows container for vertical panning
-        ctx.gRows = ctx.foreignSVG
+        ctx.gRows = ctx.svgBody
             .append('g')
-            .attr({'class': 'gRows', "transform": "translate(91,-89)"})
+            .attr({
+                'class': 'gRows',
+                "transform":"translate("+ctx.leftOffset+","+0+")"
+            })
+
+        // tooltips on top !
+        ctx.toolTipLayer = ctx.svgBody.append("g").attr({class:"toolTipLayer"});
 
 
-        ctx.toolTipLayer = ctx.foreignSVG.append("g").attr({class:"toolTipLayer"});
+
+        d3.select("#headerVis").select("svg").remove();
+        ctx.svgHeader = d3.select("#headerVis").append('svg')
+            .attr('width', ctx.w)
+            .attr('height', 125+ctx.textHeight);
+
 
         //####################### LogicPanel ##################################################
 
-        ctx.logicPanelNode = ctx.vis.append("g").attr({
+        ctx.logicPanelNode = ctx.svgBody.append("g").attr({
             class: "logicPanel",
-            "transform": "translate(" + -ctx.leftOffset + "," + (ctx.textHeight + 5) + ")"
+            "transform": "translate(" + 0 + "," + 0 + ")"
         })
 
         // TODO: give only context
         ctx.logicPanel = new LogicPanel(
             {width: ctx.setVisWidth + ctx.leftOffset,
-                visElement: ctx.vis,
+                visElement: ctx.svgHeader,
                 panelElement: ctx.logicPanelNode,
                 cellSize: ctx.cellSize,
                 usedSets: usedSets,
                 grays: ctx.grays,
-                belowVis: ctx.foreignObject,
-                buttonX: -ctx.leftOffset,
-                buttonY: ctx.textHeight - 20,
+                belowVis: ctx.gRows,
+                buttonX: 0,
+                buttonY: ctx.svgHeader.attr("height")-20,
                 stateObject: UpSetState,
                 subsets: subSets,
                 callAfterSubmit: [updateState, updateStatistics, rowTransition],
+                leftAlignment:ctx.leftOffset,
                 ctx: ctx,
                 cellWidth: ctx.cellWidth
 
@@ -271,17 +265,21 @@ function UpSet() {
 //            }
 //        );
 
-        ctx.tableHeaderNode = ctx.vis.append("g").attr({
-            class: "tableHeader"
+
+
+
+        ctx.tableHeaderNode = ctx.svgHeader.append("g").attr({
+            class: "tableHeader",
+            "transform":"translate("+ctx.leftOffset+","+(ctx.svgHeader.attr("height")-ctx.textHeight)+")"
         })
 
-        ctx.tableHeaderNode.append("g")
+//        ctx.tableHeaderNode.append("g")
 
 //        ctx.vis.append
 //        ctx.brushedScale = new BrushableScale(ctx,)
 
         // For horizon subset size
-        ctx.svg.append('defs')
+        ctx.svgBody.append('defs')
             .append('pattern')
             .attr('id', 'diagonalHatch_0')
             .attr('patternUnits', 'userSpaceOnUse')
@@ -311,6 +309,10 @@ function UpSet() {
         plotSubSets();
 
         initCallback = [dataSetChanged] //TODO: bad hack !!!
+
+        updateFrames($(window).height(), null);
+
+        updateFrames(null,$(".ui-layout-center").width());
 
 //        updateWidthHandle()
     }
@@ -350,7 +352,7 @@ function UpSet() {
         updateStatistics()
         setDynamicVisVariables()
 
-        ctx.svg.attr({
+        ctx.svgBody.attr({
             width: (Math.max(ctx.w, 400))
         })
 
@@ -1974,7 +1976,7 @@ function UpSet() {
             'x': function (d, i) {
                 return (ctx.cellWidth) * i;
             },
-            y: ctx.textHeight,
+//            y: ctx.textHeight,
             height: ctx.tableBodyHeight,
             width: ctx.cellWidth
         })
@@ -1982,22 +1984,16 @@ function UpSet() {
 
     function plotSubSets() {
 
+
+
 //        console.log("plot");
         setDynamicVisVariables();
-
-        // make the scroallable SVG adapt:
-        ctx.foreignSVG.attr({
-            height: ctx.svgHeight,
-            width:ctx.w
+        ctx.svgBody.attr({
+            height:ctx.rowScale.rangeExtent()[1]
         })
 
-        ctx.foreignObject.attr({
-            width: ctx.w
-        })
-
-
-        // to limit the foraignobject again
-        updateFrames($(window).height(), null);
+//        // to limit the foraignobject again
+//        updateFrames($(window).height(), null);
 
         updateColumnBackgrounds();
 
@@ -2138,10 +2134,10 @@ function UpSet() {
             plotSetOverview();
         });
 
-        $(EventManager).bind("ui-horizontal-resize", function (event, data) {
-            plot(Math.floor(data.newWidth * .66), undefined);
-            plotSetOverview();
-        });
+//        $(EventManager).bind("ui-horizontal-resize", function (event, data) {
+//            plot(Math.floor(data.newWidth * .66), undefined);
+//            plotSetOverview();
+//        });
 
         $(EventManager).bind("loading-dataset-started", function (event, data) {
             $(".ui-fader").show();
@@ -2550,21 +2546,37 @@ function UpSet() {
 
     function updateFrames(windowHeight, windowWidth) {
         if (windowWidth == null) {
-            ctx.svg.attr({
-                height: (windowHeight - 70)
-            })
+            d3.select(".matrixTableContainer")
+                .style({
+                    height: windowHeight+"px"
+                })
+
+            d3.select('#bodyVis')
+                .style({
+                    height: (windowHeight-2*ctx.textHeight-40)+"px" // TODO: HACK
+                })
+
+//            ctx.svgBody.attr({
+//                height: (windowHeight - 70)
+//            })
+            tmc = d3.select(".matrixTableContainer")
 
             var visHeight = windowHeight - ctx.textHeight - 70;
 
-            ctx.foreignObject.attr({
-                height: visHeight
-            })
-
-            ctx.foreignDiv.style("height", +(visHeight - ctx.textHeight) + "px")
+//            ctx.foreignObject.attr({
+//                height: visHeight
+//            })
+//
+//            ctx.foreignDiv.style("height", +(visHeight - ctx.textHeight) + "px")
         } else if (windowHeight == null) {
-            ctx.svg.attr({
+            ctx.svgBody.attr({
                 width: (Math.max(windowWidth, 400))
             })
+            ctx.svgHeader.attr({
+                width: (Math.max(windowWidth, 400))
+            })
+
+
 
             var totalWidthMax = ctx.cellWidth * usedSets.length + ctx.majorPadding + ctx.leftOffset
                 + ctx.subSetSizeWidthMax + ctx.expectedValueWidthMax + 50+ctx.summaryStatisticVis.length*(ctx.summaryStatisticsWidth+ctx.majorPadding);

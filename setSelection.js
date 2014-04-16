@@ -85,7 +85,7 @@ function plotSetOverview() {
 
     d3.selectAll(".visOverview").remove();
 
-    var overview = d3.select('#vis').select('svg').append("g").attr({
+    var overview = d3.select('#headerVis').select('svg').append("g").attr({
         class: "visOverview",
         "transform": "translate(" + 0 + "," + 0 + ")"
     })
@@ -199,7 +199,7 @@ function orderChange() {
 
         })
 
-         d3.select("#vis").select("svg")
+         d3.select("#headerVis").select("svg")
             .append("foreignObject")
             .attr("width", 100)
             .attr("height", 100)
@@ -211,7 +211,7 @@ function orderChange() {
             .html("<form><input type=button value=update /></form>")
             .on("click", setClickedByBulk);
 
-         d3.select("#vis").select("svg")
+         d3.select("#headerVis").select("svg")
             .append("foreignObject")
             .attr("width", 100)
             .attr("height", 100)
@@ -225,7 +225,7 @@ function orderChange() {
               d3.selectAll("input[value=setcheck]").property("checked", true);
             });
 
-         d3.select("#vis").select("svg")
+         d3.select("#headerVis").select("svg")
             .append("foreignObject")
             .attr("width", 100)
             .attr("height", 100)
@@ -239,7 +239,7 @@ function orderChange() {
               d3.selectAll("input[value=setcheck]").property("checked", false);
             });
 
-         d3.select("#vis").select("svg")
+         d3.select("#headerVis").select("svg")
             .append("foreignObject")
             .attr("width", 200)
             .attr("height", 100)

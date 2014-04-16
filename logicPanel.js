@@ -876,13 +876,13 @@ function LogicPanel(params){
 //                stroke: grays[1]
 //            })
 //
-//        belowVis.transition().attr({
-//            "transform":"translate(0,"+(endOfPanel+15)+")"
-//        })
-
         belowVis.transition().attr({
-            "y":+(endOfPanel+belowVisRestoreTranslate+15)
+            "transform":"translate("+params.leftAlignment+","+(endOfPanel+15)+")"
         })
+
+//        belowVis.transition().attr({
+//            "y":+(endOfPanel+belowVisRestoreTranslate+15)
+//        })
 
 
 
@@ -898,8 +898,11 @@ function LogicPanel(params){
 
 
         belowVis.transition().attr({
-            "y":belowVisRestoreTranslate
+            "transform":"translate("+params.leftAlignment+","+0+")"
         })
+//        belowVis.transition().attr({
+//            "y":belowVisRestoreTranslate
+//        })
         addLogicButton.attr({
             "opacity":1
         })
