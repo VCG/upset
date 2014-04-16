@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="author"
+          content="Alexander Lex, Nils Gehlenborg, Hendrik Strobelt, Romain Vuillemot, and Hanspeter Pfister"/>
+    <meta charset="utf-8">
+    <title>UpSet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="fontawesome/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 40px; /* 40px to make the container go all the way to the bottom of the topbar */
+        }
+
+        @media (max-width: 979px) {
+            body {
+                padding-top: 0;
+            }
+        }
+
+        p.italic {
+            font-style: italic;
+        }
+
+        .flex-video {
+            position: relative;
+            padding-top: 25px;
+            padding-bottom: 67.5%;
+            height: 0;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .flex-video.widescreen {
+            padding-bottom: 57.25%;
+        }
+
+        .flex-video.vimeo {
+            padding-top: 0;
+        }
+
+        .flex-video video, .flex-video object, .flex-video embed, .flex-video iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        @media only screen and (max-device-width: 800px), only screen and (device-width: 1024px) and (device-height: 600px), only screen and (width: 1280px) and (orientation: landscape), only screen and (device-width: 800px), only screen and (max-width: 767px) {
+            .flex-video {
+                padding-top: 0;
+            }
+        }
+
+        .jumbotron {
+            position: relative;
+            padding: 40px 10px;
+            opacity: 1;
+        }
+
+        .jumbotron:before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: url(images/upset.png) repeat center center;
+            opacity: 0.2;
+        }
+
+        .subhead {
+            color: black;
+            opacity: 1;
+        }
+
+        .page-header {
+            margin-bottom: 10px;
+        }
+
+        hr {
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin-bottom: 0px;
+            line-height: 40px;
+        }
+
+        .spacer {
+            margin-top: 10px;
+        }
+
+        #references .ref {
+            font-style: italic;
+        }
+
+        #forkongithub a {
+            background: #009900;
+            color: #fff;
+            text-decoration: none;
+            font-family: arial, sans-serif;
+            text-align: center;
+            font-weight: bold;
+            padding: 5px 40px;
+            font-size: 1rem;
+            line-height: 2rem;
+            position: relative;
+            transition: 0.5s;
+        }
+
+        #forkongithub a:hover {
+            background: #060;
+            color: #fff;
+        }
+
+        #forkongithub a::before, #forkongithub a::after {
+            content: "";
+            width: 100%;
+            display: block;
+            position: absolute;
+            top: 1px;
+            left: 0;
+            height: 1px;
+            background: #fff;
+        }
+
+        #forkongithub a::after {
+            bottom: 1px;
+            top: auto;
+        }
+
+        @media screen and (min-width: 300px) {
+            #forkongithub {
+                position: absolute;
+                display: block;
+                top: 0;
+                right: 0;
+                width: 200px;
+                overflow: hidden;
+                height: 200px;
+            }
+
+            #forkongithub a {
+                width: 200px;
+                position: absolute;
+                top: 60px;
+                right: -60px;
+                transform: rotate(45deg);
+                -webkit-transform: rotate(45deg);
+                box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);
+            }
+        }
+
+    </style>
+
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="../assets/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="shortcut icon" type="image/x-icon" href="http://www.icg.tugraz.at/favicon.ico"/>
+    <link rel="apple-touch-icon" href="http://www.icg.tugraz.at/touch_icon.png"/>
+
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        try {
+            var pageTracker = _gat._getTracker("ANALYTICS ID");
+            pageTracker._trackPageview();
+        } catch (err) {
+        }
+    </script>
+
+</head>
+
+<body data-spy="scroll" data-target="logo-sidebar">
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="brand" href="#"><b>UpSet</b></a>
+
+            <div class="nav-collapse collapse">
+                <ul class="nav">
+                    <li class="active"><a href="..">Visualization</a></li>
+                    <li class="active"><a href="#">About</a></li>
+                    <li><a href="#paper">Paper</a></li>
+                    <!--<li><a href="#talk">Talk</a></li>-->
+                    <li><a href="#video">Video</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#acknowledgements">Acknowledgements</a></li>
+                    <li><a href="#team">Team</a></li>
+                    acknowledgements
+                </ul>
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+    </div>
+</div>
+
+<header class="jumbotron subhead" id="overview">
+
+    <span id="forkongithub"><a href="https://github.com/vcg/upset">Fork me on GitHub</a></span>
+
+    <div class="container">
+
+        <h1>UpSet: Visualization of Intersecting Sets</h1>
+
+        <p class="lead">UpSet is an interactive, web based visualization technique designed to analyze set-based data.
+            UpSet visualizes both, set intersections and their properties, and the items (elements) in the dataset.</p>
+
+    </div>
+
+</header>
+
+
+<div class="container">
+    <div class="row">
+
+        <div class="span9">
+
+            <section id="About">
+                <h2 class="page-header">About</h2>
+
+                <p class="lead">
+                    Understanding relationships between sets is an important analysis task that has received widespread
+                    attention in
+                    the visualization community. The major challenge in this context is the combinatorial explosion of
+                    the number of
+                    set intersections if the number of sets exceeds a trivial threshold. In this paper we introduce
+                    UpSet, a novel
+                    visualization technique for the quantitative analysis of sets, their intersections, and aggregates
+                    of
+                    intersections. UpSet focuses on creating task-driven aggregates, communicating the size and
+                    properties of
+                    aggregates and intersections, and a duality between the visualization of the elements in a dataset
+                    and their set
+                    membership. UpSet visualizes set intersections in a matrix layout and introduces aggregates based on
+                    groupings
+                    and queries. The matrix layout enables the effective representation of associated data, such as the
+                    number of
+                    elements in the aggregates and intersections, as well as additional measures derived from set or
+                    element
+                    attributes. Sorting according to various measures enables a task-driven analysis of relevant
+                    intersections and
+                    aggregates. The elements represented in the sets and their associated attributes are visualized in a
+                    separate
+                    view. Queries based on containment in specific intersections, aggregates or driven by attribute
+                    filters are
+                    propagated between both views. We also introduce several advanced visual encodings and interaction
+                    methods to
+                    overcome the problems of varying scales and to address scalability. UpSet is web-based and open
+                    source. We
+                    demonstrate its general utility in multiple case studies from various domains.
+                </p>
+            </section>
+
+            <section id="paper">
+                <h2 class="page-header">Paper</h2>
+
+                <p class="italic">Alexander Lex, Nils Gehlenborg, Hendrik Strobelt, Romain Vuillemot, and Hanspeter
+                    Pfister<br/>
+                    UpSet: Visualization of Intersecting Sets<br/>
+                    Under Review at IEEE Transactions on Visualization and Computer Graphics (InfoVis '14).
+                </p>
+                <!--    <ul class="unstyled">
+                        <li><i class="icon-download"></i>&nbsp;<a
+                                href="">Paper</a>&nbsp;(PDF, 1.4 MB)
+                        </li>
+                    </ul>-->
+            </section>
+
+
+            <section id="video">
+                <h2 class="page-header">Video</h2>
+
+                <div class="flex-video widescreen" style="border: 1px solid #090;">
+                    <!--<iframe src="http://www.youtube.com/embed/iFqCBI4T8ks?vq=hd720&amp;origin=http://sgratzl.github.io.com" frameborder="0" allowfullscreen=""></iframe>-->
+                    <video controls="controls" poster="images/video_title.png">
+                        <source src="http://people.seas.harvard.edu/~alex/papers/2014_infovis_upset.mp4"
+                                type="video/mp4">
+                        <!-- <source src="http://data.icg.tugraz.at/caleydo/download/domino/Domino.webm" type="video/webm">-->
+                        Your browser does not support the video tag. You can download the video here: <br>
+                        <a href="http://people.seas.harvard.edu/~alex/papers/2014_infovis_upset.mp4">2014_infovis_upset.mp4
+                            (30.5 MB)</a><br>
+                        <!--<a href="http://data.icg.tugraz.at/caleydo/download/domino/Domino.webm">Domino.webm (26 MB)</a>-->
+
+                        <!--<div class="flex-video widescreen" style="border: 1px solid #090;">-->
+                        <!--<iframe src="YOUTUEBELINK&amp;origin=http://sgratzl.github.io.com"-->
+                        <!--frameborder="0" allowfullscreen=""></iframe>-->
+                        <!--</div>-->
+
+                    </video>
+                </div>
+            </section>
+
+
+            <section id="contact">
+                <h2 class="page-header">Contact</h2>
+
+                <p>You can contact us, via <a href="mailto:alex@seas.harvard.edu">alex@seas.harvard.edu</a>. If you
+                    found a bug, you can
+                    directly report it at <a href="https://github.com/VCG/upset/issues">GitHub project
+                        site</a> (not public yet).</p>
+
+                <!--<p>In addition, as a non-commercial research group we are interested in who uses UpSet to what end. We therefore ask-->
+                <!--you to provide us with some details about you and your field. We will keep your data confidential and only contact-->
+                <!--you if you are ok with it.-->
+                <!--</p>-->
+            </section>
+
+            <section id="faq">
+                <h2 class="page-header">Frequently Asked Questions</h2>
+
+                <p><i>Can I upload my own dataset to analyze in UpSet?</i><br/>
+                    Not at the moment, but we will release a version of UpSet where you can upload your own data soon.
+                </p>
+
+
+                <p><i>You say UpSet is open source but the GitHub links are dead.</i></br>
+                    UpSet will be open source once the paper is published and we had a little time to clean up the code.
+                </p>
+
+                <p><i>Can I run a local copy of UpSet so that I don't have to upload my data?</i>
+                    Yes, once the software is published.</p>
+
+                <p><i>Do you provide documentation for UpSet?</i></br>
+                    Not at the moment, but we will.</p>
+
+                <p><i>Which Browsers are supported?</i><br/>
+                    We currently test only on the latest version of Google Chrome. Other recent browsers might work too.
+                </p>
+
+                <!--<p>In addition, as a non-commercial research group we are interested in who uses UpSet to what end. We therefore ask-->
+                <!--you to provide us with some details about you and your field. We will keep your data confidential and only contact-->
+                <!--you if you are ok with it.-->
+                <!--</p>-->
+            </section>
+
+
+        <section id="acknowledgements">
+            <h2 class="page-header">Acknowledgements</h2>
+
+            <p>
+                We wish to thank our collaborators, Anne Mai Wassermann, Soohyun Lee, Michele Coscia and Frank Neffke
+                for their time and expertise. We also thank Bilal Alsallakh, Silvia Miksch and the whole <a href="http://radialsets.org/">Radial Sets
+                team</a> for providing feedback and datasets.</p>
+
+            <p>
+                UpSet is supported in part by the Austrian Science Fund (J 3437-N15), the Air Force Research
+                Laboratory and DARPA grant FA8750-12-C-0300 and the United States NIH/National Human Genome Research
+                Institute (K99 HG007583).</p>
+
+            <p>UpSet uses the <a href="d3js.org">D3 library</a> for visualization. This website is based on Samuel
+                Gratzl's <a href="http://lineup.caleydo.org">LineUp webpage</a>.</p>
+        </section>
+
+        </div>
+
+
+        <div class="span3 logo-sidebar">
+
+            <section id="team">
+                <h2 class="page-header">Team</h2>
+
+                <ul class="thumbnails">
+                    <li class="span3">
+                        <a href="http://seas.harvard.edu">
+                            <img data-src="" alt="Harvard University" src="images/harvard.png">
+                        </a>
+
+                        <p class="lead spacer">
+                            <i class="icon-user"></i>&nbsp;<a href="http://alexander-lex.com/">Alexander Lex</a><br/>
+                            <i class="icon-user"></i>&nbsp;<a href="http://www.gehlenborg.com ">Nils Gehlenborg</a><br/>
+                            <i class="icon-user"></i>&nbsp;<a href="http://hendrik.strobelt.com">Hendrik Strobelt
+                        </a><br>
+                            <i class="icon-user"></i>&nbsp;<a href="http://www.vuillemot.net">Romain Vuillemot</a><br/>
+                            <i class="icon-user"></i>&nbsp;<a href="http://vcg.seas.harvard.edu">Hanspeter Pfister</a>
+                        </p>
+                    </li>
+
+                </ul>
+            </section>
+        </div>
+    </div>
+</div>
+
+<footer class="jumbotron subhead">
+    <div class="container">
+    </div>
+</footer>
+
+<!-- Le javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="jquery/jquery-1.9.0.min.js"></script>
+<script src="bootstrap/js/bootstrap.min.js"></script>
+
+</body>
+</html>
