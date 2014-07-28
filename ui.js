@@ -75,7 +75,7 @@ Ui.prototype.initialize = function() {
 Ui.prototype.createHeader = function() {
     var self = this;
 
-    $( "#show-menu-button").on( "click", function( event ){
+    $( "#load-data-header").on( "click", function( event ){
         self.toggleMenu();
     });
 }

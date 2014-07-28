@@ -317,6 +317,16 @@ th.attribute-header.selected {
     color: white;
 }
 
+#load-data-header {
+    font-weight: bold;
+    color: white;
+    float: right;
+    padding-left: 10px;
+    padding-right: 10px;
+    cursor: pointer;
+
+}
+
 .menu-bar{
     float:right;
     padding-right: 10 px;
@@ -497,10 +507,12 @@ html, body, .ui-container {
 
 .ui-header {
     height: 30px;
+
 }
 
 .ui-menu {
     height: 50px;
+
 }
 
 .ui-row {
