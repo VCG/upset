@@ -42,8 +42,8 @@ var handleDatasetDescription = function (result) {
 }
 
 var loadDataAfterAjaxComplete = function () {
-    populateDSSelector();
-    loadDataSetFromQueryParameters();
+
+
 }
 
 var populateDSSelector = function() {
@@ -76,8 +76,22 @@ function loadDataSetDescriptions(dataSetList) {
         requests.push($.ajax({ url: url, dataType: 'json', success: handleDatasetDescription}));
     }
 
-    $.when.apply(undefined, requests).then(loadDataAfterAjaxComplete);
+    $.when.apply(undefined, requests).then(loadDataSetFromQueryParameters, handleDataSetError);
 }
+
+var handleDataSetError = function(jqXHR, textStatus, errorThrown)
+{
+    alert("Could not load dataset. \n Error: " + errorThrown)
+}
+
+function loadDataSetFromQueryParameters() {
+    populateDSSelector();
+    $(EventManager).trigger("loading-dataset-started", { description: dataSetDescriptions[queryParameters['dataset']]  });
+    //(queryParameters['dataset']);
+    changeDataset();
+}
+
+
 
 var setQueryParametersAndChangeDataset = function () {
     queryParameters['dataset'] = this.options[this.selectedIndex].value;
@@ -106,6 +120,17 @@ var changeDataset = function () {
     updateQueryParameters();
 
     clearSelections();
+}
+
+function loadDataSet(index) {
+    processDataSet(dataSetDescriptions[index]);
+}
+
+function processDataSet(dataSetDescription) {
+    d3.text(dataSetDescription.file, 'text/csv', function (data) {
+        parseDataSet(data, dataSetDescription);
+        run();
+    });
 }
 
 /**
@@ -179,22 +204,6 @@ function updateQueryParameters() {
     history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + urlQueryString);
 }
 
-function loadDataSetFromQueryParameters() {
-    $(EventManager).trigger("loading-dataset-started", { description: dataSetDescriptions[queryParameters['dataset']]  });
-    //(queryParameters['dataset']);
-    changeDataset();
-}
-
-function loadDataSet(index) {
-    processDataSet(dataSetDescriptions[index]);
-}
-
-function processDataSet(dataSetDescription) {
-    d3.text(dataSetDescription.file, 'text/csv', function (data) {
-        parseDataSet(data, dataSetDescription);
-        run();
-    });
-}
 
 function clearSelections() {
     selections = new SelectionList();
