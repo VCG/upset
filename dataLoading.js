@@ -30,20 +30,27 @@ function loadDataSetDescriptions(dataSetList) {
 
     // launch requests to load data set descriptions
     for (var i = 0; i < dataSetList.length; ++i) {
-        console.log("Loading " + dataSetList[i])
-
-        var deferred = $.ajax({ url: dataSetList[i], dataType: 'json', async: false })
-            .success(function (response) {
-                var description = response; //deferred.responseJSON;
-
-                // preprend data file path (based on path to description in data set list)
-                description.file = dataSetList[i].substring(0, dataSetList[i].lastIndexOf('/')) + '/' + description.file;
-
-                descriptions.push(description);
-            });
+        var description = loadDataSetDescription(dataSetList[i]);
+        if (description != null) {
+            descriptions.push(description)
+        }
     }
 
     load(descriptions);
+}
+
+var loadDataSetDescription = function (url)
+{
+    console.log("Loading " + url)
+    var description;
+    var deferred = $.ajax({ url: url, dataType: 'json', async: false })
+        .success(function (response) {
+            description = response; //deferred.responseJSON;
+
+            // preprend data file path (based on path to description in data set list)
+            description.file = url.substring(0, url.lastIndexOf('/')) + '/' + description.file;
+        });
+    return description;
 }
 
 var setUpConfiguration = function () {
@@ -75,10 +82,9 @@ var setUpConfiguration = function () {
 
     var dataSelect = d3.select("#dataset-selector").append('div');
 
+    var select = dataSelect.append('select').attr("class", "header-ds-selector");
 
-    var select = dataSelect.append('select').attr("class","header-ds-selector");
-
-    dataSelect.append('span').attr("class","header-right").text('Choose Dataset');
+    dataSelect.append('span').attr("class", "header-right").text('Choose Dataset');
 
     select.on('change', change)
         .selectAll('option').data(dataSetDescriptions).enter().append('option')
@@ -151,7 +157,7 @@ function clearSelections() {
 }
 
 function createInitialSelection() {
-    var selection = new Selection(allItems, new FilterCollection("#filters-controls","#filters-list") );
+    var selection = new Selection(allItems, new FilterCollection("#filters-controls", "#filters-list"));
 
     selections.addSelection(selection, true);
     selections.setActive(selection);
@@ -291,9 +297,8 @@ function parseDataSet(data, dataSetDescription) {
             set.isSelected = true;
             usedSets.push(set);
         }
-       // setID = setID << 1;
+        // setID = setID << 1;
     }
-
 
     // initialize attribute data structure
     attributes.length = 0;
@@ -396,10 +401,8 @@ function parseDataSet(data, dataSetDescription) {
         }
     }
 
-
     UpSetState.maxCardinality = attributes[attributes.length - 2].max;
-    if(isNaN(UpSetState.maxCardinality))
-    {
+    if (isNaN(UpSetState.maxCardinality)) {
         // fixme hack to make it work without attributes
         UpSetState.maxCardinality = sets.length;
     }
@@ -410,8 +413,10 @@ function parseDataSet(data, dataSetDescription) {
     minCardSpinner.max = UpSetState.maxCardinality;
 }
 
-function createSignature(listOfUsedSets, listOfSets){
-    return listOfUsedSets.map(function(d){ return (listOfSets.indexOf(d)>-1)?1:0 }).join("")
+function createSignature(listOfUsedSets, listOfSets) {
+    return listOfUsedSets.map(function (d) {
+        return (listOfSets.indexOf(d) > -1) ? 1 : 0
+    }).join("")
 
 }
 
@@ -423,68 +428,63 @@ function setUpSubSets() {
 
     subSets.length = 0;
 
-
     var aggregateIntersection = {}
 
-    var listOfUsedSets = usedSets.map(function(d){return d.id})
+    var listOfUsedSets = usedSets.map(function (d) {
+        return d.id
+    })
 
-    var setsAttribute = attributes.filter(function(d){return d.type=="sets"})[0];
+    var setsAttribute = attributes.filter(function (d) {
+        return d.type == "sets"
+    })[0];
 
-    var signature="";
+    var signature = "";
 
     var itemList;
     //HEAVY !!!
-    setsAttribute.values.forEach(function(listOfSets,index){
-        signature=createSignature(listOfUsedSets,listOfSets)
+    setsAttribute.values.forEach(function (listOfSets, index) {
+        signature = createSignature(listOfUsedSets, listOfSets)
         itemList = aggregateIntersection[signature];
-        if (itemList==null) {
-            aggregateIntersection[signature]=[index];
-        }else{
+        if (itemList == null) {
+            aggregateIntersection[signature] = [index];
+        } else {
             itemList.push(index);
         }
     })
 
-
-
     // used Variables for iterations
-    var tempBitMask=0;
+    var tempBitMask = 0;
     var usedSetLength = usedSets.length
-        var combinedSetsFlat = "";
-    var actualBit=-1;
-    var names=[];
+    var combinedSetsFlat = "";
+    var actualBit = -1;
+    var names = [];
 
     console.log(aggregateIntersection);
 
-
-    if (usedSetLength>20){ // TODo HACK !!!!
-        Object.keys(aggregateIntersection).forEach(function(key){
+    if (usedSetLength > 20) { // TODo HACK !!!!
+        Object.keys(aggregateIntersection).forEach(function (key) {
             var list = aggregateIntersection[key]
-
-
 
             var combinedSets = key.split("");
 
             //combinedSetsFlat = combinedSets.join("");
 
-
 //            if (card>UpSetState.maxCardinality) continue;//UpSetState.maxCardinality = card;
 //            if (card<UpSetState.minCardinality) continue;//UpSetState.minCardinality = card;
 
-
-            names=[];
+            names = [];
             var expectedValue = 1;
             var notExpectedValue = 1;
             // go over the sets
-            combinedSets.forEach(function(d,i){
+            combinedSets.forEach(function (d, i) {
                     //                console.log(usedSets[i]);
-                    if (d==1) { // if set is present
+                    if (d == 1) { // if set is present
                         names.push(usedSets[i].elementName);
-                        expectedValue  = expectedValue *  usedSets[i].dataRatio;
-                    }else{
-                        notExpectedValue = notExpectedValue * (1- usedSets[i].dataRatio);
+                        expectedValue = expectedValue * usedSets[i].dataRatio;
+                    } else {
+                        notExpectedValue = notExpectedValue * (1 - usedSets[i].dataRatio);
                     }
                 }
-
             );
 
             //        console.log(expectedValue, notExpectedValue);
@@ -493,33 +493,21 @@ function setUpSubSets() {
             //        console.log(combinedSetsFlat);
 
             var name = "";
-            if (names.length>0){
-                name = names.reverse().join(" ")+" " // not very clever
+            if (names.length > 0) {
+                name = names.reverse().join(" ") + " " // not very clever
             }
 
             //        var arghhList = Array.apply(null,new Array(setsAttribute.values.length)).map(function(){return 0})
             //        list.forEach(function(d){arghhList[d]=1});
-
 
 //            console.log(parseInt(key,2), name, combinedSets, list, expectedValue);
 
             var subSet = new SubSet(bitMask, name, combinedSets, list, expectedValue);
             subSets.push(subSet);
 
-
-
-
-
-
-
-
-
         })
 
-
-
-
-    }else{
+    } else {
 
 
 //        var expectedValueForOneSet = 1/usedSetLength;
@@ -527,64 +515,59 @@ function setUpSubSets() {
         for (var bitMask = 0; bitMask <= combinations; bitMask++) {
             tempBitMask = bitMask;//originalSetMask
 
-            var card= 0;
-            var combinedSets = Array.apply(null,new Array(usedSetLength)).map(function(){  //combinedSets
-                actualBit = tempBitMask%2;
-                tempBitMask=(tempBitMask-actualBit)/2;
-                card+=actualBit;
-                return +actualBit}).reverse() // reverse not necessary.. just to keep order
+            var card = 0;
+            var combinedSets = Array.apply(null, new Array(usedSetLength)).map(function () {  //combinedSets
+                actualBit = tempBitMask % 2;
+                tempBitMask = (tempBitMask - actualBit) / 2;
+                card += actualBit;
+                return +actualBit
+            }).reverse() // reverse not necessary.. just to keep order
 
             combinedSetsFlat = combinedSets.join("");
 
+            if (card > UpSetState.maxCardinality) continue;//UpSetState.maxCardinality = card;
+            if (card < UpSetState.minCardinality) continue;//UpSetState.minCardinality = card;
 
-            if (card>UpSetState.maxCardinality) continue;//UpSetState.maxCardinality = card;
-            if (card<UpSetState.minCardinality) continue;//UpSetState.minCardinality = card;
-
-
-            names=[];
+            names = [];
             var expectedValue = 1;
             var notExpectedValue = 1;
             // go over the sets
-            combinedSets.forEach(function(d,i){
+            combinedSets.forEach(function (d, i) {
 
 
-    //                console.log(usedSets[i]);
-                if (d==1) { // if set is present
-                    names.push(usedSets[i].elementName);
+                    //                console.log(usedSets[i]);
+                    if (d == 1) { // if set is present
+                        names.push(usedSets[i].elementName);
 //                    expectedValue*=expectedValueForOneSet;
-                    expectedValue  = expectedValue *  usedSets[i].dataRatio;
-                }else{
-                    notExpectedValue = notExpectedValue * (1- usedSets[i].dataRatio);
+                        expectedValue = expectedValue * usedSets[i].dataRatio;
+                    } else {
+                        notExpectedValue = notExpectedValue * (1 - usedSets[i].dataRatio);
+                    }
                 }
-                }
-
             );
 
-    //        console.log(expectedValue, notExpectedValue);
+            //        console.log(expectedValue, notExpectedValue);
             expectedValue *= notExpectedValue;
 
-    //        console.log(combinedSetsFlat);
+            //        console.log(combinedSetsFlat);
             var list = aggregateIntersection[combinedSetsFlat];
-            if (list==null) {list=[];}
-
-            var name = "";
-            if (names.length>0){
-                name = names.reverse().join(" ")+" " // not very clever
+            if (list == null) {
+                list = [];
             }
 
-    //        var arghhList = Array.apply(null,new Array(setsAttribute.values.length)).map(function(){return 0})
-    //        list.forEach(function(d){arghhList[d]=1});
+            var name = "";
+            if (names.length > 0) {
+                name = names.reverse().join(" ") + " " // not very clever
+            }
 
+            //        var arghhList = Array.apply(null,new Array(setsAttribute.values.length)).map(function(){return 0})
+            //        list.forEach(function(d){arghhList[d]=1});
 
             var subSet = new SubSet(bitMask, name, combinedSets, list, expectedValue);
             subSets.push(subSet);
         }
     }
-    aggregateIntersection={};
-
-
-
-
+    aggregateIntersection = {};
 
 //    var subSet = new SubSet(originalSetMask, name, combinedSets, combinedData, expectedValue);
 //    subSets.push(subSet);
@@ -594,7 +577,6 @@ function setUpSubSets() {
 //    }
 
     $(EventManager).trigger("computing-subsets-finished", undefined);
-
 
 }
 
@@ -644,7 +626,6 @@ function updateSetContainment(set, refresh) {
         previousState = undefined;
         updateState();
 
-
 //        ctx.updateHeaders();
 //
 //        plot();
@@ -653,8 +634,6 @@ function updateSetContainment(set, refresh) {
         initCallback.forEach(function (callback) {
             callback();
         })
-
-
 
 //        ctx.svg.attr("width", ctx.w)
 //        d3.selectAll(".svgGRows, .foreignGRows").attr("width", ctx.w)
