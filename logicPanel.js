@@ -430,7 +430,7 @@ function LogicPanel(params){
                 count+= d.items.length;
             })
 
-            console.log(countRation,logicExpression.getListOfValues()[rowIndex] );
+        //    console.log(countRation,logicExpression.getListOfValues()[rowIndex] );
             return [{countRatio:countRation,count:count}]; ///subsets.length
         })
             infoBarGroup.enter().append("g").attr({
@@ -667,7 +667,7 @@ function LogicPanel(params){
                 d();
             })
 
-        console.log(logicExpression);
+       // console.log(logicExpression);
 //        console.log(logicExpression.getListOfValues())
         destroyPanel();
     }

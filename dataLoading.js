@@ -12,7 +12,7 @@ var globalCtx;
 
 function initData(ctx, callback) {
     retrieveQueryParameters();
-    setUpConfiguration();
+    setUpGUIElements();
 
     initCallback = callback;
     globalCtx = ctx;
@@ -46,9 +46,9 @@ var loadDataAfterAjaxComplete = function () {
     loadDataSetFromQueryParameters();
 }
 
-function populateDSSelector() {
+var populateDSSelector = function() {
 
-    // updating the dropbodwn box
+    // updating the drop-down box
     d3.select("#header-ds-selector")
         .selectAll('option').data(dataSetDescriptions).enter().append('option')
         .attr('value', function (d, i) {
@@ -79,7 +79,39 @@ function loadDataSetDescriptions(dataSetList) {
     $.when.apply(undefined, requests).then(loadDataAfterAjaxComplete);
 }
 
-var setUpConfiguration = function () {
+var setQueryParametersAndChangeDataset = function () {
+    queryParameters['dataset'] = this.options[this.selectedIndex].value;
+    changeDataset();
+}
+
+/**
+ * Replace or load a new dataset based on the dataset index in the query parameters
+ */
+var changeDataset = function () {
+
+    $(EventManager).trigger("loading-dataset-started", { description: dataSetDescriptions[queryParameters['dataset']]  });
+
+    sets.length = 0;
+    subSets.length = 0;
+    usedSets.length = 0;
+    dataRows.length = 0;
+    depth = 0;
+    allItems.length = 0;
+    attributes.length = 0;
+    selectedAttributes = {};
+    previousState = undefined;
+
+    loadDataSet(queryParameters['dataset']);
+
+    updateQueryParameters();
+
+    clearSelections();
+}
+
+/**
+ * Setting up the html GUI elements
+ */
+var setUpGUIElements = function () {
 
     var maxCardSpinner = document.getElementById('maxCardinality');
     var minCardSpinner = document.getElementById('minCardinality');
@@ -110,8 +142,9 @@ var setUpConfiguration = function () {
     var select = dataSelect.append('select').attr("id", "header-ds-selector");
 
     dataSelect.append('span').attr("class", "header-right").text('Choose Dataset');
-
 }
+
+
 
 function retrieveQueryParameters() {
 
@@ -486,8 +519,7 @@ function setUpSubSets() {
             var notExpectedValue = 1;
             // go over the sets
             combinedSets.forEach(function (d, i) {
-                    //                console.log(usedSets[i]);
-                    if (d == 1) { // if set is present
+                     if (d == 1) { // if set is present
                         names.push(usedSets[i].elementName);
                         expectedValue = expectedValue * usedSets[i].dataRatio;
                     } else {
@@ -517,10 +549,6 @@ function setUpSubSets() {
         })
 
     } else {
-
-
-//        var expectedValueForOneSet = 1/usedSetLength;
-
         for (var bitMask = 0; bitMask <= combinations; bitMask++) {
             tempBitMask = bitMask;//originalSetMask
 
@@ -589,34 +617,8 @@ function setUpSubSets() {
 
 }
 
-var setQueryParametersAndChangeDataset = function () {
-    queryParameters['dataset'] = this.options[this.selectedIndex].value;
-    changeDataset();
-}
 
-/**
- * Load a new dataset based on the query parameters
- */
-var changeDataset = function () {
 
-    $(EventManager).trigger("loading-dataset-started", { description: dataSetDescriptions[queryParameters['dataset']]  });
-
-    sets.length = 0;
-    subSets.length = 0;
-    usedSets.length = 0;
-    dataRows.length = 0;
-    depth = 0;
-    allItems.length = 0;
-    attributes.length = 0;
-    selectedAttributes = {};
-    previousState = undefined;
-
-    loadDataSet(queryParameters['dataset']);
-
-    updateQueryParameters();
-
-    clearSelections();
-}
 
 function updateSetContainment(set, refresh) {
     if (!set.isSelected) {

@@ -23,7 +23,7 @@ var wordCloudConfiguration = {
                 //console.log( attribute.values[selection.items[i]].split(" ") );
                 values = values.concat( attribute.values[selection.items[i]].split(" ") );
             }
-            console.log( values );
+            
 
             values.color = selections.getColor( selection );
             data.push( values );

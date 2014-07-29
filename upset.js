@@ -481,7 +481,7 @@ function UpSet() {
             delList.remove(stat.attribute);
         })
 
-        console.log(delList);
+        //console.log(delList);
 
 
     }
