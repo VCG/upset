@@ -216,7 +216,7 @@ FilterCollection.prototype.renderController = function() {
             return d.name;
         });
 
-    attributeSelect.on('change', self.initializeFilterList );
+    attributeSelect.on('changeDataset', self.initializeFilterList );
     self.initializeFilterList();
 
 };

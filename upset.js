@@ -2507,7 +2507,7 @@ function UpSet() {
 
     }
 
-    document.getElementById('rowSizeValue').addEventListener('change', function () {
+    document.getElementById('rowSizeValue').addEventListener('changeDataset', function () {
         ctx.cellDistance = +(document.getElementById('rowSizeValue').value);
         rowTransition();
     });

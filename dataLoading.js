@@ -28,8 +28,8 @@ function initData(ctx, callback) {
     $("#custom-dataset-submit").on('click', function () {
         var url = $("#custom-dataset-url").val();
         if (url != null) {
-            loadDataSetDescriptions([url]);
-
+            loadDataSetDescriptions([url], true);
+            queryParameters['dataset'] = dataSetDescriptions.length;
         }
     })
 
@@ -62,7 +62,7 @@ function populateDSSelector() {
             return (i === queryParameters['dataset'])
         });
 
-    d3.select("#header-ds-selector").on('change', change);
+    d3.select("#header-ds-selector").on('change', setQueryParametersAndChangeDataset);
 }
 
 function loadDataSetDescriptions(dataSetList) {
@@ -148,7 +148,8 @@ function updateQueryParameters() {
 
 function loadDataSetFromQueryParameters() {
     $(EventManager).trigger("loading-dataset-started", { description: dataSetDescriptions[queryParameters['dataset']]  });
-    loadDataSet(queryParameters['dataset']);
+    //(queryParameters['dataset']);
+    changeDataset();
 }
 
 function loadDataSet(index) {
@@ -469,8 +470,6 @@ function setUpSubSets() {
     var actualBit = -1;
     var names = [];
 
-
-
     if (usedSetLength > 20) { // TODo HACK !!!!
         Object.keys(aggregateIntersection).forEach(function (key) {
             var list = aggregateIntersection[key]
@@ -590,7 +589,15 @@ function setUpSubSets() {
 
 }
 
-function change() {
+var setQueryParametersAndChangeDataset = function () {
+    queryParameters['dataset'] = this.options[this.selectedIndex].value;
+    changeDataset();
+}
+
+/**
+ * Load a new dataset based on the query parameters
+ */
+var changeDataset = function () {
 
     $(EventManager).trigger("loading-dataset-started", { description: dataSetDescriptions[queryParameters['dataset']]  });
 
@@ -604,9 +611,8 @@ function change() {
     selectedAttributes = {};
     previousState = undefined;
 
-    loadDataSet(this.options[this.selectedIndex].value);
+    loadDataSet(queryParameters['dataset']);
 
-    queryParameters['dataset'] = this.options[this.selectedIndex].value;
     updateQueryParameters();
 
     clearSelections();
