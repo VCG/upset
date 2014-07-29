@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /**
  * SVG styles for the set view.
  * Currently still a mess of various things
@@ -270,108 +269,9 @@ th.attribute-header.selected {
   font-size: 10pt;
   font-weight: bold; }
 
-.button-panel {
-  display: inline-block;
-  margin-left: 10px;
-  margin-right: 5px; }
-
-.button-panel-right {
-  float: right; }
-
-.button-panel-left {
-  float: left; }
-
 * {
   margin: 0;
   padding: 0; }
-
-html, body, .ui-container {
-  height: 100%; }
-
-.ui-container {
-  display: table;
-  width: 100%;
-  margin-top: -30px;
-  /* header + menu */
-  padding-top: 30px;
-  min-height: 100%;
-  height: auto !important;
-  height: 100%;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box; }
-
-.ui-fader {
-  position: absolute;
-  /* makes the div go into a position that’s absolute to the browser viewing area */
-  background-color: white;
-  width: 100%;
-  height: 100%;
-  z-index: 90;
-  /* makes the div the second most top layer, so it’ll lay on top of everything else EXCEPT for divs with a higher z-index (meaning the #overlay ruleset) */ }
-
-.ui-overlay-loading {
-  display: block;
-  /* ensures it’s invisible until it’s called */
-  position: absolute;
-  /* makes the div go into a position that’s absolute to the browser viewing area */
-  left: 50%;
-  /* positions the div half way horizontally */
-  top: 50%;
-  /* positions the div half way vertically */
-  padding: 25px;
-  z-index: 100;
-  /* makes the div the top layer, so it’ll lay on top of the other content */
-  color: white; }
-
-.ui-header {
-  height: 30px; }
-
-.ui-menu {
-  height: 50px; }
-
-.ui-row {
-  height: 100%;
-  display: table-row; }
-
-.ui-column {
-  display: table-cell;
-  vertical-align: top;
-  padding-top: 10px;
-  padding-left: 10px;
-  padding-right: 10px; }
-
-.ui-column.ui-column-15 {
-  width: 15%;
-  min-width: 180px; }
-
-.ui-column.ui-column-25 {
-  width: 25%; }
-
-.ui-column.ui-column-50 {
-  width: 50%; }
-
-.ui-column.ui-column-60 {
-  width: 60%; }
-
-.ui-column.ui-column-75 {
-  background: yellow;
-  width: 75%;
-  min-width: 75%; }
-
-.ui-column.ui-column-100 {
-  width: 100%; }
-
-.ui-column.ui-column-33 {
-  background: pink;
-  width: 33%; }
-
-.ui-column.ui-column-66 {
-  background: lightpurple;
-  width: 66%;
-  min-width: 66%; }
-
-.ui-column.ui-layout-east {
-  border-left: 1px solid #999; }
 
 .level-1-button {
   cursor: default;

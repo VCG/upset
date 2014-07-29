@@ -75,9 +75,11 @@ var setUpConfiguration = function () {
 
     var dataSelect = d3.select("#dataset-selector").append('div');
 
-    dataSelect.append('div').attr("class","header-label-left").text('Choose Dataset');
 
-    var select = dataSelect.append('select');
+    var select = dataSelect.append('select').attr("class","header-ds-selector");
+
+    dataSelect.append('span').attr("class","header-right").text('Choose Dataset');
+
     select.on('change', change)
         .selectAll('option').data(dataSetDescriptions).enter().append('option')
         .attr('value', function (d, i) {
