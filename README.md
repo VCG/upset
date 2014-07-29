@@ -2,7 +2,11 @@
 
 ## About
 
-UpSet is an interactive visual exploration tool for sets and their intersections. Please see the project website at [http://vcg.github.io/upset](http://vcg.github.io/upset) for details about the method.
+UpSet is an interactive, web based visualization technique designed to analyze set-based data. UpSet visualizes both, set intersections and their properties, and the items (elements) in the dataset. Please see the project website at [http://vcg.github.io/upset/about](http://vcg.github.io/upset/about) for details about the technique, publications and videos.
+
+## Demo
+
+We are hosting a demo instance of UpSet at [http://vcg.github.io/upset](http://vcg.github.io/upset).
 
 ## Local Deployment
 
