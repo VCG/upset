@@ -1,0 +1,8 @@
+.subset-state-toggle-button {
+  cursor: default; }
+
+.subset-state-toggle-button .fw {
+  color: #636363; }
+
+.subset-state-toggle-button:hover .fw {
+  color: black; }

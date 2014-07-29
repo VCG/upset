@@ -1,0 +1,91 @@
+/**
+* Styles for pure html layout
+*/
+@import 'global_styles';
+
+body {
+  font-family: $font-stack;
+}
+
+h1 {
+  font-family: $font-stack;
+}
+
+#header {
+  padding: 0;
+  text-align: right;
+  font-size: 0.8em;
+  font-style: italic;
+}
+
+.header-label-left {
+  margin-right: 5px;
+  float: left;
+  color: white;
+
+}
+
+#title {
+  font-weight: bold;
+  float: left;
+  color: white;
+}
+
+#data-loading-indicator {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#load-data-header {
+  font-weight: bold;
+  color: white;
+  float: right;
+  padding-left: 10px;
+  padding-right: 10px;
+  cursor: pointer;
+
+}
+
+.menu-bar {
+  float: right;
+  padding-right: 10px;
+  padding-left: 60px;
+  font-weight: bold;
+}
+
+.menu-bar a:visited,
+.menu-bar a:link {
+  color: white;
+  text-decoration: none;
+}
+
+a:link,
+a:visited {
+  color: black;
+}
+
+.header-container {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  background: #000;
+  border-bottom: 2px solid #999;
+
+  display: block;
+  height: 20px;
+
+  color: #666;
+}
+
+.menu-container {
+  padding: 5px 10px;
+  background: #eee;
+  border-bottom: 2px solid #999;
+  display: block;
+  height: 20px;
+}
+
+.padded-container {
+  padding: 20px 20px 10px;
+}

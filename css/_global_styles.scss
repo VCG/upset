@@ -1,0 +1,29 @@
+$font-stack: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+
+// ------- html menu / header elements ------
+$header-font-color: white;
+$header-background-color: black;
+
+
+
+// ------ matrix elements ---------
+
+// The colors for the circles in the matrix or elsewhere
+$set-circle-included-color: #636363;
+$set-circle-excluded-color: #f0f0f0;
+// should only be used outside of the matrix
+$set-circle-active-color: #000;
+
+
+
+
+// ----- set space attribute visual elements -------
+
+$deviation-positive-color: #74add1;
+$deviation-negative-color:#f46d43;
+
+
+// ------ set space GUI elements ------
+
+$slider-label-color: #a6bddb;

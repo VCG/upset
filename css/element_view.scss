@@ -1,0 +1,13 @@
+@import 'global_styles';
+
+.subset-state-toggle-button {
+  cursor: default;
+}
+
+.subset-state-toggle-button .fw {
+  color: $set-circle-included-color
+}
+
+.subset-state-toggle-button:hover .fw {
+  color: $set-circle-active-color;
+}

@@ -1,24 +1,9 @@
-body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
+/**
+ * SVG styles for the set view.
+ * Currently still a mess of various things
+ */
 
-h1 {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-#header {
-    padding: 0;
-    text-align: right;
-    font-size: 0.8em;
-    font-style: italic;
-}
-
-.header-label-left {
-    margin-right: 5px;
-    float: left;
-    color: white;
-
-}
+@import 'global_styles';
 
 .axis path,
 .axis line {
@@ -161,12 +146,14 @@ h1 {
     fill: white;
 }
 
+// Deviation bars
+
 .disproportionality.positive {
-    fill: #74add1;
+    fill: $deviation-positive-color;
 }
 
 .disproportionality.negative {
-    fill: #f46d43;
+    fill: $deviation-negative-color;
 }
 
 .connection {
@@ -263,17 +250,7 @@ th.attribute-header.selected {
     color: darkblue;
 }
 
-.subset-state-toggle-button {
-    cursor: default;
-}
 
-.subset-state-toggle-button .fw {
-    color: blue;
-}
-
-.subset-state-toggle-button:hover .fw {
-    color: darkblue;
-}
 
 #venn-diagram-viewer {
     display: none;
@@ -311,39 +288,6 @@ th.attribute-header.selected {
     fill: #f33;
 }
 
-#title {
-    font-weight: bold;
-    float: left;
-    color: white;
-}
-
-#load-data-header {
-    font-weight: bold;
-    color: white;
-    float: right;
-    padding-left: 10px;
-    padding-right: 10px;
-    cursor: pointer;
-
-}
-
-.menu-bar{
-    float:right;
-    padding-right: 10 px;
-    padding-left: 60 px;
-    font-weight: bold;
-}
-.menu-bar a:visited,
-.menu-bar a:link {
-    color: white;
-    text-decoration: none;
-}
-
-a:link,
-a:visited
-{
-color:black;
-}
 /*--- logic --*/
 .logicPanelCircle {
     stroke-width: 2pt;
@@ -357,38 +301,6 @@ color:black;
     float: right;
 }
 
-.header-container {
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-    background: #000;
-    border-bottom: 2px solid #999;
-
-    display: block;
-    height: 20px;
-
-    color: #666;
-}
-
-.menu-container {
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-    background: #eee;
-    border-bottom: 2px solid #999;
-
-    display: block;
-    height: 20px;
-}
-
-.padded-container {
-    padding-top: 20px;
-    padding-left: 20px;
-    padding-bottom: 10px;
-    padding-right: 20px;
-}
 
 .ui-button {
     color: #666;
@@ -479,12 +391,12 @@ html, body, .ui-container {
 
 .ui-fader {
     position: absolute; /* makes the div go into a position that’s absolute to the browser viewing area */
-/ / left : 0 %; /* makes the div span all the way across the viewing area */
-/ / top : 0 %; /* makes the div span all the way across the viewing area */
+// left : 0 %; /* makes the div span all the way across the viewing area */
+// top : 0 %; /* makes the div span all the way across the viewing area */
     background-color: white;
-/ / -moz-opacity : 0.7; /* makes the div transparent, so you have a cool overlay effect */
-/ / opacity : .70;
-/ / filter : alpha(opacity = 70);
+// -moz-opacity : 0.7; /* makes the div transparent, so you have a cool overlay effect */
+// opacity : .70;
+// filter : alpha(opacity = 70);
     width: 100%;
     height: 100%;
     z-index: 90; /* makes the div the second most top layer, so it’ll lay on top of everything else EXCEPT for divs with a higher z-index (meaning the #overlay ruleset) */
@@ -500,10 +412,6 @@ html, body, .ui-container {
     color: white;
 }
 
-#data-loading-indicator {
-    padding-left: 5px;
-    padding-right: 5px;
-}
 
 .ui-header {
     height: 30px;
@@ -676,7 +584,7 @@ html, body, .ui-container {
 }
 
 .filter-editor-button:hover {
-/ / text-shadow : 0 0 10 px #3fa0c7
+// text-shadow : 0 0 10 px #3fa0c7
 }
 
 .filter-active {
@@ -789,12 +697,12 @@ html, body, .ui-container {
 
 .sliderLabel rect {
     opacity: .5;
-    fill: #a6bddb;
+    fill: $slider-label-color;
 }
 
 .sliderLabel line {
     opacity: .5;
-    stroke: #a6bddb;
+    stroke: $slider-label-color;
     stroke-width: 2;
 }
 
