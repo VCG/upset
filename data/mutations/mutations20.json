@@ -1,5 +1,5 @@
 {
-	"file": "gbm_mutated_top100.csv",
+	"file": "data/mutations/gbm_mutated_top100.csv",
 	"name": "Mutations in Glioblastoma (top 20)",
 	"header": 0,
 	"separator": ",",

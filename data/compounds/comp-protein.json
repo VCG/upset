@@ -1,5 +1,5 @@
 {
-    "file": "CpdsVsProteinTable.txt",
+    "file": "data/compounds/CpdsVsProteinTable.txt",
     "name": "Compound - Protein Interaction",
     "header": 0,
     "separator": "\t",

@@ -1,5 +1,5 @@
 {
-	"file": "countries.csv",
+	"file": "data/countries/countries.csv",
 	"name": "Countries Exports by Products",
 	"header": 0,
 	"separator": ",",

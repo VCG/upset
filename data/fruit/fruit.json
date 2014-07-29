@@ -1,5 +1,5 @@
 {
-	"file": "fruit.csv",
+	"file": "data/fruit/fruit.csv",
 	"name": "Important Information about Fruit",
 	"header": 0,
 	"separator": ";",

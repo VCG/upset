@@ -5,12 +5,14 @@
  * author: Romain Vuillemot - romain.vuillemot@gmail.com
  */
 
-var dataSetDescriptions, queryParameters = {};
+var dataSetDescriptions = []
+var queryParameters = {};
 var initCallback; // function to call when dataset is loaded
 var globalCtx;
 
 function initData(ctx, callback) {
     retrieveQueryParameters();
+    setUpConfiguration();
 
     initCallback = callback;
     globalCtx = ctx;
@@ -21,36 +23,60 @@ function initData(ctx, callback) {
         function (data, textStatus, jqXHR) {
             console.error('Error loading "' + this.url + '".');
         });
+
+    /// registering custom dataset function
+    $("#custom-dataset-submit").on('click', function () {
+        var url = $("#custom-dataset-url").val();
+        if (url != null) {
+            loadDataSetDescriptions([url]);
+
+        }
+    })
+
+}
+
+var handleDatasetDescription = function (result) {
+    if (result != undefined) {
+        dataSetDescriptions.push(result);
+    }
+}
+
+var loadDataAfterAjaxComplete = function () {
+    populateDSSelector();
+    loadDataSetFromQueryParameters();
+}
+
+function populateDSSelector() {
+
+    // updating the dropbodwn box
+    d3.select("#header-ds-selector")
+        .selectAll('option').data(dataSetDescriptions).enter().append('option')
+        .attr('value', function (d, i) {
+            return i;
+        })
+        .attr('id', 'dataSetSelector')
+        .text(function (d) {
+            return d.name + ' ' + '(' + getNumberOfSets(d) + ' sets, ' + getNumberOfAttributes(d) + ' attributes' + ')';
+        })
+        .property('selected', function (d, i) {
+            return (i === queryParameters['dataset'])
+        });
+
+    d3.select("#header-ds-selector").on('change', change);
 }
 
 function loadDataSetDescriptions(dataSetList) {
 
     var descriptions = [];
-    var descriptionDeferreds = [];
-
+    //  var descriptionDeferreds = [];
+    var requests = [];
     // launch requests to load data set descriptions
     for (var i = 0; i < dataSetList.length; ++i) {
-        var description = loadDataSetDescription(dataSetList[i]);
-        if (description != null) {
-            descriptions.push(description)
-        }
+        var url = dataSetList[i];
+        requests.push($.ajax({ url: url, dataType: 'json', success: handleDatasetDescription}));
     }
 
-    load(descriptions);
-}
-
-var loadDataSetDescription = function (url)
-{
-    console.log("Loading " + url)
-    var description;
-    var deferred = $.ajax({ url: url, dataType: 'json', async: false })
-        .success(function (response) {
-            description = response; //deferred.responseJSON;
-
-            // preprend data file path (based on path to description in data set list)
-            description.file = url.substring(0, url.lastIndexOf('/')) + '/' + description.file;
-        });
-    return description;
+    $.when.apply(undefined, requests).then(loadDataAfterAjaxComplete);
 }
 
 var setUpConfiguration = function () {
@@ -59,7 +85,6 @@ var setUpConfiguration = function () {
     var minCardSpinner = document.getElementById('minCardinality');
 
     var updateCardinality = function (e) {
-
         UpSetState.maxCardinality = maxCardSpinner.value;
         UpSetState.minCardinality = minCardSpinner.value;
         UpSetState.forceUpdate = true;
@@ -82,22 +107,10 @@ var setUpConfiguration = function () {
 
     var dataSelect = d3.select("#dataset-selector").append('div');
 
-    var select = dataSelect.append('select').attr("class", "header-ds-selector");
+    var select = dataSelect.append('select').attr("id", "header-ds-selector");
 
     dataSelect.append('span').attr("class", "header-right").text('Choose Dataset');
 
-    select.on('change', change)
-        .selectAll('option').data(dataSetDescriptions).enter().append('option')
-        .attr('value', function (d, i) {
-            return i;
-        })
-        .attr('id', 'dataSetSelector')
-        .text(function (d) {
-            return d.name + ' ' + '(' + getNumberOfSets(d) + ' sets, ' + getNumberOfAttributes(d) + ' attributes' + ')';
-        })
-        .property('selected', function (d, i) {
-            return (i === queryParameters['dataset'])
-        });
 }
 
 function retrieveQueryParameters() {
@@ -124,20 +137,17 @@ function updateQueryParameters() {
     var urlQueryString = "";
     if (Object.keys(queryParameters).length > 0) {
         urlQueryString = "?";
-        for (var q in queryParameters)
+        for (var q in queryParameters) {
             urlQueryString += (q + "=" + queryParameters[q]) + "&";
+        }
         urlQueryString = urlQueryString.substring(0, urlQueryString.length - 1);
     }
 
     history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + urlQueryString);
 }
 
-function load(descriptions) {
-
-    dataSetDescriptions = descriptions;
+function loadDataSetFromQueryParameters() {
     $(EventManager).trigger("loading-dataset-started", { description: dataSetDescriptions[queryParameters['dataset']]  });
-
-    setUpConfiguration();
     loadDataSet(queryParameters['dataset']);
 }
 
@@ -459,7 +469,7 @@ function setUpSubSets() {
     var actualBit = -1;
     var names = [];
 
-    console.log(aggregateIntersection);
+
 
     if (usedSetLength > 20) { // TODo HACK !!!!
         Object.keys(aggregateIntersection).forEach(function (key) {
