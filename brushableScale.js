@@ -117,7 +117,6 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
 
     var setBrush= function(size){
 //        var sizeB =xScale(size);
-//        console.log(xScale.domain(), sizeB, size, xScale.range());
         overViewBrushDef.extent([0,size]);
 //        overviewBrush.select(".e").attr({
 //            "transform":"translate("+xScale(size)+","+0+")"
@@ -143,9 +142,6 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
         if (params.maxValue !=null) maxValue= params.maxValue;
         if (params.labels !=null) labels = params.labels;
         if (params.width != null) width = params.width;
-
-//        console.log(labels);
-
 
         updateScales();
         updateSliderLabels();
@@ -278,8 +274,6 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
                 maxSpace = xScale(label)-label.toString(10).length*numberWidth;
                 drawLabels[label] = true;
             }
-
-//            console.log(label,xScale(label)+label.toString(10).length*numberWidth,maxSpace);
         })
 
         formatFunction = function(d,i){return (d in drawLabels)?d:"";}

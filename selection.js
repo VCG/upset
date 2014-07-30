@@ -3,19 +3,18 @@
  */
 
 
-Selection = function (items, filterCollection ) {
+Selection = function (items, filterCollection) {
     this.items = items || [];
     //this.filters = filters || [];
     this.filterCollection = filterCollection;
     this.id = undefined;
 };
 
+Selection.createSubsetDefinition = function (subsets) {
 
-Selection.createSubsetDefinition = function( subsets ) {
-    
-    if ( !(subsets[0] instanceof Object) ) {
+    if (!(subsets[0] instanceof Object)) {
         var newSubsets = [];
-        newSubsets.push( subsets );
+        newSubsets.push(subsets);
         subsets = newSubsets;
     }
     else {
@@ -27,22 +26,22 @@ Selection.createSubsetDefinition = function( subsets ) {
 
     var subsetDefinition = {};
 
-    for ( var s = 0; s < subsets.length; ++s ) {
+    for (var s = 0; s < subsets.length; ++s) {
         var subset = subsets[s].combinedSets;
 
         //console.log( "subset" );
         //console.log( subset );
 
         for (var x = 0; x < subset.length; ++x) {
-            if ( subsetDefinition.hasOwnProperty( usedSets[x].id ) ) {
-                if ( subsetDefinition[usedSets[x].id] !== subset[x] ) {
+            if (subsetDefinition.hasOwnProperty(usedSets[x].id)) {
+                if (subsetDefinition[usedSets[x].id] !== subset[x]) {
                     subsetDefinition[usedSets[x].id] = 2;
                 }
             }
             else {
                 subsetDefinition[usedSets[x].id] = subset[x];
             }
-        }        
+        }
     }
 
     //console.log( "subsetDefinition" );
@@ -51,25 +50,24 @@ Selection.createSubsetDefinition = function( subsets ) {
     return ( subsetDefinition );
 };
 
-
 /** Create a selection from a subset */
-Selection.fromSubset = function ( subsets ) {
+Selection.fromSubset = function (subsets) {
     var self = this;
 
     // extract a subset definition for use with the subset filter
-    var subsetDefinition = Selection.createSubsetDefinition( subsets );
+    var subsetDefinition = Selection.createSubsetDefinition(subsets);
 
     /*
-    var subsetDefinition = {};
-    for (var x = 0; x < subset.length; ++x) {
-        subsetDefinition[usedSets[x].id] = subset[x];
-    }
-    */
-    
-    // create subset filter and create new selection based on all items
-    var selection = new Selection(allItems, new FilterCollection("#filters-controls","#filters-list"));
+     var subsetDefinition = {};
+     for (var x = 0; x < subset.length; ++x) {
+     subsetDefinition[usedSets[x].id] = subset[x];
+     }
+     */
 
-    selection.filterCollection.add(new Filter(attributes[attributes.length-1], FilterConfigurations.subset,  { subset: subsetDefinition } ) );
+    // create subset filter and create new selection based on all items
+    var selection = new Selection(allItems, new FilterCollection("#filters-controls", "#filters-list"));
+
+    selection.filterCollection.add(new Filter(attributes[attributes.length - 1], FilterConfigurations.subset, { subset: subsetDefinition }));
     selection.applyFilters();
 
     return selection;
@@ -83,7 +81,7 @@ Selection.prototype.createSelection = function (attributeId, filterId, parameter
             newItems.push(this.items[i]);
         }
     }
-    console.log(filter);
+    //console.log(filter);
     return ( new Selection(newItems, this.filters.concat([
         { id: filterId, parameters: parameters, attributeId: attributeId, uuid: Utilities.generateUuid() }
     ])) );
@@ -155,7 +153,6 @@ Selection.prototype.getFilter = function (uuid) {
     return self.filterCollection.get(uuid);
 }
 
-
 // should be a singleton
 SelectionList = function (palette) {
     var self = this;
@@ -165,7 +162,7 @@ SelectionList = function (palette) {
     self.active = {};
     self.palette = palette || d3.scale.category10().range().slice();
 
-  //  console.log("Palette Length " + self.palette);
+    //  console.log("Palette Length " + self.palette);
 };
 
 SelectionList.prototype.getSelections = function () {
@@ -217,7 +214,7 @@ SelectionList.prototype.removeSelection = function (selection) {
         }
     }
 
-    console.log('Unable to delete selection.');
+    // console.log('Unable to delete selection.');
 };
 
 SelectionList.prototype.getSelectionIndex = function (selection) {

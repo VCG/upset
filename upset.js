@@ -83,9 +83,7 @@ var ctx = {
 //bindEvents();
 
 function plot() {
-
     ctx.plot();
-//    console.log("plot");
 }
 
 function UpSet() {
@@ -141,7 +139,7 @@ function UpSet() {
     function calculateGlobalStatistics() {
         var collector = {allItems: 1};
         dataRows.forEach(function (d) {
-//            console.log(d);
+
             var setSize = d.setSize;
             var type = d.type;
 
@@ -492,7 +490,7 @@ function UpSet() {
             delList.remove(stat.attribute);
         })
 
-        console.log(delList);
+        //console.log(delList);
 
 
     }
@@ -1317,7 +1315,7 @@ function UpSet() {
                 .on({
                     "mouseover":function(d){
                         var xy = d3.select(this.parentNode.parentNode).attr("transform").split(/[,()]/);
-                        console.log(d3.select(this.parentNode.parentNode).attr("transform"),d);
+                   //     console.log(d3.select(this.parentNode.parentNode).attr("transform"),d);
 //                        console.log(xy.split(/[,()]/));
                         if (xy.length==4){
                             var infoGroup = ctx.toolTipLayer.append("g").attr({
@@ -1354,7 +1352,7 @@ function UpSet() {
 
 
 
-                            console.log(infoGroup);
+                       //     console.log(infoGroup);
 
                             d.forEach(function(row,index){
                                 var y = index*ctx.cellSize;
@@ -2227,7 +2225,7 @@ function UpSet() {
                 if (key!=UpSetState.grouping) selectableOptions[key] = ctx.groupingOptions[key];
             })
 
-            console.log("updateL2:",selectableOptions);
+         //   console.log("updateL2:",selectableOptions);
 
     //        UpSetState.grouping = StateOpt.groupByRelevanceMeasure;
     //        UpSetState.levelTwoGrouping = undefined;
@@ -2275,7 +2273,6 @@ function UpSet() {
                 "change":function(d){
                     UpSetState.levelOneDegree = +(d3.select(this).node().value);
                     UpSetState.forceUpdate=true;
-                    console.log("SSS");
                     updateState();
                     updateStatistics();
                     rowTransition();
@@ -2520,9 +2517,8 @@ function UpSet() {
 
     }
 
-    document.getElementById('rowSizeValue').addEventListener('change', function () {
+    document.getElementById('rowSizeValue').addEventListener('changeDataset', function () {
         ctx.cellDistance = +(document.getElementById('rowSizeValue').value);
-        //console.log(ctx.cellSize);
         rowTransition();
     });
 

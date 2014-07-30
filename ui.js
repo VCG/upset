@@ -48,7 +48,7 @@ Ui.prototype.updateFixedHeightContainers = function() {
     var fixedYContainers = $('.fixed-y-container');
     fixedYContainers.map( function(index) {
         var paddingBottom = parseInt( $(fixedYContainers[index]).css( 'padding-bottom' ) ) || 0;
-        console.log( paddingBottom );
+       // console.log( paddingBottom );
         var targetHeight = ( $(window).height() - $(this).offset().top - paddingBottom ) * parseFloat( $(fixedYContainers[index]).attr("data-height-ratio") );
         var minHeight = parseInt( $('.fixed-y-container').css( "min-height" ) );
         var maxHeight = parseInt( $('.fixed-y-container').css( "max-height" ) ) || targetHeight;
@@ -114,7 +114,7 @@ Ui.prototype.initWidthHandler = function(){
         $("#moveHandle")
             .mousedown(function(event) {
                 event.stopPropagation()
-                console.log("MD");
+              //  console.log("MD");
                 if ( !isDragging ) {
                     startX = event.clientX; //#set-vis-container
                     leftWidth = $(".ui-layout-center").width();

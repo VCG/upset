@@ -164,8 +164,8 @@ var groupByIntersectionSize = function (subSets, level, parentGroup) {
         var group = newGroups[subSet.nrCombinedSets];
         if (group != null)
             group.addSubSet(subSet);
-        else
-            console.log('Fail ' + group + subSet.nrCombinedSets);
+//        else
+//            console.log('Fail ' + group + subSet.nrCombinedSets);
     })
     return newGroups;
 }

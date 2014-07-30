@@ -3,22 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>UpSet</title>
-  <script>
-    (function (i, s, o, g, r, a, m) {
-      i['GoogleAnalyticsObject'] = r;
-      i[r] = i[r] || function () {
-        (i[r].q = i[r].q || []).push(arguments)
-      }, i[r].l = 1 * new Date();
-      a = s.createElement(o),
-              m = s.getElementsByTagName(o)[0];
-      a.async = 1;
-      a.src = g;
-      m.parentNode.insertBefore(a, m)
-    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-    ga('create', 'UA-52852221-1', 'auto');
-    ga('send', 'pageview');
-  </script>
+  <script src="google-analytics.js"></script>
   <script src="lib/d3.v3.js" charset="utf-8"></script>
   <script src="lib/colorbrewer.js" charset="utf-8"></script>
   <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
@@ -50,9 +35,11 @@
 
 <div class="ui-menu">
   <div class="menu-container">
-      <span>Provide a <a href="https://github.com/VCG/upset/wiki/Data-Import">JSON file</a> defining your data: <input
-              type="text" style="width: 500px"/> <input type="submit" value="Submit"> | <a
-              href="https://github.com/VCG/upset/wiki/Data-Import">Learn how to create the JSON file</a></span>
+      <span>Provide a <a href="https://github.com/VCG/upset/wiki/Data-Import">JSON file</a> defining your data: <input id="custom-dataset-url"
+              type="text" style="width: 500px"
+              value="https://dl.dropboxusercontent.com/u/36962787/UpSet/movies.json"/> <input id="custom-dataset-submit" type="submit"
+                                                                                            value="Submit"> | <a
+              href="https://github.com/VCG/upset/wiki/">Learn how to create the JSON file</a></span>
   </div>
 </div>
 
@@ -80,7 +67,6 @@
         <div id="secondLevelGrouping"></div>
         <div id='secondLevelMinCardinality' style="padding-top: 5px;" hidden>overlap degree:<br/> <input
                 id='secondLevelMinCardinalityInput' type='number' min='0' max='12' value='0'>
-
         </div>
       </div>
 

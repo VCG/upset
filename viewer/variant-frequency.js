@@ -161,7 +161,7 @@ var variantFrequencyConfiguration = {
                     .attr("transform", function(d, i) {
                             return "translate(0," + (size * i) + ")";
                         })
-                    .attr('fill', function(d,i) { console.log(d); return( color(d) ); })
+                    .attr('fill', function(d,i) { return( color(d) ); })
                     .attr('stroke', 'white');
         }
     }

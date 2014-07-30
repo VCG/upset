@@ -216,7 +216,7 @@ FilterCollection.prototype.renderController = function() {
             return d.name;
         });
 
-    attributeSelect.on('change', self.initializeFilterList );
+    attributeSelect.on('changeDataset', self.initializeFilterList );
     self.initializeFilterList();
 
 };
@@ -449,7 +449,7 @@ Filter.prototype.parseParameterValues = function( selection ) {
         var value = self.parseParameterValue( filterParameters[i].variable, filterParameters[i].type );
 
         if ( value ) {
-            console.log( 'Replacing ' + filterParameters[i].variable + ' (' + filterParameters[i].type + ') = "' + filterInstanceParameters[filterParameters[i].variable] + '" with "' + value + '"' );
+    //        console.log( 'Replacing ' + filterParameters[i].variable + ' (' + filterParameters[i].type + ') = "' + filterInstanceParameters[filterParameters[i].variable] + '" with "' + value + '"' );
             filterInstanceParameters[filterParameters[i].variable] = value;
         }
     }
@@ -476,7 +476,7 @@ Filter.prototype.parseParameterValue = function( parameterVariable, parameterTyp
             var parameterEditor = filterEditor.find( ".subset-state-toggle-button" ).each(function() {
                 value[this.dataset.subset] = +this.dataset.subsetState;
             });
-            console.log( value );
+         //   console.log( value );
             break;
         case 'string':
             // fall-through

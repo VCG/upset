@@ -177,7 +177,7 @@ function SetGrouping(params){
 
         gQuery.selectAll(".selectorCircle").style({
             fill:function(d){
-                console.log(d);
+       //         console.log(d);
                 switch(toggleState[d])
             {
                 case 0:

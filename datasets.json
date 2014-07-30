@@ -8,21 +8,13 @@
     "data/compounds/comp-protein.json",
     "data/compounds/comp-family.json",
 
-    "UpSet-Data/data/variants/allvcf_depth.json",
-    "UpSet-Data/data/variants/allvcf_10x.json",
-    "UpSet-Data/data/variants/allvcf_20x.json",
-    "UpSet-Data/data/variants/allvcf_30x.json",
-
-    "https://dl.dropboxusercontent.com/u/1041348/countries-upset-test/countries.json",
     "data/countries/countries.json",
     "data/countries/countries100.json",
-    "https://dl.dropboxusercontent.com/u/1041348/countries-upset-test/countries.json",
 
     "data/socialgraph/socialgraph.json",
 
     "data/test/rand.json",
     "data/test/test.json",
     "data/test/test_2set.json"
-
 ]
 

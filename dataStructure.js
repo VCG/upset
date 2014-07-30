@@ -350,7 +350,7 @@ function makeSubSet(setMask) {
 //    console.log(expectedValue, notExpectedValue);
 //    console.log("combinedData:", combinedData);
     expectedValue *= notExpectedValue;
-    console.log(originalSetMask,name,combinedSets,combinedData,expectedValue);
+  //  console.log(originalSetMask,name,combinedSets,combinedData,expectedValue);
     var subSet = new SubSet(originalSetMask, name, combinedSets, combinedData, expectedValue);
     subSets.push(subSet);
 }

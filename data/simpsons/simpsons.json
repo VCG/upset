@@ -1,5 +1,5 @@
 {
-	"file": "simpsons.csv",
+	"file": "data/simpsons/simpsons.csv",
 	"name": "Simpsons Characters",
 	"header": 0,
 	"separator": "\t",

@@ -38,7 +38,7 @@ h1 {
 .header-right-clickable {
   cursor: pointer; }
 
-.header-ds-selector {
+#header-ds-selector {
   float: right;
   color: black; }
 
