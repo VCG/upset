@@ -1,5 +1,5 @@
 {
-	"file": "socialgraph.csv",
+	"file": "data/socialgraph/socialgraph.csv",
 	"name": "Social Graph",
 	"header": 0,
 	"separator": ";",
