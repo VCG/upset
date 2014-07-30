@@ -360,37 +360,37 @@ function plotSetOverview() {
             }
         })
 
-        pagiGroup.append("text").attr({
-            "class": "multiSelect setLabel"
-        }).style({
-            "text-anchor": "start",
-            "cursor": "pointer"
-        }).attr({
-            "transform": "translate(" + (cellDistance + 5) + "," + (2.4*paginationLinespace) + ")"
-        }).text("multi select")
-            .on({
-            "click": function () {
-                if (ctx.setSelection.mode=="none"){
-                    ctx.setSelection.mode = "multiSel";
-                    plotSetOverview();
-                }else if (ctx.setSelection.mode === "multiSel"){
-                    ctx.setSelection.mode = "none";
-                    plotSetOverview();
-                }
-            }
-        })
-
-        pagiGroup.append("text").attr({
-            "class": "multiSelect setLabel"
-        }).style({
-            "text-anchor": "start",
-            "cursor": "pointer"
-        }).attr({
-            "transform": "translate(" + (cellDistance + 5) + "," + (4.0*paginationLinespace) + ")"
-        }).text("sort & filter")
-
-        // --- UPDATES
-
+//        pagiGroup.append("text").attr({
+//            "class": "multiSelect setLabel"
+//        }).style({
+//            "text-anchor": "start",
+//            "cursor": "pointer"
+//        }).attr({
+//            "transform": "translate(" + (cellDistance + 5) + "," + (2.4*paginationLinespace) + ")"
+//        }).text("multi select")
+//            .on({
+//            "click": function () {
+//                if (ctx.setSelection.mode=="none"){
+//                    ctx.setSelection.mode = "multiSel";
+//                    plotSetOverview();
+//                }else if (ctx.setSelection.mode === "multiSel"){
+//                    ctx.setSelection.mode = "none";
+//                    plotSetOverview();
+//                }
+//            }
+//        })
+//
+//        pagiGroup.append("text").attr({
+//            "class": "sortFilter setLabel"
+//        }).style({
+//            "text-anchor": "start",
+//            "cursor": "pointer"
+//        }).attr({
+//            "transform": "translate(" + (cellDistance + 5) + "," + (4.0*paginationLinespace) + ")"
+//        }).text("sort & filter")
+//
+//        // --- UPDATES
+//
         pagi.select(".right").text(function (d) {
             if (d.countRight < 1) return '-|'
             else return '>>';
@@ -427,15 +427,15 @@ function plotSetOverview() {
                 Math.min(ctx.setSelection.paginationEnd,unusedSets.length)
         })
 
-        pagi.select(".multiSelect").style({
-            "font-weight": function () {
-                if (ctx.setSelection.mode === "multiSel"){
-                    return "bold"
-                }else{
-                    return "normal"
-                }
-            }
-        })
+//        pagi.select(".multiSelect").style({
+//            "font-weight": function () {
+//                if (ctx.setSelection.mode === "multiSel"){
+//                    return "bold"
+//                }else{
+//                    return "normal"
+//                }
+//            }
+//        })
 
 
     }
