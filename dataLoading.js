@@ -231,7 +231,7 @@ function run() {
 //    plotSetSelection();
     selections.setActive();
     //createInitialSelection();
-    plotSetOverview();
+    plotSetOverview({initialize:true});
 
     $(EventManager).trigger("loading-dataset-finished", { });
 }
