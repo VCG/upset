@@ -69,8 +69,13 @@ var ctx = {
 
 
     // GROUPING OPTIONS
-    groupingOptions : {}
+    groupingOptions : {},
 
+    setSelection: {
+        paginationStart:0,
+        paginationEnd:10,
+        mode:"none" // special modes are: "multiSel", "sortFilter"
+    }
 
 
 };
@@ -229,7 +234,11 @@ function UpSet() {
         d3.select("#headerVis").select("svg").remove();
         ctx.svgHeader = d3.select("#headerVis").append('svg')
             .attr('width', ctx.w)
-            .attr('height', 125+ctx.textHeight);
+            .attr('height', 65+ctx.textHeight);
+//            .style({
+//                "top":"",
+//                "position":"relative"
+//            });
 
 
         //####################### LogicPanel ##################################################
@@ -2177,6 +2186,7 @@ function UpSet() {
             updateFrames(null, data.newWidth);
             updateHeaders()
             plotSubSets()
+            plotSetOverview()
 
         });
     }
@@ -2534,7 +2544,7 @@ function UpSet() {
         ctx.barTransitions = true;
     }
 
-    ctx.resizeSetView = rowTransition
+    ctx.resizeSetView = updateFrames
 //    function(windowHeight, windowWidth){
 //        updateFrames(windowHeight, windowWidth);
 //        rowTransition(false);
@@ -2549,7 +2559,8 @@ function UpSet() {
 
             d3.select('#bodyVis')
                 .style({
-                    height: (windowHeight-2*ctx.textHeight-40)+"px" // TODO: HACK
+//                    height: (windowHeight-2*ctx.textHeight-40)+"px" // TODO: HACK
+                    height: (windowHeight-300)+"px" // TODO: HACK
                 })
 
 //            ctx.svgBody.attr({

@@ -242,12 +242,10 @@ th.attribute-header.selected {
   text-shadow: 0 0 10px #3fa0c7; }
 
 .fixed-y-container {
-  overflow-y: auto; }
+  overflow-y: hidden; }
 
 #set-vis-container {
-  min-height: 300px;
-  padding-bottom: 10px;
-  margin-top: -40px; }
+  min-height: 300px; }
 
 #item-vis-container {
   min-height: 200px;
