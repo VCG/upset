@@ -12,5 +12,8 @@
 	],
 	"sets": [
 		{ "format": "binary", "start": 2, "end": 18 }
-	]
+	],
+    "author": "grouplens",
+    "description": "MovieLens ratings dataset, curated and filtered by Alsallakh.",
+    "source": "http://grouplens.org/datasets/movielens/"
 }

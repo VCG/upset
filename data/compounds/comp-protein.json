@@ -27,5 +27,8 @@
             "start": 1,
             "end": 100
         }
-    ]
+    ],
+    "author": "Gleeson et al.",
+    "description": "Protein binding of small molecules.",
+    "source": "http://dx.doi.org/10.1073/pnas.1012741107"
 }

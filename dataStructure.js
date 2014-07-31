@@ -52,12 +52,6 @@ var selections = new SelectionList(); //an array of selection
 
 var elementViewers = new ElementViewerCollection( "#element-viewers-controls", "#element-viewers-visualization" );
 
-var dataSetMetaData = {
-    author: "",
-    description: "",
-    source: ""
-};
-
 /** The list of available datasets */
 var dataSets;
 
