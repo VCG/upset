@@ -29,8 +29,6 @@ h1 {
   color: white;
 }
 
-
-
 #data-loading-indicator {
   padding-left: 5px;
   padding-right: 5px;
@@ -61,8 +59,6 @@ h1 {
   float: right;
   color: $font-color;
 }
-
-
 
 .button-panel {
   display: inline-block;
@@ -99,7 +95,6 @@ h1 {
 .padded-container {
   padding: 20px 20px 10px;
 }
-
 
 // ------------ global layout --------------------------------------
 
@@ -143,7 +138,6 @@ html, body, .ui-container {
   z-index: 100; /* makes the div the top layer, so it’ll lay on top of the other content */
   color: white;
 }
-
 
 .ui-header {
   height: 30px;
@@ -209,4 +203,42 @@ html, body, .ui-container {
 
 .ui-column.ui-layout-east {
   border-left: 1px solid #999;
+}
+
+/** ============ Configuration Panel Left ============== */
+.configTable {
+  padding-bottom: 10px;
+  font-size: 12px;
+  display: inline-block;
+  float: left;
+  clear: both;
+}
+
+.option {
+}
+
+.option:hover {
+}
+
+.configHeader {
+  font-weight: bold;
+  padding-bottom: .2em;
+}
+
+.configH1 {
+  font-weight: bold;
+  // padding: .2em;
+  //  background-color: $group-background-color;
+}
+
+#dataset-info-viewer {
+  @extend .configTable;
+  color: white;
+  background-color: $set-circle-included-color;
+  padding: .4em;
+
+  a:link,
+  a:visited {
+    color: white;
+  }
 }

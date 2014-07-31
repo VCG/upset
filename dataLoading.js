@@ -43,10 +43,9 @@ var handleDatasetDescription = function (result) {
 
 var loadDataAfterAjaxComplete = function () {
 
-
 }
 
-var populateDSSelector = function() {
+var populateDSSelector = function () {
 
     // updating the drop-down box
     d3.select("#header-ds-selector")
@@ -79,8 +78,7 @@ function loadDataSetDescriptions(dataSetList) {
     $.when.apply(undefined, requests).then(loadDataSetFromQueryParameters, handleDataSetError);
 }
 
-var handleDataSetError = function(jqXHR, textStatus, errorThrown)
-{
+var handleDataSetError = function (jqXHR, textStatus, errorThrown) {
     alert("Could not load dataset. \n Error: " + errorThrown)
 }
 
@@ -90,8 +88,6 @@ function loadDataSetFromQueryParameters() {
     //(queryParameters['dataset']);
     changeDataset();
 }
-
-
 
 var setQueryParametersAndChangeDataset = function () {
     queryParameters['dataset'] = this.options[this.selectedIndex].value;
@@ -169,8 +165,6 @@ var setUpGUIElements = function () {
     dataSelect.append('span').attr("class", "header-right").text('Choose Dataset');
 }
 
-
-
 function retrieveQueryParameters() {
 
     // Variables from query string
@@ -204,7 +198,6 @@ function updateQueryParameters() {
     history.replaceState({}, 'Upset', window.location.origin + window.location.pathname + urlQueryString);
 }
 
-
 function clearSelections() {
     selections = new SelectionList();
 }
@@ -231,7 +224,7 @@ function run() {
 //    plotSetSelection();
     selections.setActive();
     //createInitialSelection();
-    plotSetOverview({initialize:true});
+    plotSetOverview({initialize: true});
 
     $(EventManager).trigger("loading-dataset-finished", { });
 }
@@ -464,6 +457,45 @@ function parseDataSet(data, dataSetDescription) {
     maxCardSpinner.max = UpSetState.maxCardinality;
     var minCardSpinner = document.getElementById('minCardinality');
     minCardSpinner.max = UpSetState.maxCardinality;
+
+    updateDatasetInformation(dataSetDescription)
+
+}
+
+var updateDatasetInformation = function (dataSetDescription) {
+
+    var infoBox = $('#dataset-info-content');
+    infoBox.empty();
+    //infoBox.append('<hr><br />');
+    infoBox.append('<p style="padding-bottom: 5px">');
+    infoBox.append("<b>Name:</b> " + dataSetDescription.name + "<br />");
+    infoBox.append("<b># Sets:</b> " + sets.length + "<br />");
+    infoBox.append("<b># Attributes</b>: " + attributes.length + "<br />");
+    infoBox.append("<b># Elements:</b> " + depth + "<br />");
+    infoBox.append('</p> <p style="padding-bottom: 10px">');
+    if (dataSetDescription.author) {
+        infoBox.append("<b>Author</b>: " + dataSetDescription.author + "<br />");
+    }
+    if (dataSetDescription.description) {
+        infoBox.append("<b>Description:</b> <br />" + dataSetDescription.description + "<br />");
+    }
+    if (dataSetDescription.source) {
+        if (dataSetDescription.source.indexOf("http://") == 0) {
+            var urlText = dataSetDescription.source;
+            var numCharacters = 22;
+            if (urlText.length > numCharacters) {
+                urlText = urlText.substring(0, numCharacters) + ".."
+            }
+
+            infoBox.append("<b>Source:</b> <br /><a href=\"" + dataSetDescription.source + "\">" + urlText + "</a><br />");
+
+        } else {
+            infoBox.append("<b>Source:</b> <br />" + dataSetDescription.source + "<br />");
+        }
+    }
+
+    infoBox.append('</p>');
+
 }
 
 function createSignature(listOfUsedSets, listOfSets) {
@@ -528,7 +560,7 @@ function setUpSubSets() {
             var notExpectedValue = 1;
             // go over the sets
             combinedSets.forEach(function (d, i) {
-                     if (d == 1) { // if set is present
+                    if (d == 1) { // if set is present
                         names.push(usedSets[i].elementName);
                         expectedValue = expectedValue * usedSets[i].dataRatio;
                     } else {
@@ -625,9 +657,6 @@ function setUpSubSets() {
     $(EventManager).trigger("computing-subsets-finished", undefined);
 
 }
-
-
-
 
 function updateSetContainment(set, refresh) {
     if (!set.isSelected) {

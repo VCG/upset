@@ -1,6 +1,6 @@
 {
 	"file": "data/mutations/gbm_mutated_top100.csv",
-	"name": "Mutations in Glioblastoma (top 20)",
+	"name": "Mutations in Glioblastoma",
 	"header": 0,
 	"separator": ",",
 	"skip": 0,
@@ -8,6 +8,9 @@
 		{ "type": "id", "index": 0, "name": "Name" }
 	],
 	"sets": [
-		{ "format": "binary", "start": 1, "end": 20 }
-	]
+		{ "format": "binary", "start": 1, "end": 100 }
+	],
+    "author": "TCGA Consortium",
+    "description": "Glioblastoma Multiforme Mutation Analysis, filtered for 100 most mutated genes.",
+    "source": "http://dx.doi.org/10.7908/C1HD7SP0"
 }

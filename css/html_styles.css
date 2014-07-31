@@ -158,3 +158,26 @@ html, body, .ui-container {
 
 .ui-column.ui-layout-east {
   border-left: 1px solid #999; }
+
+/** ============ Configuration Panel Left ============== */
+.configTable, #dataset-info-viewer {
+  padding-bottom: 10px;
+  font-size: 12px;
+  display: inline-block;
+  float: left;
+  clear: both; }
+
+.configHeader {
+  font-weight: bold;
+  padding-bottom: .2em; }
+
+.configH1 {
+  font-weight: bold; }
+
+#dataset-info-viewer {
+  color: white;
+  background-color: #636363;
+  padding: .4em; }
+  #dataset-info-viewer a:link,
+  #dataset-info-viewer a:visited {
+    color: white; }

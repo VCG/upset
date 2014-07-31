@@ -43,7 +43,7 @@
 .setLabel, .connection {
   /*dominant-baseline: middle;*/
   font: 12px sans-serif;
-  cursor: s-resize;
+  cursor: pointer;
   font-weight: 300;
   /*alignment-baseline:middle;*/
   /*alignment-baseline:middle;*/
@@ -242,7 +242,7 @@ th.attribute-header.selected {
   text-shadow: 0 0 10px #3fa0c7; }
 
 .fixed-y-container {
-  overflow-y: hidden; }
+  overflow-y: auto; }
 
 #set-vis-container {
   min-height: 300px; }
@@ -414,18 +414,6 @@ th.attribute-header.selected {
 .element-view-controls {
   min-height: 25px; }
 
-/** ============ Configuration ============== */
-.configTable {
-  padding-bottom: 10px;
-  font-size: 12px;
-  display: inline-block;
-  float: left;
-  clear: both; }
-
-.configHeader {
-  font-weight: bold;
-  padding-bottom: .2em; }
-
 /** ==== for range slider == **/
 .drawBrush, path.connectionArea {
   fill: gray;
@@ -495,6 +483,36 @@ th.attribute-header.selected {
   display: block;
   overflow-y: hidden;
   overflow-x: scroll; }
+
+.setSelectionArea {
+  fill: lightgrey;
+  stroke: none; }
+
+.setSelectionButton {
+  fill: lightgrey;
+  stroke: none; }
+
+.setSelectionButton:hover {
+  fill: darkgray; }
+
+.pagination, .setMenuExtra {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 300; }
+
+.setMenuExtraAwesome {
+  font-family: FontAwesome; }
+
+.setSelectionLabelAwesome {
+  font-family: FontAwesome;
+  font-size: 14px;
+  fill: lightgrey;
+  cursor: pointer;
+  font-weight: 300; }
+
+.setSelectionLabelAwesome:hover {
+  fill: darkgrey; }
 
 /*.groupingSelect{*/
 /*position: relative;*/

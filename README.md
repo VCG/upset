@@ -19,6 +19,8 @@ We are hosting a demo instance of UpSet at [http://vcg.github.io/upset](http://v
 
 3. View UpSet in your browser at [localhost:8000](http://localhost:8000).
 
+Alternatively you can also **run UpSet without a web server**. Chrome does not allow this by default, but Firefox works well. Simply open the index.html file in Firefox. 
+
 ## Configuring Datasets
 
 See the project wiki for an [overview of the data definition file format](https://github.com/VCG/upset/wiki/Data-Import) used to describe tabular text files.

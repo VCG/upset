@@ -31,7 +31,7 @@ var ctx = {
     paddingTop: 30,
     paddingSide: 20,
 
-    setOrder: 'size',
+
 
     truncateAfter: 20,
     truncateGroupAfter: 30,
@@ -74,7 +74,11 @@ var ctx = {
     setSelection: {
         paginationStart:0,
         paginationEnd:10,
-        mode:"none" // special modes are: "multiSel", "sortFilter"
+        mode:"none", // special modes are: "multiSel", "sortFilter"
+        modeChange: false,// only true if mode changed and re-rendering
+        multiSelIn:d3.set(),
+        multiSelOut:d3.set(),
+        setOrder: 'size' // options: size or name
     }
 
 
@@ -427,7 +431,10 @@ function UpSet() {
                 transform: function (d, i) {
                     return 'translate(0,' + (ctx.textHeight - ctx.textSpacing - 2) + ')rotate(45)';
                 },
-                'text-anchor': 'end',
+                'text-anchor': 'end'
+            })
+            .style({
+                'cursor':'s-resize'
             })
             .on('mouseover', mouseoverColumn)
             .on('mouseout', mouseoutColumn)
@@ -460,6 +467,8 @@ function UpSet() {
                 UpSetState.forceUpdate = true;
                 updateState(d);
                 rowTransition();
+            }).style({
+                'cursor':'s-resize'
             });
 
 

@@ -57,7 +57,7 @@
 .setLabel, .connection {
     /*dominant-baseline: middle;*/
     font: 12px sans-serif;
-    cursor: s-resize;
+    cursor: pointer;
     font-weight: 300;
     /*alignment-baseline:middle;*/
     /*alignment-baseline:middle;*/
@@ -547,25 +547,7 @@ th.attribute-header.selected {
     min-height: 25px;
 }
 
-/** ============ Configuration ============== */
-.configTable {
-    padding-bottom: 10px;
-    font-size: 12px;
-    display: inline-block;
-    float: left;
-    clear: both;
-}
 
-.option {
-}
-
-.option:hover {
-}
-
-.configHeader {
-    font-weight: bold;
-    padding-bottom: .2em;
-}
 
 /** ==== for range slider == **/
 
@@ -652,6 +634,46 @@ th.attribute-header.selected {
     overflow-y: hidden;
     overflow-x: scroll;
 }
+
+
+/// -- Styles for Set Selection component (SVG)
+
+.setSelectionArea {
+  fill:lightgrey;
+  stroke:none;
+}
+
+.setSelectionButton {
+  fill:lightgrey;
+  stroke:none;
+}
+.setSelectionButton:hover {
+  fill:darkgray;
+}
+
+.pagination, .setMenuExtra {
+  font-family: $font-stack;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 300;
+}
+
+.setMenuExtraAwesome {
+  font-family: FontAwesome;
+//  font-size: 14px;
+}
+.setSelectionLabelAwesome {
+  font-family: FontAwesome;
+  font-size: 14px;
+  fill:lightgrey;
+  cursor: pointer;
+  font-weight: 300;
+}
+.setSelectionLabelAwesome:hover {
+  fill:darkgrey;
+  //  font-size: 14px;
+}
+
 
 /*.groupingSelect{*/
 /*position: relative;*/

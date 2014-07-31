@@ -27,5 +27,8 @@
             "start": 1,
             "end": 10
         }
-    ]
+    ],
+    "author": "Gleeson et al. and Wassermann.",
+    "description": "Protein binding of small molecules. Molecules grouped into families by Wassermann.",
+    "source": "http://dx.doi.org/10.1073/pnas.1012741107"
 }
