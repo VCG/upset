@@ -409,7 +409,7 @@ function plotSetOverview() {
 
                 return "translate(" + ( middlePos) + "," + (.8*paginationLinespace) + ")";
             }
-        }).text("set menu")
+        }).text("Set Selection")
 
 
         pagiGroup.append("rect")
@@ -490,7 +490,7 @@ function plotSetOverview() {
             "pointer-events":"none"
         }).attr({
             "transform": "translate(" + (middlePos) + "," + (3.0*paginationLinespace) + ")"
-        }).text("multi select")
+        }).text("Batch Add Sets")
 
 
         pagiGroup.append("rect").attr({
@@ -525,7 +525,7 @@ function plotSetOverview() {
             "pointer-events":"none"
         }).attr({
             "transform": "translate(" + (middlePos) + "," + (4*paginationLinespace) + ")"
-        }).text("sort")
+        }).text("Sort Sets")
 
 
         // --- UPDATES
@@ -625,27 +625,27 @@ function plotSetOverview() {
         if (ctx.setSelection.mode === "multiSel"){
             menuContent =
                 [[
-                    {name:"add all", func: function(){
+                    {name:"Add All Sets", func: function(){
                         unusedSets.forEach(function(d){ctx.setSelection.multiSelIn.add(d.elementName);});
                         plotSetOverview();
                     }},
-                    {name:"add none", func: function(){
+                    {name:"Clear Selected", func: function(){
                         ctx.setSelection.multiSelIn = d3.set();
                         plotSetOverview()
                     }},
-                    {name:"confirm", func: bulkChange, fontawe:"\uf00c"}
+                    {name:"Confirm", func: bulkChange, fontawe:"\uf00c"}
                 ]]
 
         } else if (ctx.setSelection.mode === "sortFilter"){
             menuContent =
                 [[
-                    {name:"by size", func: function(){
+                    {name:"by Size", func: function(){
                         ctx.setSelection.setOrder = "size"
                         ctx.setSelection.mode = "none"
                         ctx.setSelection.modeChange = true
                         plotSetOverview();
                     }},
-                    {name:"by name", func: function(){
+                    {name:"by Name", func: function(){
                         ctx.setSelection.setOrder = "name"
                         ctx.setSelection.mode = "none"
                         ctx.setSelection.modeChange = true
