@@ -417,7 +417,7 @@ function plotSetOverview() {
                 "class":"selectionRect setSelectionArea",
                 x:cellDistance,
                 width:paddingForPaginationRight-cellDistance+5,
-                height:paginationLinespace *.8,
+                height:paginationLinespace *.9,
                 opacity:0
             })
 
@@ -427,8 +427,7 @@ function plotSetOverview() {
         pagiGroup.append("text").attr({
             "class": "right setSelectionLabelAwesome"
         }).style({
-            "text-anchor": "end",
-            "cursor": "e-resize"
+            "text-anchor": "end"
         }).attr({
             "transform": function () {
                 return "translate(" + (paddingForPaginationRight - 2) + "," + (2*paginationLinespace) + ")";
@@ -438,30 +437,19 @@ function plotSetOverview() {
         pagiGroup.append("text").attr({
             "class": "left setSelectionLabelAwesome"
         }).style({
-            "text-anchor": "start",
-            "cursor": "w-resize"
+            "text-anchor": "start"
         }).attr({
             "transform": function () {
                 return "translate(" + (cellDistance+2) + "," + (2 * paginationLinespace) + ")";
             }
         })
 
-//        pagiGroup.append("text").attr({
-//            "class": "info setLabel"
-//        }).style({
-//            "text-anchor": "start",
-//            "cursor": "none"
-//        }).attr({
-//            "transform": function () {
-//                return "translate(" + (cellDistance + 5) + "," + (1 * paginationLinespace) + ")";
-//            }
-//        })
 
         pagiGroup.append("text").attr({
             "class": "info_distance"
         }).style({
             "text-anchor": "middle",
-            "cursor": "none"
+            "cursor": "default"
         }).attr({
             "transform": function (d) {
                 return "translate(" + (middlePos) + ","
@@ -469,38 +457,51 @@ function plotSetOverview() {
             }
         })
 
+        pagiGroup.append("rect").attr({
+            "class": "multiSelect setSelectionButton"
+        }).attr({
+            "transform": "translate(" + (cellDistance+2) + "," + (2.3*paginationLinespace) + ")",
+            width: paddingForPaginationRight-cellDistance-4,
+            height:.9*paginationLinespace,
+            rx:5,
+            ry:5
+        })
+            .on({
+                "click": function () {
+                    if (ctx.setSelection.mode=="none"){
+                        ctx.setSelection.mode = "multiSel";
+                        ctx.setSelection.modeChange = true;
+                        plotSetOverview();
+                    }else if (ctx.setSelection.mode === "multiSel"){
+                        ctx.setSelection.multiSelIn = d3.set();
+                        ctx.setSelection.multiSelOut = d3.set();
+                        ctx.setSelection.mode = "none";
+                        ctx.setSelection.modeChange = true;
+                        plotSetOverview();
+                    }
+                }
+            })
+
         pagiGroup.append("text").attr({
             "class": "multiSelect"
         }).style({
             "text-anchor": "middle",
-            "cursor": "pointer"
+            "cursor": "pointer",
+            "pointer-events":"none"
         }).attr({
             "transform": "translate(" + (middlePos) + "," + (3.0*paginationLinespace) + ")"
         }).text("multi select")
-            .on({
-            "click": function () {
-                if (ctx.setSelection.mode=="none"){
-                    ctx.setSelection.mode = "multiSel";
-                    ctx.setSelection.modeChange = true;
-                    plotSetOverview();
-                }else if (ctx.setSelection.mode === "multiSel"){
-                    ctx.setSelection.multiSelIn = d3.set();
-                    ctx.setSelection.multiSelOut = d3.set();
-                    ctx.setSelection.mode = "none";
-                    ctx.setSelection.modeChange = true;
-                    plotSetOverview();
-                }
-            }
-        })
 
-        pagiGroup.append("text").attr({
-            "class": "sortFilter"
-        }).style({
-            "text-anchor": "middle",
-            "cursor": "pointer"
+
+        pagiGroup.append("rect").attr({
+            "class": "sortFilter setSelectionButton"
         }).attr({
-            "transform": "translate(" + (middlePos) + "," + (4*paginationLinespace) + ")"
-        }).text("sort")
+            "transform": "translate(" + (cellDistance+2) + "," + (3.3*paginationLinespace) + ")",
+            width: paddingForPaginationRight-cellDistance-4,
+            height:.9*paginationLinespace,
+            rx:5,
+            ry:5
+        })
             .on({
                 "click": function () {
                     if (ctx.setSelection.mode == "none") {
@@ -514,6 +515,18 @@ function plotSetOverview() {
                     }
                 }
             })
+
+
+        pagiGroup.append("text").attr({
+            "class": "sortFilter"
+        }).style({
+            "text-anchor": "middle",
+            "cursor": "pointer",
+            "pointer-events":"none"
+        }).attr({
+            "transform": "translate(" + (middlePos) + "," + (4*paginationLinespace) + ")"
+        }).text("sort")
+
 
         // --- UPDATES
 
@@ -560,15 +573,15 @@ function plotSetOverview() {
                 Math.min(ctx.setSelection.paginationEnd,unusedSets.length)
         })
 
-        pagi.select(".multiSelect").style({
-            "font-weight": function () {
-//                if (ctx.setSelection.mode === "multiSel"){
-//                    return "bold"
-//                }else{
-                    return "normal"
-//                }
-            }
-        })
+//        pagi.select(".multiSelect").style({
+//            "font-weight": function () {
+////                if (ctx.setSelection.mode === "multiSel"){
+////                    return "bold"
+////                }else{
+//                    return "normal"
+////                }
+//            }
+//        })
 
 
         var selRectPos = 0;

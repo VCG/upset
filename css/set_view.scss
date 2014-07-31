@@ -661,6 +661,14 @@ th.attribute-header.selected {
   stroke:none;
 }
 
+.setSelectionButton {
+  fill:lightgrey;
+  stroke:none;
+}
+.setSelectionButton:hover {
+  fill:darkgray;
+}
+
 .pagination, .setMenuExtra {
   font-family: $font-stack;
   font-size: 12px;
@@ -676,8 +684,12 @@ th.attribute-header.selected {
   font-family: FontAwesome;
   font-size: 14px;
   fill:lightgrey;
-  cursor: s-resize;
+  cursor: pointer;
   font-weight: 300;
+}
+.setSelectionLabelAwesome:hover {
+  fill:darkgrey;
+  //  font-size: 14px;
 }
 
 

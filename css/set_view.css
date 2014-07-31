@@ -242,7 +242,7 @@ th.attribute-header.selected {
   text-shadow: 0 0 10px #3fa0c7; }
 
 .fixed-y-container {
-  overflow-y: hidden; }
+  overflow-y: auto; }
 
 #set-vis-container {
   min-height: 300px; }
@@ -500,6 +500,13 @@ th.attribute-header.selected {
   fill: lightgrey;
   stroke: none; }
 
+.setSelectionButton {
+  fill: lightgrey;
+  stroke: none; }
+
+.setSelectionButton:hover {
+  fill: darkgray; }
+
 .pagination, .setMenuExtra {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 12px;
@@ -513,8 +520,11 @@ th.attribute-header.selected {
   font-family: FontAwesome;
   font-size: 14px;
   fill: lightgrey;
-  cursor: s-resize;
+  cursor: pointer;
   font-weight: 300; }
+
+.setSelectionLabelAwesome:hover {
+  fill: darkgrey; }
 
 /*.groupingSelect{*/
 /*position: relative;*/
