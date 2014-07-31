@@ -242,7 +242,7 @@ th.attribute-header.selected {
   text-shadow: 0 0 10px #3fa0c7; }
 
 .fixed-y-container {
-  overflow-y: hidden; }
+  overflow-y: auto; }
 
 #set-vis-container {
   min-height: 300px; }
@@ -413,18 +413,6 @@ th.attribute-header.selected {
 
 .element-view-controls {
   min-height: 25px; }
-
-/** ============ Configuration ============== */
-.configTable {
-  padding-bottom: 10px;
-  font-size: 12px;
-  display: inline-block;
-  float: left;
-  clear: both; }
-
-.configHeader {
-  font-weight: bold;
-  padding-bottom: .2em; }
 
 /** ==== for range slider == **/
 .drawBrush, path.connectionArea {

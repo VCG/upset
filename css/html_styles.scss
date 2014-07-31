@@ -210,3 +210,24 @@ html, body, .ui-container {
 .ui-column.ui-layout-east {
   border-left: 1px solid #999;
 }
+
+
+/** ============ Configuration Panel Left ============== */
+.configTable {
+  padding-bottom: 10px;
+  font-size: 12px;
+  display: inline-block;
+  float: left;
+  clear: both;
+}
+
+.option {
+}
+
+.option:hover {
+}
+
+.configHeader {
+  font-weight: bold;
+  padding-bottom: .2em;
+}
