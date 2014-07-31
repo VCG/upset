@@ -43,7 +43,7 @@
 .setLabel, .connection {
   /*dominant-baseline: middle;*/
   font: 12px sans-serif;
-  cursor: s-resize;
+  cursor: pointer;
   font-weight: 300;
   /*alignment-baseline:middle;*/
   /*alignment-baseline:middle;*/

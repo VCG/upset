@@ -431,7 +431,10 @@ function UpSet() {
                 transform: function (d, i) {
                     return 'translate(0,' + (ctx.textHeight - ctx.textSpacing - 2) + ')rotate(45)';
                 },
-                'text-anchor': 'end',
+                'text-anchor': 'end'
+            })
+            .style({
+                'cursor':'s-resize'
             })
             .on('mouseover', mouseoverColumn)
             .on('mouseout', mouseoutColumn)
@@ -464,6 +467,8 @@ function UpSet() {
                 UpSetState.forceUpdate = true;
                 updateState(d);
                 rowTransition();
+            }).style({
+                'cursor':'s-resize'
             });
 
 
