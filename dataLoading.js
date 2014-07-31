@@ -281,6 +281,9 @@ function parseDataSet(data, dataSetDescription) {
     // the names of the sets are in the columns
     var header = file[dataSetDescription.header];
 
+    dataSetMetaData.author = dataSetDescription.author;
+    dataSetMetaData.description = dataSetDescription.description;
+    dataSetMetaData.source = dataSetDescription.source;
     // remove header
     file.splice(dataSetDescription.header, 1);
 

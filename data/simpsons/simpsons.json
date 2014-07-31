@@ -9,5 +9,9 @@
 	],
 	"sets": [
 		{ "format": "binary", "start": 1, "end": 6 }
-	]
+	],
+    "author": "Alexander Lex",
+    "description": "A collection of simpsons characters and their attributes.",
+    "source": "http://www.thesimpsons.com/"
+
 }

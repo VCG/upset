@@ -1,5 +1,5 @@
 /**
- * Created by alexsb on 2/4/14.
+ * Created by Alexander Lex on 2/4/14.
  */
 
 
@@ -51,6 +51,12 @@ var selectedItems = [];
 var selections = new SelectionList(); //an array of selection
 
 var elementViewers = new ElementViewerCollection( "#element-viewers-controls", "#element-viewers-visualization" );
+
+var dataSetMetaData = {
+    author: "",
+    description: "",
+    source: ""
+};
 
 /** The list of available datasets */
 var dataSets;
