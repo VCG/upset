@@ -3,12 +3,16 @@ function plotSetOverview() {
     var initialize = false;
     var animate = false;
 
+
     if (arguments[0]){
         console.log(arguments[0]);
         initialize = arguments[0].initialize || false;
 
         if (initialize){
             ctx.setSelection.mode = "none"
+            ctx.setSelection.modeChange = false;
+            ctx.setSelection.multiSelIn = d3.set();
+            ctx.setSelection.multiSelOut = d3.set();
         }
 //        animate = arguments[0].animate || false;
 //        mode = arguments[0].mode || "none";
@@ -22,49 +26,37 @@ function plotSetOverview() {
     var cellSize = cellDistance;// - minorPadding;
     var setCellDistance = 12;
     var setCellSize = 10;
-    var textHeight = 60;
+
+    var differenceForMultiSel = 7;
+    var textHeight = 62-differenceForMultiSel;
     var truncateAfter = 7;
     var distanceUsedUnused = 30;
     var paddingForPaginationRight = 115;
     var paddingForPaginationRightExtra = (ctx.setSelection.mode==="none")?0:100;
     const paginationLinespace = 14;
 
+    var headerSVG = d3.select('#headerVis').select('svg');
+
+    // calculate widths
+    var svgWidth = headerSVG.attr("width");
+    var unusedLabelOffset = usedSets.length*cellSize + distanceUsedUnused;
+    var maxWidthUnused = svgWidth - unusedLabelOffset - paddingForPaginationRight - paddingForPaginationRightExtra;
+
+    var unusedSets = sets.filter(function(n) {
+        return usedSets.indexOf(n) == -1
+    });
 
 
-    d3.selectAll(".visOverview").remove();
 
 
     // --- INIT the SVG structure (d3 version)
 
-    var headerSVG = d3.select('#headerVis').select('svg');
+
     var setSelectionGroup = headerSVG.selectAll(".setSelection").data([1]);
     setSelectionGroup.enter().append("g").attr({
         class: "setSelection",
         "transform": "translate(" + 0 + "," + 0 + ")"
     })
-
-    var usedSetsVis = setSelectionGroup.selectAll(".usedSets").data([1]);
-    usedSetsVis.enter().append("g").attr("class", "usedSets");
-
-
-
-    // ----------------------------
-    ///-- Render the __used Sets
-    // ----------------------------
-
-    var usedSetsLabels = usedSetsVis
-        .selectAll('.setLabel')
-        .data(usedSets, function(d){return d.elementName;})
-
-    usedSetsLabels.exit().remove();
-
-    var usedSetsLabelsEnter = usedSetsLabels.enter().append("g").attr("class","setLabel").attr({
-        transform: function (d, i) {
-            return 'translate(' + (cellDistance * (i )) + ', 0)'
-        },
-        opacity:.1
-
-    });
 
 
     // scale for the size of the subSets, also used for the sets
@@ -72,230 +64,306 @@ function plotSetOverview() {
         return d.setSize;
     })]).nice().range([0, textHeight]);
 
-    usedSetsLabelsEnter
-        .append('rect')
-        .attr({
-            class: 'setSizeBackground',
-            height: (textHeight+1),
-            width: cellSize//setRowScale.rangeBand()
+
+    function updateUsedSets() {
+        // ----------------------------
+        ///-- Render the used Sets
+        // ----------------------------
+        var usedSetsVis = setSelectionGroup.selectAll(".usedSets").data([1]);
+        usedSetsVis.enter().append("g").attr("class", "usedSets");
+
+        usedSetsVis.attr({
+            "transform":"translate("+0+","+differenceForMultiSel+")"
         })
-        .on('click', setClicked)
-        .on('mouseover', function(d, i) {
-            mouseoverColumn(d, i);
 
-        })
-        .on('mouseout', function(d, i) {
-            mouseoutColumn(d, i);
-        });
-
-    // background bar
-    usedSetsLabelsEnter
-        .append('rect')
-        .attr({
-            class: 'setSize',
-            x:1,
-            width: cellSize-2//setRowScale.rangeBand()
-        })
-      //  .attr("transform", "skewX(45)")
-        .on('mouseover', mouseoverColumn)
-        .on('mouseout', mouseoutColumn)
-        .on('click', setClicked)
-
-
-    // *** update sizes (might happen when changing datasets)
-    d3.selectAll(".usedSets .setSize").transition().duration(1000).attr({
-        y:function(d){return (textHeight-(setSizeScale(d.setSize)));},
-        height: function (d) {
-            return setSizeScale(d.setSize);
-        }
-    });
-
-    usedSetsLabelsEnter.transition().duration(400).delay(400).attr({
-        opacity:1
-    })
-
-    // *** update group position
-    usedSetsLabels
-//        .transition()
-        .attr({
-        transform: function (d, i) {
-            return 'translate(' + (cellDistance * (i )) + ', 0)'
-        }
-    })
-
-
-
-    // ----------------------------
-    ///-- Render the unused Sets
-    // ----------------------------
-
-
-    // calculate widths
-    var unusedLabelOffset = usedSets.length*cellSize + distanceUsedUnused;
-
-    var svgWidth = headerSVG.attr("width");
-    var maxWidthUnused = svgWidth - unusedLabelOffset - paddingForPaginationRight - paddingForPaginationRightExtra;
-
-
-
-    var unusedSets = sets.filter(function(n) {
-        return usedSets.indexOf(n) == -1
-    });
-
-    var sortSize = function (a, b) {
-        return b.setSize - a.setSize;
-    };
-
-    var sortName = function (a, b) {
-      return d3.ascending(a.elementName, b.elementName);
-    };
-
-    var sortFn;
-
-    if (ctx.setOrder === "name") {
-      sortFn = sortName;
-    }  else {
-      sortFn = sortSize;
-    }
-
-    unusedSets.sort(sortFn);
-
-    var unusedSetsGroup = setSelectionGroup.selectAll(".unusedSets").data([1])
-    unusedSetsGroup.enter().append("g").attr("class","unusedSets")
-
-    console.log(svgWidth,maxWidthUnused, cellDistance);
-
-
-
-
-    if (maxWidthUnused<cellDistance){
-
-
-        unusedSetsGroup.selectAll('.unusedSetLabel').remove();
-
-    }else{
-
-        /*
-         * add only if there is enough space !!!
-         * */
-
-        var paginationDistance = Math.floor(maxWidthUnused/cellDistance);
-        if (initialize){
-            ctx.setSelection.paginationStart=+0;
-        }
-        ctx.setSelection.paginationEnd=+ctx.setSelection.paginationStart+paginationDistance;
-
-        var unusedSetsFiltered = unusedSets.filter(
-            function(d,i){
-                return ((ctx.setSelection.paginationStart<=i) && (i<=ctx.setSelection.paginationEnd));
-            }
-        )
-
-        console.log("uS_f:", maxWidthUnused,paginationDistance,unusedSetsFiltered);
-
-        /*
-        * create buttons for pagination
-        * */
-        updatePaginationDecoration();
-
-
-        var unusedSetsLabels = unusedSetsGroup
-            .selectAll('.unusedSetLabel')
-            .data(unusedSetsFiltered, function(d){return d.elementName;})
-
-        unusedSetsLabels.exit()
-//        .transition().style({
-//        opacity:0
-//    }).transition().delay(500)
-            .remove();
-
-        unusedSetsLabels.attr({
+        var usedSetsLabels = usedSetsVis
+            .selectAll('.setLabel')
+            .data(usedSets, function (d) {
+                return d.elementName;
+            })
+        usedSetsLabels.exit().remove();
+        var usedSetsLabelsEnter = usedSetsLabels.enter().append("g").attr("class", "setLabel").attr({
             transform: function (d, i) {
-                return 'translate(' + (cellDistance * (i ) + unusedLabelOffset) + ', 0)'
-            }
-        })
-
-
-        var unusedSetsLabelsEnter = unusedSetsLabels.enter().append("g").attr("class","unusedSetLabel").attr({
-            transform: function (d, i) {
-                return 'translate(' + (cellDistance * (i ) + unusedLabelOffset) + ', -10)'
+                return 'translate(' + (cellDistance * (i )) + ', 0)'
             },
-            opacity:.1
+            opacity: .1
+
         });
-        unusedSetsLabelsEnter
+        usedSetsLabelsEnter
             .append('rect')
             .attr({
-                class: 'unusedSetSizeBackground',
+                class: 'setSizeBackground',
+                height: (textHeight + 1),
+                width: cellSize//setRowScale.rangeBand()
+            })
+            .on('click', setClicked)
+            .on('mouseover', function (d, i) {
+                mouseoverColumn(d, i);
+            })
+            .on('mouseout', function (d, i) {
+                mouseoutColumn(d, i);
+            });
+        // background bar
+        usedSetsLabelsEnter
+            .append('rect')
+            .attr({
+                class: 'setSizeRect setSize',
+                x: 1,
+                width: cellSize - 2//setRowScale.rangeBand()
+            })
+            //  .attr("transform", "skewX(45)")
+            .on('mouseover', mouseoverColumn)
+            .on('mouseout', mouseoutColumn)
+            .on('click', setClicked)
+        // *** update sizes (might happen when changing datasets)
+        d3.selectAll(".usedSets .setSize").transition().duration(1000).attr({
+            y: function (d) {
+                return (textHeight - (setSizeScale(d.setSize)));
+            },
+            height: function (d) {
+                return setSizeScale(d.setSize);
+            }
+        });
+        usedSetsLabelsEnter.transition().duration(400).delay(400).attr({
+            opacity: 1
+        })
+        // *** update group position
+//        usedSetsLabels
+//            .attr({
+//                transform: function (d, i) {
+//                        return 'translate(' + (cellDistance * i) + ', 0)'
+//                }
+//            })
+
+        usedSetsLabels.attr({
+            transform: function (d, i) {
+                if (ctx.setSelection.mode==="multiSel"){
+                    if (ctx.setSelection.multiSelOut.has(d.elementName)) {
+                        return 'translate(' + (cellDistance * i ) + ', -'+differenceForMultiSel+')'
+                    }else{
+                        return 'translate(' + (cellDistance * i ) + ', 0)'
+                    }
+
+                }else{
+                    return 'translate(' + (cellDistance * i)  + ', 0)'
+                }
+
+            }
+        })
+
+        usedSetsLabels.selectAll(".setSizeRect")
+            .attr({
+                "class":function(d){
+                    if (ctx.setSelection.multiSelOut.has(d.elementName)) {
+                        return 'setSizeRect unusedSetSize'
+                    }else{
+                        return 'setSizeRect setSize'
+                    }
+
+
+                }
+
+
+            })
+
+
+    }
+
+    updateUsedSets();
+
+
+
+    function updateUnusedSets(){
+        // ----------------------------
+        ///-- Render the unused Sets
+        // ----------------------------
+        var sortSize = function (a, b) {
+            return b.setSize - a.setSize;
+        };
+
+        var sortName = function (a, b) {
+            return d3.ascending(a.elementName, b.elementName);
+        };
+
+        var sortFn;
+
+        if (ctx.setSelection.setOrder === "name") {
+            sortFn = sortName;
+        }  else {
+            sortFn = sortSize;
+        }
+
+        unusedSets.sort(sortFn);
+
+        var unusedSetsGroup = setSelectionGroup.selectAll(".unusedSets").data([1])
+        unusedSetsGroup.enter().append("g").attr("class","unusedSets")
+
+        unusedSetsGroup.attr({
+            "transform":function(d){
+                if (ctx.setSelection.mode==="multiSel"){
+                    return 'translate(0, 0)'
+                }else{
+                    return 'translate(0, '+differenceForMultiSel+')'
+                }
+            }
+        })
+
+
+
+
+
+        if (maxWidthUnused<cellDistance){
+
+
+            unusedSetsGroup.selectAll('.unusedSetLabel').remove();
+
+        }else{
+
+            /*
+             * add only if there is enough space !!!
+             * */
+
+            var paginationDistance = Math.floor(maxWidthUnused/cellDistance);
+            if (initialize){
+                ctx.setSelection.paginationStart=+0;
+            }
+            ctx.setSelection.paginationEnd=+ctx.setSelection.paginationStart+paginationDistance;
+
+            var unusedSetsFiltered = unusedSets.filter(
+                function(d,i){
+                    return ((ctx.setSelection.paginationStart<=i) && (i<=ctx.setSelection.paginationEnd));
+                }
+            )
+
+
+            /*
+             * create buttons for pagination
+             * */
+            updatePaginationDecoration();
+
+
+            var unusedSetsLabels = unusedSetsGroup
+                .selectAll('.unusedSetLabel')
+                .data(unusedSetsFiltered, function(d){return d.elementName;})
+
+            unusedSetsLabels.exit().remove();
+
+
+            var unusedSetsLabelsEnter = unusedSetsLabels.enter().append("g").attr("class","unusedSetLabel").attr({
+                transform: function (d, i) {
+                    return 'translate(' + (cellDistance * (i ) + unusedLabelOffset) + ', -10)'
+                },
+                opacity:.1
+            });
+            unusedSetsLabelsEnter
+                .append('rect')
+                .attr({
+                    class: 'unusedSetSizeBackground',
 //                transform: function (d, i) {
 //                    return 'translate(' + (cellDistance * (i )) + ', 20)'
 //                },
-                height: textHeight-2,
-                width: cellSize
-            })
-            .on('click', setClicked)
+                    height: textHeight-2,
+                    width: cellSize
+                })
+                .on('click', setClicked)
 
-        unusedSetsLabelsEnter
-            .append('rect')
-            .attr({
-                class: 'unusedSetSize',
-                transform: function (d, i) {
-                    return 'translate(1, ' + ( textHeight - setSizeScale(d.setSize)) + ')'
-                }, // ' + (textHeight - 5) + ')'
-                height: function (d) {
-                    return setSizeScale(d.setSize);
-                },
-                width: cellSize-2
-            })
-            .on('click', setClicked)
+            unusedSetsLabelsEnter
+                .append('rect')
+                .attr({
+                    class: 'setSizeRect unusedSetSize',
+                    transform: function (d, i) {
+                        return 'translate(1, ' + ( textHeight - setSizeScale(d.setSize)) + ')'
+                    }, // ' + (textHeight - 5) + ')'
+                    height: function (d) {
+                        return setSizeScale(d.setSize);
+                    },
+                    width: cellSize-2
+                })
+                .on('click', setClicked)
 //        .append("svg:title")
 //        .text(function(d, i) { return d.elementName + " (" +d.setSize+ ")"; });;
 
 
-        unusedSetsLabelsEnter
-            .append('text').text(function (d) {
-                if (d.elementName.length > (truncateAfter+3)){
-                    var str = d.elementName.substring(0, truncateAfter)
-                    if(str.length<d.elementName.length)
-                        str = str.trim() + "...";
-                }else{
-                    str= d.elementName.trim();
-                }
+            unusedSetsLabelsEnter
+                .append('text').text(function (d) {
+                    if (d.elementName.length > (truncateAfter+3)){
+                        var str = d.elementName.substring(0, truncateAfter)
+                        if(str.length<d.elementName.length)
+                            str = str.trim() + "...";
+                    }else{
+                        str= d.elementName.trim();
+                    }
 
-                return str;
-            })
-//        .sort(sortFn)
-            .attr({
-                class: 'setLabel',
+                    return str;
+                })
+                .attr({
+                    class: 'setLabel',
+                    transform: function (d, i) {
+                        return 'translate(' + (cellDistance + 5) + ', 0) rotate(90)'
+                    },
+                    y: cellSize - 3,
+                    x: 3,
+                    height: textHeight-4,
+                    'text-anchor': 'start'
+
+                })
+                .on('click', setClicked)
+                .append("svg:title")
+                .text(function(d, i) { return d.elementName + " (" +d.setSize+ ")"; });
+
+
+//            console.log("animate:", animate);
+//            var updateUnusedPos =unusedSetsLabelsEnter;
+//            if (animate){
+//                updateUnusedPos= unusedSetsLabelsEnter
+//                    .transition().duration(400).delay(400)
+//            }
+//            updateUnusedPos.attr({
+//                opacity:1,
+//                transform: function (d, i) {
+//                    return 'translate(' + (cellDistance * (i ) + unusedLabelOffset) + ', 0)'
+//                }
+//            })
+
+            unusedSetsLabels.attr({
                 transform: function (d, i) {
-                    return 'translate(' + (cellDistance + 5) + ', 0) rotate(90)'
+                    if (ctx.setSelection.mode==="multiSel"){
+                        if (ctx.setSelection.multiSelIn.has(d.elementName)) {
+                            return 'translate(' + (cellDistance * (i ) + unusedLabelOffset) + ', '+differenceForMultiSel+')'
+                        }else{
+                            return 'translate(' + (cellDistance * (i ) + unusedLabelOffset) + ', 0)'
+                        }
+
+                    }else{
+                        return 'translate(' + (cellDistance * (i ) + unusedLabelOffset) + ', 0)'
+                    }
+
                 },
-                y: cellSize - 3,
-                x: 3,
-                height: textHeight-4,
-                'text-anchor': 'start'
-
+                opacity:1
             })
-            .on('click', setClicked)
-            .append("svg:title")
-            .text(function(d, i) { return d.elementName + " (" +d.setSize+ ")"; });
 
 
-        console.log("animate:", animate);
-        var updateUnusedPos =unusedSetsLabelsEnter;
-        if (animate){
-            updateUnusedPos= unusedSetsLabelsEnter
-                .transition().duration(400).delay(400)
+            unusedSetsLabels.selectAll(".setSizeRect")
+                .attr({
+                  "class":function(d){
+                      if (ctx.setSelection.multiSelIn.has(d.elementName)) {
+                          return 'setSizeRect setSize'
+                      }else{
+                          return 'setSizeRect unusedSetSize'
+                      }
+
+
+                  }
+
+
+                })
+
+
+
         }
-        updateUnusedPos.attr({
-            opacity:1,
-            transform: function (d, i) {
-                return 'translate(' + (cellDistance * (i ) + unusedLabelOffset) + ', 0)'
-            }
-        })
-
-
-
     }
+
+    updateUnusedSets();
 
 
 
@@ -305,35 +373,76 @@ function plotSetOverview() {
         var setsRight = unusedSets.length - ctx.setSelection.paginationEnd;
         var setsLeft = ctx.setSelection.paginationStart;
 
+        var middlePos = ((paddingForPaginationRight - cellDistance) / 2 + cellDistance);
+        var paginationDistance = Math.floor(maxWidthUnused/cellDistance);
 
         var pagi = headerSVG.selectAll(".pagination")
             .data([{countRight: setsRight, countLeft: setsLeft, distance: paginationDistance}])
         var pagiGroup = pagi.enter().append("g").attr({
             "class":"pagination"
         })
-        pagi.attr({
-            "transform":"translate("+(svgWidth-paddingForPaginationRight)+",0)"
-        })
+
+        var finalPos = svgWidth-paddingForPaginationRight;
+        if (ctx.setSelection.mode !== "none"){
+            finalPos-=paddingForPaginationRightExtra;
+        }
+
+        if (ctx.setSelection.modeChange){
+            pagi.transition().attr({
+                "transform":"translate("+(finalPos)+",0)"
+            })
+
+        }else{
+            pagi.attr({
+                "transform":"translate("+(finalPos)+",0)"
+            })
+        }
+
+
+        pagiGroup.append("text")
+        .style({
+            "text-anchor": "middle",
+            "cursor": "default",
+                "font-weight":"bold"
+        }).attr({
+            "transform": function () {
+
+                return "translate(" + ( middlePos) + "," + (.8*paginationLinespace) + ")";
+            }
+        }).text("set menu")
+
+
+        pagiGroup.append("rect")
+            .attr({
+                "class":"selectionRect setSelectionArea",
+                x:cellDistance,
+                width:paddingForPaginationRight-cellDistance+5,
+                height:paginationLinespace *.8,
+                opacity:0
+            })
+
+
+
 
         pagiGroup.append("text").attr({
-            "class": "right setLabel"
+            "class": "right setSelectionLabelAwesome"
         }).style({
             "text-anchor": "end",
             "cursor": "e-resize"
         }).attr({
             "transform": function () {
-                return "translate(" + (paddingForPaginationRight - 2) + "," + (1*paginationLinespace) + ")";
+                return "translate(" + (paddingForPaginationRight - 2) + "," + (2*paginationLinespace) + ")";
             }
         })
 
         pagiGroup.append("text").attr({
-            "class": "left setLabel"
+            "class": "left setSelectionLabelAwesome"
         }).style({
             "text-anchor": "start",
             "cursor": "w-resize"
         }).attr({
             "transform": function () {
-                return "translate(" + (cellDistance+2) + "," + (1 * paginationLinespace) + ")";
+                return "translate(" + (cellDistance+2) + "," + (2 * paginationLinespace) + ")";
             }
         })
 
@@ -349,51 +458,70 @@ function plotSetOverview() {
 //        })
 
         pagiGroup.append("text").attr({
-            "class": "info_distance setLabel"
+            "class": "info_distance"
         }).style({
             "text-anchor": "middle",
             "cursor": "none"
         }).attr({
             "transform": function (d) {
-                return "translate(" + ((paddingForPaginationRight-cellDistance) / 2 + cellDistance) + ","
-                    + (1 * paginationLinespace) + ")";
+                return "translate(" + (middlePos) + ","
+                    + (2 * paginationLinespace) + ")";
             }
         })
 
-//        pagiGroup.append("text").attr({
-//            "class": "multiSelect setLabel"
-//        }).style({
-//            "text-anchor": "start",
-//            "cursor": "pointer"
-//        }).attr({
-//            "transform": "translate(" + (cellDistance + 5) + "," + (2.4*paginationLinespace) + ")"
-//        }).text("multi select")
-//            .on({
-//            "click": function () {
-//                if (ctx.setSelection.mode=="none"){
-//                    ctx.setSelection.mode = "multiSel";
-//                    plotSetOverview();
-//                }else if (ctx.setSelection.mode === "multiSel"){
-//                    ctx.setSelection.mode = "none";
-//                    plotSetOverview();
-//                }
-//            }
-//        })
-//
-//        pagiGroup.append("text").attr({
-//            "class": "sortFilter setLabel"
-//        }).style({
-//            "text-anchor": "start",
-//            "cursor": "pointer"
-//        }).attr({
-//            "transform": "translate(" + (cellDistance + 5) + "," + (4.0*paginationLinespace) + ")"
-//        }).text("sort & filter")
-//
-//        // --- UPDATES
-//
+        pagiGroup.append("text").attr({
+            "class": "multiSelect"
+        }).style({
+            "text-anchor": "middle",
+            "cursor": "pointer"
+        }).attr({
+            "transform": "translate(" + (middlePos) + "," + (3.0*paginationLinespace) + ")"
+        }).text("multi select")
+            .on({
+            "click": function () {
+                if (ctx.setSelection.mode=="none"){
+                    ctx.setSelection.mode = "multiSel";
+                    ctx.setSelection.modeChange = true;
+                    plotSetOverview();
+                }else if (ctx.setSelection.mode === "multiSel"){
+                    ctx.setSelection.multiSelIn = d3.set();
+                    ctx.setSelection.multiSelOut = d3.set();
+                    ctx.setSelection.mode = "none";
+                    ctx.setSelection.modeChange = true;
+                    plotSetOverview();
+                }
+            }
+        })
+
+        pagiGroup.append("text").attr({
+            "class": "sortFilter"
+        }).style({
+            "text-anchor": "middle",
+            "cursor": "pointer"
+        }).attr({
+            "transform": "translate(" + (middlePos) + "," + (4*paginationLinespace) + ")"
+        }).text("sort")
+            .on({
+                "click": function () {
+                    if (ctx.setSelection.mode == "none") {
+                        ctx.setSelection.mode = "sortFilter";
+                        ctx.setSelection.modeChange = true;
+                        plotSetOverview();
+                    } else if (ctx.setSelection.mode === "sortFilter") {
+                        ctx.setSelection.mode = "none";
+                        ctx.setSelection.modeChange = true;
+                        plotSetOverview();
+                    }
+                }
+            })
+
+        // --- UPDATES
+
         pagi.select(".right").text(function (d) {
-            if (d.countRight < 1) return '-|'
-            else return '>>';
+//            if (d.countRight < 1) return '-|'
+//            else return '>>';
+            if (d.countRight < 1) return ''
+            else return '\uf0a9';
         }).on({
             "click": function (d) {
                 if (d.countRight > 0) {
@@ -408,8 +536,13 @@ function plotSetOverview() {
 
         pagi.select(".left")
              .text(function (d) {
-                if (d.countLeft < 1) return '|-'
-                else return '<<'; })
+//                if (d.countLeft < 1) return '|-'
+//                else return '<<'; })
+                if (d.countLeft < 1) return ''
+                else return '\uf0a8'; })
+
+                //&#f053
+
             .on({
                 "click": function (d) {
                     if (d.countLeft > 0) {
@@ -427,18 +560,147 @@ function plotSetOverview() {
                 Math.min(ctx.setSelection.paginationEnd,unusedSets.length)
         })
 
-//        pagi.select(".multiSelect").style({
-//            "font-weight": function () {
+        pagi.select(".multiSelect").style({
+            "font-weight": function () {
 //                if (ctx.setSelection.mode === "multiSel"){
 //                    return "bold"
 //                }else{
-//                    return "normal"
+                    return "normal"
 //                }
-//            }
-//        })
+            }
+        })
+
+
+        var selRectPos = 0;
+        var selRectOpa = 0;
+        if (ctx.setSelection.mode==="multiSel"){
+            selRectPos = 2.3*paginationLinespace;
+            selRectOpa = 1;
+        }else if (ctx.setSelection.mode==="sortFilter"){
+            selRectPos = 3.3*paginationLinespace;
+            selRectOpa = 1;
+        }
+
+
+        if (ctx.setSelection.modeChange){
+            pagi.select(".selectionRect").transition().duration(200)
+                .attr({
+                y:selRectPos,
+                opacity:selRectOpa
+            })
+
+        }else{
+            pagi.select(".selectionRect").attr({
+                y:selRectPos,
+                opacity:selRectOpa
+            })
+        }
+
+        updateSecondMenu();
+
+        // only one pass of mode change rendering
+        ctx.setSelection.modeChange = false;
 
 
     }
+
+
+
+    function updateSecondMenu(){
+
+        var menuContent = []
+        if (ctx.setSelection.mode === "multiSel"){
+            menuContent =
+                [[
+                    {name:"add all", func: function(){
+                        unusedSets.forEach(function(d){ctx.setSelection.multiSelIn.add(d.elementName);});
+                        plotSetOverview();
+                    }},
+                    {name:"add none", func: function(){
+                        ctx.setSelection.multiSelIn = d3.set();
+                        plotSetOverview()
+                    }},
+                    {name:"confirm", func: bulkChange, fontawe:"\uf00c"}
+                ]]
+
+        } else if (ctx.setSelection.mode === "sortFilter"){
+            menuContent =
+                [[
+                    {name:"by size", func: function(){
+                        ctx.setSelection.setOrder = "size"
+                        ctx.setSelection.mode = "none"
+                        ctx.setSelection.modeChange = true
+                        plotSetOverview();
+                    }},
+                    {name:"by name", func: function(){
+                        ctx.setSelection.setOrder = "name"
+                        ctx.setSelection.mode = "none"
+                        ctx.setSelection.modeChange = true
+                        plotSetOverview()
+                    }}
+                ]]
+
+        }
+
+        var menuExtra = headerSVG.selectAll(".setMenuExtra").data(menuContent);
+        menuExtra.exit().remove();
+        var menuExtraGroup = menuExtra.enter().append("g").attr("class","setMenuExtra").attr({
+            opacity:.1
+        })
+
+        menuExtraGroup.append("rect").attr({
+            "class":"setSelectionArea",
+            x:5,
+            width:paddingForPaginationRightExtra-10,
+            height:textHeight+5
+        })
+
+        if (ctx.setSelection.modeChange){
+            menuExtra.transition().duration(500)
+                .attr({
+                    opacity:1
+                });
+        }
+
+        menuExtra
+            .attr({
+                "transform":"translate("+(svgWidth-paddingForPaginationRightExtra)+","+0+")"
+            });
+
+
+        var menuExtraGroupEntries = menuExtraGroup.selectAll(".menuExtraEntry").data(function(d){return d;})
+        menuExtraGroupEntries.enter().append("text")
+            .attr({
+                "class": function (d) {
+                   if ('fontawe' in d){
+                       return "menuExtraEntry setMenuExtraAwesome"
+                   }else{
+                       return "menuExtraEntry"
+                   }
+                }  ,
+                "transform":function(d,i) {
+                    return "translate("+(paddingForPaginationRightExtra/2)+","+((1+(i*1.4))*paginationLinespace)+")";
+                }
+            })
+            .style({
+                "cursor":"pointer",
+                "text-anchor":"middle"
+            })
+            .text(function(d){
+                if ('fontawe' in d) {
+                    return  d.fontawe + " "+ d.name;
+                }else{
+                    return d.name;
+                }
+            })
+            .on("click", function(d){ d.func();})
+
+
+
+
+
+    }
+
 
 
 //    // -- update position !!!
@@ -530,9 +792,59 @@ function plotSetOverview() {
 //      .text(function(d, i) { return d.elementName + " (" +d.setSize+ ")"; });
 
     function setClicked(d, i) {
-        updateSetContainment(d, true);        
-               d3.selectAll(".bulkCheck").transition().remove();
+
+        if (ctx.setSelection.mode === "multiSel"){
+            if (d.isSelected){
+                // for usedSets:
+                if (ctx.setSelection.multiSelOut.has(d.elementName)){
+                    ctx.setSelection.multiSelOut.remove(d.elementName);
+                }else{
+                    ctx.setSelection.multiSelOut.add(d.elementName);
+                }
+            }else{
+                // for UNusedSets:
+                if (ctx.setSelection.multiSelIn.has(d.elementName)){
+                    ctx.setSelection.multiSelIn.remove(d.elementName);
+                }else{
+                    ctx.setSelection.multiSelIn.add(d.elementName);
+                }
+            }
+            plotSetOverview();
+        }else{
+            updateSetContainment(d, true);
+        }
+
+
+//               d3.selectAll(".bulkCheck").transition().remove();
     }
+
+
+    function bulkChange(){
+
+        var list_update =
+            sets.filter(function(d){
+                return ctx.setSelection.multiSelIn.has(d.elementName) ||
+                    ctx.setSelection.multiSelOut.has(d.elementName)
+            })
+
+
+        ctx.setSelection.multiSelIn = d3.set();
+        ctx.setSelection.multiSelOut = d3.set();
+
+        //close multiselect panel
+        ctx.setSelection.mode ="none"
+        ctx.setSelection.modeChange= true
+
+        if (list_update.length>0){
+            // updateSetCon will call plot again
+            list_update.map(function(d, i) { updateSetContainment(d, i==list_update.length-1); });
+        }else{
+            plotSetOverview()
+        }
+
+
+    }
+
 
     function setClickedByBulk() {
 
@@ -541,14 +853,14 @@ function plotSetOverview() {
       var list_update = [];
 
       // Browse all the checkboxes
-      d3.selectAll("input[value=setcheck]").filter(function() {
-        var d = d3.select(d3.select(this)[0][0].parentNode.parentNode).datum();
-        if(d3.select(this).property("checked") != d[0].isSelected)
-          list_update.push(d[0])
-      })
+//      d3.selectAll("input[value=setcheck]").filter(function() {
+//        var d = d3.select(d3.select(this)[0][0].parentNode.parentNode).datum();
+//        if(d3.select(this).property("checked") != d[0].isSelected)
+//          list_update.push(d[0])
+//      })
 
 
-       d3.selectAll(".bulkCheck").transition().remove();
+//       d3.selectAll(".bulkCheck").transition().remove();
 
       list_update.map(function(d, i) { updateSetContainment(d, i==list_update.length-1); });
 

@@ -653,6 +653,34 @@ th.attribute-header.selected {
     overflow-x: scroll;
 }
 
+
+/// -- Styles for Set Selection component (SVG)
+
+.setSelectionArea {
+  fill:lightgrey;
+  stroke:none;
+}
+
+.pagination, .setMenuExtra {
+  font-family: $font-stack;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 300;
+}
+
+.setMenuExtraAwesome {
+  font-family: FontAwesome;
+//  font-size: 14px;
+}
+.setSelectionLabelAwesome {
+  font-family: FontAwesome;
+  font-size: 14px;
+  fill:lightgrey;
+  cursor: s-resize;
+  font-weight: 300;
+}
+
+
 /*.groupingSelect{*/
 /*position: relative;*/
 /*left:-6px;*/

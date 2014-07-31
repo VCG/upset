@@ -496,6 +496,26 @@ th.attribute-header.selected {
   overflow-y: hidden;
   overflow-x: scroll; }
 
+.setSelectionArea {
+  fill: lightgrey;
+  stroke: none; }
+
+.pagination, .setMenuExtra {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 300; }
+
+.setMenuExtraAwesome {
+  font-family: FontAwesome; }
+
+.setSelectionLabelAwesome {
+  font-family: FontAwesome;
+  font-size: 14px;
+  fill: lightgrey;
+  cursor: s-resize;
+  font-weight: 300; }
+
 /*.groupingSelect{*/
 /*position: relative;*/
 /*left:-6px;*/

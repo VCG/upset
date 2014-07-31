@@ -31,7 +31,7 @@ var ctx = {
     paddingTop: 30,
     paddingSide: 20,
 
-    setOrder: 'size',
+
 
     truncateAfter: 20,
     truncateGroupAfter: 30,
@@ -74,7 +74,11 @@ var ctx = {
     setSelection: {
         paginationStart:0,
         paginationEnd:10,
-        mode:"none" // special modes are: "multiSel", "sortFilter"
+        mode:"none", // special modes are: "multiSel", "sortFilter"
+        modeChange: false,// only true if mode changed and re-rendering
+        multiSelIn:d3.set(),
+        multiSelOut:d3.set(),
+        setOrder: 'size' // options: size or name
     }
 
 
