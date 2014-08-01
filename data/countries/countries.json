@@ -9,5 +9,8 @@
 	],
 	"sets": [
 		{ "format": "binary", "start": 1, "end": 345}
-	]
+	],
+    "author": "UN Comtrade",
+    "description": "International Trade Statistics on Countries Exports and Imports for the Yeat 2010",
+    "source": "http://comtrade.un.org/"
 }
