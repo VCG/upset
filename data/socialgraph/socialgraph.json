@@ -10,5 +10,8 @@
 	],
 	"sets": [
 		{ "format": "binary", "start": 1, "end": 7 }
-	]
+	],
+    "author": "Michele Coscia",
+    "description": "Social Graph Data from Facebook, Flickr, GMail, Google+, LastFM, LinkedIN and Twitter",
+    "source": "http://www.michelecoscia.com/"	
 }
