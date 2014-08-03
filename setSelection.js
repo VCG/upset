@@ -30,7 +30,7 @@ function plotSetOverview() {
     var differenceForMultiSel = 7;
     var textHeight = 62-differenceForMultiSel;
     var truncateAfter = 7;
-    var distanceUsedUnused = 30;
+    var distanceUsedMenu = 15;
     var paddingForPaginationRight = 115;
     var paddingForPaginationRightExtra = (ctx.setSelection.mode==="none")?0:100;
     const paginationLinespace = 14;
@@ -39,8 +39,8 @@ function plotSetOverview() {
 
     // calculate widths
     var svgWidth = headerSVG.attr("width");
-    var unusedLabelOffset = usedSets.length*cellSize + distanceUsedUnused;
-    var maxWidthUnused = svgWidth - unusedLabelOffset - paddingForPaginationRight - paddingForPaginationRightExtra;
+    var menuOffset = usedSets.length*cellSize + distanceUsedMenu;
+    var maxWidthUnused = svgWidth - menuOffset - paddingForPaginationRight - paddingForPaginationRightExtra-distanceUsedMenu-cellDistance;
 
     var unusedSets = sets.filter(function(n) {
         return usedSets.indexOf(n) == -1
@@ -193,6 +193,9 @@ function plotSetOverview() {
             sortFn = sortSize;
         }
 
+        var unuseedSetsOffset = menuOffset+paddingForPaginationRight+paddingForPaginationRightExtra +distanceUsedMenu;
+
+
         unusedSets.sort(sortFn);
 
         var unusedSetsGroup = setSelectionGroup.selectAll(".unusedSets").data([1])
@@ -201,9 +204,9 @@ function plotSetOverview() {
         unusedSetsGroup.attr({
             "transform":function(d){
                 if (ctx.setSelection.mode==="multiSel"){
-                    return 'translate(0, 0)'
+                    return 'translate('+ unuseedSetsOffset+', 0)'
                 }else{
-                    return 'translate(0, '+differenceForMultiSel+')'
+                    return 'translate('+ unuseedSetsOffset +', '+differenceForMultiSel+')'
                 }
             }
         })
@@ -223,7 +226,10 @@ function plotSetOverview() {
              * add only if there is enough space !!!
              * */
 
+            console.log(maxWidthUnused, cellDistance);
             var paginationDistance = Math.floor(maxWidthUnused/cellDistance);
+
+            console.log(maxWidthUnused, cellDistance, paginationDistance);
             if (initialize){
                 ctx.setSelection.paginationStart=+0;
             }
@@ -251,7 +257,7 @@ function plotSetOverview() {
 
             var unusedSetsLabelsEnter = unusedSetsLabels.enter().append("g").attr("class","unusedSetLabel").attr({
                 transform: function (d, i) {
-                    return 'translate(' + (cellDistance * (i ) + unusedLabelOffset) + ', -10)'
+                    return 'translate(' + (cellDistance * (i ) ) + ', -10)'
                 },
                 opacity:.1
             });
@@ -329,13 +335,13 @@ function plotSetOverview() {
                 transform: function (d, i) {
                     if (ctx.setSelection.mode==="multiSel"){
                         if (ctx.setSelection.multiSelIn.has(d.elementName)) {
-                            return 'translate(' + (cellDistance * (i ) + unusedLabelOffset) + ', '+differenceForMultiSel+')'
+                            return 'translate(' + (cellDistance * (i ) ) + ', '+differenceForMultiSel+')'
                         }else{
-                            return 'translate(' + (cellDistance * (i ) + unusedLabelOffset) + ', 0)'
+                            return 'translate(' + (cellDistance * (i ) ) + ', 0)'
                         }
 
                     }else{
-                        return 'translate(' + (cellDistance * (i ) + unusedLabelOffset) + ', 0)'
+                        return 'translate(' + (cellDistance * (i ) ) + ', 0)'
                     }
 
                 },
@@ -370,10 +376,11 @@ function plotSetOverview() {
 
 
     function updatePaginationDecoration() {
+        var internalLeftPadding = 0 // only local
         var setsRight = unusedSets.length - ctx.setSelection.paginationEnd;
         var setsLeft = ctx.setSelection.paginationStart;
 
-        var middlePos = ((paddingForPaginationRight - cellDistance) / 2 + cellDistance);
+        var middlePos = ((paddingForPaginationRight - internalLeftPadding) / 2 + internalLeftPadding);
         var paginationDistance = Math.floor(maxWidthUnused/cellDistance);
 
         var pagi = headerSVG.selectAll(".pagination")
@@ -382,9 +389,11 @@ function plotSetOverview() {
             "class":"pagination"
         })
 
-        var finalPos = svgWidth-paddingForPaginationRight;
+//        var finalPos = svgWidth-paddingForPaginationRight;
+        var finalPos = menuOffset;
+//        console.log("finalpos", finalPos);
         if (ctx.setSelection.mode !== "none"){
-            finalPos-=paddingForPaginationRightExtra;
+            finalPos+=paddingForPaginationRightExtra;
         }
 
         if (ctx.setSelection.modeChange){
@@ -415,8 +424,8 @@ function plotSetOverview() {
         pagiGroup.append("rect")
             .attr({
                 "class":"selectionRect setSelectionArea",
-                x:cellDistance,
-                width:paddingForPaginationRight-cellDistance+5,
+                x:-5,
+                width:paddingForPaginationRight-internalLeftPadding+5,
                 height:paginationLinespace *.9,
                 opacity:0
             })
@@ -440,7 +449,7 @@ function plotSetOverview() {
             "text-anchor": "start"
         }).attr({
             "transform": function () {
-                return "translate(" + (cellDistance+2) + "," + (2 * paginationLinespace) + ")";
+                return "translate(" + (internalLeftPadding+2) + "," + (2 * paginationLinespace) + ")";
             }
         })
 
@@ -460,8 +469,8 @@ function plotSetOverview() {
         pagiGroup.append("rect").attr({
             "class": "multiSelect setSelectionButton"
         }).attr({
-            "transform": "translate(" + (cellDistance+2) + "," + (2.3*paginationLinespace) + ")",
-            width: paddingForPaginationRight-cellDistance-4,
+            "transform": "translate(" + (internalLeftPadding+2) + "," + (2.3*paginationLinespace) + ")",
+            width: paddingForPaginationRight-internalLeftPadding-4,
             height:.9*paginationLinespace,
             rx:5,
             ry:5
@@ -483,7 +492,7 @@ function plotSetOverview() {
             })
 
         pagiGroup.append("text").attr({
-            "class": "multiSelect"
+            "class": "multiSelect setSelectionButtonText"
         }).style({
             "text-anchor": "middle",
             "cursor": "pointer",
@@ -496,8 +505,8 @@ function plotSetOverview() {
         pagiGroup.append("rect").attr({
             "class": "sortFilter setSelectionButton"
         }).attr({
-            "transform": "translate(" + (cellDistance+2) + "," + (3.3*paginationLinespace) + ")",
-            width: paddingForPaginationRight-cellDistance-4,
+            "transform": "translate(" + (internalLeftPadding+2) + "," + (3.3*paginationLinespace) + ")",
+            width: paddingForPaginationRight-internalLeftPadding-4,
             height:.9*paginationLinespace,
             rx:5,
             ry:5
@@ -518,7 +527,7 @@ function plotSetOverview() {
 
 
         pagiGroup.append("text").attr({
-            "class": "sortFilter"
+            "class": "sortFilter setSelectionButtonText"
         }).style({
             "text-anchor": "middle",
             "cursor": "pointer",
@@ -539,6 +548,7 @@ function plotSetOverview() {
             "click": function (d) {
                 if (d.countRight > 0) {
                     ctx.setSelection.paginationStart = ctx.setSelection.paginationStart + d.distance;
+
                     plotSetOverview({animate: false});
                 } else {
                     return;
@@ -677,7 +687,7 @@ function plotSetOverview() {
 
         menuExtra
             .attr({
-                "transform":"translate("+(svgWidth-paddingForPaginationRightExtra)+","+0+")"
+                "transform":"translate("+(menuOffset)+","+0+")"
             });
 
 
