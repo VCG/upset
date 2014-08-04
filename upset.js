@@ -740,14 +740,17 @@ function UpSet() {
               return d.id;
           });
 
+//        console.log("rr:",renderRows);
+//        console.log("rr2:",ctx.rowScale.domain());
+
       var rowSubSets = subSets
           .enter()
           .append('g')
           .attr({transform: function (d) {
 
-              if (d.data.type === ROW_TYPE.SUBSET)
+              if (d.data.type === ROW_TYPE.SUBSET || d.data.type === ROW_TYPE.GROUP) {
                   return 'translate(0, ' + ctx.rowScale(d.id) + ')';
-              else {
+              }else {
                   var offset_y = ctx.textHeight;
                   if (d.data.level == 2)
                       offset_y += 10
@@ -757,7 +760,7 @@ function UpSet() {
               return 'row ' + d.data.type;
           }
           }).style("opacity", function (d) {
-              if (d.data.type === ROW_TYPE.SUBSET)
+              if (d.data.type === ROW_TYPE.SUBSET || d.data.type === ROW_TYPE.GROUP)
                   return ctx.gRows.selectAll('.row')[0].length == 0 ? 1 : 0;
               else
                   return ctx.gRows.selectAll('.row')[0].length ? 0 : 1;
@@ -771,8 +774,8 @@ function UpSet() {
       
       subSets.exit().remove();
 
-      var subSetTransition = subSets;
-      if (ctx.rowTransitions)
+      var subSetTransition = subSets
+      if (ctx.rowTransitions && usedSets.length<10)
           subSetTransition = subSets
               .transition().duration(function (d, i) {
                   if (d.data.type === ROW_TYPE.SUBSET)
