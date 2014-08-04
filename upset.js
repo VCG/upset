@@ -79,6 +79,12 @@ var ctx = {
         multiSelIn:d3.set(),
         multiSelOut:d3.set(),
         setOrder: 'size' // options: size or name
+    },
+
+    logicStates: {
+        NOT:0,
+        DONTCARE:2,
+        MUST:1
     }
 
 

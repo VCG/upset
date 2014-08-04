@@ -111,6 +111,9 @@ var changeDataset = function () {
     selectedAttributes = {};
     previousState = undefined;
 
+    UpSetState.logicGroups = [];
+    UpSetState.logicGroupChanged = true;
+
     loadDataSet(queryParameters['dataset']);
 
     updateQueryParameters();

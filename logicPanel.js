@@ -30,6 +30,8 @@ function LogicPanel(params){
 //    ]
 
 
+    this.logicState = ctx.logicStates;
+
     var me = this;
 
 
@@ -61,12 +63,6 @@ function LogicPanel(params){
 
     var logicExpression = {}
     var actualOrClause = 1;
-    var logicState ={
-        NOT:0,
-        DONTCARE:2,
-        MUST:1
-    }
-
 
     var initLogicExpression = function(){
         logicExpression = {
@@ -218,7 +214,7 @@ function LogicPanel(params){
         // define first orClause as dontcare ANDs
         logicExpression.orClauses[0] = {};
         usedSets.forEach(function(d){
-            logicExpression.orClauses[0][d.id]={state:logicState.DONTCARE};
+            logicExpression.orClauses[0][d.id]={state:me.logicState.DONTCARE};
 //            logicExpression.orClauses[0][d.id]={state:Math.floor(Math.random()*3)};
         })
 
@@ -241,7 +237,7 @@ function LogicPanel(params){
         var id = logicExpression.orClauses.length;
         logicExpression.orClauses[id] = {};
         usedSets.forEach(function(d){
-            logicExpression.orClauses[id][d.id]= {state:logicState.DONTCARE};
+            logicExpression.orClauses[id][d.id]= {state:me.logicState.DONTCARE};
 //            logicExpression.orClauses[id][d.id]={state:Math.floor(Math.random()*3)};
         })
         actualOrClause= id;
@@ -299,17 +295,17 @@ function LogicPanel(params){
         var setNameListLength = Object.keys(setNames).length;
         var expression = "";
 
-        Object.keys(logicState).forEach(function (dd){
-            var d = logicState[dd];
+        Object.keys(me.logicState).forEach(function (dd){
+            var d = me.logicState[dd];
             if (collectExpressions[d]!=null && collectExpressions[d].length ==setNameListLength){
                 switch(d){
-                    case logicState.NOT:
+                    case me.logicState.NOT:
                         expression=  "the intersection that does not intersect with any selected set";
                         break;
-                    case logicState.DONTCARE:
+                    case me.logicState.DONTCARE:
                         expression =  "all intersections of all selected sets";
                         break;
-                    case logicState.MUST:
+                    case me.logicState.MUST:
                         expression = "the intersection of all selected sets";
                         break;
                     default : break;
@@ -321,14 +317,14 @@ function LogicPanel(params){
             expression = "intersections of  ";
 
             var but = "";
-            if (collectExpressions[logicState.MUST]!=null){
-                expression += "set"+((collectExpressions[logicState.MUST].length>1)?"s ":" ")
-                expression += collectExpressions[logicState.MUST].map(function(d){return "["+d+"]"}).join(" and ")
+            if (collectExpressions[me.logicState.MUST]!=null){
+                expression += "set"+((collectExpressions[me.logicState.MUST].length>1)?"s ":" ")
+                expression += collectExpressions[me.logicState.MUST].map(function(d){return "["+d+"]"}).join(" and ")
                 but=" but "
             }
-            if (collectExpressions[logicState.NOT]!=null){
-                expression += but+"excluding "+ "set"+((collectExpressions[logicState.NOT].length>1)?"s ":" ");
-                expression += collectExpressions[logicState.NOT].map(function(d){return "["+d+"]"}).join(" and ")
+            if (collectExpressions[me.logicState.NOT]!=null){
+                expression += but+"excluding "+ "set"+((collectExpressions[me.logicState.NOT].length>1)?"s ":" ");
+                expression += collectExpressions[me.logicState.NOT].map(function(d){return "["+d+"]"}).join(" and ")
             }
 
 
@@ -488,13 +484,13 @@ function LogicPanel(params){
                 fill:function(d){
                     switch(d.state)
                     {
-                        case logicState.NOT:
+                        case me.logicState.NOT:
                             return grays[0]
                             break;
-                        case logicState.MUST:
+                        case me.logicState.MUST:
                             return grays[1]
                             break;
-                        default: // logicState.DONTCARE
+                        default: // me.logicState.DONTCARE
                             return "url(#DontCarePattern)"
                     }},
                 stroke:grays[1]//function(){if (isExpanded) return logicColor; else return grays[1];}
@@ -527,16 +523,16 @@ function LogicPanel(params){
 
 
 //        console.log("clist:",clausesList);
-        var matrix = Object.keys(logicState).map(function(d){
+        var matrix = Object.keys(me.logicState).map(function(d){
             return {
 
-                state:logicState[d],
+                state:me.logicState[d],
                 selectors:clausesList.map(function(dd){
 
                     return{
-                        state:logicState[d],
+                        state:me.logicState[d],
                         id:dd.subsetID,
-                        isSelected:function(){return (logicState[d]==dd.state)}
+                        isSelected:function(){return (me.logicState[d]==dd.state)}
                     }
                 })
 
@@ -553,13 +549,13 @@ function LogicPanel(params){
         trEnter.append("text").text(function(d,i){
             switch(d.state)
             {
-                case logicState.NOT:
+                case me.logicState.NOT:
                     return "not";
                     break;
-                case logicState.MUST:
+                case me.logicState.MUST:
                     return "must";
                     break;
-                default: // logicState.DONTCARE
+                default: // me.logicState.DONTCARE
                     return "maybe"
             }}).attr({
                 x:-4,
@@ -611,13 +607,13 @@ function LogicPanel(params){
                 fill:function(d){
                     switch(d.state)
                     {
-                        case logicState.NOT:
+                        case me.logicState.NOT:
                             return grays[0]
                             break;
-                        case logicState.MUST:
+                        case me.logicState.MUST:
                             return grays[1]
                             break;
-                        default: // logicState.DONTCARE
+                        default: // me.logicState.DONTCARE
                             return "url(#DontCarePattern)"
                     }},
                 stroke:function(d){
@@ -914,4 +910,6 @@ function LogicPanel(params){
 
 
 }
+
+
 
