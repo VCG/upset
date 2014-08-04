@@ -12,6 +12,6 @@
 		{ "format": "binary", "start": 1, "end": 7 }
 	],
     "author": "Michele Coscia",
-    "description": "Social Graph Data from Facebook, Flickr, GMail, Google+, LastFM, LinkedIN and Twitter",
+    "description": "Social graph data for co-usage of multiple online social platforms. Each element is a person using one or multiple of the platforms (the sets).",
     "source": "http://www.michelecoscia.com/"	
 }
