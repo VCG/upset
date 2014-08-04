@@ -501,6 +501,10 @@ th.attribute-header.selected {
   cursor: pointer;
   font-weight: 300; }
 
+.setSelectionButtonText {
+  fill: #444;
+  font-weight: bold; }
+
 .setMenuExtraAwesome {
   font-family: FontAwesome; }
 

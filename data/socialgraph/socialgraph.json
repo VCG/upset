@@ -10,5 +10,8 @@
 	],
 	"sets": [
 		{ "format": "binary", "start": 1, "end": 7 }
-	]
+	],
+    "author": "Michele Coscia",
+    "description": "Social graph data for co-usage of multiple online social platforms. Each element is a person using one or multiple of the platforms (the sets).",
+    "source": "http://www.michelecoscia.com/"	
 }

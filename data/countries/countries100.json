@@ -1,6 +1,6 @@
 {
 	"file": "data/countries/countries100.csv",
-	"name": "Countries Exports by Products (1335)",
+	"name": "Exports of Countries by Products",
 	"header": 0,
 	"separator": ",",
 	"skip": 0,
@@ -12,5 +12,8 @@
 	],
 	"sets": [
 		{ "format": "binary", "start": 1, "end": 1354}
-	]
+	],
+    "author": "UN Comtrade",
+    "description": "International Trade Statistics on Exports and Imports by Countries for the Year 2010",
+    "source": "http://comtrade.un.org/"
 }
