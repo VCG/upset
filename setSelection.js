@@ -1,3 +1,7 @@
+/**
+ * Created by romain & hen (hendrik.strobelt.com)
+ */
+
 function plotSetOverview() {
 
     var initialize = false;
@@ -637,12 +641,24 @@ function plotSetOverview() {
                 [[
                     {name:"Add All Sets", func: function(){
                         unusedSets.forEach(function(d){ctx.setSelection.multiSelIn.add(d.elementName);});
+                        ctx.setSelection.multiSelOut = d3.set();
                         plotSetOverview();
                     }},
-                    {name:"Clear Selected", func: function(){
+                    {name:"Clear All Sets", func: function(){
                         ctx.setSelection.multiSelIn = d3.set();
+                        usedSets.forEach(function(d){ctx.setSelection.multiSelOut.add(d.elementName);});
+
                         plotSetOverview()
                     }},
+                    {name:"Cancel", func: function(){
+                        ctx.setSelection.multiSelIn = d3.set();
+                        ctx.setSelection.multiSelOut = d3.set();
+
+                        //close multiselect panel
+                        ctx.setSelection.mode ="none"
+                        ctx.setSelection.modeChange= true
+                        plotSetOverview();
+                    }, fontawe:"\uf00d"},
                     {name:"Confirm", func: bulkChange, fontawe:"\uf00c"}
                 ]]
 
@@ -702,7 +718,7 @@ function plotSetOverview() {
                    }
                 }  ,
                 "transform":function(d,i) {
-                    return "translate("+(paddingForPaginationRightExtra/2)+","+((1+(i*1.4))*paginationLinespace)+")";
+                    return "translate("+(paddingForPaginationRightExtra/2)+","+((1+(i*1.0))*paginationLinespace)+")";
                 }
             })
             .style({

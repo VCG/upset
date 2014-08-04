@@ -1,5 +1,5 @@
 /**
- * Created by hen on 3/12/14.
+ * Created by hen (hendrik.strobelt.com)
  */
 
 function LogicPanel(params){
