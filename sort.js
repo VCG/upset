@@ -15,17 +15,17 @@ var handleLogicGroups = function (subsets, level, parentGroup) {
         getSubsetsForMaskList(subsets, maskList, function (d) {
             group.addSubSet(d);
         });
-        if (group.subSets.length>0){
 
+        if (group.subSets.length>0){
             filterGroups.push(group)
         }else{
-            deleteCandidates.append(d);
+            deleteCandidates.push(d);
         }
     })
 
     // TODO: HAS TO BE IMPROVED !!!
     deleteCandidates.forEach(function(d){
-        UpSetState.logicGroups.slice(UpSetState.indexOf(d),1);
+        UpSetState.logicGroups.slice(UpSetState.logicGroups.indexOf(d),1);
     })
 
 
@@ -474,3 +474,31 @@ var updateState = function (parameter) {
     updateQueryParameters();
 
 };
+
+// external events that influence sort.js
+function bindEventsForSort() {
+    $(EventManager).bind("set-added", function (event, data) {
+        UpSetState.logicGroups.forEach(function(lg){
+            lg.orClauses.forEach(function(orClause){
+                orClause[data.set.id] = {state:ctx.logicStates.DONTCARE};
+            })
+        })
+        UpSetState.logicGroupChanged = true;
+
+    })
+
+    $(EventManager).bind("set-removed", function (event, data) {
+        UpSetState.logicGroups.forEach(function(lg){
+
+            lg.orClauses.forEach(function(orClause){
+                delete orClause[data.set.id];
+            })
+        })
+        UpSetState.logicGroupChanged = true;
+
+    })
+
+
+}
+
+bindEventsForSort();

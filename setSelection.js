@@ -885,25 +885,7 @@ function plotSetOverview() {
     }
 
 
-    function setClickedByBulk() {
 
-
-      var nb_update = 0;
-      var list_update = [];
-
-      // Browse all the checkboxes
-//      d3.selectAll("input[value=setcheck]").filter(function() {
-//        var d = d3.select(d3.select(this)[0][0].parentNode.parentNode).datum();
-//        if(d3.select(this).property("checked") != d[0].isSelected)
-//          list_update.push(d[0])
-//      })
-
-
-//       d3.selectAll(".bulkCheck").transition().remove();
-
-      list_update.map(function(d, i) { updateSetContainment(d, i==list_update.length-1); });
-
-    }
 }
 
 //    overview.on('mouseover', function(d, i) {
