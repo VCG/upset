@@ -2575,11 +2575,11 @@ function UpSet() {
                     height: windowHeight+"px"
                 })
 
-            d3.select('#bodyVis')
-                .style({
+//            d3.select('#bodyVis')
+//                .style({
 //                    height: (windowHeight-2*ctx.textHeight-40)+"px" // TODO: HACK
-                    height: (windowHeight-300)+"px" // TODO: HACK
-                })
+//                    height: (windowHeight-300)+"px" // TODO: HACK
+//                })
 
 //            ctx.svgBody.attr({
 //                height: (windowHeight - 70)
