@@ -8,6 +8,10 @@ UpSet is an interactive, web based visualization technique designed to analyze s
 
 We are hosting a demo instance of UpSet at [http://vcg.github.io/upset](http://vcg.github.io/upset).
 
+## R Package
+
+An R package to generate UpSet plots is under development and available at [https://github.com/hms-dbmi/UpSetR](https://github.com/hms-dbmi/UpSetR).
+
 ## Local Deployment
 
 1. Clone the repository using ```git clone``` or download and extract the [ZIP file](https://github.com/VCG/upset/archive/master.zip).
