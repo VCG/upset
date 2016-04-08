@@ -10,19 +10,25 @@ var queryParameters = {};
 var initCallback; // function to call when dataset is loaded
 var globalCtx;
 
-function initData(ctx, callback) {
+function initData(ctx, callback, datasets) {
+    dataSetDescriptions = [];
+
     retrieveQueryParameters();
     setUpGUIElements();
 
     initCallback = callback;
     globalCtx = ctx;
-    $.when($.ajax({ url: 'datasets.json', dataType: 'json' })).then(
-        function (data, textStatus, jqXHR) {
-            loadDataSetDescriptions(data);
-        },
-        function (data, textStatus, jqXHR) {
-            console.error('Error loading "' + this.url + '".');
-        });
+    if (!datasets) {
+        $.when($.ajax({ url: 'datasets.json', dataType: 'json' })).then(
+            function (data, textStatus, jqXHR) {
+                loadDataSetDescriptions(data);
+            },
+            function (data, textStatus, jqXHR) {
+                console.error('Error loading "' + this.url + '".');
+            });
+    } else {
+        loadDataSetDescriptions(datasets);
+    }
 
     /// registering custom dataset function
     $("#custom-dataset-submit").on('click', function () {
@@ -72,7 +78,11 @@ function loadDataSetDescriptions(dataSetList) {
     // launch requests to load data set descriptions
     for (var i = 0; i < dataSetList.length; ++i) {
         var url = dataSetList[i];
-        requests.push($.ajax({ url: url, dataType: 'json', success: handleDatasetDescription}));
+        if ($.type(url) === 'string') {
+            requests.push($.ajax({ url: url, dataType: 'json', success: handleDatasetDescription}));
+        } else {
+            handleDatasetDescription(url);
+        }
     }
 
     $.when.apply(undefined, requests).then(loadDataSetFromQueryParameters, handleDataSetError);
@@ -116,7 +126,7 @@ var changeDataset = function () {
 
     loadDataSet(queryParameters['dataset']);
 
-    updateQueryParameters();
+    // updateQueryParameters();
 
     clearSelections();
 }
@@ -126,10 +136,15 @@ function loadDataSet(index) {
 }
 
 function processDataSet(dataSetDescription) {
-    d3.text(dataSetDescription.file, 'text/csv', function (data) {
-        parseDataSet(data, dataSetDescription);
-        run();
-    });
+    if (dataSetDescription.file) {
+        d3.text(dataSetDescription.file, 'text/csv', function (data) {
+            parseDataSet(data, dataSetDescription);
+            run();
+        });
+    } else {
+      parseDataSet(dataSetDescription.data, dataSetDescription);
+      run();
+    }
 }
 
 /**
@@ -182,7 +197,7 @@ function retrieveQueryParameters() {
     queryParameters['dataset'] = parseInt(queryParameters['dataset']) || 0;
     queryParameters['duration'] = queryParameters['duration'] || 1000;
     queryParameters['orderBy'] = queryParameters['orderBy'] || "subsetSize"; // deviation, intersection, specific set
-    queryParameters['grouping'] = queryParameters['grouping'] == "undefined" ? undefined : queryParameters['grouping'] || "groupBySet"; // groupByIntersectionSize, 
+    queryParameters['grouping'] = queryParameters['grouping'] == "undefined" ? undefined : queryParameters['grouping'] || "groupBySet"; // groupByIntersectionSize,
     queryParameters['selection'] = queryParameters['selection'] || "";
     // Missing item space query..
 
@@ -265,14 +280,17 @@ function getIdColumn(dataSetDescription) {
 }
 
 function parseDataSet(data, dataSetDescription) {
-
-    var dsv = d3.dsv(dataSetDescription.separator, 'text/plain');
-
     // the raw set arrays
     var rawSets = [];
     var setNames = [];
 
-    var file = dsv.parseRows(data);
+    var file;
+    if ($.type(data) === 'string') {
+        var dsv = d3.dsv(dataSetDescription.separator, 'text/plain');
+        file = dsv.parseRows(data);
+    } else {
+        file = data;
+    }
 
     // the names of the sets are in the columns
     var header = file[dataSetDescription.header];

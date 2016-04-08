@@ -8,7 +8,7 @@
  */
 
 
-VennDiagram = function( element, radius ) {
+var VennDiagram = function( element, radius ) {
 	this.element = element;
 	this.radius = radius;
 };
@@ -25,11 +25,11 @@ VennDiagram.prototype.isActive = function( areaSets, highlightSubsets ) {
 		for ( var i = 0; i < areaSets.length; ++i ) {
 			if ( areaSets[i] === highlightSubsets[s].combinedSets[i] ) {
 				++hitCounter;
-			}		
+			}
 		}
 		if ( hitCounter === areaSets.length ) {
 			return ( true );
-		}		
+		}
 	}
 
 	return ( false );
@@ -71,9 +71,9 @@ VennDiagram.prototype.plot2Set = function( highlightSubsets ) {
 	    .attr("width", width)
 	    .attr("height", height)
 	    .attr("class", function() { return ( self.isActive( [0,0], highlightSubsets ) ? "venn-zero-set-area-active" : "venn-zero-set-area" ); } );
-	 
+
 	var defs = svg.append("svg:defs");
-	 
+
 	defs.append("svg:clipPath")
 	    .attr("id", "circle1")
 	  .append("svg:circle")
@@ -87,20 +87,20 @@ VennDiagram.prototype.plot2Set = function( highlightSubsets ) {
 	    .attr("cx", self.radius * 550/180 - .5 * self.radius )
 	    .attr("cy", self.radius * 200/180 + .25 * self.radius)
 	    .attr("r", self.radius /*180*/);
-	
-	 
+
+
 	vis.append("svg:rect")
 	    .attr("clip-path", "url(#circle1)")
 	    .attr("width", width)
 	    .attr("height", height)
 	    .attr("class", function() { return ( self.isActive( [1,0], highlightSubsets ) ? "venn-one-set-area-active" : "venn-one-set-area" ); } );
-	 
+
 	vis.append("svg:rect")
 	    .attr("clip-path", "url(#circle2)")
 	    .attr("width", width)
 	    .attr("height", height)
 	    .attr("class", function() { return ( self.isActive( [0,1], highlightSubsets ) ? "venn-one-set-area-active" : "venn-one-set-area" ); } );
-	 
+
 	vis.append("svg:g")
 	    .attr("clip-path", "url(#circle1)")
 	  .append("svg:rect")
@@ -132,9 +132,9 @@ VennDiagram.prototype.plot3Set = function( highlightSubsets ) {
 	    .attr("width", width)
 	    .attr("height", height)
 	    .attr("class", function() { return ( self.isActive( [0,0,0], highlightSubsets ) ? "venn-zero-set-area-active" : "venn-zero-set-area" ); } );
-	 
+
 	var defs = svg.append("svg:defs");
-	 
+
 	defs.append("svg:clipPath")
 	    .attr("id", "circle1")
 	  .append("svg:circle")
@@ -148,32 +148,32 @@ VennDiagram.prototype.plot3Set = function( highlightSubsets ) {
 	    .attr("cx", self.radius * 550/180 - .5 * self.radius )
 	    .attr("cy", self.radius * 200/180 + .25 * self.radius)
 	    .attr("r", self.radius /*180*/);
-	
+
 	defs.append("svg:clipPath")
 	    .attr("id", "circle3")
 	  .append("svg:circle")
 	    .attr("cx", self.radius * 450/180 - .5 * self.radius )
 	    .attr("cy", self.radius * 300/180 + .25 * self.radius)
-	    .attr("r", self.radius /*180*/);		
-	 
+	    .attr("r", self.radius /*180*/);
+
 	vis.append("svg:rect")
 	    .attr("clip-path", "url(#circle1)")
 	    .attr("width", width)
 	    .attr("height", height)
 	    .attr("class", function() { return ( self.isActive( [1,0,0], highlightSubsets ) ? "venn-one-set-area-active" : "venn-one-set-area" ); } );
-	 
+
 	vis.append("svg:rect")
 	    .attr("clip-path", "url(#circle2)")
 	    .attr("width", width)
 	    .attr("height", height)
 	    .attr("class", function() { return ( self.isActive( [0,1,0], highlightSubsets ) ? "venn-one-set-area-active" : "venn-one-set-area" ); } );
-	 
+
 	vis.append("svg:rect")
 	    .attr("clip-path", "url(#circle3)")
 	    .attr("width", width)
 	    .attr("height", height)
 	    .attr("class", function() { return ( self.isActive( [0,0,1], highlightSubsets ) ? "venn-one-set-area-active" : "venn-one-set-area" ); } );
-	 
+
 	vis.append("svg:g")
 	    .attr("clip-path", "url(#circle1)")
 	  .append("svg:rect")
@@ -181,7 +181,7 @@ VennDiagram.prototype.plot3Set = function( highlightSubsets ) {
 	    .attr("width", width)
 	    .attr("height", height)
 	    .attr("class", function() { return ( self.isActive( [1,1,0], highlightSubsets ) ? "venn-two-set-area-active" : "venn-two-set-area" ); } );
-	
+
 	vis.append("svg:g")
 	    .attr("clip-path", "url(#circle2)")
 	  .append("svg:rect")
@@ -197,7 +197,7 @@ VennDiagram.prototype.plot3Set = function( highlightSubsets ) {
 	    .attr("width", width)
 	    .attr("height", height)
 	    .attr("class", function() { return ( self.isActive( [1,0,1], highlightSubsets ) ? "venn-two-set-area-active" : "venn-two-set-area" ); } );
-	 
+
 	vis.append("svg:g")
 	    .attr("clip-path", "url(#circle3)")
 	  .append("svg:g")

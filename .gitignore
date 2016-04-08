@@ -1,3 +1,5 @@
 *.sublime-project
 *.sublime-workspace
 UpSet-Data/*
+dist/*
+node_modules

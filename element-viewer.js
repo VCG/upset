@@ -2,7 +2,7 @@
  * author: Nils Gehlenborg - nils@hms.harvard.edu
 */
 
-ElementViewerConfigurations = {
+var ElementViewerConfigurations = {
     scatterplot: scatterplotConfiguration,
     histogram: histogramConfiguration,
     wordCloud: wordCloudConfiguration,
@@ -23,7 +23,7 @@ $(EventManager).bind("element-viewer-activated", function (event, data) {
 });
 
 
-ElementViewerCollection = function( controllerElementId, viewerElementId ) {
+var ElementViewerCollection = function( controllerElementId, viewerElementId ) {
     var self = this;
 
     self.list = [];
@@ -89,7 +89,7 @@ ElementViewerCollection.prototype.activateNext = function() {
         self.setActiveIndex( 0 );
     }
     else {
-        self.setActiveIndex( undefined );        
+        self.setActiveIndex( undefined );
     }
 };
 
@@ -103,7 +103,7 @@ ElementViewerCollection.prototype.activatePrevious = function() {
         self.setActiveIndex( self.list.length - 1 );
     }
     else {
-        self.setActiveIndex( undefined );        
+        self.setActiveIndex( undefined );
     }
 };
 
@@ -160,7 +160,7 @@ ElementViewerCollection.prototype.renderController = function() {
     var self = this;
     var controllerElement = d3.select( self.controllerElementId );
 
-    controllerElement.html("");    
+    controllerElement.html("");
 
     // create header and controls
     var viewerElementHeaderLeft = controllerElement.append( "div" ).attr( "class", "element-viewer-header" );
@@ -186,7 +186,7 @@ ElementViewerCollection.prototype.renderController = function() {
     var viewerConfigurationList = $.map(ElementViewerConfigurations, function(value, index) {
         return [value];
     });
-    
+
     select.attr('id', 'element-viewer-selector')
         .selectAll('option')
             .data( viewerConfigurationList )
@@ -275,14 +275,14 @@ ElementViewerCollection.prototype.renderViewer = function( showEditor ) {
         self.getActive().renderViewer( '#' + id );
     }
     else {
-        self.getActive().renderEditor( '#' + id );        
+        self.getActive().renderEditor( '#' + id );
     }
 
     return self;
 };
 
 
-ElementViewer = function( attributes, selections, configuration, editorElementId, viewerElementId  ) {
+var ElementViewer = function( attributes, selections, configuration, editorElementId, viewerElementId  ) {
     var self = this;
 
     self.attributes = attributes;
@@ -304,7 +304,7 @@ ElementViewer.prototype.initializeParameterMap = function() {
         var parameter = self.configuration.parameters[i];
 
         self.parameterMap[parameter.variable] = parameter.default;
-    }    
+    }
 }
 
 
@@ -333,8 +333,8 @@ ElementViewer.prototype.renderEditor = function( editorElementId ) {
 
     var editor = element.append('div').attr( 'id', 'element-viewer-editor-' + self.uuid );
 
-    editor.html( '<div>' + 
-        '<div class="element-viewer-title">' + self.configuration.name +'</div>' + 
+    editor.html( '<div>' +
+        '<div class="element-viewer-title">' + self.configuration.name +'</div>' +
         '&nbsp;<span class="element-viewer-editor-button level-2-button element-viewer-editor-save" data-viewer-uuid="' + self.uuid + '""><i class="fa fw fa-check"></i></span>' +
         '&nbsp;<span class="element-viewer-editor-button level-2-button element-viewer-editor-cancel" data-viewer-uuid="' + self.uuid + '""><i class="fa fw fa-times"></i></span>' +
         '</div>');
@@ -349,7 +349,7 @@ ElementViewer.prototype.renderEditor = function( editorElementId ) {
 
     d3.selectAll( '.element-viewer-editor-cancel' ).on( 'click', function(event){
         // ignore changes, just render the viewer
-        self.renderViewer( editorElementId );        
+        self.renderViewer( editorElementId );
     });
 
     for ( var i = 0; i < self.configuration.attributes.length; ++i ) {
@@ -435,7 +435,7 @@ ElementViewer.prototype.parseAttributeValue = function( attributeVariable ) {
 
     var value = undefined;
 
-    editor = $('[data-element-viewer-attribute-variable="' + attributeVariable + '"]' );    
+    editor = $('[data-element-viewer-attribute-variable="' + attributeVariable + '"]' );
 
     value = parseInt( $( editor ).val(), 10 );
 
@@ -446,9 +446,9 @@ ElementViewer.prototype.parseAttributeValue = function( attributeVariable ) {
 ElementViewer.prototype.renderParameterEditor = function( element, parameter, value ) {
     var self = this;
     var s = "";
-    
+
     s += '<div data-element-viewer-parameter-type="' + parameter.type + '">';
-    
+
     switch ( parameter.type ) {
         case 'float':
             s += parameter.name + ' ' + '<input data-element-viewer-parameter-variable="' + parameter.variable + '" type="number" step="0.1" value="' + d3.format('f')(value) + '"></input>';
@@ -466,7 +466,7 @@ ElementViewer.prototype.renderParameterEditor = function( element, parameter, va
             break;
     }
 
-    s += '</div>'; 
+    s += '</div>';
 
     // add to DOM
     element.html(s);
@@ -479,9 +479,9 @@ ElementViewer.prototype.renderParameterEditor = function( element, parameter, va
 ElementViewer.prototype.renderAttributeEditor = function( element, attributes, attribute, value ) {
     var self = this;
     var s = "";
-    
+
     s += '<div data-element-viewer-attribute-type="' + attribute.type + '">';
-    
+
     s += '<b>' + attribute.name + '</b>' + '<select data-element-viewer-attribute-variable="' + attribute.variable +'">';
     for ( var i = 0; i < attributes.length; ++i ) {
         if ( Attribute.matchesType( attributes[i].type, attribute.type ) ) {
@@ -494,7 +494,7 @@ ElementViewer.prototype.renderAttributeEditor = function( element, attributes, a
         }
     }
     s += "</select>";
-    s += '</div>'; 
+    s += '</div>';
 
     // add to DOM
     element.html(s);

@@ -216,3 +216,5 @@ StatisticGraphs.prototype.renderBoxPlot = function(id, g, x,y,w,h,classID){
 
 
 }
+
+window.StatisticGraphs = StatisticGraphs;
