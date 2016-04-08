@@ -910,6 +910,3 @@ function LogicPanel(params){
 
 
 }
-
-
-

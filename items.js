@@ -56,11 +56,11 @@ function plotSelectionTabs( element, selections, activeSelection ) {
         .html('<i class="fa fw fa-plus"></i>')
         .on("click", function(event){
             createInitialSelection();
-        });                    
+        });
 }
 
 
-function plotSelectedItems( elementId, selection ) { 
+function plotSelectedItems( elementId, selection ) {
 
     var element = d3.select(elementId);
     // clear target element
@@ -79,7 +79,7 @@ function plotSelectedItems( elementId, selection ) {
     }
     */
     selection.filterCollection.renderController(d3.select("filters-controller"));
-    
+
     var table = element.append("table");
     var thead = table.append("thead");
     var tbody = table.append("tbody");
@@ -101,7 +101,7 @@ function plotSelectedItems( elementId, selection ) {
 
                     thead.selectAll('th').data(attributes).text(function(d) { return d.name; });
                     d3.select(this).html( ( k.sort > 0 ? "&#x25B2;" : "&#x25BC;" ) + " " + k.name );
-                    rows.sort( function(a, b) { 
+                    rows.sort( function(a, b) {
                         switch ( k.type ) {
                             case 'integer':
                                 // fall-through
@@ -118,7 +118,7 @@ function plotSelectedItems( elementId, selection ) {
                                 if ( k.values[a] > k.values[b] ) {
                                     return k.sort * 1;
                                 }
-                                
+
                                 return 0;
                         }
                     });
@@ -130,7 +130,7 @@ function plotSelectedItems( elementId, selection ) {
             .data(selection.items.slice(0,100))
         .enter()
             .append("tr")
-            .each(function(d,i) { 
+            .each(function(d,i) {
                 d3.select(this).selectAll("td")
                     .data(attributes.slice(0,attributes.length-1))
                 .enter()

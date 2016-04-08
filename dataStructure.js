@@ -3,7 +3,7 @@
  */
 
 
-ROW_TYPE =
+var ROW_TYPE =
 {
     SET: 'SET_TYPE',
     SUBSET: 'SUBSET_TYPE',

@@ -41,7 +41,7 @@ function Scrollbar(params) {
       fill: 'lightgray',
       class: "scrollbar-background",
       x: params.x,
-      y: params.y    
+      y: params.y
     });
 
   this.parentEl.selectAll(".scrollbar-thumb").remove()
@@ -62,7 +62,7 @@ function Scrollbar(params) {
         .attr("x", params.x)
         .attr("y", params.y)
         .attr("rx", 20)
-        .attr("ry", 10)          
+        .attr("ry", 10)
         .attr("fill", "gray")
 
     function dragstartScrollbar(d) {
@@ -71,7 +71,7 @@ function Scrollbar(params) {
 
 
     function dragendScrollbar(d) {
-      
+
     }
 
     function dragScrollbar(d) {
@@ -98,4 +98,3 @@ Scrollbar.prototype.setValue = function(value) {
 		return "translate("+[0, -d.y]+")";
 	})
 }
-

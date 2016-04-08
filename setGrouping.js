@@ -110,7 +110,7 @@ function SetGrouping(params){
         var groupSelector = gQuery.append("g").attr({
            class:"groupSelector",
             "transform":"translate("+5+","+2+")"
-            
+
         })
         usedSets.forEach(function(d){
             toggleState[d.id]=2;
@@ -246,4 +246,3 @@ function SetGrouping(params){
 
 
 }
-

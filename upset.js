@@ -96,7 +96,7 @@ function plot() {
     ctx.plot();
 }
 
-function UpSet() {
+function UpSet(datasets) {
 
     // FAKE:
 //    var usedSets = ["xx","zzz"];
@@ -777,7 +777,7 @@ function UpSet() {
       rowSubSets.append("g").attr("class", "gHorizon")
       rowSubSets.append("g").attr("class", "gOverlays")
       rowSubSets.append("g").attr("class", "gIndicators")
-      
+
       subSets.exit().remove();
 
       var subSetTransition = subSets
@@ -791,7 +791,7 @@ function UpSet() {
               })
       subSetTransition.attr({transform: function (d) {
         return 'translate(0, ' + ctx.rowScale(d.id) + ')';
-          
+
       }, class: function (d) {
           return 'row ' + d.data.type;
       }}).transition().duration(100).style("opacity", 1);
@@ -1505,7 +1505,7 @@ function UpSet() {
 
 
 
-  
+
         // --- Horizon Bars for size.
 
         groupRows.each(function (e, j) {
@@ -1566,7 +1566,7 @@ function UpSet() {
             g.selectAll(".row-type-group")
                 .attr({
                     transform: function (d, i) {
-  
+
                         return   'translate(' + (ctx.xStartSetSizes) + ', ' + (ctx.cellSizeShrink * i+2) + ')'; // ' + (textHeight - 5) + ')'
 
                     },
@@ -1704,7 +1704,7 @@ function UpSet() {
     function updateOverlays(allRows) {
         if (selections.getSize() == 0) {
             allRows.selectAll(".what").remove();
-            allRows.selectAll(".newOverlay").remove();            
+            allRows.selectAll(".newOverlay").remove();
             allRows.selectAll('.selectionIndicators').remove();
             return;
         }
@@ -1712,7 +1712,7 @@ function UpSet() {
         var currentRowSize = 0
 
         allRows.each(function (e, j) {
-          
+
             var g = d3.select(this);
             var max_scale = ctx.subSetSizeScale.domain()[1];
 
@@ -1733,7 +1733,7 @@ function UpSet() {
                     e.data.selections[p] = [];
 
                   e.data.selections[p] = e.data.selections[p].concat(s.selections[p]);
-                
+
               }
             });
 
@@ -1754,7 +1754,7 @@ function UpSet() {
             }
 
             currentRowSize =  s[usedID].length;
-            if(e.data.type==ROW_TYPE.GROUP) 
+            if(e.data.type==ROW_TYPE.GROUP)
               e.data.selections.setSize =currentRowSize;
 
 
@@ -1804,7 +1804,7 @@ function UpSet() {
                     width: function (d, i) {
 
                      return ctx.subSetSizeScale(d.data.setSize);
-                    
+
                   },
                     height: function (d, i) {
                         return ctx.cellSize - ctx.cellSizeShrink * 2 * i - 2;
@@ -1824,9 +1824,9 @@ function UpSet() {
                         return 0;
                     }
 
-                    return selections.getColorFromUuid(usedID)//"url(#diagonalHatch_0)"      
-                   }           
-                                       
+                    return selections.getColorFromUuid(usedID)//"url(#diagonalHatch_0)"
+                   }
+
                 })
                 .style("opacity", function (d, i) {
 
@@ -2584,7 +2584,7 @@ function UpSet() {
 //            ctx.svgBody.attr({
 //                height: (windowHeight - 70)
 //            })
-            tmc = d3.select(".matrixTableContainer")
+            var tmc = d3.select(".matrixTableContainer")
 
             var visHeight = windowHeight - ctx.textHeight - 70;
 
@@ -2619,11 +2619,7 @@ function UpSet() {
     }
 
     setUpSortSelections()
-    initData(ctx, [init]);
+    initData(ctx, [init], datasets);
 //    init();
 
 }
-
-UpSet();
-
-

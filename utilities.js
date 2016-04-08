@@ -2,7 +2,7 @@
  * author: Nils Gehlenborg - nils@hms.harvard.edu
 */
 
-Utilities = function() {
+var Utilities = function() {
 };
 
 

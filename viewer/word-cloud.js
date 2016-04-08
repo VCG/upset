@@ -31,7 +31,7 @@ var wordCloudConfiguration = {
 
 
         d3.select( elementId ).html("");
-        d3.layout.cloud().size([300, 200])        
+        d3.layout.cloud().size([300, 200])
             .words(data[0].map(function(d) {
             return {text: d, size: 3 + Math.random() * 7};
             }))

@@ -4,7 +4,7 @@
 @import 'global_styles';
 
 // ----------------- Global styles -------------------------------------------
-body {
+.upset-body {
   font-family: $font-stack;
 }
 
@@ -15,7 +15,7 @@ a:visited {
 
 //----------------- The heading and title bar ---------------------------------------------------
 
-h1 {
+.upset-body h1 {
   font-family: $font-stack;
 }
 

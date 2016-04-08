@@ -3,7 +3,7 @@
 */
 
 
-Attribute = function() {
+var Attribute = function() {
 	// nothing here
 };
 
@@ -15,7 +15,7 @@ Attribute.matchesType = function( sourceType, targetType ) {
 	if ( sourceType === 'integer' ) {
 		return targetType === 'numeric';
 	}
-	
+
 	if ( sourceType === 'float' ) {
 		return targetType === 'numeric';
 	}

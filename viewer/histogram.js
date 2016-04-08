@@ -3,7 +3,7 @@ var histogramConfiguration = {
     attributes: [{
             name: "Variable",
             type: "numeric",
-            variable: "variable"                    
+            variable: "variable"
         }],
     parameters: [/*{
             name: "Small Multiples?",
@@ -33,7 +33,7 @@ var histogramConfiguration = {
 
         // A formatter for counts.
         var format = d3.format(".00r");
-        
+
         if ( attribute.type === "float" ) {
             format = d3.format(",.00r");
         }
@@ -109,12 +109,12 @@ var histogramConfiguration = {
             .enter().append("g")
                 .attr("class", "histogram");
 
-        var bar = histogram.selectAll(".bar")   
+        var bar = histogram.selectAll(".bar")
                 .data( function( d ) { return ( d ); } )
             .enter().append("g")
                 .attr("class", "bar")
                 .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
-        
+
         bar.append("rect")
             .attr("x", 1)
             .attr("width", function(d) { return x(d.dx+attribute.min) - 1; }) //x(histograms[0].dx+attribute.min) - 1
@@ -130,7 +130,7 @@ var histogramConfiguration = {
                 .attr("transform", "translate(0," + 30 + ")" )
                 .style("text-anchor", "start")
                 .text(attribute.name);
-        
+
         svg.append("g")
             .attr("class", "x axis")
             //.attr('stroke-width','1')

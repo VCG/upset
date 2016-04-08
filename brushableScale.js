@@ -94,7 +94,7 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
         if (endRange<5){
             endRange =5;
             overViewBrushDef.extent([0,5]);
-            
+
         }
 
 
@@ -405,5 +405,3 @@ function BrushableScale(ctx, svg, width, updateFunctionNameInCtx, redrawFunction
     ctx[updateFunctionNameInCtx]=function(d,params){update(params);};
 
 }
-
-

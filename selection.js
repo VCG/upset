@@ -3,7 +3,7 @@
  */
 
 
-Selection = function (items, filterCollection) {
+var Selection = function (items, filterCollection) {
     this.items = items || [];
     //this.filters = filters || [];
     this.filterCollection = filterCollection;
@@ -154,7 +154,7 @@ Selection.prototype.getFilter = function (uuid) {
 }
 
 // should be a singleton
-SelectionList = function (palette) {
+var SelectionList = function (palette) {
     var self = this;
 
     self.list = [];

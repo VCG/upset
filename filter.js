@@ -15,7 +15,7 @@ $(EventManager).bind("filter-added", function (event, data) {
 $(EventManager).bind("filter-activated", function (event, data) {
 });
 
-FilterConfigurations = {
+var FilterConfigurations = {
     // subset filter
     subset: {
       name: "Subset",
@@ -47,7 +47,7 @@ FilterConfigurations = {
             }
 
             return true;
-        }   
+        }
     },
     // string match filter
     stringMatch: {
@@ -56,7 +56,7 @@ FilterConfigurations = {
       parameters: [ { name: "String", type: "string", variable: "pattern", default: "" } ],
       test: function( item, attribute, parameters ) {
             return ( attribute.values[item].indexOf( parameters.pattern ) >= 0 );
-        }   
+        }
     },
     // exact string length filter
     stringLength: {
@@ -65,7 +65,7 @@ FilterConfigurations = {
       parameters: [ { name: "Length", type: "integer", variable: "len", default: 0 } ],
       test: function( item, attribute, parameters ) {
             return ( attribute.values[item].length === parameters.len );
-        }   
+        }
     },
     // string match filter
     stringRegex: {
@@ -74,7 +74,7 @@ FilterConfigurations = {
       parameters: [ { name: "Pattern", type: "string", variable: "pattern", default: "." } ],
       test: function( item, attribute, parameters ) {
             return ( attribute.values[item].match( parameters.pattern ) !== null );
-        }   
+        }
     },
     // numeric range filter
     numericRange: {
@@ -83,7 +83,7 @@ FilterConfigurations = {
       parameters: [ { name: "Minimum", type: "float", variable: "min", default: 0 }, { name: "Maximum", type: "float", variable: "max", default: 1 } ],
       test: function( item, attribute, parameters ) {
             return ( attribute.values[item] >= parameters.min && attribute.values[item] <= parameters.max );
-        }           
+        }
     },
     // numeric minimum filter
     numericMinimum: {
@@ -92,7 +92,7 @@ FilterConfigurations = {
       parameters: [ { name: "Minimum", type: "float", variable: "min", default: 0 } ],
       test: function( item, attribute, parameters ) {
             return ( attribute.values[item] >= parameters.min );
-        }           
+        }
     },
     // numeric maximum filter
     numericMaximum: {
@@ -101,13 +101,13 @@ FilterConfigurations = {
       parameters: [ { name: "Maximum", type: "float", variable: "max", default: 0 } ],
       test: function( item, attribute, parameters ) {
             return ( attribute.values[item] <= parameters.max );
-        }           
-    }        
+        }
+    }
 };
 
 
 
-FilterCollection = function( controllerElementId, filterElementId ) {
+var FilterCollection = function( controllerElementId, filterElementId ) {
     var self = this;
 
     self.list = [];
@@ -171,7 +171,7 @@ FilterCollection.prototype.renderController = function() {
     var self = this;
     var controllerElement = d3.select( self.controllerElementId );
 
-    controllerElement.html("");    
+    controllerElement.html("");
 
     // create header and controls
     var viewerElementHeader = controllerElement.append( "div" ).attr( "class", "filter-header" );
@@ -273,7 +273,7 @@ FilterCollection.prototype.renderFilters = function() {
     return self;
 };
 
-Filter = function(attribute, configuration,parameterMap) {
+var Filter = function(attribute, configuration,parameterMap) {
     var self = this;
 
     self.attribute = attribute;
@@ -298,7 +298,7 @@ Filter.prototype.initializeParameterMap = function() {
         var parameter = self.configuration.parameters[i];
 
         self.parameterMap[parameter.variable] = parameter.default;
-    }    
+    }
 };
 
 /*
@@ -327,7 +327,7 @@ Filter.prototype.getList = function( type ) {
 */
 
 
-Filter.prototype.renderViewer = function( element, selection ) { 
+Filter.prototype.renderViewer = function( element, selection ) {
     var self = this;
 
     var parameters = self.parameterMap;
@@ -335,7 +335,7 @@ Filter.prototype.renderViewer = function( element, selection ) {
 
     filterViewer.attr( 'class', 'filter-viewer' );
 
-    filterViewer.html( '<div>' + 
+    filterViewer.html( '<div>' +
         '<span class="filter-button level-2-button filter-remove" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-times-circle"></i></span>' +
         '<span class="filter-button level-2-button filter-edit" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-pencil"></i></span>' +
         '&nbsp;<b>' + self.configuration.name + '</b>&nbsp;|&nbsp;' + self.attribute.name +'</div>');
@@ -344,7 +344,7 @@ Filter.prototype.renderViewer = function( element, selection ) {
         self.renderEditor( element, selection, self.uuid );
     });
 
-    $( '.filter-remove[data-filter-uuid="' + self.uuid + '"]').on( 'click', function(){        
+    $( '.filter-remove[data-filter-uuid="' + self.uuid + '"]').on( 'click', function(){
         $( self.editorElementId ).remove();
         selection.filterCollection.remove( self );
         selection.applyFilters();
@@ -376,7 +376,7 @@ Filter.prototype.renderEditor = function( element, selection ) { // filterId, at
     var parameters = self.parameterMap;
     var filterEditor = element;
 
-    filterEditor.html( '<div>' + 
+    filterEditor.html( '<div>' +
         '<span class="filter-button level-2-button filter-cancel" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-times"></i></span>' +
         '<span class="filter-button level-2-button filter-save" data-filter-uuid="' + self.uuid + '""><i class="fa fw fa-check"></i></span>' +
         '&nbsp;<b>' + self.configuration.name + '</b>&nbsp;|&nbsp;' + self.attribute.name +'</div>');
@@ -412,7 +412,7 @@ Filter.prototype.renderEditor = function( element, selection ) { // filterId, at
 
 
 Filter.prototype.renderParameterViewer = function( element, parameterName, parameterType, parameterValue ) {
-    
+
     switch ( parameterType ) {
         case 'float':
             element.html( '<i>' + parameterName + '</i> = ' + d3.format('f')(parameterValue) );
@@ -492,9 +492,9 @@ Filter.prototype.parseParameterValue = function( parameterVariable, parameterTyp
 Filter.prototype.renderParameterEditor = function( element, parameterName, parameterType, parameterValue, parameterVariable ) {
     var self = this;
     var s = "";
-    
+
     s += '<div data-filter-parameter-type="' + parameterType + '">';
-    
+
     switch ( parameterType ) {
         case 'float':
             s += '<i>' + parameterName + '</i> = ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="number" step="0.1" value="' + d3.format('f')(parameterValue) + '"></input>';
@@ -502,9 +502,9 @@ Filter.prototype.renderParameterEditor = function( element, parameterName, param
         case 'integer':
             s +=  '<i>' + parameterName + '</i> = ' + '<input data-filter-parameter-variable="' + parameterVariable + '" type="number" step="1" value="' + d3.format('d')(parameterValue) + '"></input>';
             break;
-        case 'subset':        
+        case 'subset':
             var subset = parameterValue;
-            for (var id in subset) {                
+            for (var id in subset) {
                 if (subset.hasOwnProperty(id)) {
                     s += '<span class="subset-state-toggle-button" data-subset="' + id + '" data-subset-state="' + subset[id] + '">' + '<i class="' + this.subsetStateToClass( subset[id] ) + '"></i>';
                     s += ' ' + setIdToSet[id].elementName + ' <small>' + (setIdToSet[id].setSize === 0 ? '<i class="fa fa-warning"></i> 0 items' : '') + '</small>' + '</span><br>';
@@ -518,7 +518,7 @@ Filter.prototype.renderParameterEditor = function( element, parameterName, param
             break;
     }
 
-    s += '</div>'; 
+    s += '</div>';
 
     // add to DOM
     element.html(s);
@@ -551,4 +551,3 @@ Filter.prototype.subsetStateToClass = function( state ) {
 
     return ( s );
 }
-

@@ -471,7 +471,7 @@ var updateState = function (parameter) {
     previousState = JSON.parse(JSON.stringify(UpSetState));
 
     queryParameters["grouping"] = UpSetState.grouping;
-    updateQueryParameters();
+    // updateQueryParameters();
 
 };
 

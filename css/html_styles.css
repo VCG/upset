@@ -2,14 +2,14 @@
 /**
 * Styles for pure html layout
 */
-body {
+.upset-body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
 
 a:link,
 a:visited {
   color: black; }
 
-h1 {
+.upset-body h1 {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
 
 .header-label-left {

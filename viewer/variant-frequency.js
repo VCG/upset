@@ -31,7 +31,7 @@ var variantFrequencyConfiguration = {
                     [0,0,0,0], //A -> A, C, G, T
                     [0,0,0,0], //C -> A, C, G, T
                     [0,0,0,0], //G -> A, C, G, T
-                    [0,0,0,0]  //T -> A, C, G, T 
+                    [0,0,0,0]  //T -> A, C, G, T
                 ];
 
             var transitions = 0;
@@ -67,10 +67,10 @@ var variantFrequencyConfiguration = {
             values.max = max;
 
             data.push( values );
-        }      
-        
+        }
+
         d3.select( elementId ).html( "" );
-        var viewer = d3.select( elementId ); 
+        var viewer = d3.select( elementId );
 
         viewer.selectAll( 'p' )
                 .data( data )
@@ -109,7 +109,7 @@ var variantFrequencyConfiguration = {
 
             var color = d3.scale.linear()
                 .domain([0,data[s].max])
-                .range(["#e8e8e8", "#080808"]);        
+                .range(["#e8e8e8", "#080808"]);
 
             var svg = d3.select(elementId).append("svg")
                 .attr("width", size * 5 + margin.left + margin.right)
@@ -154,7 +154,7 @@ var variantFrequencyConfiguration = {
                         });
 
             hmcells = hmcells.selectAll('rect')
-                    .data(function(d,i) { return d; })            
+                    .data(function(d,i) { return d; })
                 .enter().append("svg:rect")
                     .attr("width", size)
                     .attr("height", size)

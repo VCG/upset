@@ -44,37 +44,37 @@ var scatterplotConfiguration = {
 
             data.push( values );
         }
-           
+
         var margin = {top: 10, right: 20, bottom: 35, left: 45},
             width = 350 - margin.left - margin.right,
             height = 200 - margin.top - margin.bottom;
-            
+
         var x;
 
         if ( parameterMap.logScaleX ) {
             x = d3.scale.log()
                 .domain([attributeX.min, attributeX.max])
-                .range([0, width]);                    
-        } 
+                .range([0, width]);
+        }
         else {
             x = d3.scale.linear()
                 .domain([attributeX.min, attributeX.max])
-                .range([0, width]);                    
+                .range([0, width]);
         }
 
         var y;
 
-        if ( parameterMap.logScaleY ) {            
+        if ( parameterMap.logScaleY ) {
             y = d3.scale.log()
                 .domain([attributeY.min, attributeY.max])
                 .range([ height, 0 ]);
         }
-        else {            
+        else {
             y = d3.scale.linear()
                 .domain([attributeY.min, attributeY.max])
                 .range([ height, 0 ]);
         }
-     
+
         d3.select( elementId ).html("");
 
         var chart = d3.select( elementId )
@@ -87,8 +87,8 @@ var scatterplotConfiguration = {
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
         .attr('width', width)
         .attr('height', height)
-        .attr('class', 'main')   
-            
+        .attr('class', 'main')
+
         // draw the x axis
         var xAxis = d3.svg.axis()
         .scale(x)
@@ -121,8 +121,8 @@ var scatterplotConfiguration = {
                 .style("text-anchor", "end")
                 .text( attributeY.name );
 
-        var g = main.append("svg:g"); 
-        
+        var g = main.append("svg:g");
+
         var selectionGroup = g.selectAll( '.selection-group' )
             .data(data)
           .enter()
@@ -137,6 +137,6 @@ var scatterplotConfiguration = {
                 .append("svg:circle")
                     .attr("cx", function (d,i) { return x(d[0]); } )
                     .attr("cy", function (d,i) { return y(d[1]); } )
-                    .attr("r", 2);                
+                    .attr("r", 2);
     }
 };

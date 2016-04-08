@@ -2,7 +2,7 @@
  * author: Nils Gehlenborg - nils@hms.harvard.edu
  */
 
-Ui = function() {
+var Ui = function() {
     var self = this;
 
     self.lastWindowWidth = 0;
