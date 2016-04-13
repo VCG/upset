@@ -5,179 +5,147 @@
 .upset-body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
 
-a:link,
-a:visited {
-  color: black; }
-
-.upset-body h1 {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
-
-.header-label-left {
-  margin-right: 5px;
-  float: left;
-  color: white; }
-
-#data-loading-indicator {
-  padding-left: 5px;
-  padding-right: 5px; }
-
-.header, .header-right, .header-right-clickable {
-  color: white;
-  font-weight: bold; }
-  .header a:visited, .header-right a:visited, .header-right-clickable a:visited,
-  .header a:link,
-  .header-right a:link,
-  .header-right-clickable a:link {
-    color: white;
-    text-decoration: none; }
-
-.header-right, .header-right-clickable {
-  float: right;
-  padding-right: 10px; }
-
-.header-right-clickable {
-  cursor: pointer; }
-
-#header-ds-selector {
-  float: right;
-  color: black; }
-
-.button-panel {
-  display: inline-block;
-  margin-left: 10px;
-  margin-right: 5px; }
-
-.header-container {
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-left: 10px;
-  padding-right: 10px;
-  background: #000;
-  border-bottom: 2px solid #999;
-  display: block;
-  height: 20px;
-  color: #666; }
-
-.menu-container {
-  padding: 5px 10px;
-  background: #eee;
-  border-bottom: 2px solid #999;
-  display: block;
-  height: 20px;
-  text-align: right;
-  font-size: 0.8em;
-  font-style: italic; }
-
-.padded-container {
-  padding: 20px 20px 10px; }
-
-html, body, .ui-container {
-  height: 100%; }
-
-.ui-container {
-  display: table;
-  width: 100%;
-  margin-top: -30px;
-  /* header + menu */
-  padding-top: 30px;
-  min-height: 100%;
-  height: auto !important;
-  height: 100%;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box; }
-
-.ui-fader {
-  position: absolute;
-  /* makes the div go into a position that’s absolute to the browser viewing area */
-  background-color: white;
-  width: 100%;
-  height: 100%;
-  z-index: 90;
-  /* makes the div the second most top layer, so it’ll lay on top of everything else EXCEPT for divs with a higher z-index (meaning the #overlay ruleset) */ }
-
-.ui-overlay-loading {
-  display: block;
-  /* ensures it’s invisible until it’s called */
-  position: absolute;
-  /* makes the div go into a position that’s absolute to the browser viewing area */
-  left: 50%;
-  /* positions the div half way horizontally */
-  top: 50%;
-  /* positions the div half way vertically */
-  padding: 25px;
-  z-index: 100;
-  /* makes the div the top layer, so it’ll lay on top of the other content */
-  color: white; }
-
-.ui-header {
-  height: 30px; }
-
-.ui-menu {
-  height: 50px; }
-
-.ui-row {
-  height: 100%;
-  display: table-row; }
-
-.ui-column {
-  display: table-cell;
-  vertical-align: top;
-  padding-top: 10px;
-  padding-left: 10px;
-  padding-right: 10px; }
-
-.ui-column.ui-column-15 {
-  width: 15%;
-  min-width: 180px; }
-
-.ui-column.ui-column-25 {
-  width: 25%; }
-
-.ui-column.ui-column-50 {
-  width: 50%; }
-
-.ui-column.ui-column-60 {
-  width: 60%; }
-
-.ui-column.ui-column-75 {
-  background: yellow;
-  width: 75%;
-  min-width: 75%; }
-
-.ui-column.ui-column-100 {
-  width: 100%; }
-
-.ui-column.ui-column-33 {
-  background: pink;
-  width: 33%; }
-
-.ui-column.ui-column-66 {
-  background: lightpurple;
-  width: 66%;
-  min-width: 66%; }
-
-.ui-column.ui-layout-east {
-  border-left: 1px solid #999; }
-
-/** ============ Configuration Panel Left ============== */
-.configTable, #dataset-info-viewer {
-  padding-bottom: 10px;
-  font-size: 12px;
-  display: inline-block;
-  float: left;
-  clear: both; }
-
-.configHeader {
-  font-weight: bold;
-  padding-bottom: .2em; }
-
-.configH1 {
-  font-weight: bold; }
-
-#dataset-info-viewer {
-  color: white;
-  background-color: #636363;
-  padding: .4em; }
-  #dataset-info-viewer a:link,
-  #dataset-info-viewer a:visited {
+.upset-body {
+  /** ============ Configuration Panel Left ============== */ }
+  .upset-body a:link,
+  .upset-body a:visited {
+    color: black; }
+  .upset-body .upset-body h1 {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  .upset-body .header-label-left {
+    margin-right: 5px;
+    float: left;
     color: white; }
+  .upset-body #data-loading-indicator {
+    padding-left: 5px;
+    padding-right: 5px; }
+  .upset-body .header, .upset-body .header-right, .upset-body .header-right-clickable {
+    color: white;
+    font-weight: bold; }
+    .upset-body .header a:visited, .upset-body .header-right a:visited, .upset-body .header-right-clickable a:visited,
+    .upset-body .header a:link, .upset-body .header-right a:link, .upset-body .header-right-clickable a:link {
+      color: white;
+      text-decoration: none; }
+  .upset-body .header-right, .upset-body .header-right-clickable {
+    float: right;
+    padding-right: 10px; }
+  .upset-body .header-right-clickable {
+    cursor: pointer; }
+  .upset-body #header-ds-selector {
+    float: right;
+    color: black; }
+  .upset-body .button-panel {
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 5px; }
+  .upset-body .header-container {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background: #000;
+    border-bottom: 2px solid #999;
+    display: block;
+    height: 20px;
+    color: #666; }
+  .upset-body .menu-container {
+    padding: 5px 10px;
+    background: #eee;
+    border-bottom: 2px solid #999;
+    display: block;
+    height: 20px;
+    text-align: right;
+    font-size: 0.8em;
+    font-style: italic; }
+  .upset-body .padded-container {
+    padding: 20px 20px 10px; }
+  .upset-body html, .upset-body body, .upset-body .ui-container {
+    height: 100%; }
+  .upset-body .ui-container {
+    display: table;
+    width: 100%;
+    margin-top: -30px;
+    /* header + menu */
+    padding-top: 30px;
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+  .upset-body .ui-fader {
+    position: absolute;
+    /* makes the div go into a position that’s absolute to the browser viewing area */
+    background-color: white;
+    width: 100%;
+    height: 100%;
+    z-index: 90;
+    /* makes the div the second most top layer, so it’ll lay on top of everything else EXCEPT for divs with a higher z-index (meaning the #overlay ruleset) */ }
+  .upset-body .ui-overlay-loading {
+    display: block;
+    /* ensures it’s invisible until it’s called */
+    position: absolute;
+    /* makes the div go into a position that’s absolute to the browser viewing area */
+    left: 50%;
+    /* positions the div half way horizontally */
+    top: 50%;
+    /* positions the div half way vertically */
+    padding: 25px;
+    z-index: 100;
+    /* makes the div the top layer, so it’ll lay on top of the other content */
+    color: white; }
+  .upset-body .ui-header {
+    height: 30px; }
+  .upset-body .ui-menu {
+    height: 50px; }
+  .upset-body .ui-row {
+    height: 100%;
+    display: table-row; }
+  .upset-body .ui-column {
+    display: table-cell;
+    vertical-align: top;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px; }
+  .upset-body .ui-column.ui-column-15 {
+    width: 15%;
+    min-width: 180px; }
+  .upset-body .ui-column.ui-column-25 {
+    width: 25%; }
+  .upset-body .ui-column.ui-column-50 {
+    width: 50%; }
+  .upset-body .ui-column.ui-column-60 {
+    width: 60%; }
+  .upset-body .ui-column.ui-column-75 {
+    background: yellow;
+    width: 75%;
+    min-width: 75%; }
+  .upset-body .ui-column.ui-column-100 {
+    width: 100%; }
+  .upset-body .ui-column.ui-column-33 {
+    background: pink;
+    width: 33%; }
+  .upset-body .ui-column.ui-column-66 {
+    background: lightpurple;
+    width: 66%;
+    min-width: 66%; }
+  .upset-body .ui-column.ui-layout-east {
+    border-left: 1px solid #999; }
+  .upset-body .configTable, .upset-body #dataset-info-viewer {
+    padding-bottom: 10px;
+    font-size: 12px;
+    display: inline-block;
+    float: left;
+    clear: both; }
+  .upset-body .configHeader {
+    font-weight: bold;
+    padding-bottom: .2em; }
+  .upset-body .configH1 {
+    font-weight: bold; }
+  .upset-body #dataset-info-viewer {
+    color: white;
+    background-color: #636363;
+    padding: .4em; }
+    .upset-body #dataset-info-viewer a:link,
+    .upset-body #dataset-info-viewer a:visited {
+      color: white; }
+

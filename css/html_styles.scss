@@ -8,6 +8,8 @@
   font-family: $font-stack;
 }
 
+.upset-body {
+
 a:link,
 a:visited {
   color: black;
@@ -241,4 +243,6 @@ html, body, .ui-container {
   a:visited {
     color: white;
   }
+}
+
 }
