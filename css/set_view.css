@@ -2,528 +2,422 @@
  * SVG styles for the set view.
  * Currently still a mess of various things
  */
-.axis path,
-.axis line {
-  fill: none;
-  stroke: gray;
-  shape-rendering: crispEdges; }
+.upset-body {
+  /** The set size bar */
+  /** The subSet size bar */
+  /** The labels for the vertical set names */
+  /*.cell, .what, .setSize, .disproportionality, .subSetSize, .groupBackGround {*/
+  /*stroke: #fff;*/
+  /*stroke-width: .5;*/
+  /*}*/
+  /* ---------------- The set selector --------------- */
+  /* ---------------- tables --------------- */
+  /*--- logic --*/
+  /** === Filter Controls === */
+  /** ==== for range slider == **/
+  /*.groupingSelect{*/
+  /*position: relative;*/
+  /*left:-6px;*/
+  /*}*/
+  /*.groupBackGround .filterGroup{*/
+  /*fill: #d3d3d3;;  */
+  /*logic Color*/
+  /**/
+  /*}*/ }
+  .upset-body .axis path,
+  .upset-body .axis line {
+    fill: none;
+    stroke: gray;
+    shape-rendering: crispEdges; }
+  .upset-body .axis text {
+    font-size: 0.6em; }
+  .upset-body .setSize {
+    /*fill: #bbb0fb;*/
+    fill: #636363;
+    stroke: white;
+    stroke-width: 1px; }
+  .upset-body .unusedSetSize {
+    fill: lightgray;
+    stroke: white;
+    stroke-width: 1px; }
+  .upset-body .setSizeBackground, .upset-body .unusedSetSizeBackground {
+    fill: #f0f0f0;
+    stroke: white;
+    stroke-width: 1px; }
+  .upset-body .setSizeBackground:hover {
+    stroke: white;
+    shape-rendering: crispEdges; }
+  .upset-body .subSetSize.row-type-subset {
+    fill: #737373; }
+  .upset-body .subSetSize.row-type-group {
+    fill: #535353; }
+  .upset-body .setLabel, .upset-body .connection {
+    /*dominant-baseline: middle;*/
+    font: 12px sans-serif;
+    cursor: pointer;
+    font-weight: 300;
+    /*alignment-baseline:middle;*/
+    /*alignment-baseline:middle;*/
+    /* writing-mode: bt-lr;*/ }
+  .upset-body .setRow .setLabel {
+    font-weight: 500; }
+  .upset-body .setLabel.small {
+    dominant-baseline: middle;
+    font: 9px sans-serif;
+    cursor: s-resize; }
+  .upset-body .configTable {
+    float: left; }
+  .upset-body .groupLabel {
+    /*dominant-baseline: central;*/
+    font: sans-serif;
+    text-anchor: left;
+    cursor: s-resize;
+    font-size: 10pt;
+    font-weight: 200; }
+  .upset-body .groupLabel.small {
+    /*dominant-baseline: central;*/
+    font: sans-serif;
+    /*font-weight:bold;*/
+    text-anchor: left;
+    cursor: s-resize;
+    font-size: 8pt; }
+  .upset-body .intersectionSizeLabel {
+    /*dominant-baseline: central;*/
+    font: sans-serif;
+    text-anchor: left;
+    font-size: 8pt;
+    dominant-baseline: middle; }
+  .upset-body .columnLabel, .upset-body .axis .columnLabel {
+    dominant-baseline: central;
+    font: 13px sans-serif;
+    text-anchor: middle;
+    cursor: s-resize; }
+  .upset-body .addButton {
+    dominant-baseline: central;
+    font: 13px sans-serif;
+    text-anchor: middle;
+    cursor: row-resize; }
+  .upset-body .groupBackGround {
+    /*stroke: #d3d3d3;*/
+    stroke: #555555;
+    stroke-width: 1px;
+    fill: #cccccc;
+    opacity: .3; }
+  .upset-body .groupBackGround.secondLevel {
+    stroke: #aaaaaa; }
+  .upset-body .labelBackground {
+    fill: #d3d3d3; }
+  .upset-body .labelBackground:hover {
+    fill: rgba(145, 145, 145, 0.88);
+    cursor: s-resize; }
+  .upset-body .setBackground {
+    fill: #d3d3d3;
+    stroke-width: 1;
+    fill: white; }
+  .upset-body .disproportionality.positive {
+    fill: #74add1; }
+  .upset-body .disproportionality.negative {
+    fill: #f46d43; }
+  .upset-body .connection {
+    stroke: white;
+    stroke-width: 1;
+    fill: #f0f0f0; }
+  .upset-body #setSelect {
+    float: left;
+    padding-right: 10px; }
+  .upset-body td {
+    padding-left: 2px;
+    padding-right: 2px; }
+  .upset-body tr:nth-child(even) {
+    background-color: #eee; }
+  .upset-body th {
+    text-align: left;
+    padding-left: 2px;
+    padding-right: 2px;
+    cursor: s-resize; }
+  .upset-body th.attribute-header {
+    background-color: lightgray; }
+  .upset-body th.attribute-header.selected {
+    background-color: yellow; }
+  .upset-body #selection-tabs {
+    border-bottom: 1px dotted #bbb;
+    padding-bottom: 3px;
+    margin-bottom: 3px; }
+  .upset-body .selection-tab-list {
+    display: inline-block;
+    min-height: 30px;
+    margin-left: 5px; }
+  .upset-body .selection-tab {
+    cursor: pointer;
+    background-color: #eee;
+    border-radius: 5px;
+    padding: 4px;
+    margin-right: 4px; }
+  .upset-body .selection-tab.active {
+    background-color: #ccc; }
+  .upset-body .selection-button {
+    cursor: pointer;
+    background-color: #eee;
+    border-radius: 5px;
+    padding: 4px;
+    margin-right: 4px;
+    display: inline-block; }
+  .upset-body .selection-button:hover {
+    background-color: #ccc; }
+  .upset-body .filter-button {
+    cursor: default;
+    color: #2b8cbe;
+    fill: #2b8cbe;
+    /*should be the same as "color" -- for svg and html*/ }
+  .upset-body .filter-button:hover {
+    color: darkblue; }
+  .upset-body #venn-diagram-viewer {
+    display: none; }
+  .upset-body .venn-zero-set-area {
+    fill: #eee; }
+  .upset-body .venn-one-set-area {
+    fill: #ccc; }
+  .upset-body .venn-two-set-area {
+    fill: #aaa; }
+  .upset-body .venn-three-set-area {
+    fill: #999; }
+  .upset-body .venn-zero-set-area-active {
+    fill: #faa; }
+  .upset-body .venn-one-set-area-active {
+    fill: #f99; }
+  .upset-body .venn-two-set-area-active {
+    fill: #f66; }
+  .upset-body .venn-three-set-area-active {
+    fill: #f33; }
+  .upset-body .logicPanelCircle {
+    stroke-width: 2pt; }
+  .upset-body .logicPanelHeaderCircle {
+    stroke-width: 1pt; }
+  .upset-body #dataset-selector {
+    float: right; }
+  .upset-body .ui-button {
+    color: #666; }
+  .upset-body .ui-button:hover {
+    color: #136382;
+    text-shadow: 0 0 10px #3fa0c7; }
+  .upset-body .fixed-y-container {
+    overflow-y: auto; }
+  .upset-body #set-vis-container {
+    min-height: 300px; }
+  .upset-body #item-vis-container {
+    min-height: 200px;
+    max-height: 400px; }
+  .upset-body #item-table-container {
+    min-height: 400px;
+    padding-bottom: 10px; }
+  .upset-body #item-table {
+    border-bottom: 1px dotted #bbb;
+    padding-bottom: 2px; }
+  .upset-body .item-table-header {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 10pt;
+    font-weight: bold; }
+  .upset-body * {
+    margin: 0;
+    padding: 0; }
+  .upset-body .level-1-button {
+    cursor: default;
+    display: inline-block;
+    font-weight: bold;
+    background-color: #ccc;
+    color: #444;
+    border-radius: 10px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 1px;
+    padding-bottom: 1px; }
+  .upset-body .level-1-button:hover {
+    background-color: #aaa;
+    color: #444; }
+  .upset-body .level-2-button {
+    cursor: default;
+    display: inline-block;
+    color: #444;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 1px;
+    padding-bottom: 1px; }
+  .upset-body .level-2-button:hover {
+    color: #111; }
+  .upset-body .info-message {
+    display: block;
+    background-color: #eee;
+    color: #444;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding: 3px;
+    font-style: italic; }
+  .upset-body .element-viewer-header {
+    display: inline; }
+  .upset-body .element-viewer-title {
+    display: inline; }
+  .upset-body .element-viewer-editor-button {
+    display: inline-block; }
+  .upset-body .element-viewer-editor-button:hover {
+    /*text-shadow: 0 0 10px #3fa0c7*/ }
+  .upset-body .element-viewer-active {
+    margin-top: 5px;
+    border-bottom: 1px dotted #bbb;
+    padding-bottom: 3px;
+    margin-bottom: 5px; }
+  .upset-body #element-viewer-selector {
+    display: inline;
+    float: none; }
+  .upset-body #filters-container {
+    display: block; }
+  .upset-body .filter-header {
+    display: inline; }
+  .upset-body .filter-title {
+    display: inline; }
+  .upset-body .filter-editor-button {
+    display: inline-block; }
+  .upset-body .filter-active {
+    background-color: white;
+    border: 1px dashed lightgray;
+    padding: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px; }
+  .upset-body .filter-parameter-viewer {
+    font-size: 10pt; }
+  .upset-body .filter-viewer:not(:first-child) {
+    border-top: 1px dotted #bbb; }
+  .upset-body .filter-viewer {
+    padding-bottom: 3px;
+    margin-bottom: 1px; }
+  .upset-body #filter-selector {
+    display: inline;
+    margin-left: 5px; }
+  .upset-body #filters-list {
+    border-bottom: 1px dotted #bbb;
+    padding-bottom: 2px; }
+  .upset-body .filter-editor:not(:first-child) {
+    border-top: 1px dotted #bbb; }
+  .upset-body .filter-editor {
+    padding-bottom: 3px;
+    margin-bottom: 1px; }
+  .upset-body #filters-controls {
+    padding-top: 5px; }
+  .upset-body .element-view-header {
+    border-bottom: 1px solid #636363;
+    margin-top: 12px;
+    margin-bottom: 3px;
+    padding-left: 5px; }
+  .upset-body .element-view-title {
+    display: inline;
+    background-color: #636363;
+    color: white;
+    padding: 2px 5px 1px 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    margin-bottom: 0px;
+    font-weight: bold;
+    font-size: 10pt; }
+  .upset-body .element-view-subtitle {
+    display: inline;
+    color: #636363;
+    padding: 1px 3px 1px 3px;
+    margin-bottom: 0px;
+    font-weight: bold;
+    font-size: 10pt; }
+  .upset-body .element-view-controls {
+    min-height: 25px; }
+  .upset-body .drawBrush, .upset-body path.connectionArea {
+    fill: gray;
+    opacity: 0.2;
+    stroke: none; }
+  .upset-body .sliderLabel rect {
+    opacity: .5;
+    fill: #a6bddb; }
+  .upset-body .sliderLabel line {
+    opacity: .5;
+    stroke: #a6bddb;
+    stroke-width: 2; }
+  .upset-body .sliderLabel text {
+    opacity: 1;
+    font: 10px sans-serif;
+    fill: black;
+    text-anchor: middle; }
+  .upset-body .groupLabelText {
+    cursor: pointer; }
+  .upset-body .collapseIcon, .upset-body .groupDeleteIcon {
+    font-family: FontAwesome;
+    font-size: 12px;
+    cursor: pointer;
+    text-anchor: middle;
+    /*dominant-baseline: ;*/ }
+  .upset-body #moveHandle {
+    cursor: pointer;
+    position: relative;
+    left: -13px;
+    background-color: #ddd;
+    float: left;
+    cursor: ew-resize;
+    border-left: 1px solid #999;
+    border-right: 1px solid #999;
+    width: 3px;
+    height: 25px; }
+  .upset-body .boxPlot {
+    stroke-width: 1px;
+    stroke: black;
+    fill: lightgray;
+    shape-rendering: crispEdges; }
+  .upset-body .logicButton {
+    font-family: FontAwesome;
+    font-size: 12px;
+    cursor: pointer;
+    text-anchor: middle;
+    dominant-baseline: central; }
+  .upset-body .gSeparatorLine {
+    stroke: darkgrey;
+    stroke-width: 3; }
+  .upset-body #bodyVis, .upset-body #headerVis {
+    display: block;
+    overflow-y: auto;
+    overflow-x: hidden; }
+  .upset-body .matrixTableContainer {
+    display: block;
+    overflow-y: hidden;
+    overflow-x: scroll; }
+  .upset-body .setSelectionArea {
+    fill: lightgrey;
+    stroke: none; }
+  .upset-body .setSelectionButton {
+    fill: lightgrey;
+    stroke: none; }
+  .upset-body .setSelectionButton:hover {
+    fill: darkgray; }
+  .upset-body .pagination, .upset-body .setMenuExtra {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 300; }
+  .upset-body .setSelectionButtonText {
+    fill: #444;
+    font-weight: bold; }
+  .upset-body .setMenuExtraAwesome {
+    font-family: FontAwesome; }
+  .upset-body .setSelectionLabelAwesome {
+    font-family: FontAwesome;
+    font-size: 14px;
+    fill: lightgrey;
+    cursor: pointer;
+    font-weight: 300; }
+  .upset-body .setSelectionLabelAwesome:hover {
+    fill: darkgrey; }
 
-.axis text {
-  font-size: 0.6em; }
-
-/** The set size bar */
-.setSize {
-  /*fill: #bbb0fb;*/
-  fill: #636363;
-  stroke: white;
-  stroke-width: 1px; }
-
-.unusedSetSize {
-  fill: lightgray;
-  stroke: white;
-  stroke-width: 1px; }
-
-.setSizeBackground, .unusedSetSizeBackground {
-  fill: #f0f0f0;
-  stroke: white;
-  stroke-width: 1px; }
-
-.setSizeBackground:hover {
-  stroke: white;
-  shape-rendering: crispEdges; }
-
-/** The subSet size bar */
-.subSetSize.row-type-subset {
-  fill: #737373; }
-
-.subSetSize.row-type-group {
-  fill: #535353; }
-
-/** The labels for the vertical set names */
-.setLabel, .connection {
-  /*dominant-baseline: middle;*/
-  font: 12px sans-serif;
-  cursor: pointer;
-  font-weight: 300;
-  /*alignment-baseline:middle;*/
-  /*alignment-baseline:middle;*/
-  /* writing-mode: bt-lr;*/ }
-
-.setRow .setLabel {
-  font-weight: 500; }
-
-.setLabel.small {
-  dominant-baseline: middle;
-  font: 9px sans-serif;
-  cursor: s-resize; }
-
-.configTable {
-  float: left; }
-
-.groupLabel {
-  /*dominant-baseline: central;*/
-  font: sans-serif;
-  text-anchor: left;
-  cursor: s-resize;
-  font-size: 10pt;
-  font-weight: 200; }
-
-.groupLabel.small {
-  /*dominant-baseline: central;*/
-  font: sans-serif;
-  /*font-weight:bold;*/
-  text-anchor: left;
-  cursor: s-resize;
-  font-size: 8pt; }
-
-.intersectionSizeLabel {
-  /*dominant-baseline: central;*/
-  font: sans-serif;
-  text-anchor: left;
-  font-size: 8pt;
-  dominant-baseline: middle; }
-
-.columnLabel, .axis .columnLabel {
-  dominant-baseline: central;
-  font: 13px sans-serif;
-  text-anchor: middle;
-  cursor: s-resize; }
-
-.addButton {
-  dominant-baseline: central;
-  font: 13px sans-serif;
-  text-anchor: middle;
-  cursor: row-resize; }
-
-.groupBackGround {
-  /*stroke: #d3d3d3;*/
-  stroke: #555555;
-  stroke-width: 1px;
-  fill: #cccccc;
-  opacity: .3; }
-
-.groupBackGround.secondLevel {
-  stroke: #aaaaaa; }
-
-.labelBackground {
-  fill: #d3d3d3; }
-
-.labelBackground:hover {
-  fill: rgba(145, 145, 145, 0.88);
-  cursor: s-resize; }
-
-.setBackground {
-  fill: #d3d3d3;
-  stroke-width: 1;
-  fill: white; }
-
-.disproportionality.positive {
-  fill: #74add1; }
-
-.disproportionality.negative {
-  fill: #f46d43; }
-
-.connection {
-  stroke: white;
-  stroke-width: 1;
-  fill: #f0f0f0; }
-
-/*.cell, .what, .setSize, .disproportionality, .subSetSize, .groupBackGround {*/
-/*stroke: #fff;*/
-/*stroke-width: .5;*/
-/*}*/
-/* ---------------- The set selector --------------- */
-#setSelect {
-  float: left;
-  padding-right: 10px; }
-
-/* ---------------- tables --------------- */
-td {
-  padding-left: 2px;
-  padding-right: 2px; }
-
-tr:nth-child(even) {
-  background-color: #eee; }
-
-th {
-  text-align: left;
-  padding-left: 2px;
-  padding-right: 2px;
-  cursor: s-resize; }
-
-th.attribute-header {
-  background-color: lightgray; }
-
-th.attribute-header.selected {
-  background-color: yellow; }
-
-#selection-tabs {
-  border-bottom: 1px dotted #bbb;
-  padding-bottom: 3px;
-  margin-bottom: 3px; }
-
-.selection-tab-list {
-  display: inline-block;
-  min-height: 30px;
-  margin-left: 5px; }
-
-.selection-tab {
-  cursor: pointer;
-  background-color: #eee;
-  border-radius: 5px;
-  padding: 4px;
-  margin-right: 4px; }
-
-.selection-tab.active {
-  background-color: #ccc; }
-
-.selection-button {
-  cursor: pointer;
-  background-color: #eee;
-  border-radius: 5px;
-  padding: 4px;
-  margin-right: 4px;
-  display: inline-block; }
-
-.selection-button:hover {
-  background-color: #ccc; }
-
-.filter-button {
-  cursor: default;
-  color: #2b8cbe;
-  fill: #2b8cbe;
-  /*should be the same as "color" -- for svg and html*/ }
-
-.filter-button:hover {
-  color: darkblue; }
-
-#venn-diagram-viewer {
-  display: none; }
-
-.venn-zero-set-area {
-  fill: #eee; }
-
-.venn-one-set-area {
-  fill: #ccc; }
-
-.venn-two-set-area {
-  fill: #aaa; }
-
-.venn-three-set-area {
-  fill: #999; }
-
-.venn-zero-set-area-active {
-  fill: #faa; }
-
-.venn-one-set-area-active {
-  fill: #f99; }
-
-.venn-two-set-area-active {
-  fill: #f66; }
-
-.venn-three-set-area-active {
-  fill: #f33; }
-
-/*--- logic --*/
-.logicPanelCircle {
-  stroke-width: 2pt; }
-
-.logicPanelHeaderCircle {
-  stroke-width: 1pt; }
-
-#dataset-selector {
-  float: right; }
-
-.ui-button {
-  color: #666; }
-
-.ui-button:hover {
-  color: #136382;
-  text-shadow: 0 0 10px #3fa0c7; }
-
-.fixed-y-container {
-  overflow-y: auto; }
-
-#set-vis-container {
-  min-height: 300px; }
-
-#item-vis-container {
-  min-height: 200px;
-  max-height: 400px; }
-
-#item-table-container {
-  min-height: 400px;
-  padding-bottom: 10px; }
-
-#item-table {
-  border-bottom: 1px dotted #bbb;
-  padding-bottom: 2px; }
-
-.item-table-header {
-  padding-top: 3px;
-  padding-bottom: 3px;
-  padding-left: 5px;
-  padding-right: 5px;
-  font-size: 10pt;
-  font-weight: bold; }
-
-* {
-  margin: 0;
-  padding: 0; }
-
-.level-1-button {
-  cursor: default;
-  display: inline-block;
-  font-weight: bold;
-  background-color: #ccc;
-  color: #444;
-  border-radius: 10px;
-  margin-left: 3px;
-  margin-right: 3px;
-  margin-top: 1px;
-  margin-bottom: 1px;
-  padding-left: 8px;
-  padding-right: 8px;
-  padding-top: 1px;
-  padding-bottom: 1px; }
-
-.level-1-button:hover {
-  background-color: #aaa;
-  color: #444; }
-
-.level-2-button {
-  cursor: default;
-  display: inline-block;
-  color: #444;
-  margin-left: 2px;
-  margin-right: 2px;
-  margin-top: 1px;
-  margin-bottom: 1px;
-  padding-left: 2px;
-  padding-right: 2px;
-  padding-top: 1px;
-  padding-bottom: 1px; }
-
-.level-2-button:hover {
-  color: #111; }
-
-.info-message {
-  display: block;
-  background-color: #eee;
-  color: #444;
-  margin-top: 2px;
-  margin-bottom: 2px;
-  padding: 3px;
-  font-style: italic; }
-
-.element-viewer-header {
-  display: inline; }
-
-.element-viewer-title {
-  display: inline; }
-
-.element-viewer-editor-button {
-  display: inline-block; }
-
-.element-viewer-editor-button:hover {
-  /*text-shadow: 0 0 10px #3fa0c7*/ }
-
-.element-viewer-active {
-  margin-top: 5px;
-  border-bottom: 1px dotted #bbb;
-  padding-bottom: 3px;
-  margin-bottom: 5px; }
-
-#element-viewer-selector {
-  display: inline;
-  float: none; }
-
-/** === Filter Controls === */
-#filters-container {
-  display: block; }
-
-.filter-header {
-  display: inline; }
-
-.filter-title {
-  display: inline; }
-
-.filter-editor-button {
-  display: inline-block; }
-
-.filter-active {
-  background-color: white;
-  border: 1px dashed lightgray;
-  padding: 5px;
-  margin-top: 5px;
-  margin-bottom: 5px; }
-
-.filter-parameter-viewer {
-  font-size: 10pt; }
-
-.filter-viewer:not(:first-child) {
-  border-top: 1px dotted #bbb; }
-
-.filter-viewer {
-  padding-bottom: 3px;
-  margin-bottom: 1px; }
-
-#filter-selector {
-  display: inline;
-  margin-left: 5px; }
-
-#filters-list {
-  border-bottom: 1px dotted #bbb;
-  padding-bottom: 2px; }
-
-.filter-editor:not(:first-child) {
-  border-top: 1px dotted #bbb; }
-
-.filter-editor {
-  padding-bottom: 3px;
-  margin-bottom: 1px; }
-
-#filters-controls {
-  padding-top: 5px; }
-
-.element-view-header {
-  border-bottom: 1px solid #636363;
-  margin-top: 12px;
-  margin-bottom: 3px;
-  padding-left: 5px; }
-
-.element-view-title {
-  display: inline;
-  background-color: #636363;
-  color: white;
-  padding: 2px 5px 1px 5px;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  margin-bottom: 0px;
-  font-weight: bold;
-  font-size: 10pt; }
-
-.element-view-subtitle {
-  display: inline;
-  color: #636363;
-  padding: 1px 3px 1px 3px;
-  margin-bottom: 0px;
-  font-weight: bold;
-  font-size: 10pt; }
-
-.element-view-controls {
-  min-height: 25px; }
-
-/** ==== for range slider == **/
-.drawBrush, path.connectionArea {
-  fill: gray;
-  opacity: 0.2;
-  stroke: none; }
-
-.sliderLabel rect {
-  opacity: .5;
-  fill: #a6bddb; }
-
-.sliderLabel line {
-  opacity: .5;
-  stroke: #a6bddb;
-  stroke-width: 2; }
-
-.sliderLabel text {
-  opacity: 1;
-  font: 10px sans-serif;
-  fill: black;
-  text-anchor: middle; }
-
-.groupLabelText {
-  cursor: pointer; }
-
-.collapseIcon, .groupDeleteIcon {
-  font-family: FontAwesome;
-  font-size: 12px;
-  cursor: pointer;
-  text-anchor: middle;
-  /*dominant-baseline: ;*/ }
-
-#moveHandle {
-  cursor: pointer;
-  position: relative;
-  left: -13px;
-  background-color: #ddd;
-  float: left;
-  cursor: ew-resize;
-  border-left: 1px solid #999;
-  border-right: 1px solid #999;
-  width: 3px;
-  height: 25px; }
-
-.boxPlot {
-  stroke-width: 1px;
-  stroke: black;
-  fill: lightgray;
-  shape-rendering: crispEdges; }
-
-.logicButton {
-  font-family: FontAwesome;
-  font-size: 12px;
-  cursor: pointer;
-  text-anchor: middle;
-  dominant-baseline: central; }
-
-.gSeparatorLine {
-  stroke: darkgrey;
-  stroke-width: 3; }
-
-#bodyVis, #headerVis {
-  display: block;
-  overflow-y: auto;
-  overflow-x: hidden; }
-
-.matrixTableContainer {
-  display: block;
-  overflow-y: hidden;
-  overflow-x: scroll; }
-
-.setSelectionArea {
-  fill: lightgrey;
-  stroke: none; }
-
-.setSelectionButton {
-  fill: lightgrey;
-  stroke: none; }
-
-.setSelectionButton:hover {
-  fill: darkgray; }
-
-.pagination, .setMenuExtra {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 12px;
-  cursor: pointer;
-  font-weight: 300; }
-
-.setSelectionButtonText {
-  fill: #444;
-  font-weight: bold; }
-
-.setMenuExtraAwesome {
-  font-family: FontAwesome; }
-
-.setSelectionLabelAwesome {
-  font-family: FontAwesome;
-  font-size: 14px;
-  fill: lightgrey;
-  cursor: pointer;
-  font-weight: 300; }
-
-.setSelectionLabelAwesome:hover {
-  fill: darkgrey; }
-
-/*.groupingSelect{*/
-/*position: relative;*/
-/*left:-6px;*/
-/*}*/
-/*.groupBackGround .filterGroup{*/
-/*fill: #d3d3d3;;  */
-/*logic Color*/
-/**/
-/*}*/
