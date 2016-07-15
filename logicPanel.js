@@ -905,7 +905,7 @@ function LogicPanel(params){
         initLogicExpression();
     }
 
-
+    LogicPanel.destroyPanel = destroyPanel;
     init();
 
 

@@ -123,6 +123,11 @@ var changeDataset = function () {
 
     UpSetState.logicGroups = [];
     UpSetState.logicGroupChanged = true;
+    if (LogicPanel.destroyPanel) {
+        LogicPanel.destroyPanel();
+    } else {
+        console.warn('LogicPanel.destroyPanel not defined');
+    }
 
     loadDataSet(queryParameters['dataset']);
 
