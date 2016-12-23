@@ -142,7 +142,7 @@ function BaseSet(setID, setName, combinedSets, setData, fake) {
 BaseSet.prototype = Element;
 BaseSet.prototype.constructor = Element;
 
-function Set(setID, setName, combinedSets, itemList) {
+function USet(setID, setName, combinedSets, itemList) {
     BaseSet.call(this, setID, setName, combinedSets,[],1);
         for (var i = 0; i < itemList.length; i++) {
         if (itemList[i] !== 0) {
@@ -159,8 +159,8 @@ function Set(setID, setName, combinedSets, itemList) {
 
 }
 
-Set.prototype = BaseSet;
-Set.prototype.constructor = BaseSet;
+USet.prototype = BaseSet;
+USet.prototype.constructor = BaseSet;
 
 function SubSet(setID, setName, combinedSets, itemList, expectedProb) {
     BaseSet.call(this, setID, setName, combinedSets, itemList);
@@ -184,7 +184,7 @@ SubSet.prototype.toString = function () {
 }
 
 // Not sure how to do this properly with parameters?
-SubSet.prototype = Set;
+SubSet.prototype = USet;
 SubSet.prototype.constructor = SubSet;
 
 function Group(groupID, groupName, level) {
