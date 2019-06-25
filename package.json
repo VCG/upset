@@ -29,6 +29,6 @@
     "d3": "^3.5.14",
     "font-awesome": "^4.4.0",
     "font-awesome-webpack": "^0.0.4",
-    "jquery": "^2.2.0"
+    "jquery": "^3.4.1"
   }
 }
