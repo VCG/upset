@@ -107,7 +107,11 @@ function plotSetOverview() {
             })
             .on('mouseout', function (d, i) {
                 mouseoutColumn(d, i);
-            });
+            })
+            .append("svg:title")
+                .text(function (d) {
+                    return d.elementName + " (" + d.setSize + ")";
+                });
         // background bar
         usedSetsLabelsEnter
             .append('rect')
@@ -120,6 +124,10 @@ function plotSetOverview() {
             .on('mouseover', mouseoverColumn)
             .on('mouseout', mouseoutColumn)
             .on('click', setClicked)
+            .append("svg:title")
+                .text(function (d) {
+                    return d.elementName + " (" + d.setSize + ")";
+                });
         // *** update sizes (might happen when changing datasets)
         d3.selectAll(".usedSets .setSize").transition().duration(1000).attr({
             y: function (d) {
@@ -127,9 +135,6 @@ function plotSetOverview() {
             },
             height: function (d) {
                 return setSizeScale(d.setSize);
-            },
-            title: function (d) {
-                return d.setSize
             }
         });
         usedSetsLabelsEnter.transition().duration(400).delay(400).attr({
@@ -290,11 +295,10 @@ function plotSetOverview() {
                         return setSizeScale(d.setSize);
                     },
                     width: cellSize - 2,
-                    title: function (d) {
-                        return d.setSize
-                    }
                 })
                 .on('click', setClicked)
+               // .append('title').text(function (d) {return d});
+              //     .append('title').text("what");
 //        .append("svg:title")
 //        .text(function(d, i) { return d.elementName + " (" +d.setSize+ ")"; });;
 
@@ -368,14 +372,8 @@ function plotSetOverview() {
                         } else {
                             return 'setSizeRect unusedSetSize'
                         }
-
-
                     }
-
-
                 })
-
-
         }
     }
 
