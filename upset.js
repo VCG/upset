@@ -2535,7 +2535,7 @@ function UpSet(datasets) {
 
     }
 
-    document.getElementById('rowSizeValue').addEventListener('changeDataset', function () {
+    document.getElementById('rowSizeValue').addEventListener('change', function () {
         ctx.cellDistance = +(document.getElementById('rowSizeValue').value);
         rowTransition();
     });
