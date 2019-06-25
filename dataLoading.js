@@ -357,7 +357,7 @@ function parseDataSet(data, dataSetDescription) {
     for (var i = 0; i < rawSets.length; i++) {
         var combinedSets = Array.apply(null, new Array(rawSets.length)).map(Number.prototype.valueOf, 0);
         combinedSets[i] = 1;
-        var set = new Set(setPrefix + i, setNames[i], combinedSets, rawSets[i]);
+        var set = new USet(setPrefix + i, setNames[i], combinedSets, rawSets[i]);
         setIdToSet[setPrefix + i] = set;
         sets.push(set);
         if (i < nrDefaultSets) {
