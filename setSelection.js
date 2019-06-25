@@ -8,11 +8,11 @@ function plotSetOverview() {
     var animate = false;
 
 
-    if (arguments[0]){
+    if (arguments[0]) {
         console.log(arguments[0]);
         initialize = arguments[0].initialize || false;
 
-        if (initialize){
+        if (initialize) {
             ctx.setSelection.mode = "none"
             ctx.setSelection.modeChange = false;
             ctx.setSelection.multiSelIn = d3.set();
@@ -32,25 +32,23 @@ function plotSetOverview() {
     var setCellSize = 10;
 
     var differenceForMultiSel = 7;
-    var textHeight = 62-differenceForMultiSel;
+    var textHeight = 62 - differenceForMultiSel;
     var truncateAfter = 7;
     var distanceUsedMenu = 15;
     var paddingForPaginationRight = 115;
-    var paddingForPaginationRightExtra = (ctx.setSelection.mode==="none")?0:100;
+    var paddingForPaginationRightExtra = (ctx.setSelection.mode === "none") ? 0 : 100;
     const paginationLinespace = 14;
 
     var headerSVG = d3.select('#headerVis').select('svg');
 
     // calculate widths
     var svgWidth = headerSVG.attr("width");
-    var menuOffset = usedSets.length*cellSize + distanceUsedMenu;
-    var maxWidthUnused = svgWidth - menuOffset - paddingForPaginationRight - paddingForPaginationRightExtra-distanceUsedMenu-cellDistance;
+    var menuOffset = usedSets.length * cellSize + distanceUsedMenu;
+    var maxWidthUnused = svgWidth - menuOffset - paddingForPaginationRight - paddingForPaginationRightExtra - distanceUsedMenu - cellDistance;
 
-    var unusedSets = sets.filter(function(n) {
+    var unusedSets = sets.filter(function (n) {
         return usedSets.indexOf(n) == -1
     });
-
-
 
 
     // --- INIT the SVG structure (d3 version)
@@ -77,7 +75,7 @@ function plotSetOverview() {
         usedSetsVis.enter().append("g").attr("class", "usedSets");
 
         usedSetsVis.attr({
-            "transform":"translate("+0+","+differenceForMultiSel+")"
+            "transform": "translate(" + 0 + "," + differenceForMultiSel + ")"
         })
 
         var usedSetsLabels = usedSetsVis
@@ -88,7 +86,7 @@ function plotSetOverview() {
         usedSetsLabels.exit().remove();
         var usedSetsLabelsEnter = usedSetsLabels.enter().append("g").attr("class", "setLabel").attr({
             transform: function (d, i) {
-                return 'translate(' + (cellDistance * (i )) + ', 0)'
+                return 'translate(' + (cellDistance * (i)) + ', 0)'
             },
             opacity: .1
 
@@ -98,7 +96,10 @@ function plotSetOverview() {
             .attr({
                 class: 'setSizeBackground',
                 height: (textHeight + 1),
-                width: cellSize//setRowScale.rangeBand()
+                width: cellSize,//setRowScale.rangeBand()
+                title: function (d) {
+                    return d.setSize
+                }
             })
             .on('click', setClicked)
             .on('mouseover', function (d, i) {
@@ -126,6 +127,9 @@ function plotSetOverview() {
             },
             height: function (d) {
                 return setSizeScale(d.setSize);
+            },
+            title: function (d) {
+                return d.setSize
             }
         });
         usedSetsLabelsEnter.transition().duration(400).delay(400).attr({
@@ -141,15 +145,15 @@ function plotSetOverview() {
 
         usedSetsLabels.attr({
             transform: function (d, i) {
-                if (ctx.setSelection.mode==="multiSel"){
+                if (ctx.setSelection.mode === "multiSel") {
                     if (ctx.setSelection.multiSelOut.has(d.elementName)) {
-                        return 'translate(' + (cellDistance * i ) + ', -'+differenceForMultiSel+')'
-                    }else{
-                        return 'translate(' + (cellDistance * i ) + ', 0)'
+                        return 'translate(' + (cellDistance * i) + ', -' + differenceForMultiSel + ')'
+                    } else {
+                        return 'translate(' + (cellDistance * i) + ', 0)'
                     }
 
-                }else{
-                    return 'translate(' + (cellDistance * i)  + ', 0)'
+                } else {
+                    return 'translate(' + (cellDistance * i) + ', 0)'
                 }
 
             }
@@ -157,10 +161,10 @@ function plotSetOverview() {
 
         usedSetsLabels.selectAll(".setSizeRect")
             .attr({
-                "class":function(d){
+                "class": function (d) {
                     if (ctx.setSelection.multiSelOut.has(d.elementName)) {
                         return 'setSizeRect unusedSetSize'
-                    }else{
+                    } else {
                         return 'setSizeRect setSize'
                     }
 
@@ -176,8 +180,7 @@ function plotSetOverview() {
     updateUsedSets();
 
 
-
-    function updateUnusedSets(){
+    function updateUnusedSets() {
         // ----------------------------
         ///-- Render the unused Sets
         // ----------------------------
@@ -193,55 +196,52 @@ function plotSetOverview() {
 
         if (ctx.setSelection.setOrder === "name") {
             sortFn = sortName;
-        }  else {
+        } else {
             sortFn = sortSize;
         }
 
-        var unuseedSetsOffset = menuOffset+paddingForPaginationRight+paddingForPaginationRightExtra +distanceUsedMenu;
+        var unuseedSetsOffset = menuOffset + paddingForPaginationRight + paddingForPaginationRightExtra + distanceUsedMenu;
 
 
         unusedSets.sort(sortFn);
 
         var unusedSetsGroup = setSelectionGroup.selectAll(".unusedSets").data([1])
-        unusedSetsGroup.enter().append("g").attr("class","unusedSets")
+        unusedSetsGroup.enter().append("g").attr("class", "unusedSets")
 
         unusedSetsGroup.attr({
-            "transform":function(d){
-                if (ctx.setSelection.mode==="multiSel"){
-                    return 'translate('+ unuseedSetsOffset+', 0)'
-                }else{
-                    return 'translate('+ unuseedSetsOffset +', '+differenceForMultiSel+')'
+            "transform": function (d) {
+                if (ctx.setSelection.mode === "multiSel") {
+                    return 'translate(' + unuseedSetsOffset + ', 0)'
+                } else {
+                    return 'translate(' + unuseedSetsOffset + ', ' + differenceForMultiSel + ')'
                 }
             }
         })
 
 
-
-
-
-        if (maxWidthUnused<cellDistance){
+        if (maxWidthUnused < cellDistance) {
 
 
             unusedSetsGroup.selectAll('.unusedSetLabel').remove();
 
-        }else{
+        } else {
 
             /*
              * add only if there is enough space !!!
              * */
 
             console.log(maxWidthUnused, cellDistance);
-            var paginationDistance = Math.floor(maxWidthUnused/cellDistance);
+            var paginationDistance = Math.floor(maxWidthUnused / cellDistance);
 
             console.log(maxWidthUnused, cellDistance, paginationDistance);
-            if (initialize){
-                ctx.setSelection.paginationStart=+0;
+            if (initialize) {
+                ctx.setSelection.paginationStart = +0;
             }
-            ctx.setSelection.paginationEnd=+ctx.setSelection.paginationStart+paginationDistance;
+            ctx.setSelection.paginationEnd = +ctx.setSelection.paginationStart + paginationDistance;
 
             var unusedSetsFiltered = unusedSets.filter(
-                function(d,i){
-                    return ((ctx.setSelection.paginationStart<=i) && (i<=ctx.setSelection.paginationEnd));
+                function (d, i) {
+                    return ((ctx.setSelection.paginationStart <= i) && (i <= ctx.setSelection.paginationEnd));
                 }
             )
 
@@ -254,16 +254,18 @@ function plotSetOverview() {
 
             var unusedSetsLabels = unusedSetsGroup
                 .selectAll('.unusedSetLabel')
-                .data(unusedSetsFiltered, function(d){return d.elementName;})
+                .data(unusedSetsFiltered, function (d) {
+                    return d.elementName;
+                })
 
             unusedSetsLabels.exit().remove();
 
 
-            var unusedSetsLabelsEnter = unusedSetsLabels.enter().append("g").attr("class","unusedSetLabel").attr({
+            var unusedSetsLabelsEnter = unusedSetsLabels.enter().append("g").attr("class", "unusedSetLabel").attr({
                 transform: function (d, i) {
-                    return 'translate(' + (cellDistance * (i ) ) + ', -10)'
+                    return 'translate(' + (cellDistance * (i)) + ', -10)'
                 },
-                opacity:.1
+                opacity: .1
             });
             unusedSetsLabelsEnter
                 .append('rect')
@@ -272,7 +274,7 @@ function plotSetOverview() {
 //                transform: function (d, i) {
 //                    return 'translate(' + (cellDistance * (i )) + ', 20)'
 //                },
-                    height: textHeight-2,
+                    height: textHeight - 2,
                     width: cellSize
                 })
                 .on('click', setClicked)
@@ -282,12 +284,15 @@ function plotSetOverview() {
                 .attr({
                     class: 'setSizeRect unusedSetSize',
                     transform: function (d, i) {
-                        return 'translate(1, ' + ( textHeight - setSizeScale(d.setSize)) + ')'
+                        return 'translate(1, ' + (textHeight - setSizeScale(d.setSize)) + ')'
                     }, // ' + (textHeight - 5) + ')'
                     height: function (d) {
                         return setSizeScale(d.setSize);
                     },
-                    width: cellSize-2
+                    width: cellSize - 2,
+                    title: function (d) {
+                        return d.setSize
+                    }
                 })
                 .on('click', setClicked)
 //        .append("svg:title")
@@ -296,16 +301,16 @@ function plotSetOverview() {
 
             unusedSetsLabelsEnter
                 .append('text').text(function (d) {
-                    if (d.elementName.length > (truncateAfter+3)){
-                        var str = d.elementName.substring(0, truncateAfter)
-                        if(str.length<d.elementName.length)
-                            str = str.trim() + "...";
-                    }else{
-                        str= d.elementName.trim();
-                    }
+                if (d.elementName.length > (truncateAfter + 3)) {
+                    var str = d.elementName.substring(0, truncateAfter)
+                    if (str.length < d.elementName.length)
+                        str = str.trim() + "...";
+                } else {
+                    str = d.elementName.trim();
+                }
 
-                    return str;
-                })
+                return str;
+            })
                 .attr({
                     class: 'setLabel',
                     transform: function (d, i) {
@@ -313,13 +318,15 @@ function plotSetOverview() {
                     },
                     y: cellSize - 3,
                     x: 3,
-                    height: textHeight-4,
+                    height: textHeight - 4,
                     'text-anchor': 'start'
 
                 })
                 .on('click', setClicked)
                 .append("svg:title")
-                .text(function(d, i) { return d.elementName + " (" +d.setSize+ ")"; });
+                .text(function (d, i) {
+                    return d.elementName + " (" + d.setSize + ")";
+                });
 
 
 //            console.log("animate:", animate);
@@ -337,37 +344,36 @@ function plotSetOverview() {
 
             unusedSetsLabels.attr({
                 transform: function (d, i) {
-                    if (ctx.setSelection.mode==="multiSel"){
+                    if (ctx.setSelection.mode === "multiSel") {
                         if (ctx.setSelection.multiSelIn.has(d.elementName)) {
-                            return 'translate(' + (cellDistance * (i ) ) + ', '+differenceForMultiSel+')'
-                        }else{
-                            return 'translate(' + (cellDistance * (i ) ) + ', 0)'
+                            return 'translate(' + (cellDistance * (i)) + ', ' + differenceForMultiSel + ')'
+                        } else {
+                            return 'translate(' + (cellDistance * (i)) + ', 0)'
                         }
 
-                    }else{
-                        return 'translate(' + (cellDistance * (i ) ) + ', 0)'
+                    } else {
+                        return 'translate(' + (cellDistance * (i)) + ', 0)'
                     }
 
                 },
-                opacity:1
+                opacity: 1
             })
 
 
             unusedSetsLabels.selectAll(".setSizeRect")
                 .attr({
-                  "class":function(d){
-                      if (ctx.setSelection.multiSelIn.has(d.elementName)) {
-                          return 'setSizeRect setSize'
-                      }else{
-                          return 'setSizeRect unusedSetSize'
-                      }
+                    "class": function (d) {
+                        if (ctx.setSelection.multiSelIn.has(d.elementName)) {
+                            return 'setSizeRect setSize'
+                        } else {
+                            return 'setSizeRect unusedSetSize'
+                        }
 
 
-                  }
+                    }
 
 
                 })
-
 
 
         }
@@ -376,65 +382,60 @@ function plotSetOverview() {
     updateUnusedSets();
 
 
-
-
-
     function updatePaginationDecoration() {
         var internalLeftPadding = 0 // only local
         var setsRight = unusedSets.length - ctx.setSelection.paginationEnd;
         var setsLeft = ctx.setSelection.paginationStart;
 
         var middlePos = ((paddingForPaginationRight - internalLeftPadding) / 2 + internalLeftPadding);
-        var paginationDistance = Math.floor(maxWidthUnused/cellDistance);
+        var paginationDistance = Math.floor(maxWidthUnused / cellDistance);
 
         var pagi = headerSVG.selectAll(".pagination")
             .data([{countRight: setsRight, countLeft: setsLeft, distance: paginationDistance}])
         var pagiGroup = pagi.enter().append("g").attr({
-            "class":"pagination"
+            "class": "pagination"
         })
 
 //        var finalPos = svgWidth-paddingForPaginationRight;
         var finalPos = menuOffset;
 //        console.log("finalpos", finalPos);
-        if (ctx.setSelection.mode !== "none"){
-            finalPos+=paddingForPaginationRightExtra;
+        if (ctx.setSelection.mode !== "none") {
+            finalPos += paddingForPaginationRightExtra;
         }
 
-        if (ctx.setSelection.modeChange){
+        if (ctx.setSelection.modeChange) {
             pagi.transition().attr({
-                "transform":"translate("+(finalPos)+",0)"
+                "transform": "translate(" + (finalPos) + ",0)"
             })
 
-        }else{
+        } else {
             pagi.attr({
-                "transform":"translate("+(finalPos)+",0)"
+                "transform": "translate(" + (finalPos) + ",0)"
             })
         }
 
 
         pagiGroup.append("text")
-        .style({
-            "text-anchor": "middle",
-            "cursor": "default",
-                "font-weight":"bold"
-        }).attr({
+            .style({
+                "text-anchor": "middle",
+                "cursor": "default",
+                "font-weight": "bold"
+            }).attr({
             "transform": function () {
 
-                return "translate(" + ( middlePos) + "," + (.8*paginationLinespace) + ")";
+                return "translate(" + (middlePos) + "," + (.8 * paginationLinespace) + ")";
             }
         }).text("Set Selection")
 
 
         pagiGroup.append("rect")
             .attr({
-                "class":"selectionRect setSelectionArea",
-                x:-5,
-                width:paddingForPaginationRight-internalLeftPadding+5,
-                height:paginationLinespace *.9,
-                opacity:0
+                "class": "selectionRect setSelectionArea",
+                x: -5,
+                width: paddingForPaginationRight - internalLeftPadding + 5,
+                height: paginationLinespace * .9,
+                opacity: 0
             })
-
-
 
 
         pagiGroup.append("text").attr({
@@ -443,7 +444,7 @@ function plotSetOverview() {
             "text-anchor": "end"
         }).attr({
             "transform": function () {
-                return "translate(" + (paddingForPaginationRight - 2) + "," + (2*paginationLinespace) + ")";
+                return "translate(" + (paddingForPaginationRight - 2) + "," + (2 * paginationLinespace) + ")";
             }
         })
 
@@ -453,7 +454,7 @@ function plotSetOverview() {
             "text-anchor": "start"
         }).attr({
             "transform": function () {
-                return "translate(" + (internalLeftPadding+2) + "," + (2 * paginationLinespace) + ")";
+                return "translate(" + (internalLeftPadding + 2) + "," + (2 * paginationLinespace) + ")";
             }
         })
 
@@ -473,19 +474,19 @@ function plotSetOverview() {
         pagiGroup.append("rect").attr({
             "class": "multiSelect setSelectionButton"
         }).attr({
-            "transform": "translate(" + (internalLeftPadding+2) + "," + (2.3*paginationLinespace) + ")",
-            width: paddingForPaginationRight-internalLeftPadding-4,
-            height:.9*paginationLinespace,
-            rx:5,
-            ry:5
+            "transform": "translate(" + (internalLeftPadding + 2) + "," + (2.3 * paginationLinespace) + ")",
+            width: paddingForPaginationRight - internalLeftPadding - 4,
+            height: .9 * paginationLinespace,
+            rx: 5,
+            ry: 5
         })
             .on({
                 "click": function () {
-                    if (ctx.setSelection.mode=="none"){
+                    if (ctx.setSelection.mode == "none") {
                         ctx.setSelection.mode = "multiSel";
                         ctx.setSelection.modeChange = true;
                         plotSetOverview();
-                    }else if (ctx.setSelection.mode === "multiSel"){
+                    } else if (ctx.setSelection.mode === "multiSel") {
                         ctx.setSelection.multiSelIn = d3.set();
                         ctx.setSelection.multiSelOut = d3.set();
                         ctx.setSelection.mode = "none";
@@ -500,20 +501,20 @@ function plotSetOverview() {
         }).style({
             "text-anchor": "middle",
             "cursor": "pointer",
-            "pointer-events":"none"
+            "pointer-events": "none"
         }).attr({
-            "transform": "translate(" + (middlePos) + "," + (3.0*paginationLinespace) + ")"
+            "transform": "translate(" + (middlePos) + "," + (3.0 * paginationLinespace) + ")"
         }).text("Batch Add Sets")
 
 
         pagiGroup.append("rect").attr({
             "class": "sortFilter setSelectionButton"
         }).attr({
-            "transform": "translate(" + (internalLeftPadding+2) + "," + (3.3*paginationLinespace) + ")",
-            width: paddingForPaginationRight-internalLeftPadding-4,
-            height:.9*paginationLinespace,
-            rx:5,
-            ry:5
+            "transform": "translate(" + (internalLeftPadding + 2) + "," + (3.3 * paginationLinespace) + ")",
+            width: paddingForPaginationRight - internalLeftPadding - 4,
+            height: .9 * paginationLinespace,
+            rx: 5,
+            ry: 5
         })
             .on({
                 "click": function () {
@@ -535,9 +536,9 @@ function plotSetOverview() {
         }).style({
             "text-anchor": "middle",
             "cursor": "pointer",
-            "pointer-events":"none"
+            "pointer-events": "none"
         }).attr({
-            "transform": "translate(" + (middlePos) + "," + (4*paginationLinespace) + ")"
+            "transform": "translate(" + (middlePos) + "," + (4 * paginationLinespace) + ")"
         }).text("Sort Sets")
 
 
@@ -562,13 +563,14 @@ function plotSetOverview() {
 
 
         pagi.select(".left")
-             .text(function (d) {
+            .text(function (d) {
 //                if (d.countLeft < 1) return '|-'
 //                else return '<<'; })
                 if (d.countLeft < 1) return ''
-                else return '\uf0a8'; })
+                else return '\uf0a8';
+            })
 
-                //&#f053
+            //&#f053
 
             .on({
                 "click": function (d) {
@@ -583,8 +585,8 @@ function plotSetOverview() {
 
 
         pagi.select(".info_distance").text(function (d) {
-            return ctx.setSelection.paginationStart+ " - " +
-                Math.min(ctx.setSelection.paginationEnd,unusedSets.length)
+            return ctx.setSelection.paginationStart + " - " +
+                Math.min(ctx.setSelection.paginationEnd, unusedSets.length)
         })
 
 //        pagi.select(".multiSelect").style({
@@ -600,26 +602,26 @@ function plotSetOverview() {
 
         var selRectPos = 0;
         var selRectOpa = 0;
-        if (ctx.setSelection.mode==="multiSel"){
-            selRectPos = 2.3*paginationLinespace;
+        if (ctx.setSelection.mode === "multiSel") {
+            selRectPos = 2.3 * paginationLinespace;
             selRectOpa = 1;
-        }else if (ctx.setSelection.mode==="sortFilter"){
-            selRectPos = 3.3*paginationLinespace;
+        } else if (ctx.setSelection.mode === "sortFilter") {
+            selRectPos = 3.3 * paginationLinespace;
             selRectOpa = 1;
         }
 
 
-        if (ctx.setSelection.modeChange){
+        if (ctx.setSelection.modeChange) {
             pagi.select(".selectionRect").transition().duration(200)
                 .attr({
-                y:selRectPos,
-                opacity:selRectOpa
-            })
+                    y: selRectPos,
+                    opacity: selRectOpa
+                })
 
-        }else{
+        } else {
             pagi.select(".selectionRect").attr({
-                y:selRectPos,
-                opacity:selRectOpa
+                y: selRectPos,
+                opacity: selRectOpa
             })
         }
 
@@ -632,114 +634,127 @@ function plotSetOverview() {
     }
 
 
-
-    function updateSecondMenu(){
+    function updateSecondMenu() {
 
         var menuContent = []
-        if (ctx.setSelection.mode === "multiSel"){
+        if (ctx.setSelection.mode === "multiSel") {
             menuContent =
                 [[
-                    {name:"Add All Sets", func: function(){
-                        unusedSets.forEach(function(d){ctx.setSelection.multiSelIn.add(d.elementName);});
-                        ctx.setSelection.multiSelOut = d3.set();
-                        plotSetOverview();
-                    }},
-                    {name:"Clear All Sets", func: function(){
-                        ctx.setSelection.multiSelIn = d3.set();
-                        usedSets.forEach(function(d){ctx.setSelection.multiSelOut.add(d.elementName);});
+                    {
+                        name: "Add All Sets", func: function () {
+                            unusedSets.forEach(function (d) {
+                                ctx.setSelection.multiSelIn.add(d.elementName);
+                            });
+                            ctx.setSelection.multiSelOut = d3.set();
+                            plotSetOverview();
+                        }
+                    },
+                    {
+                        name: "Clear All Sets", func: function () {
+                            ctx.setSelection.multiSelIn = d3.set();
+                            usedSets.forEach(function (d) {
+                                ctx.setSelection.multiSelOut.add(d.elementName);
+                            });
 
-                        plotSetOverview()
-                    }},
-                    {name:"Cancel", func: function(){
-                        ctx.setSelection.multiSelIn = d3.set();
-                        ctx.setSelection.multiSelOut = d3.set();
+                            plotSetOverview()
+                        }
+                    },
+                    {
+                        name: "Cancel", func: function () {
+                            ctx.setSelection.multiSelIn = d3.set();
+                            ctx.setSelection.multiSelOut = d3.set();
 
-                        //close multiselect panel
-                        ctx.setSelection.mode ="none"
-                        ctx.setSelection.modeChange= true
-                        plotSetOverview();
-                    }, fontawe:"\uf00d"},
-                    {name:"Confirm", func: bulkChange, fontawe:"\uf00c"}
+                            //close multiselect panel
+                            ctx.setSelection.mode = "none"
+                            ctx.setSelection.modeChange = true
+                            plotSetOverview();
+                        }, fontawe: "\uf00d"
+                    },
+                    {name: "Confirm", func: bulkChange, fontawe: "\uf00c"}
                 ]]
 
-        } else if (ctx.setSelection.mode === "sortFilter"){
+        } else if (ctx.setSelection.mode === "sortFilter") {
             menuContent =
                 [[
-                    {name:"by Size", func: function(){
-                        ctx.setSelection.setOrder = "size"
-                        ctx.setSelection.mode = "none"
-                        ctx.setSelection.modeChange = true
-                        plotSetOverview();
-                    }},
-                    {name:"by Name", func: function(){
-                        ctx.setSelection.setOrder = "name"
-                        ctx.setSelection.mode = "none"
-                        ctx.setSelection.modeChange = true
-                        plotSetOverview()
-                    }}
+                    {
+                        name: "by Size", func: function () {
+                            ctx.setSelection.setOrder = "size"
+                            ctx.setSelection.mode = "none"
+                            ctx.setSelection.modeChange = true
+                            plotSetOverview();
+                        }
+                    },
+                    {
+                        name: "by Name", func: function () {
+                            ctx.setSelection.setOrder = "name"
+                            ctx.setSelection.mode = "none"
+                            ctx.setSelection.modeChange = true
+                            plotSetOverview()
+                        }
+                    }
                 ]]
 
         }
 
         var menuExtra = headerSVG.selectAll(".setMenuExtra").data(menuContent);
         menuExtra.exit().remove();
-        var menuExtraGroup = menuExtra.enter().append("g").attr("class","setMenuExtra").attr({
-            opacity:.1
+        var menuExtraGroup = menuExtra.enter().append("g").attr("class", "setMenuExtra").attr({
+            opacity: .1
         })
 
         menuExtraGroup.append("rect").attr({
-            "class":"setSelectionArea",
-            x:5,
-            width:paddingForPaginationRightExtra-10,
-            height:textHeight+5
+            "class": "setSelectionArea",
+            x: 5,
+            width: paddingForPaginationRightExtra - 10,
+            height: textHeight + 5
         })
 
-        if (ctx.setSelection.modeChange){
+        if (ctx.setSelection.modeChange) {
             menuExtra.transition().duration(500)
                 .attr({
-                    opacity:1
+                    opacity: 1
                 });
         }
 
         menuExtra
             .attr({
-                "transform":"translate("+(menuOffset)+","+0+")"
+                "transform": "translate(" + (menuOffset) + "," + 0 + ")"
             });
 
 
-        var menuExtraGroupEntries = menuExtraGroup.selectAll(".menuExtraEntry").data(function(d){return d;})
+        var menuExtraGroupEntries = menuExtraGroup.selectAll(".menuExtraEntry").data(function (d) {
+            return d;
+        })
         menuExtraGroupEntries.enter().append("text")
             .attr({
                 "class": function (d) {
-                   if ('fontawe' in d){
-                       return "menuExtraEntry setMenuExtraAwesome"
-                   }else{
-                       return "menuExtraEntry"
-                   }
-                }  ,
-                "transform":function(d,i) {
-                    return "translate("+(paddingForPaginationRightExtra/2)+","+((1+(i*1.0))*paginationLinespace)+")";
+                    if ('fontawe' in d) {
+                        return "menuExtraEntry setMenuExtraAwesome"
+                    } else {
+                        return "menuExtraEntry"
+                    }
+                },
+                "transform": function (d, i) {
+                    return "translate(" + (paddingForPaginationRightExtra / 2) + "," + ((1 + (i * 1.0)) * paginationLinespace) + ")";
                 }
             })
             .style({
-                "cursor":"pointer",
-                "text-anchor":"middle"
+                "cursor": "pointer",
+                "text-anchor": "middle"
             })
-            .text(function(d){
+            .text(function (d) {
                 if ('fontawe' in d) {
-                    return  d.fontawe + " "+ d.name;
-                }else{
+                    return d.fontawe + " " + d.name;
+                } else {
                     return d.name;
                 }
             })
-            .on("click", function(d){ d.func();})
-
-
-
+            .on("click", function (d) {
+                d.func();
+            })
 
 
     }
-
 
 
 //    // -- update position !!!
@@ -832,24 +847,24 @@ function plotSetOverview() {
 
     function setClicked(d, i) {
 
-        if (ctx.setSelection.mode === "multiSel"){
-            if (d.isSelected){
+        if (ctx.setSelection.mode === "multiSel") {
+            if (d.isSelected) {
                 // for usedSets:
-                if (ctx.setSelection.multiSelOut.has(d.elementName)){
+                if (ctx.setSelection.multiSelOut.has(d.elementName)) {
                     ctx.setSelection.multiSelOut.remove(d.elementName);
-                }else{
+                } else {
                     ctx.setSelection.multiSelOut.add(d.elementName);
                 }
-            }else{
+            } else {
                 // for UNusedSets:
-                if (ctx.setSelection.multiSelIn.has(d.elementName)){
+                if (ctx.setSelection.multiSelIn.has(d.elementName)) {
                     ctx.setSelection.multiSelIn.remove(d.elementName);
-                }else{
+                } else {
                     ctx.setSelection.multiSelIn.add(d.elementName);
                 }
             }
             plotSetOverview();
-        }else{
+        } else {
             updateSetContainment(d, true);
         }
 
@@ -858,10 +873,10 @@ function plotSetOverview() {
     }
 
 
-    function bulkChange(){
+    function bulkChange() {
 
         var list_update =
-            sets.filter(function(d){
+            sets.filter(function (d) {
                 return ctx.setSelection.multiSelIn.has(d.elementName) ||
                     ctx.setSelection.multiSelOut.has(d.elementName)
             })
@@ -871,19 +886,20 @@ function plotSetOverview() {
         ctx.setSelection.multiSelOut = d3.set();
 
         //close multiselect panel
-        ctx.setSelection.mode ="none"
-        ctx.setSelection.modeChange= true
+        ctx.setSelection.mode = "none"
+        ctx.setSelection.modeChange = true
 
-        if (list_update.length>0){
+        if (list_update.length > 0) {
             // updateSetCon will call plot again
-            list_update.map(function(d, i) { updateSetContainment(d, i==list_update.length-1); });
-        }else{
+            list_update.map(function (d, i) {
+                updateSetContainment(d, i == list_update.length - 1);
+            });
+        } else {
             plotSetOverview()
         }
 
 
     }
-
 
 
 }
@@ -1000,8 +1016,6 @@ function plotSetOverview() {
 //            mouseoutColumn(d, i);
 //            d3.selectAll(".bulkCheck").transition().duration(1500).remove();
 //        })
-
-
 
 
 //function orderChange() {
