@@ -1,0 +1,16 @@
+{
+	"file": "data/offerings/offerings.csv",
+	"name": "Offerings Analysis",
+	"header": 0,
+	"separator": ",",
+	"skip": 0,
+	"meta": [
+	  { "type": "string", "index": 0, "name": "Editor*" },
+		{ "type": "id", "index": 1, "name": "Name" },
+		{ "type": "string", "index": 2, "name": "Company / Organisation name" },
+		{ "type": "string", "index": 3, "name": "Value Proposition text"}
+	],
+	"sets": [
+		{ "format": "binary", "start": 4, "end": 71 }
+	]
+}
